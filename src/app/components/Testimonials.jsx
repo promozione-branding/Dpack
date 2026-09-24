@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import { useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  Quote,
   MapPin,
+  Quote,
   Star,
 } from "lucide-react";
 
@@ -17,276 +17,67 @@ const testimonials = [
   {
     id: 1,
     text: "We needed customized Packaging Air Bags, and D Pack delivered exactly what we were looking for. Great quality and professional service.",
-    company: "Manufacturing Company",
+    company: "Manufacturing Client",
     location: "Mumbai",
-    name: "Manufacturing Client",
     initials: "MC",
   },
   {
     id: 2,
     text: "D Pack's Packaging Air Bags have greatly reduced product damage during our shipments. The quality is excellent and the service is always reliable.",
-    company: "Logistics Company",
+    company: "Logistics Client",
     location: "Delhi",
-    name: "Logistics Client",
     initials: "LC",
   },
   {
     id: 3,
     text: "We have been using their Air Column Bags for packaging electronics, and the protection level is outstanding. Highly recommended for fragile items.",
-    company: "Electronics Distributor",
+    company: "Electronics Client",
     location: "Bangalore",
-    name: "Electronics Client",
-    initials: "ED",
+    initials: "EC",
   },
   {
     id: 4,
     text: "The packaging quality has made our dispatch process much safer. Their team understood our requirements and delivered a reliable solution.",
-    company: "E-Commerce Company",
+    company: "E-Commerce Client",
     location: "Pune",
-    name: "E-Commerce Client",
     initials: "EC",
   },
   {
     id: 5,
     text: "Their protective packaging solutions have helped us improve product safety during transportation. The overall experience has been excellent.",
-    company: "Packaging Company",
+    company: "Packaging Client",
     location: "Gurugram",
-    name: "Packaging Client",
     initials: "PC",
   },
 ];
 
 /* ============================================================
-   TESTIMONIAL CARD
-============================================================ */
-
-function TestimonialCard({ testimonial }) {
-  return (
-    <article
-      className="
-        group
-        relative
-        flex
-        min-h-[390px]
-        w-[86vw]
-        max-w-[430px]
-        shrink-0
-        flex-col
-        justify-between
-        overflow-hidden
-        border
-        border-black/[0.08]
-        bg-white
-        p-6
-        shadow-[0_12px_45px_rgba(0,0,0,0.07)]
-        transition-all
-        duration-500
-        hover:-translate-y-1
-        hover:shadow-[0_20px_55px_rgba(0,0,0,0.11)]
-        sm:w-[390px]
-        md:w-[420px]
-      "
-    >
-      {/* TOP */}
-
-      <div>
-        <div className="flex items-center justify-between">
-          {/* QUOTE ICON */}
-
-          <div
-            className="
-              flex
-              h-11
-              w-11
-              items-center
-              justify-center
-              bg-[#171918]
-              text-[#E9B95F]
-            "
-          >
-            <Quote size={19} strokeWidth={1.5} />
-          </div>
-
-          {/* VERIFIED */}
-
-          <span
-            className="
-              text-[9px]
-              font-medium
-              uppercase
-              tracking-[0.2em]
-              text-black/35
-            "
-          >
-            Verified Client
-          </span>
-        </div>
-
-        {/* RATING */}
-
-        <div className="mt-7 flex items-center gap-1">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <Star
-              key={star}
-              size={14}
-              fill="#E9B95F"
-              strokeWidth={0}
-              className="text-[#E9B95F]"
-            />
-          ))}
-
-          <span className="ml-2 text-[10px] text-black/35">
-            5.0
-          </span>
-        </div>
-
-        {/* REVIEW */}
-
-        <p
-          className="
-            mt-6
-            font-serif
-            text-[21px]
-            leading-[1.5]
-            tracking-[-0.02em]
-            text-[#171918]
-            sm:text-[22px]
-          "
-        >
-          “{testimonial.text}”
-        </p>
-      </div>
-
-      {/* BOTTOM */}
-
-      <div>
-        <div className="mb-6 h-px w-full bg-black/[0.08]" />
-
-        <div className="flex items-center justify-between">
-          {/* CUSTOMER */}
-
-          <div className="flex items-center gap-3">
-            <div
-              className="
-                flex
-                h-11
-                w-11
-                shrink-0
-                items-center
-                justify-center
-                rounded-full
-                bg-[#171918]
-                text-[10px]
-                font-semibold
-                tracking-wider
-                text-[#E9B95F]
-              "
-            >
-              {testimonial.initials}
-            </div>
-
-            <div>
-              <h3
-                className="
-                  text-[12px]
-                  font-semibold
-                  tracking-[-0.01em]
-                  text-[#171918]
-                "
-              >
-                {testimonial.company}
-              </h3>
-
-              <div className="mt-1 flex items-center gap-1 text-[10px] text-black/40">
-                <MapPin size={10} strokeWidth={1.5} />
-
-                {testimonial.location}
-              </div>
-            </div>
-          </div>
-
-          {/* NUMBER */}
-
-          <span
-            className="
-              text-[10px]
-              font-medium
-              tracking-[0.2em]
-              text-black/20
-            "
-          >
-            0{testimonial.id}
-          </span>
-        </div>
-      </div>
-
-      {/* GOLD BOTTOM LINE */}
-
-      <div
-        className="
-          absolute
-          bottom-0
-          left-0
-          h-[3px]
-          w-full
-          origin-left
-          scale-x-0
-          bg-[#E9B95F]
-          transition-transform
-          duration-500
-          group-hover:scale-x-100
-        "
-      />
-    </article>
-  );
-}
-
-/* ============================================================
-   MAIN TESTIMONIAL SECTION
+   MAIN
 ============================================================ */
 
 export default function Testimonials() {
-  const sliderRef = useRef(null);
-
   const [activeIndex, setActiveIndex] = useState(0);
 
-  /* ============================================================
-     SLIDER
-  ============================================================ */
+  const activeTestimonial = testimonials[activeIndex];
 
-  const scrollSlider = (direction) => {
-    if (!sliderRef.current) return;
+  /* ==========================================================
+     NEXT
+  ========================================================== */
 
-    const amount = 450;
-
-    sliderRef.current.scrollBy({
-      left: direction === "next" ? amount : -amount,
-      behavior: "smooth",
-    });
-
-    setActiveIndex((prev) => {
-      if (direction === "next") {
-        return Math.min(prev + 1, testimonials.length - 1);
-      }
-
-      return Math.max(prev - 1, 0);
-    });
+  const nextTestimonial = () => {
+    setActiveIndex((prev) =>
+      prev === testimonials.length - 1 ? 0 : prev + 1
+    );
   };
 
-  const scrollToCard = (index) => {
-    if (!sliderRef.current) return;
+  /* ==========================================================
+     PREVIOUS
+  ========================================================== */
 
-    const cards = sliderRef.current.children;
-
-    if (!cards[index]) return;
-
-    cards[index].scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "start",
-    });
-
-    setActiveIndex(index);
+  const previousTestimonial = () => {
+    setActiveIndex((prev) =>
+      prev === 0 ? testimonials.length - 1 : prev - 1
+    );
   };
 
   return (
@@ -295,27 +86,28 @@ export default function Testimonials() {
         relative
         w-full
         overflow-hidden
-        bg-[#F7F6F2]
+        bg-[#F8F7F3]
         py-20
         sm:py-24
-        lg:py-28
+        lg:min-h-[650px]
+        lg:py-24
       "
     >
-      {/* =====================================================
-          BACKGROUND DETAILS
-      ===================================================== */}
+      {/* ======================================================
+          BACKGROUND DECORATION
+      ====================================================== */}
 
       <div
         className="
           pointer-events-none
           absolute
-          -right-32
-          -top-32
+          -right-[180px]
+          -top-[180px]
           h-[420px]
           w-[420px]
           rounded-full
           border
-          border-[#E9B95F]/20
+          border-[#D4A017]/10
         "
       />
 
@@ -323,47 +115,73 @@ export default function Testimonials() {
         className="
           pointer-events-none
           absolute
-          -left-40
-          bottom-[-220px]
-          h-[450px]
-          w-[450px]
+          -left-[220px]
+          bottom-[-250px]
+          h-[500px]
+          w-[500px]
           rounded-full
           border
-          border-black/[0.04]
+          border-black/[0.035]
         "
       />
 
-      {/* =====================================================
-          CONTAINER
-      ===================================================== */}
+      {/* ======================================================
+          MAIN CONTAINER
+      ====================================================== */}
 
-      <div className="relative mx-auto w-full max-w-[1500px]">
-        {/* ===================================================
-            HEADER
-        =================================================== */}
-
+      <div
+        className="
+          relative
+          mx-auto
+          w-full
+          max-w-[1450px]
+          px-5
+          sm:px-8
+          lg:px-12
+          xl:px-16
+        "
+      >
         <div
           className="
-            mb-12
-            flex
-            flex-col
-            gap-8
-            px-5
-            sm:px-8
-            lg:mb-14
-            lg:flex-row
-            lg:items-end
-            lg:justify-between
-            lg:px-14
+            grid
+            items-center
+            gap-14
+            lg:grid-cols-[0.95fr_1.25fr]
+            lg:gap-10
+            xl:grid-cols-[0.9fr_1.35fr]
+            xl:gap-16
           "
         >
-          {/* LEFT */}
+          {/* ==================================================
+              LEFT CONTENT
+          ================================================== */}
 
-          <div className="max-w-[720px]">
+          <div
+            className="
+              relative
+              z-10
+              flex
+              flex-col
+              items-start
+            "
+          >
             {/* EYEBROW */}
 
-            <div className="mb-5 flex items-center gap-3">
-              <span className="h-px w-10 bg-[#E9B95F]" />
+            <div
+              className="
+                mb-6
+                flex
+                items-center
+                gap-4
+              "
+            >
+              <span
+                className="
+                  h-[2px]
+                  w-12
+                  bg-[#D4A017]
+                "
+              />
 
               <span
                 className="
@@ -371,7 +189,7 @@ export default function Testimonials() {
                   font-semibold
                   uppercase
                   tracking-[0.25em]
-                  text-[#171918]/45
+                  text-[#8B7B55]
                 "
               >
                 Customer Reviews
@@ -382,188 +200,629 @@ export default function Testimonials() {
 
             <h2
               className="
-                text-[42px]
-                font-medium
-                leading-[0.95]
+                max-w-[650px]
+                font-[var(--font-outfit)]
+                text-[46px]
+                font-black
+                leading-[0.9]
                 tracking-[-0.055em]
-                text-[#171918]
-                sm:text-[54px]
-                md:text-[64px]
-                lg:text-[76px]
+                text-[#101A26]
+                sm:text-[58px]
+                md:text-[68px]
+                lg:text-[66px]
+                xl:text-[78px]
               "
             >
-              Loved by
-              <span className="ml-2 text-[#B8860B]">
-                businesses.
+              Trusted Clients
+              <br />
+              <span className="text-[#101A26]">
+                Testimonial
               </span>
             </h2>
 
+            {/* DESCRIPTION */}
+
             <p
               className="
-                mt-5
-                max-w-[550px]
+                mt-7
+                max-w-[500px]
                 text-[13px]
-                leading-6
-                text-black/45
+                leading-[1.8]
+                text-[#4D5863]
                 sm:text-[14px]
+                lg:max-w-[470px]
               "
             >
               Trusted by manufacturers, logistics companies,
               e-commerce businesses and packaging professionals
               across India.
             </p>
+
+            {/* EXPLORE BUTTON */}
+
+            <button
+              type="button"
+              className="
+                group
+                mt-9
+                flex
+                h-[130px]
+                w-[130px]
+                flex-col
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-[#D4A017]/30
+                bg-transparent
+                text-left
+                transition-all
+                duration-500
+                hover:border-[#D4A017]
+                hover:bg-[#D4A017]
+              "
+            >
+              <span
+                className="
+                  flex
+                  items-center
+                  gap-3
+                  font-[var(--font-outfit)]
+                  text-[11px]
+                  font-bold
+                  uppercase
+                  leading-[1.3]
+                  tracking-[0.02em]
+                  text-[#101A26]
+                  transition-colors
+                  duration-500
+                  group-hover:text-white
+                "
+              >
+                Explore Us
+                <ArrowRight
+                  size={15}
+                  strokeWidth={1.5}
+                  className="
+                    transition-transform
+                    duration-500
+                    group-hover:translate-x-1
+                  "
+                />
+              </span>
+
+              <span
+                className="
+                  mt-1
+                  font-[var(--font-outfit)]
+                  text-[11px]
+                  font-bold
+                  uppercase
+                  leading-none
+                  text-[#101A26]
+                  transition-colors
+                  duration-500
+                  group-hover:text-white
+                "
+              >
+                More
+              </span>
+            </button>
           </div>
 
-          {/* RIGHT CONTROLS */}
+          {/* ==================================================
+              RIGHT TESTIMONIAL AREA
+          ================================================== */}
 
-          <div className="flex items-center justify-between gap-5 lg:justify-end">
-            {/* REVIEW COUNT */}
+          <div
+            className="
+              relative
+              min-h-[500px]
+              w-full
+              lg:min-h-[520px]
+            "
+          >
+            {/* =================================================
+                LEFT NAVIGATION ARROW
+            ================================================= */}
 
-            <div>
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={13}
-                    fill="#E9B95F"
-                    strokeWidth={0}
-                    className="text-[#E9B95F]"
-                  />
-                ))}
+            <button
+              type="button"
+              onClick={previousTestimonial}
+              aria-label="Previous testimonial"
+              className="
+                absolute
+                left-0
+                top-1/2
+                z-40
+                hidden
+                h-[58px]
+                w-[58px]
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-[#D4A017]/40
+                bg-[#F8F7F3]
+                text-[#101A26]
+                transition-all
+                duration-300
+                hover:bg-[#D4A017]
+                hover:text-white
+                lg:flex
+                xl:left-[-15px]
+              "
+            >
+              <ArrowLeft
+                size={20}
+                strokeWidth={1.5}
+              />
+            </button>
+
+            {/* =================================================
+                RIGHT NAVIGATION ARROW
+            ================================================= */}
+
+            <button
+              type="button"
+              onClick={nextTestimonial}
+              aria-label="Next testimonial"
+              className="
+                absolute
+                right-0
+                top-1/2
+                z-40
+                hidden
+                h-[58px]
+                w-[58px]
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-[#D4A017]/40
+                bg-[#F8F7F3]
+                text-[#101A26]
+                transition-all
+                duration-300
+                hover:bg-[#D4A017]
+                hover:text-white
+                lg:flex
+                xl:right-[-15px]
+              "
+            >
+              <ArrowRight
+                size={20}
+                strokeWidth={1.5}
+              />
+            </button>
+
+            {/* =================================================
+                BACK CARD
+            ================================================= */}
+
+            <div
+              className="
+                absolute
+                right-[7%]
+                top-[4%]
+                h-[410px]
+                w-[78%]
+                rotate-[1.5deg]
+                border
+                border-black/[0.04]
+                bg-[#E7E5DE]
+                shadow-[0_20px_50px_rgba(0,0,0,0.04)]
+                sm:h-[440px]
+                lg:right-[8%]
+                lg:h-[445px]
+                lg:w-[75%]
+              "
+            />
+
+            {/* =================================================
+                MIDDLE CARD
+            ================================================= */}
+
+            <div
+              className="
+                absolute
+                right-[4%]
+                top-[2%]
+                h-[410px]
+                w-[78%]
+                rotate-[-1deg]
+                bg-[#DCDAD3]
+                sm:h-[440px]
+                lg:right-[5%]
+                lg:h-[445px]
+                lg:w-[75%]
+              "
+            />
+
+            {/* =================================================
+                MAIN CARD
+            ================================================= */}
+
+            <div
+              key={activeTestimonial.id}
+              className="
+                absolute
+                right-[2%]
+                top-0
+                z-20
+                flex
+                h-[410px]
+                w-[78%]
+                flex-col
+                justify-between
+                border
+                border-black/[0.06]
+                bg-[#FFFFFF]
+                p-7
+                shadow-[0_25px_70px_rgba(0,0,0,0.09)]
+                sm:h-[440px]
+                sm:p-8
+                lg:right-[3%]
+                lg:h-[445px]
+                lg:w-[75%]
+                lg:p-9
+              "
+            >
+              {/* =================================================
+                  CARD TOP
+              ================================================= */}
+
+              <div>
+                <div
+                  className="
+                    flex
+                    items-start
+                    justify-between
+                  "
+                >
+                  {/* QUOTE */}
+
+                  <div
+                    className="
+                      flex
+                      h-[56px]
+                      w-[56px]
+                      items-center
+                      justify-center
+                      bg-[#101A26]
+                      text-[#D4A017]
+                    "
+                  >
+                    <Quote
+                      size={24}
+                      strokeWidth={1.5}
+                      fill="currentColor"
+                    />
+                  </div>
+
+                  {/* VERIFIED */}
+
+                  <span
+                    className="
+                      pt-1
+                      text-[9px]
+                      font-semibold
+                      uppercase
+                      tracking-[0.2em]
+                      text-black/30
+                    "
+                  >
+                    Verified Client
+                  </span>
+                </div>
+
+                {/* =================================================
+                    RATING
+                ================================================= */}
+
+                <div
+                  className="
+                    mt-6
+                    flex
+                    items-center
+                    gap-1.5
+                  "
+                >
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={17}
+                      fill="#D4A017"
+                      strokeWidth={0}
+                      className="text-[#D4A017]"
+                    />
+                  ))}
+
+                  <span
+                    className="
+                      ml-2
+                      text-[12px]
+                      font-medium
+                      text-black/40
+                    "
+                  >
+                    5.0
+                  </span>
+                </div>
+
+                {/* =================================================
+                    REVIEW
+                ================================================= */}
+
+                <p
+                  className="
+                    mt-7
+                    max-w-[620px]
+                    font-serif
+                    text-[20px]
+                    leading-[1.55]
+                    tracking-[-0.015em]
+                    text-[#18202A]
+                    sm:text-[22px]
+                    lg:text-[24px]
+                  "
+                >
+                  “{activeTestimonial.text}”
+                </p>
               </div>
 
-              <p className="mt-2 text-[10px] uppercase tracking-[0.15em] text-black/35">
-                5 Star Customer Experience
-              </p>
+              {/* =================================================
+                  CARD BOTTOM
+              ================================================= */}
+
+              <div>
+                {/* DIVIDER */}
+
+                <div
+                  className="
+                    mb-6
+                    h-px
+                    w-full
+                    bg-black/[0.08]
+                  "
+                />
+
+                <div
+                  className="
+                    flex
+                    items-end
+                    justify-between
+                  "
+                >
+                  {/* CLIENT */}
+
+                  <div
+                    className="
+                      flex
+                      items-center
+                      gap-3
+                    "
+                  >
+                    <div
+                      className="
+                        flex
+                        h-[48px]
+                        w-[48px]
+                        shrink-0
+                        items-center
+                        justify-center
+                        rounded-full
+                        bg-[#101A26]
+                        text-[11px]
+                        font-bold
+                        tracking-wider
+                        text-[#D4A017]
+                      "
+                    >
+                      {activeTestimonial.initials}
+                    </div>
+
+                    <div>
+                      <h3
+                        className="
+                          font-[var(--font-outfit)]
+                          text-[13px]
+                          font-bold
+                          text-[#101A26]
+                        "
+                      >
+                        {activeTestimonial.company}
+                      </h3>
+
+                      <div
+                        className="
+                          mt-1
+                          flex
+                          items-center
+                          gap-1.5
+                          text-[10px]
+                          text-black/40
+                        "
+                      >
+                        <MapPin
+                          size={11}
+                          strokeWidth={1.5}
+                        />
+
+                        {activeTestimonial.location}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* NUMBER */}
+
+                  <span
+                    className="
+                      text-[11px]
+                      font-medium
+                      tracking-[0.18em]
+                      text-black/25
+                    "
+                  >
+                    0{activeTestimonial.id}
+                  </span>
+                </div>
+              </div>
+
+              {/* GOLD LINE */}
+
+              <div
+                className="
+                  absolute
+                  bottom-0
+                  left-0
+                  h-[3px]
+                  w-full
+                  bg-[#D4A017]
+                "
+              />
             </div>
 
-            {/* ARROWS */}
+            {/* =================================================
+                MOBILE ARROWS
+            ================================================= */}
 
-            <div className="flex items-center gap-2">
+            <div
+              className="
+                absolute
+                bottom-[-5px]
+                left-1/2
+                z-50
+                flex
+                -translate-x-1/2
+                items-center
+                gap-2
+                lg:hidden
+              "
+            >
               <button
                 type="button"
+                onClick={previousTestimonial}
                 aria-label="Previous testimonial"
-                onClick={() => scrollSlider("prev")}
                 className="
                   flex
                   h-11
                   w-11
                   items-center
                   justify-center
+                  rounded-full
                   border
                   border-black/10
                   bg-white
-                  text-[#171918]
-                  transition-all
-                  duration-300
-                  hover:border-[#E9B95F]
-                  hover:bg-[#E9B95F]
+                  text-[#101A26]
+                  shadow-sm
                 "
               >
-                <ArrowLeft size={17} strokeWidth={1.5} />
+                <ArrowLeft
+                  size={17}
+                  strokeWidth={1.5}
+                />
               </button>
 
               <button
                 type="button"
+                onClick={nextTestimonial}
                 aria-label="Next testimonial"
-                onClick={() => scrollSlider("next")}
                 className="
                   flex
                   h-11
                   w-11
                   items-center
                   justify-center
-                  bg-[#171918]
-                  text-[#E9B95F]
-                  transition-all
-                  duration-300
-                  hover:bg-[#E9B95F]
-                  hover:text-[#171918]
+                  rounded-full
+                  bg-[#101A26]
+                  text-[#D4A017]
+                  shadow-sm
                 "
               >
-                <ArrowRight size={17} strokeWidth={1.5} />
+                <ArrowRight
+                  size={17}
+                  strokeWidth={1.5}
+                />
               </button>
             </div>
+
+            {/* =================================================
+                PAGINATION
+            ================================================= */}
+
+            <div
+              className="
+                absolute
+                bottom-[-3px]
+                right-[4%]
+                z-30
+                hidden
+                items-center
+                gap-3
+                lg:flex
+              "
+            >
+              {testimonials.map((item, index) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                  className={`
+                    h-[5px]
+                    rounded-full
+                    transition-all
+                    duration-300
+
+                    ${
+                      activeIndex === index
+                        ? "w-[25px] bg-[#D4A017]"
+                        : "w-[15px] bg-black/10 hover:bg-black/20"
+                    }
+                  `}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* ===================================================
-            SLIDER
-        =================================================== */}
-
-        <div
-          ref={sliderRef}
-          className="
-            flex
-            gap-5
-            overflow-x-auto
-            px-5
-            pb-8
-            sm:px-8
-            lg:px-14
-            [scrollbar-width:none]
-            [&::-webkit-scrollbar]:hidden
-            snap-x
-            snap-mandatory
-          "
-        >
-          {testimonials.map((testimonial) => (
-            <div
-              key={testimonial.id}
-              className="snap-start"
-            >
-              <TestimonialCard testimonial={testimonial} />
-            </div>
-          ))}
-        </div>
-
-        {/* ===================================================
-            BOTTOM NAVIGATION
-        =================================================== */}
+        {/* ======================================================
+            MOBILE PAGINATION
+        ====================================================== */}
 
         <div
           className="
-            mt-2
+            mt-10
             flex
             items-center
-            justify-between
-            px-5
-            sm:px-8
-            lg:px-14
+            justify-center
+            gap-2
+            lg:hidden
           "
         >
-          {/* PAGINATION */}
+          {testimonials.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              aria-label={`Go to testimonial ${index + 1}`}
+              className={`
+                h-[4px]
+                rounded-full
+                transition-all
+                duration-300
 
-          <div className="flex items-center gap-2">
-            {testimonials.map((testimonial, index) => (
-              <button
-                key={testimonial.id}
-                type="button"
-                aria-label={`Go to testimonial ${index + 1}`}
-                onClick={() => scrollToCard(index)}
-                className={`
-                  h-[3px]
-                  transition-all
-                  duration-300
-                  ${
-                    activeIndex === index
-                      ? "w-10 bg-[#E9B95F]"
-                      : "w-4 bg-black/10 hover:bg-black/25"
-                  }
-                `}
-              />
-            ))}
-          </div>
-
-          {/* SWIPE LABEL */}
-
-          <div className="flex items-center gap-3">
-            <span className="text-[9px] uppercase tracking-[0.2em] text-black/25">
-              Swipe to explore
-            </span>
-
-            <span className="h-px w-8 bg-black/10" />
-          </div>
+                ${
+                  activeIndex === index
+                    ? "w-8 bg-[#D4A017]"
+                    : "w-3 bg-black/10"
+                }
+              `}
+            />
+          ))}
         </div>
       </div>
     </section>

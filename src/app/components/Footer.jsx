@@ -9,6 +9,10 @@ import {
     ArrowRight,
 } from "lucide-react";
 
+/* ============================================================
+   PRODUCT LINKS
+============================================================ */
+
 const productLinks = [
     { name: "Dunnage Bags", href: "/products/dunnage-bags" },
     { name: "Air Column Bags", href: "/products/air-column-bags" },
@@ -16,6 +20,10 @@ const productLinks = [
     { name: "Packaging Air Bags", href: "/products/packaging-air-bags" },
     { name: "Gap Fillers", href: "/products/gap-fillers" },
 ];
+
+/* ============================================================
+   COMPANY LINKS
+============================================================ */
 
 const companyLinks = [
     { name: "About Us", href: "/about" },
@@ -25,466 +33,441 @@ const companyLinks = [
     { name: "Get a Quote", href: "/contact" },
 ];
 
+/* ============================================================
+   FOOTER
+============================================================ */
+
 export default function Footer() {
     return (
-        <footer className="relative overflow-hidden bg-[#171918] text-white">
+        <footer className="relative overflow-hidden bg-[#0B2942] text-white">
 
-            {/* =====================================================
-                DECORATIVE BACKGROUND
-            ===================================================== */}
-
-            <div
-                className="
-                    pointer-events-none
-                    absolute
-                    -right-[180px]
-                    -top-[180px]
-                    h-[500px]
-                    w-[500px]
-                    rounded-full
-                    border
-                    border-[#E9B95F]/10
-                "
-            />
-
-            <div
-                className="
-                    pointer-events-none
-                    absolute
-                    -bottom-[250px]
-                    -left-[200px]
-                    h-[550px]
-                    w-[550px]
-                    rounded-full
-                    border
-                    border-white/[0.04]
-                "
-            />
-
-    
-            {/* =====================================================
+            {/* ==================================================
                 MAIN FOOTER
-            ===================================================== */}
+            ================================================== */}
 
-            <div className="relative">
+            <div className="relative mx-auto w-full max-w-[1500px] px-5 py-10 sm:px-8 sm:py-12 lg:px-12 lg:py-14">
 
                 <div
                     className="
-                        mx-auto
-                        max-w-[1500px]
-                        px-5
-                        py-16
-                        md:px-10
-                        md:py-20
-                        lg:px-16
+                        grid
+                        gap-10
+                        sm:grid-cols-2
+                        lg:grid-cols-[1.45fr_1fr_1fr_1.2fr]
+                        lg:gap-12
                     "
                 >
 
-                    <div
-                        className="
-                            grid
-                            gap-14
-                            sm:grid-cols-2
-                            lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]
-                        "
-                    >
+                    {/* ==================================================
+                        BRAND
+                    ================================================== */}
 
-                        {/* BRAND */}
-                        <div>
+                    <div>
 
-                            <Link
-                                href="/"
+                        <Link
+                            href="/"
+                            className="inline-flex items-center gap-3"
+                        >
+
+                            {/* LOGO BOX */}
+
+                           
+                            <div>
+
+                             <img src="/logo (21).webp" alt="" />
+
+                            </div>
+
+                        </Link>
+
+
+                        {/* DESCRIPTION */}
+
+                        <p
+                            className="
+                                mt-5
+                                max-w-[350px]
+                                font-[var(--font-lexend)]
+                                text-[12px]
+                                leading-5
+                                text-white/65
+                            "
+                        >
+                            Smart protective packaging solutions designed
+                            to keep products safer during storage, handling
+                            and transportation.
+                        </p>
+
+
+                        {/* SMALL GOLD LINE */}
+
+                        <div className="mt-5 flex items-center gap-3">
+
+                            <span className="h-[2px] w-8 bg-[#E9B95F]" />
+
+                            <span
                                 className="
-                                    inline-flex
-                                    items-center
-                                    gap-3
+                                    text-[8px]
+                                    font-medium
+                                    uppercase
+                                    tracking-[0.2em]
+                                    text-white/45
                                 "
                             >
+                                Protect • Pack • Deliver
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* ==================================================
+                        PRODUCTS
+                    ================================================== */}
+
+                    <div>
+
+                        <h3
+                            className="
+                                mb-5
+                                font-[var(--font-outfit)]
+                                text-[12px]
+                                font-bold
+                                uppercase
+                                tracking-[0.12em]
+                                text-white
+                            "
+                        >
+                            Products
+                        </h3>
+
+                        <ul className="space-y-2.5">
+
+                            {productLinks.map((item) => (
+                                <li key={item.name}>
+
+                                    <Link
+                                        href={item.href}
+                                        className="
+                                            group
+                                            flex
+                                            items-center
+                                            justify-between
+                                            py-0.5
+                                            font-[var(--font-lexend)]
+                                            text-[11px]
+                                            font-normal
+                                            text-white/60
+                                            transition-all
+                                            duration-300
+                                            hover:text-white
+                                        "
+                                    >
+
+                                        <span>
+                                            {item.name}
+                                        </span>
+
+                                        <ArrowUpRight
+                                            size={13}
+                                            strokeWidth={1.5}
+                                            className="
+                                                text-white/25
+                                                transition-all
+                                                duration-300
+                                                group-hover:translate-x-0.5
+                                                group-hover:-translate-y-0.5
+                                                group-hover:text-[#E9B95F]
+                                            "
+                                        />
+
+                                    </Link>
+
+                                </li>
+                            ))}
+
+                        </ul>
+
+                    </div>
+
+
+                    {/* ==================================================
+                        COMPANY
+                    ================================================== */}
+
+                    <div>
+
+                        <h3
+                            className="
+                                mb-5
+                                font-[var(--font-outfit)]
+                                text-[12px]
+                                font-bold
+                                uppercase
+                                tracking-[0.12em]
+                                text-white
+                            "
+                        >
+                            Company
+                        </h3>
+
+                        <ul className="space-y-2.5">
+
+                            {companyLinks.map((item) => (
+                                <li key={item.name}>
+
+                                    <Link
+                                        href={item.href}
+                                        className="
+                                            group
+                                            flex
+                                            items-center
+                                            justify-between
+                                            py-0.5
+                                            font-[var(--font-lexend)]
+                                            text-[11px]
+                                            text-white/60
+                                            transition-all
+                                            duration-300
+                                            hover:text-white
+                                        "
+                                    >
+
+                                        <span>
+                                            {item.name}
+                                        </span>
+
+                                        <ArrowUpRight
+                                            size={13}
+                                            strokeWidth={1.5}
+                                            className="
+                                                text-white/25
+                                                transition-all
+                                                duration-300
+                                                group-hover:translate-x-0.5
+                                                group-hover:-translate-y-0.5
+                                                group-hover:text-[#E9B95F]
+                                            "
+                                        />
+
+                                    </Link>
+
+                                </li>
+                            ))}
+
+                        </ul>
+
+                    </div>
+
+
+                    {/* ==================================================
+                        CONTACT
+                    ================================================== */}
+
+                    <div>
+
+                        <h3
+                            className="
+                                mb-5
+                                font-[var(--font-outfit)]
+                                text-[12px]
+                                font-bold
+                                uppercase
+                                tracking-[0.12em]
+                                text-white
+                            "
+                        >
+                            Get In Touch
+                        </h3>
+
+
+                        <div className="space-y-4">
+
+                            {/* PHONE */}
+
+                            <a
+                                href="tel:+919999999999"
+                                className="group flex items-center gap-3"
+                            >
+
                                 <span
                                     className="
                                         flex
-                                        h-11
-                                        w-11
+                                        h-8
+                                        w-8
+                                        shrink-0
                                         items-center
                                         justify-center
-                                        rounded-full
-                                        bg-[#E9B95F]
-                                        text-[18px]
-                                        font-bold
-                                        text-[#171918]
+                                        border
+                                        border-white/15
+                                        text-[#E9B95F]
+                                        transition-all
+                                        duration-300
+                                        group-hover:border-[#E9B95F]
+                                        group-hover:bg-[#E9B95F]
+                                        group-hover:text-[#0B2942]
                                     "
                                 >
-                                    D
+                                    <Phone size={13} />
                                 </span>
 
                                 <div>
-                                    <div
-                                        className="
-                                            text-[22px]
-                                            font-semibold
-                                            tracking-[-0.04em]
-                                            text-[#F7F2EB]
-                                        "
-                                    >
-                                        D PACK
-                                    </div>
 
-                                    <div
+                                    <span
                                         className="
+                                            block
                                             text-[8px]
+                                            font-medium
                                             uppercase
-                                            tracking-[0.25em]
-                                            text-white/30
+                                            tracking-[0.15em]
+                                            text-white/40
                                         "
                                     >
-                                        Protective Packaging
-                                    </div>
+                                        Call Us
+                                    </span>
+
+                                    <span
+                                        className="
+                                            mt-0.5
+                                            block
+                                            font-[var(--font-lexend)]
+                                            text-[11px]
+                                            text-white
+                                        "
+                                    >
+                                        +91 99999 99999
+                                    </span>
+
                                 </div>
-                            </Link>
 
-                            <p
-                                className="
-                                    mt-7
-                                    max-w-[320px]
-                                    text-[13px]
-                                    leading-6
-                                    text-white/40
-                                "
+                            </a>
+
+
+                            {/* EMAIL */}
+
+                            <a
+                                href="mailto:info@dpack.in"
+                                className="group flex items-center gap-3"
                             >
-                                Smart protective packaging solutions designed
-                                to keep products safer throughout storage,
-                                handling and transportation.
-                            </p>
 
-                            {/* GOLD LINE */}
-                            <div className="mt-8 flex items-center gap-3">
-                                <span className="h-px w-10 bg-[#E9B95F]" />
-                                <span className="text-[9px] uppercase tracking-[0.25em] text-white/25">
-                                    Protect • Pack • Deliver
+                                <span
+                                    className="
+                                        flex
+                                        h-8
+                                        w-8
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        border
+                                        border-white/15
+                                        text-[#E9B95F]
+                                        transition-all
+                                        duration-300
+                                        group-hover:border-[#E9B95F]
+                                        group-hover:bg-[#E9B95F]
+                                        group-hover:text-[#0B2942]
+                                    "
+                                >
+                                    <Mail size={13} />
                                 </span>
-                            </div>
-                        </div>
 
-                        {/* PRODUCTS */}
-                        <div>
-                            <h3
-                                className="
-                                    mb-6
-                                    text-[10px]
-                                    font-medium
-                                    uppercase
-                                    tracking-[0.28em]
-                                    text-[#E9B95F]
-                                "
-                            >
-                                Products
-                            </h3>
+                                <div>
 
-                            <ul className="space-y-4">
-                                {productLinks.map((item) => (
-                                    <li key={item.name}>
-                                        <Link
-                                            href={item.href}
-                                            className="
-                                                group
-                                                flex
-                                                items-center
-                                                justify-between
-                                                border-b
-                                                border-white/[0.06]
-                                                pb-3
-                                                text-[13px]
-                                                text-white/55
-                                                transition-colors
-                                                duration-300
-                                                hover:text-[#F7F2EB]
-                                            "
-                                        >
-                                            {item.name}
+                                    <span
+                                        className="
+                                            block
+                                            text-[8px]
+                                            font-medium
+                                            uppercase
+                                            tracking-[0.15em]
+                                            text-white/40
+                                        "
+                                    >
+                                        Email
+                                    </span>
 
-                                            <ArrowUpRight
-                                                size={14}
-                                                className="
-                                                    text-white/20
-                                                    transition-all
-                                                    duration-300
-                                                    group-hover:-translate-y-0.5
-                                                    group-hover:translate-x-0.5
-                                                    group-hover:text-[#E9B95F]
-                                                "
-                                            />
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                                    <span
+                                        className="
+                                            mt-0.5
+                                            block
+                                            font-[var(--font-lexend)]
+                                            text-[11px]
+                                            text-white
+                                        "
+                                    >
+                                        info@dpack.in
+                                    </span>
 
-                        {/* COMPANY */}
-                        <div>
-                            <h3
-                                className="
-                                    mb-6
-                                    text-[10px]
-                                    font-medium
-                                    uppercase
-                                    tracking-[0.28em]
-                                    text-[#E9B95F]
-                                "
-                            >
-                                Company
-                            </h3>
+                                </div>
 
-                            <ul className="space-y-4">
-                                {companyLinks.map((item) => (
-                                    <li key={item.name}>
-                                        <Link
-                                            href={item.href}
-                                            className="
-                                                group
-                                                flex
-                                                items-center
-                                                justify-between
-                                                border-b
-                                                border-white/[0.06]
-                                                pb-3
-                                                text-[13px]
-                                                text-white/55
-                                                transition-colors
-                                                duration-300
-                                                hover:text-[#F7F2EB]
-                                            "
-                                        >
-                                            {item.name}
+                            </a>
 
-                                            <ArrowUpRight
-                                                size={14}
-                                                className="
-                                                    text-white/20
-                                                    transition-all
-                                                    duration-300
-                                                    group-hover:-translate-y-0.5
-                                                    group-hover:translate-x-0.5
-                                                    group-hover:text-[#E9B95F]
-                                                "
-                                            />
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
 
-                        {/* CONTACT */}
-                        <div>
-                            <h3
-                                className="
-                                    mb-6
-                                    text-[10px]
-                                    font-medium
-                                    uppercase
-                                    tracking-[0.28em]
-                                    text-[#E9B95F]
-                                "
-                            >
-                                Get In Touch
-                            </h3>
+                            {/* LOCATION */}
 
-                            <div className="space-y-6">
+                            <div className="flex items-center gap-3">
 
-                                {/* PHONE */}
-                                <a
-                                    href="tel:+919999999999"
-                                    className="group flex gap-4"
+                                <span
+                                    className="
+                                        flex
+                                        h-8
+                                        w-8
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        border
+                                        border-white/15
+                                        text-[#E9B95F]
+                                    "
                                 >
+                                    <MapPin size={13} />
+                                </span>
+
+                                <div>
+
                                     <span
                                         className="
-                                            flex
-                                            h-10
-                                            w-10
-                                            shrink-0
-                                            items-center
-                                            justify-center
-                                            rounded-full
-                                            border
-                                            border-white/10
-                                            text-[#E9B95F]
-                                            transition
-                                            group-hover:border-[#E9B95F]
+                                            block
+                                            text-[8px]
+                                            font-medium
+                                            uppercase
+                                            tracking-[0.15em]
+                                            text-white/40
                                         "
                                     >
-                                        <Phone size={15} />
+                                        Location
                                     </span>
 
-                                    <div>
-                                        <span className="block text-[9px] uppercase tracking-[0.2em] text-white/25">
-                                            Call Us
-                                        </span>
-
-                                        <span className="mt-1 block text-[13px] text-white/65">
-                                            +91 99999 99999
-                                        </span>
-                                    </div>
-                                </a>
-
-                                {/* EMAIL */}
-                                <a
-                                    href="mailto:info@dpack.in"
-                                    className="group flex gap-4"
-                                >
                                     <span
                                         className="
-                                            flex
-                                            h-10
-                                            w-10
-                                            shrink-0
-                                            items-center
-                                            justify-center
-                                            rounded-full
-                                            border
-                                            border-white/10
-                                            text-[#E9B95F]
-                                            transition
-                                            group-hover:border-[#E9B95F]
+                                            mt-0.5
+                                            block
+                                            font-[var(--font-lexend)]
+                                            text-[11px]
+                                            text-white
                                         "
                                     >
-                                        <Mail size={15} />
+                                        India
                                     </span>
 
-                                    <div>
-                                        <span className="block text-[9px] uppercase tracking-[0.2em] text-white/25">
-                                            Email
-                                        </span>
-
-                                        <span className="mt-1 block text-[13px] text-white/65">
-                                            info@dpack.in
-                                        </span>
-                                    </div>
-                                </a>
-
-                                {/* LOCATION */}
-                                <div className="flex gap-4">
-                                    <span
-                                        className="
-                                            flex
-                                            h-10
-                                            w-10
-                                            shrink-0
-                                            items-center
-                                            justify-center
-                                            rounded-full
-                                            border
-                                            border-white/10
-                                            text-[#E9B95F]
-                                        "
-                                    >
-                                        <MapPin size={15} />
-                                    </span>
-
-                                    <div>
-                                        <span className="block text-[9px] uppercase tracking-[0.2em] text-white/25">
-                                            Location
-                                        </span>
-
-                                        <span className="mt-1 block text-[13px] leading-5 text-white/65">
-                                            India
-                                        </span>
-                                    </div>
                                 </div>
 
                             </div>
+
                         </div>
 
                     </div>
-                </div>
-            </div>
-
-            {/* =====================================================
-                NEWSLETTER / QUICK ENQUIRY STRIP
-            ===================================================== */}
-
-            <div className="relative border-y border-white/[0.08]">
-
-                <div
-                    className="
-                        mx-auto
-                        flex
-                        max-w-[1500px]
-                        flex-col
-                        gap-6
-                        px-5
-                        py-7
-                        md:flex-row
-                        md:items-center
-                        md:justify-between
-                        md:px-10
-                        lg:px-16
-                    "
-                >
-
-                    <div>
-                        <p
-                            className="
-                                text-[10px]
-                                uppercase
-                                tracking-[0.25em]
-                                text-[#E9B95F]
-                            "
-                        >
-                            Need Bulk Packaging?
-                        </p>
-
-                        <p className="mt-2 text-[13px] text-white/40">
-                            Tell us what you need and our team will help you
-                            find the right solution.
-                        </p>
-                    </div>
-
-                    <Link
-                        href="/contact"
-                        className="
-                            group
-                            inline-flex
-                            w-fit
-                            items-center
-                            gap-3
-                            text-[11px]
-                            font-medium
-                            uppercase
-                            tracking-[0.18em]
-                            text-white/70
-                            transition
-                            hover:text-[#E9B95F]
-                        "
-                    >
-                        Talk To Sales
-
-                        <span
-                            className="
-                                flex
-                                h-8
-                                w-8
-                                items-center
-                                justify-center
-                                rounded-full
-                                border
-                                border-white/15
-                                transition
-                                group-hover:border-[#E9B95F]
-                                group-hover:bg-[#E9B95F]
-                                group-hover:text-[#171918]
-                            "
-                        >
-                            <ArrowRight size={14} />
-                        </span>
-                    </Link>
 
                 </div>
+
             </div>
 
-            {/* =====================================================
-                BOTTOM BAR
-            ===================================================== */}
 
-            <div className="relative">
+            {/* ==================================================
+                CTA STRIP
+            ================================================== */}
+
+            <div className="border-y border-white/10 bg-[#09243A]">
 
                 <div
                     className="
@@ -494,27 +477,132 @@ export default function Footer() {
                         flex-col
                         gap-4
                         px-5
-                        py-6
+                        py-5
+                        sm:px-8
                         md:flex-row
                         md:items-center
                         md:justify-between
-                        md:px-10
-                        lg:px-16
+                        lg:px-12
                     "
                 >
 
-                    <p className="text-[10px] tracking-wide text-white/25">
+                    <div>
+
+                        <p
+                            className="
+                                font-[var(--font-outfit)]
+                                text-[11px]
+                                font-bold
+                                uppercase
+                                tracking-[0.12em]
+                                text-white
+                            "
+                        >
+                            Need Bulk Packaging?
+                        </p>
+
+                        <p
+                            className="
+                                mt-1
+                                font-[var(--font-lexend)]
+                                text-[10px]
+                                text-white/50
+                            "
+                        >
+                            Tell us what you need and our team will help.
+                        </p>
+
+                    </div>
+
+
+                    <Link
+                        href="/contact"
+                        className="
+                            group
+                            inline-flex
+                            w-fit
+                            items-center
+                            gap-2
+                            border
+                            border-white/20
+                            px-4
+                            py-2
+                            font-[var(--font-outfit)]
+                            text-[9px]
+                            font-bold
+                            uppercase
+                            tracking-[0.12em]
+                            text-white
+                            transition-all
+                            duration-300
+                            hover:border-[#E9B95F]
+                            hover:bg-[#E9B95F]
+                            hover:text-[#0B2942]
+                        "
+                    >
+
+                        Talk To Sales
+
+                        <ArrowRight
+                            size={12}
+                            className="
+                                transition-transform
+                                duration-300
+                                group-hover:translate-x-1
+                            "
+                        />
+
+                    </Link>
+
+                </div>
+
+            </div>
+
+
+            {/* ==================================================
+                BOTTOM BAR
+            ================================================== */}
+
+            <div className="bg-[#071D2E]">
+
+                <div
+                    className="
+                        mx-auto
+                        flex
+                        max-w-[1500px]
+                        flex-col
+                        gap-3
+                        px-5
+                        py-4
+                        sm:px-8
+                        md:flex-row
+                        md:items-center
+                        md:justify-between
+                        lg:px-12
+                    "
+                >
+
+                    <p
+                        className="
+                            font-[var(--font-lexend)]
+                            text-[9px]
+                            text-white/40
+                        "
+                    >
                         © {new Date().getFullYear()} D Pack. All rights reserved.
                     </p>
 
-                    <div className="flex items-center gap-6">
+
+                    <div className="flex items-center gap-5">
+
                         <Link
                             href="/privacy-policy"
                             className="
-                                text-[10px]
-                                text-white/25
+                                font-[var(--font-lexend)]
+                                text-[9px]
+                                text-white/40
                                 transition
-                                hover:text-[#E9B95F]
+                                hover:text-white
                             "
                         >
                             Privacy Policy
@@ -523,28 +611,36 @@ export default function Footer() {
                         <Link
                             href="/terms"
                             className="
-                                text-[10px]
-                                text-white/25
+                                font-[var(--font-lexend)]
+                                text-[9px]
+                                text-white/40
                                 transition
-                                hover:text-[#E9B95F]
+                                hover:text-white
                             "
                         >
                             Terms & Conditions
                         </Link>
+
                     </div>
+
 
                     <p
                         className="
-                            text-[9px]
+                            hidden
+                            font-[var(--font-outfit)]
+                            text-[8px]
+                            font-medium
                             uppercase
-                            tracking-[0.25em]
-                            text-white/20
+                            tracking-[0.18em]
+                            text-white/30
+                            md:block
                         "
                     >
                         Protective Packaging Solutions
                     </p>
 
                 </div>
+
             </div>
 
         </footer>

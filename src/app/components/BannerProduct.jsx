@@ -386,7 +386,7 @@ function ProductCard({ product, index }) {
             >
               <span
                 className="
-                  text-[6px]
+                  text-[9px]
                   font-bold
                   uppercase
                   tracking-[0.12em]
@@ -430,13 +430,12 @@ export default function BannerProduct() {
         bg-[#F7F6F2]
         py-4
         sm:py-5
-        lg:py-6
+        lg:py-10
       "
     >
       <div
         className="
-          mx-auto
-          max-w-[1080px]
+         w-full
           px-3
           sm:px-5
           lg:px-6
@@ -552,7 +551,7 @@ export default function BannerProduct() {
                     <span
                       className={`
                         font-mono
-                        text-[6px]
+                        text-[8px]
                         font-bold
                         ${
                           isActive
@@ -566,7 +565,7 @@ export default function BannerProduct() {
 
                     <span
                       className="
-                        text-[8px]
+                        text-[13px]
                         font-semibold
                         whitespace-nowrap
                       "
@@ -611,7 +610,7 @@ export default function BannerProduct() {
                 <div>
                   <p
                     className="
-                      text-[6px]
+                      text-[10px]
                       font-bold
                       uppercase
                       tracking-[0.25em]
@@ -732,7 +731,7 @@ export default function BannerProduct() {
                 <p
                   className="
                     max-w-[500px]
-                    text-[8px]
+                    text-[12px]
                     leading-4
                     text-[#74796F]
                     sm:text-[9px]
