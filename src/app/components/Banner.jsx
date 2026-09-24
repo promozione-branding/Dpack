@@ -15,7 +15,6 @@ const banners = [
     link: "/contact",
     image: "https://packingairbag.com/cat/1.webp",
     bg: "#E9B95F",
-    imagePosition: "right",
   },
   {
     id: 2,
@@ -26,18 +25,15 @@ const banners = [
     button: "Explore Products",
     link: "/products",
     image: "https://packingairbag.com/cat/5.webp",
-    bg: "#B8C9DE",
-    imagePosition: "right",
+    bg: "#DDD9D0",
   },
 ];
 
 export default function PromoBanners() {
   return (
-    <section className="w-full bg-[#F7F2EB] py-8 sm:py-10 lg:py-12">
+    <section className="w-full bg-[#F1F0EC] py-10 sm:py-12 lg:py-14">
       <div className="mx-auto max-w-[1450px] px-4 sm:px-6 lg:px-8">
-
-        <div className="grid gap-4 lg:grid-cols-2">
-
+        <div className="grid gap-5 lg:grid-cols-2">
           {banners.map((banner) => (
             <Link
               key={banner.id}
@@ -46,32 +42,38 @@ export default function PromoBanners() {
                 group
                 relative
                 block
-                min-h-[230px]
+                min-h-[245px]
                 overflow-hidden
-                rounded-[18px]
-                sm:min-h-[260px]
-                lg:min-h-[280px]
+                rounded-[20px]
+                border
+                border-black/[0.08]
+                shadow-[0_10px_35px_rgba(0,0,0,0.06)]
+                transition-all
+                duration-500
+                hover:-translate-y-1
+                hover:shadow-[0_18px_45px_rgba(0,0,0,0.10)]
+                sm:min-h-[270px]
+                lg:min-h-[290px]
               "
               style={{
                 backgroundColor: banner.bg,
               }}
             >
-
               {/* ==================================================
-                  BACKGROUND DECORATION
+                  SUBTLE BACKGROUND SHAPE
               ================================================== */}
 
               <div
                 className="
                   pointer-events-none
                   absolute
-                  -right-16
-                  -top-16
-                  h-52
-                  w-52
+                  -right-20
+                  -top-20
+                  h-64
+                  w-64
                   rounded-full
-                  bg-white/10
-                  blur-2xl
+                  border
+                  border-white/20
                 "
               />
 
@@ -79,12 +81,12 @@ export default function PromoBanners() {
                 className="
                   pointer-events-none
                   absolute
-                  bottom-[-80px]
+                  -bottom-24
                   right-[25%]
-                  h-48
-                  w-48
+                  h-52
+                  w-52
                   rounded-full
-                  bg-white/10
+                  bg-white/[0.10]
                   blur-3xl
                 "
               />
@@ -99,39 +101,31 @@ export default function PromoBanners() {
                   z-20
                   flex
                   h-full
-                  min-h-[230px]
-                  w-[58%]
+                  min-h-[245px]
+                  w-[60%]
                   flex-col
                   justify-center
                   px-6
                   py-7
-                  sm:min-h-[260px]
+                  sm:min-h-[270px]
                   sm:px-8
-                  lg:min-h-[280px]
+                  lg:min-h-[290px]
                   lg:w-[58%]
-                  lg:px-9
+                  lg:px-10
                 "
               >
+                {/* LABEL */}
 
-                {/* SMALL LABEL */}
-
-                <div
-                  className="
-                    mb-3
-                    flex
-                    items-center
-                    gap-2
-                  "
-                >
-                  <span className="h-[2px] w-5 bg-black/50" />
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="h-[2px] w-6 bg-[#171717]" />
 
                   <span
                     className="
                       text-[8px]
                       font-bold
                       uppercase
-                      tracking-[0.2em]
-                      text-black/55
+                      tracking-[0.24em]
+                      text-[#171717]
                     "
                   >
                     DPACK
@@ -142,21 +136,21 @@ export default function PromoBanners() {
 
                 <h2
                   className="
-                    max-w-[310px]
-                    text-[27px]
-                    font-black
+                    max-w-[330px]
+                    text-[29px]
+                    font-bold
                     leading-[0.95]
-                    tracking-[-0.045em]
-                    text-[#171918]
-                    sm:text-[31px]
-                    lg:text-[34px]
+                    tracking-[-0.05em]
+                    text-[#171717]
+                    sm:text-[33px]
+                    lg:text-[36px]
                   "
                 >
                   {banner.title}
 
                   <br />
 
-                  <span className="text-black/65">
+                  <span className="text-[#171717]/55">
                     {banner.highlight}
                   </span>
                 </h2>
@@ -169,8 +163,8 @@ export default function PromoBanners() {
                     max-w-[300px]
                     text-[10px]
                     font-medium
-                    leading-[1.55]
-                    text-black/60
+                    leading-[1.6]
+                    text-[#171717]/65
                     sm:text-[11px]
                   "
                 >
@@ -180,25 +174,25 @@ export default function PromoBanners() {
                 {/* CTA */}
 
                 <div className="mt-5">
-
                   <span
                     className="
                       inline-flex
                       items-center
                       gap-3
                       rounded-[7px]
-                      bg-[#171918]
-                      px-4
-                      py-2.5
+                      bg-[#171717]
+                      px-5
+                      py-3
                       text-[8px]
                       font-bold
                       uppercase
-                      tracking-[0.1em]
+                      tracking-[0.12em]
                       text-white
+                      shadow-[0_6px_18px_rgba(0,0,0,0.15)]
                       transition-all
                       duration-300
                       group-hover:gap-4
-                      group-hover:bg-[#8B9A6E]
+                      group-hover:bg-[#2B2B2B]
                     "
                   >
                     {banner.button}
@@ -208,13 +202,11 @@ export default function PromoBanners() {
                       strokeWidth={2}
                     />
                   </span>
-
                 </div>
-
               </div>
 
               {/* ==================================================
-                  IMAGE AREA
+                  IMAGE
               ================================================== */}
 
               <div
@@ -228,11 +220,11 @@ export default function PromoBanners() {
                   overflow-hidden
                 "
               >
-
-                {/* Soft image fade */}
+                {/* Image fade */}
 
                 <div
                   className="
+                    pointer-events-none
                     absolute
                     inset-y-0
                     left-0
@@ -257,10 +249,10 @@ export default function PromoBanners() {
                     p-2
                     transition-transform
                     duration-700
-                    group-hover:scale-105
+                    ease-out
+                    group-hover:scale-[1.06]
                   "
                 />
-
               </div>
 
               {/* ==================================================
@@ -276,15 +268,32 @@ export default function PromoBanners() {
                   text-[8px]
                   font-bold
                   tracking-[0.15em]
-                  text-black/20
+                  text-[#171717]/25
                 "
               >
                 0{banner.id}
               </span>
 
+              {/* ==================================================
+                  INNER BORDER
+              ================================================== */}
+
+              <div
+                className="
+                  pointer-events-none
+                  absolute
+                  inset-2
+                  z-30
+                  rounded-[17px]
+                  border
+                  border-black/[0.04]
+                  transition-all
+                  duration-500
+                  group-hover:border-black/[0.10]
+                "
+              />
             </Link>
           ))}
-
         </div>
       </div>
     </section>

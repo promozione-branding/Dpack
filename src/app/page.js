@@ -13,6 +13,10 @@ import Testimonials from "./components/Testimonials";
 import FAQSection from "./components/Faq";
 import CategoryProducts from "./components/TabProducts";
 import Footer from "./components/Footer";
+import ProductCards from "./components/Main";
+import Marquee from "./components/Marquee";
+import BannerProduct from "./components/BannerProduct";
+import Newbanner from "./components/NewBanner";
 
 
 export default function Home() {
@@ -20,11 +24,16 @@ export default function Home() {
     <>
  <Navbar/>
  <Main/>
- 
  <ProductsSection/>
  <Categories/>
+ <ProductCards/>
  <PromoBanners/>
+  <Marquee/>
+ <BannerProduct/>
+  <Newbanner/>
  <CategoryProducts/>
+ 
+
  <WhyChooseUs/>
 {/* <BestSeller/> */}
  <Testimonials/>

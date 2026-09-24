@@ -193,7 +193,7 @@ export default function WhyChooseUs() {
               h-[350px]
               w-[350px]
               rounded-full
-              bg-[#8B9A6E]/10
+              bg-[#2F7180]/10
               blur-[120px]
             "
           />
@@ -235,7 +235,7 @@ export default function WhyChooseUs() {
             className="
               h-[2px]
               w-8
-              bg-[#8B9A6E]
+              bg-[#2F7180]
             "
           />
 
@@ -272,7 +272,7 @@ export default function WhyChooseUs() {
             -translate-x-1/2
             -translate-y-1/2
             rounded-full
-            bg-[#8B9A6E]
+            bg-[#2F7180]
             shadow-[25px_20px_80px_rgba(23,25,24,0.10)]
             sm:h-[850px]
             sm:w-[850px]
@@ -432,7 +432,7 @@ export default function WhyChooseUs() {
             -translate-y-1/2
             rounded-full
             border
-            border-[#8B9A6E]/25
+            border-[#2F7180]/25
             sm:left-[430px]
             lg:left-[470px]
             lg:h-[680px]
@@ -451,7 +451,7 @@ export default function WhyChooseUs() {
               w-3
               -translate-y-1/2
               rounded-full
-              bg-[#8B9A6E]
+              bg-[#2F7180]
               shadow-[0_0_0_8px_rgba(139,154,110,0.10)]
             "
           />
@@ -567,7 +567,7 @@ export default function WhyChooseUs() {
                   font-bold
                   uppercase
                   tracking-[0.32em]
-                  text-[#8B9A6E]
+                  text-[#2F7180]
                 "
               >
                 {current.small}
@@ -615,7 +615,7 @@ export default function WhyChooseUs() {
                   className="
                     h-px
                     w-14
-                    bg-[#8B9A6E]
+                    bg-[#2F7180]
                   "
                 />
 
@@ -677,7 +677,7 @@ export default function WhyChooseUs() {
                   className="
                     h-[3px]
                     rounded-full
-                    bg-[#8B9A6E]
+                    bg-[#2F7180]
                   "
                 />
               )
@@ -734,7 +734,7 @@ export default function WhyChooseUs() {
 
           <ArrowRight
             size={12}
-            className="text-[#8B9A6E]"
+            className="text-[#2F7180]"
           />
 
         </div>
