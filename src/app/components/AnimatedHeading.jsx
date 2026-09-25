@@ -11,7 +11,13 @@ export default function AnimatedHeading({
 
   return (
     <motion.h2
-      className={`relative font-black text-[3.7em] leading-none ${className}`}
+      className={[
+        "relative",
+        "font-black",
+        "text-[3.7em]",
+        "leading-none",
+        className,
+      ].join(" ")}
       initial={{ opacity: 1 }}
       animate={{ opacity: [1, 1, 0] }}
       transition={{

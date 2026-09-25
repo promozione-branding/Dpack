@@ -21,17 +21,40 @@
 
 
 
-/* All Headings */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-heading);
+  font-family: "TWK Lausanne", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em;
 }
 
 /* Paragraphs */
 p {
   font-family: var(--font-body);
+}
+
+@keyframes dpackMarquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (max-width: 768px) {
+  .dpack-marquee-track {
+    animation-duration: 25s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dpack-marquee-track {
+    animation-duration: 60s;
+  }
 }

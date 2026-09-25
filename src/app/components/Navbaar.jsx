@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+
 import {
   Search,
   Heart,
@@ -13,34 +14,63 @@ import {
   ChevronDown,
   Menu,
   X,
+  ArrowRight,
+  ArrowUpRight,
 } from "lucide-react";
 
+/* =========================================================
+   NAVIGATION DATA
+========================================================= */
+
+const navLinks = [
+  {
+    name: "Home",
+    href: "/",
+  },
+  {
+    name: "Shop",
+    href: "/shop",
+    dropdown: true,
+  },
+  {
+    name: "Collection",
+    href: "/collection",
+    dropdown: true,
+  },
+  {
+    name: "My Account",
+    href: "/my-account",
+  },
+  {
+    name: "Pages",
+    href: "/pages",
+    dropdown: true,
+  },
+  {
+    name: "Blog",
+    href: "/blog",
+  },
+  {
+    name: "Contact Us",
+    href: "/contact-us",
+  },
+];
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  /* =====================================================
-     SCROLL
-  ===================================================== */
+  /* =======================================================
+     LOCK BODY WHEN MOBILE MENU IS OPEN
+  ======================================================= */
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  /* =====================================================
-     BODY LOCK WHEN MOBILE MENU OPEN
-  ===================================================== */
-
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    document.body.style.overflow = mobileOpen
+      ? "hidden"
+      : "";
 
     return () => {
       document.body.style.overflow = "";
@@ -50,122 +80,220 @@ export default function Navbar() {
   return (
     <>
       {/* =====================================================
-          MAIN HEADER
+          NORMAL HEADER
+          NOT STICKY
       ===================================================== */}
 
       <header
-        className={`
-          fixed
-          top-0
-          left-0
+        className="
+          relative
+          z-[100]
           w-full
-          z-[9999]
           bg-white
-          transition-all
-          duration-300
-          ${isScrolled ? "shadow-md" : ""}
-        `}
+        "
       >
-        {/* =================================================
-            TOP OFFER BAR
-        ================================================= */}
+        {/* ===================================================
+            THIN TOP OFFER BAR
+        =================================================== */}
 
-        <div className="w-full bg-[#171717] text-white">
+        <div
+          className="
+            relative
+            h-[24px]
+            overflow-hidden
+            bg-[#0B2A42]
+            text-white
+          "
+        >
+          {/* LEFT GLOW */}
+
           <div
             className="
-              h-[40px]
+              pointer-events-none
+              absolute
+              -left-10
+              top-1/2
+
+              h-16
+              w-16
+
+              -translate-y-1/2
+
+              rounded-full
+              bg-[#2F7180]/30
+              blur-xl
+            "
+          />
+
+          {/* RIGHT GLOW */}
+
+          <div
+            className="
+              pointer-events-none
+              absolute
+              -right-10
+              top-1/2
+
+              h-16
+              w-16
+
+              -translate-y-1/2
+
+              rounded-full
+              bg-[#F5A623]/15
+              blur-xl
+            "
+          />
+
+          <div
+            className="
+              relative
+              mx-auto
+
               flex
+              h-full
+              max-w-[1400px]
               items-center
               justify-center
+
               px-4
             "
           >
             <p
               className="
-                text-[13px]
-                md:text-[14px]
+                flex
+                items-center
+                justify-center
+
+                whitespace-nowrap
+
+                text-[10px]
                 font-medium
-                tracking-[0.01em]
-                text-center
-                text-white
+                tracking-[0.04em]
+                text-white/90
+
+                sm:text-[11px]
               "
             >
-              Exclusive Packaging Sale Up To 50% Off
+              Protective Packaging Solutions
+
+              <span
+                className="
+                  mx-2
+                  text-[#F5A623]
+                "
+              >
+                •
+              </span>
+
+              Bulk Orders Available
+
+              <Link
+                href="/shop"
+                className="
+                  ml-3
+
+                  hidden
+
+                  font-bold
+                  text-[#F5A623]
+
+                  transition-colors
+                  duration-300
+
+                  hover:text-white
+
+                  sm:inline
+                "
+              >
+                Shop Now →
+              </Link>
             </p>
           </div>
         </div>
 
-        {/* =================================================
-            MAIN WHITE HEADER
-        ================================================= */}
+        {/* ===================================================
+            MAIN HEADER
+        =================================================== */}
 
         <div
-          className={`
-            bg-[#FFFFFF]
-            transition-all
-            duration-300
-            ${isScrolled ? "h-[82px]" : "h-[90px]"}
-          `}
+          className="
+            h-[62px]
+
+            border-b
+            border-[#DCE3E7]
+
+            bg-white
+          "
         >
           <div
             className="
-              max-w-[1320px]
               mx-auto
               h-full
-              px-5
+              max-w-[1400px]
+
+              px-4
+              sm:px-5
               lg:px-8
             "
           >
             <div
               className="
-                h-full
+                relative
+
                 flex
+                h-full
                 items-center
                 justify-between
               "
             >
-              {/* =================================================
+              {/* =============================================
                   LEFT CONTACT
-              ================================================= */}
+              ============================================= */}
 
               <div
                 className="
                   hidden
-                  lg:flex
+                  w-[410px]
                   items-center
-                  gap-8
-                  w-[420px]
+                  gap-5
+
+                  lg:flex
                 "
               >
-                {/* =================================================
-                    PHONE
-                ================================================= */}
+                {/* PHONE */}
 
                 <div
                   className="
+                    group
                     flex
                     items-center
-                    gap-3
-                    shrink-0
+                    gap-2.5
                   "
                 >
                   <div
                     className="
-                      w-[58px]
-                      h-[48px]
-                      rounded-full
-                      bg-[#E6F1F6]
-                      border
-                      border-[#DCE3E7]
                       flex
+                      h-[34px]
+                      w-[34px]
+                      shrink-0
                       items-center
                       justify-center
-                      text-[#202830]
-                      shrink-0
+
+                      rounded-full
+                      bg-[#E6F1F6]
+
+                      text-[#123B5D]
+
+                      transition-all
+                      duration-300
+
+                      group-hover:bg-[#123B5D]
+                      group-hover:text-white
                     "
                   >
                     <Phone
-                      size={22}
+                      size={15}
                       strokeWidth={2}
                     />
                   </div>
@@ -173,14 +301,15 @@ export default function Navbar() {
                   <div>
                     <p
                       className="
-                        text-[13px]
+                        mb-[4px]
+
+                        text-[10px]
                         font-medium
-                        text-[#66737D]
                         leading-none
-                        mb-[7px]
+                        text-[#66737D]
                       "
                     >
-                      Need Help ?
+                      Need Help?
                     </p>
 
                     <a
@@ -188,13 +317,16 @@ export default function Navbar() {
                       className="
                         block
                         whitespace-nowrap
-                        text-[16px]
-                        font-semibold
-                        text-[#202830]
+
+                        text-[13px]
+                        font-bold
                         leading-none
-                        tracking-[-0.01em]
-                        hover:text-[#123B5D]
+                        text-[#202830]
+
                         transition-colors
+                        duration-300
+
+                        hover:text-[#2F7180]
                       "
                     >
                       +91 766 998 8825
@@ -202,48 +334,51 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                {/* =================================================
-                    SEPARATOR
-                ================================================= */}
+                {/* DIVIDER */}
 
                 <div
                   className="
+                    h-[30px]
                     w-px
-                    h-[44px]
-                    bg-[#DCE3E7]
                     shrink-0
+                    bg-[#DCE3E7]
                   "
                 />
 
-                {/* =================================================
-                    EMAIL
-                ================================================= */}
+                {/* EMAIL */}
 
                 <div
                   className="
+                    group
                     flex
-                    items-center
-                    gap-3
                     min-w-0
+                    items-center
+                    gap-2.5
                   "
                 >
                   <div
                     className="
-                      w-[48px]
-                      h-[48px]
-                      rounded-full
-                      bg-[#E6F1F6]
-                      border
-                      border-[#DCE3E7]
                       flex
+                      h-[34px]
+                      w-[34px]
+                      shrink-0
                       items-center
                       justify-center
-                      text-[#202830]
-                      shrink-0
+
+                      rounded-full
+                      bg-[#E6F1F6]
+
+                      text-[#123B5D]
+
+                      transition-all
+                      duration-300
+
+                      group-hover:bg-[#123B5D]
+                      group-hover:text-white
                     "
                   >
                     <Mail
-                      size={21}
+                      size={15}
                       strokeWidth={2}
                     />
                   </div>
@@ -251,11 +386,12 @@ export default function Navbar() {
                   <div className="min-w-0">
                     <p
                       className="
-                        text-[13px]
+                        mb-[4px]
+
+                        text-[10px]
                         font-medium
-                        text-[#66737D]
                         leading-none
-                        mb-[7px]
+                        text-[#66737D]
                       "
                     >
                       Email Us
@@ -266,12 +402,16 @@ export default function Navbar() {
                       className="
                         block
                         whitespace-nowrap
-                        text-[14px]
-                        font-semibold
-                        text-[#202830]
+
+                        text-[12px]
+                        font-bold
                         leading-none
-                        hover:text-[#123B5D]
+                        text-[#202830]
+
                         transition-colors
+                        duration-300
+
+                        hover:text-[#2F7180]
                       "
                     >
                       info@dpacksolutions.com
@@ -280,18 +420,18 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* =================================================
+              {/* =============================================
                   CENTER LOGO
-              ================================================= */}
+              ============================================= */}
 
               <Link
                 href="/"
                 className="
                   absolute
                   left-1/2
-                  -translate-x-1/2
+
                   flex
-                  flex-col
+                  -translate-x-1/2
                   items-center
                   justify-center
                 "
@@ -299,126 +439,175 @@ export default function Navbar() {
                 <Image
                   src="/logo (21).webp"
                   alt="DPACK"
-                  width={190}
-                  height={70}
+                  width={165}
+                  height={50}
                   priority
                   className="
+                    h-[43px]
                     w-auto
-                    h-[62px]
                     object-contain
+
+                    transition-transform
+                    duration-300
+
+                    hover:scale-[1.03]
                   "
                 />
               </Link>
 
-              {/* =================================================
-                  RIGHT ICONS
-              ================================================= */}
+              {/* =============================================
+                  DESKTOP ECOMMERCE ICONS
+              ============================================= */}
 
               <div
                 className="
+                  ml-auto
                   hidden
-                  lg:flex
+                  w-[410px]
                   items-center
                   justify-end
-                  gap-7
-                  ml-auto
-                  w-[420px]
+                  gap-1
+
+                  lg:flex
                 "
               >
-                {/* =================================================
-                    SEARCH
-                ================================================= */}
+                {/* SEARCH */}
 
-                <Link
+                <HeaderIcon
                   href="/search"
-                  aria-label="Search"
-                  className="
-                    text-[#202830]
-                    hover:text-[#123B5D]
-                    transition-colors
-                  "
+                  label="Search"
                 >
                   <Search
-                    size={23}
+                    size={18}
                     strokeWidth={2}
                   />
-                </Link>
+                </HeaderIcon>
 
-                {/* =================================================
-                    WISHLIST
-                ================================================= */}
+                {/* WISHLIST */}
 
-                <Link
+                <HeaderIcon
                   href="/wishlist"
-                  aria-label="Wishlist"
-                  className="
-                    text-[#202830]
-                    hover:text-[#123B5D]
-                    transition-colors
-                  "
+                  label="Wishlist"
+                  badge="0"
                 >
                   <Heart
-                    size={24}
+                    size={18}
                     strokeWidth={2}
                   />
-                </Link>
+                </HeaderIcon>
 
-                {/* =================================================
-                    ACCOUNT
-                ================================================= */}
+                {/* ACCOUNT */}
 
-                <Link
+                <HeaderIcon
                   href="/my-account"
-                  aria-label="Account"
-                  className="
-                    text-[#202830]
-                    hover:text-[#123B5D]
-                    transition-colors
-                  "
+                  label="Account"
                 >
                   <UserRound
-                    size={23}
+                    size={18}
                     strokeWidth={2}
                   />
-                </Link>
+                </HeaderIcon>
 
-                {/* =================================================
-                    CART
-                ================================================= */}
+                {/* CART */}
 
                 <Link
                   href="/cart"
                   aria-label="Cart"
                   className="
-                    text-[#202830]
+                    group
+                    relative
+
+                    ml-1
+
+                    flex
+                    h-[38px]
+                    w-[38px]
+                    items-center
+                    justify-center
+
+                    rounded-full
+                    bg-[#123B5D]
+
+                    text-white
+
+                    transition-all
+                    duration-300
+
+                    hover:-translate-y-[2px]
+                    hover:bg-[#F5A623]
                     hover:text-[#123B5D]
-                    transition-colors
                   "
                 >
                   <ShoppingBag
-                    size={23}
+                    size={17}
                     strokeWidth={2}
                   />
+
+                  <span
+                    className="
+                      absolute
+                      -right-[3px]
+                      -top-[3px]
+
+                      flex
+                      h-[15px]
+                      min-w-[15px]
+                      items-center
+                      justify-center
+
+                      rounded-full
+                      bg-[#F5A623]
+
+                      px-1
+
+                      text-[8px]
+                      font-black
+                      text-[#123B5D]
+
+                      ring-2
+                      ring-white
+                    "
+                  >
+                    0
+                  </span>
                 </Link>
               </div>
 
-              {/* =================================================
+              {/* =============================================
                   MOBILE MENU BUTTON
-              ================================================= */}
+              ============================================= */}
 
               <button
                 type="button"
-                onClick={() => setMobileOpen(true)}
+                onClick={() =>
+                  setMobileOpen(true)
+                }
+                aria-label="Open menu"
                 className="
-                  lg:hidden
                   ml-auto
-                  text-[#202830]
-                  hover:text-[#123B5D]
+
+                  flex
+                  h-[36px]
+                  w-[36px]
+                  items-center
+                  justify-center
+
+                  rounded-full
+                  bg-[#E6F1F6]
+
+                  text-[#123B5D]
+
                   transition-colors
+                  duration-300
+
+                  hover:bg-[#123B5D]
+                  hover:text-white
+
+                  lg:hidden
                 "
               >
                 <Menu
-                  size={25}
+                  size={20}
                   strokeWidth={2}
                 />
               </button>
@@ -426,181 +615,21 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* =================================================
-            NAVIGATION BAR
-        ================================================= */}
-
-        <nav
-          className="
-            hidden
-            lg:block
-            w-full
-            bg-[#2F7180]
-            border-t
-            border-[#DCE3E7]
-            border-b
-            border-[#DCE3E7]
-          "
-        >
-          <div
-            className="
-              h-[56px]
-              flex
-              items-center
-              justify-center
-            "
-          >
-            <div
-              className="
-                flex
-                items-center
-                gap-[42px]
-              "
-            >
-              {/* HOME */}
-
-              <Link
-                href="/"
-                className="
-                  text-[16px]
-                  fwhiteold
-                  twhite
-                  hover:text-white
-                  transition-colors
-                "
-              >
-                Home
-              </Link>
-
-              {/* SHOP */}
-
-              <Link
-                href="/shop"
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  text-[16px]
-                  font-semibold
-                  text-white
-                  hover:text-white
-                  transition-colors
-                "
-              >
-                Shop
-
-                <ChevronDown
-                  size={16}
-                  strokeWidth={2}
-                />
-              </Link>
-
-              {/* COLLECTION */}
-
-              <Link
-                href="/collection"
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  text-[16px]
-                  font-semibold
-                  text-white
-                  hover:text-white
-                  transition-colors
-                "
-              >
-                Collection
-
-                <ChevronDown
-                  size={16}
-                  strokeWidth={2}
-                />
-              </Link>
-
-              {/* MY ACCOUNT */}
-
-              <Link
-                href="/my-account"
-                className="
-                  text-[16px]
-                  font-semibold
-                  text-white
-                  hover:text-white
-                  transition-colors
-                "
-              >
-                My Account
-              </Link>
-
-              {/* PAGES */}
-
-              <Link
-                href="/pages"
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  text-[16px]
-                  font-semibold
-                  text-white
-                  hover:text-white
-                  transition-colors
-                "
-              >
-                Pages
-
-                <ChevronDown
-                  size={16}
-                  strokeWidth={2}
-                />
-              </Link>
-
-              {/* BLOG */}
-
-              <Link
-                href="/blog"
-                className="
-                  text-[16px]
-                  font-semibold
-                  text-white
-                  hover:text-white
-                  transition-colors
-                "
-              >
-                Blog
-              </Link>
-
-              {/* CONTACT */}
-
-              <Link
-                href="/contact-us"
-                className="
-                  text-[16px]
-                  font-semibold
-                  text-white
-                  hover:text-white
-                  transition-colors
-                "
-              >
-                Contact Us
-              </Link>
-            </div>
-          </div>
-        </nav>
-
-        {/* =================================================
-            MOBILE HEADER SEARCH
-        ================================================= */}
+        {/* ===================================================
+            MOBILE SEARCH
+        =================================================== */}
 
         <div
           className="
-            lg:hidden
-            px-4
-            py-3
-            border-t
+            border-b
             border-[#DCE3E7]
-            bg-[#FFFFFF]
+
+            bg-white
+
+            px-4
+            py-2
+
+            lg:hidden
           "
         >
           <form
@@ -612,36 +641,79 @@ export default function Navbar() {
               gap-2
             "
           >
-            <input
-              type="text"
-              name="q"
-              placeholder="Search products..."
+            <div
               className="
+                relative
                 flex-1
-                h-[42px]
-                px-4
-                bg-[#F7F8F9]
-                border
-                border-[#DCE3E7]
-                outline-none
-                text-[13px]
-                text-[#202830]
-                placeholder:text-[#66737D]
-                focus:border-[#123B5D]
               "
-            />
+            >
+              <Search
+                size={15}
+                className="
+                  absolute
+                  left-4
+                  top-1/2
+
+                  -translate-y-1/2
+
+                  text-[#66737D]
+                "
+              />
+
+              <input
+                type="text"
+                name="q"
+                placeholder="Search packaging products..."
+                className="
+                  h-[38px]
+                  w-full
+
+                  rounded-full
+
+                  border
+                  border-[#DCE3E7]
+
+                  bg-[#F7F8F9]
+
+                  pl-10
+                  pr-4
+
+                  text-[12px]
+                  text-[#202830]
+
+                  outline-none
+
+                  placeholder:text-[#66737D]
+
+                  transition-colors
+
+                  focus:border-[#123B5D]
+                "
+              />
+            </div>
 
             <button
               type="submit"
               className="
-                h-[42px]
-                px-5
-                bg-[#123B5D]
-                text-white
-                text-[12px]
-                font-semibold
-                hover:bg-[#2F7180]
+                flex
+                h-[38px]
+                items-center
+                justify-center
+
+                rounded-full
+                bg-[#F5A623]
+
+                px-4
+
+                text-[11px]
+                font-bold
+                text-[#123B5D]
+
                 transition-colors
+                duration-300
+
+                hover:bg-[#123B5D]
+                hover:text-white
               "
             >
               Search
@@ -651,20 +723,143 @@ export default function Navbar() {
       </header>
 
       {/* =====================================================
+          ONLY BOTTOM NAVBAR IS STICKY
+      ===================================================== */}
+
+      <nav
+        className="
+          sticky
+          top-0
+          z-[9999]
+
+          hidden
+          w-full
+
+          bg-[#123B5D]
+
+          shadow-[0_8px_25px_rgba(18,59,93,0.13)]
+
+          lg:block
+        "
+      >
+        <div
+          className="
+            mx-auto
+
+            flex
+            h-[48px]
+            max-w-[1400px]
+            items-center
+            justify-center
+
+            px-8
+          "
+        >
+          <div
+            className="
+              flex
+              h-full
+              items-center
+              gap-[38px]
+            "
+          >
+            {navLinks.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="
+                  group
+                  relative
+
+                  flex
+                  h-full
+                  items-center
+                  gap-1.5
+
+                  text-[14px]
+                  font-semibold
+                  text-white
+
+                  transition-colors
+                  duration-300
+
+                  hover:text-white
+                "
+              >
+                {item.name}
+
+                {item.dropdown && (
+                  <ChevronDown
+                    size={13}
+                    strokeWidth={2}
+                    className="
+                      text-white/65
+
+                      transition-transform
+                      duration-300
+
+                      group-hover:rotate-180
+                      group-hover:text-[#F5A623]
+                    "
+                  />
+                )}
+
+                {/* HOVER LINE */}
+
+                <span
+                  className="
+                    absolute
+                    bottom-0
+                    left-0
+
+                    h-[3px]
+                    w-full
+
+                    origin-left
+                    scale-x-0
+
+                    bg-[#F5A623]
+
+                    transition-transform
+                    duration-300
+
+                    group-hover:scale-x-100
+                  "
+                />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      {/* =====================================================
           MOBILE DRAWER
       ===================================================== */}
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-[10000] lg:hidden">
+        <div
+          className="
+            fixed
+            inset-0
+            z-[10000]
+
+            lg:hidden
+          "
+        >
           {/* OVERLAY */}
 
           <div
             className="
               absolute
               inset-0
-              bg-black/50
+
+              bg-[#0B2A42]/70
+
+              backdrop-blur-[3px]
             "
-            onClick={() => setMobileOpen(false)}
+            onClick={() =>
+              setMobileOpen(false)
+            }
           />
 
           {/* DRAWER */}
@@ -672,264 +867,565 @@ export default function Navbar() {
           <div
             className="
               absolute
-              top-0
               right-0
+              top-0
+
               h-full
               w-[88%]
-              max-w-[400px]
-              bg-white
-              shadow-2xl
+              max-w-[390px]
+
               overflow-y-auto
+
+              bg-white
+
+              shadow-2xl
             "
           >
-            {/* DRAWER HEADER */}
+            {/* ===============================================
+                DRAWER TOP
+            =============================================== */}
 
             <div
               className="
-                h-[75px]
-                px-5
-                border-b
-                border-[#DCE3E7]
                 flex
+                h-[32px]
                 items-center
                 justify-between
+
+                bg-[#123B5D]
+
+                px-5
+
+                text-white
+              "
+            >
+              <span
+                className="
+                  text-[10px]
+                  font-bold
+                  uppercase
+                  tracking-[0.12em]
+                "
+              >
+                DPACK Menu
+              </span>
+
+              <span
+                className="
+                  bg-[#F5A623]
+
+                  px-2
+                  py-[3px]
+
+                  text-[8px]
+                  font-black
+                  text-[#123B5D]
+                "
+              >
+                PACK SMART
+              </span>
+            </div>
+
+            {/* ===============================================
+                DRAWER HEADER
+            =============================================== */}
+
+            <div
+              className="
+                flex
+                h-[65px]
+                items-center
+                justify-between
+
+                border-b
+                border-[#DCE3E7]
+
+                px-5
               "
             >
               <Image
-                src="/logo.png"
+                src="/logo (21).webp"
                 alt="DPACK"
-                width={150}
-                height={55}
+                width={140}
+                height={45}
                 className="
+                  h-[42px]
                   w-auto
-                  h-[48px]
                   object-contain
                 "
               />
 
               <button
                 type="button"
-                onClick={() => setMobileOpen(false)}
+                onClick={() =>
+                  setMobileOpen(false)
+                }
+                aria-label="Close menu"
                 className="
-                  text-[#202830]
-                  hover:text-[#123B5D]
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+
+                  rounded-full
+                  bg-[#E6F1F6]
+
+                  text-[#123B5D]
+
                   transition-colors
+                  duration-300
+
+                  hover:bg-[#123B5D]
+                  hover:text-white
                 "
               >
-                <X
-                  size={25}
-                  strokeWidth={2}
-                />
+                <X size={19} />
               </button>
             </div>
 
-            {/* MOBILE NAV */}
+            {/* ===============================================
+                MOBILE NAVIGATION
+            =============================================== */}
 
-            <div className="px-5 py-5">
-              <Link
-                href="/"
-                onClick={() => setMobileOpen(false)}
-                className="
-                  block
-                  py-4
-                  border-b
-                  border-[#DCE3E7]
-                  text-[15px]
-                  font-semibold
-                  text-[#123B5D]
-                "
-              >
-                Home
-              </Link>
+            <div className="px-5 py-4">
+              {navLinks.map(
+                (item, index) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() =>
+                      setMobileOpen(false)
+                    }
+                    className="
+                      group
 
-              <Link
-                href="/shop"
-                onClick={() => setMobileOpen(false)}
-                className="
-                  block
-                  py-4
-                  border-b
-                  border-[#DCE3E7]
-                  text-[15px]
-                  font-semibold
-                  text-[#202830]
-                  hover:text-[#123B5D]
-                  transition-colors
-                "
-              >
-                Shop
-              </Link>
+                      flex
+                      items-center
+                      justify-between
 
-              <Link
-                href="/collection"
-                onClick={() => setMobileOpen(false)}
-                className="
-                  block
-                  py-4
-                  border-b
-                  border-[#DCE3E7]
-                  text-[15px]
-                  font-semibold
-                  text-[#202830]
-                  hover:text-[#123B5D]
-                  transition-colors
-                "
-              >
-                Collection
-              </Link>
+                      border-b
+                      border-[#DCE3E7]
 
-              <Link
-                href="/my-account"
-                onClick={() => setMobileOpen(false)}
-                className="
-                  block
-                  py-4
-                  border-b
-                  border-[#DCE3E7]
-                  text-[15px]
-                  font-semibold
-                  text-[#202830]
-                  hover:text-[#123B5D]
-                  transition-colors
-                "
-              >
-                My Account
-              </Link>
+                      py-3.5
 
-              <Link
-                href="/pages"
-                onClick={() => setMobileOpen(false)}
-                className="
-                  block
-                  py-4
-                  border-b
-                  border-[#DCE3E7]
-                  text-[15px]
-                  font-semibold
-                  text-[#202830]
-                  hover:text-[#123B5D]
-                  transition-colors
-                "
-              >
-                Pages
-              </Link>
+                      text-[15px]
+                      font-semibold
+                      text-[#202830]
 
-              <Link
-                href="/blog"
-                onClick={() => setMobileOpen(false)}
-                className="
-                  block
-                  py-4
-                  border-b
-                  border-[#DCE3E7]
-                  text-[15px]
-                  font-semibold
-                  text-[#202830]
-                  hover:text-[#123B5D]
-                  transition-colors
-                "
-              >
-                Blog
-              </Link>
+                      transition-colors
+                      duration-300
 
-              <Link
-                href="/contact-us"
-                onClick={() => setMobileOpen(false)}
-                className="
-                  block
-                  py-4
-                  border-b
-                  border-[#DCE3E7]
-                  text-[15px]
-                  font-semibold
-                  text-[#202830]
-                  hover:text-[#123B5D]
-                  transition-colors
-                "
-              >
-                Contact Us
-              </Link>
+                      hover:text-[#123B5D]
+                    "
+                  >
+                    <span
+                      className="
+                        flex
+                        items-center
+                        gap-3
+                      "
+                    >
+                      <span
+                        className="
+                          font-mono
+                          text-[10px]
+                          font-bold
+                          text-[#2F7180]
+                        "
+                      >
+                        {String(
+                          index + 1
+                        ).padStart(
+                          2,
+                          "0"
+                        )}
+                      </span>
+
+                      {item.name}
+                    </span>
+
+                    <ArrowRight
+                      size={15}
+                      className="
+                        text-[#F5A623]
+
+                        transition-transform
+                        duration-300
+
+                        group-hover:translate-x-1
+                      "
+                    />
+                  </Link>
+                )
+              )}
             </div>
 
-            {/* MOBILE CONTACT */}
+            {/* ===============================================
+                MOBILE ECOMMERCE ICONS
+            =============================================== */}
 
             <div
               className="
-                mx-3
-                mt-5
-                p-5
-                bg-[#F7F8F9]
+                mx-5
+
+                grid
+                grid-cols-3
+
                 border
                 border-[#DCE3E7]
               "
             >
-              <p
+              <Link
+                href="/wishlist"
+                onClick={() =>
+                  setMobileOpen(false)
+                }
                 className="
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  gap-1.5
+
+                  border-r
+                  border-[#DCE3E7]
+
+                  py-3
+
+                  text-[#123B5D]
+                "
+              >
+                <Heart size={17} />
+
+                <span
+                  className="
+                    text-[10px]
+                    font-bold
+                  "
+                >
+                  Wishlist
+                </span>
+              </Link>
+
+              <Link
+                href="/my-account"
+                onClick={() =>
+                  setMobileOpen(false)
+                }
+                className="
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  gap-1.5
+
+                  border-r
+                  border-[#DCE3E7]
+
+                  py-3
+
+                  text-[#123B5D]
+                "
+              >
+                <UserRound size={17} />
+
+                <span
+                  className="
+                    text-[10px]
+                    font-bold
+                  "
+                >
+                  Account
+                </span>
+              </Link>
+
+              <Link
+                href="/cart"
+                onClick={() =>
+                  setMobileOpen(false)
+                }
+                className="
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  gap-1.5
+
+                  py-3
+
+                  text-[#123B5D]
+                "
+              >
+                <ShoppingBag size={17} />
+
+                <span
+                  className="
+                    text-[10px]
+                    font-bold
+                  "
+                >
+                  Cart
+                </span>
+              </Link>
+            </div>
+
+            {/* ===============================================
+                CONTACT
+            =============================================== */}
+
+            <div
+              className="
+                mx-5
+                mt-5
+                bg-[#E6F1F6]
+                p-4
+              "
+            >
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-3
+                "
+              >
+                <span
+                  className="
+                    flex
+                    h-8
+                    w-8
+                    items-center
+                    justify-center
+
+                    rounded-full
+                    bg-[#123B5D]
+
+                    text-white
+                  "
+                >
+                  <Phone size={14} />
+                </span>
+
+                <div>
+                  <p
+                    className="
+                      text-[9px]
+                      font-bold
+                      uppercase
+                      tracking-[0.08em]
+                      text-[#2F7180]
+                    "
+                  >
+                    Need Help?
+                  </p>
+
+                  <a
+                    href="tel:+917669988825"
+                    className="
+                      mt-1
+                      block
+
+                      text-[14px]
+                      font-bold
+                      text-[#123B5D]
+                    "
+                  >
+                    +91 766 998 8825
+                  </a>
+                </div>
+              </div>
+
+              <div
+                className="
+                  my-3
+                  h-px
+                  bg-[#123B5D]/10
+                "
+              />
+
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-3
+                "
+              >
+                <span
+                  className="
+                    flex
+                    h-8
+                    w-8
+                    items-center
+                    justify-center
+
+                    rounded-full
+                    bg-[#123B5D]
+
+                    text-white
+                  "
+                >
+                  <Mail size={14} />
+                </span>
+
+                <div>
+                  <p
+                    className="
+                      text-[9px]
+                      font-bold
+                      uppercase
+                      tracking-[0.08em]
+                      text-[#2F7180]
+                    "
+                  >
+                    Email Us
+                  </p>
+
+                  <a
+                    href="mailto:info@dpacksolutions.com"
+                    className="
+                      mt-1
+                      block
+
+                      text-[12px]
+                      font-semibold
+                      text-[#123B5D]
+                    "
+                  >
+                    info@dpacksolutions.com
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* ===============================================
+                SHOP CTA
+            =============================================== */}
+
+            <div className="px-5 py-5">
+              <Link
+                href="/shop"
+                onClick={() =>
+                  setMobileOpen(false)
+                }
+                className="
+                  group
+
+                  flex
+                  w-full
+                  items-center
+                  justify-between
+
+                  bg-[#F5A623]
+
+                  px-5
+                  py-3.5
+
                   text-[12px]
-                  font-medium
-                  text-[#66737D]
-                  mb-2
-                "
-              >
-                Need Help ?
-              </p>
+                  font-black
+                  uppercase
+                  tracking-[0.04em]
+                  text-[#123B5D]
 
-              <a
-                href="tel:+917669988825"
-                className="
-                  block
-                  whitespace-nowrap
-                  text-[16px]
-                  font-semibold
-                  text-[#202830]
-                  hover:text-[#123B5D]
                   transition-colors
-                "
-              >
-                +91 766 998 8825
-              </a>
+                  duration-300
 
-              <p
-                className="
-                  text-[12px]
-                  font-medium
-                  text-[#66737D]
-                  mt-5
-                  mb-2
+                  hover:bg-[#123B5D]
+                  hover:text-white
                 "
               >
-                Email Us
-              </p>
+                Explore Products
 
-              <a
-                href="mailto:info@dpacksolutions.com"
-                className="
-                  block
-                  whitespace-nowrap
-                  text-[14px]
-                  font-semibold
-                  text-[#202830]
-                  hover:text-[#123B5D]
-                  transition-colors
-                "
-              >
-                info@dpacksolutions.com
-              </a>
+                <ArrowUpRight
+                  size={16}
+                  className="
+                    transition-transform
+                    duration-300
+
+                    group-hover:-translate-y-1
+                    group-hover:translate-x-1
+                  "
+                />
+              </Link>
             </div>
           </div>
         </div>
       )}
-
-      {/* =====================================================
-          HEADER SPACE
-      ===================================================== */}
-
-      <div
-        className="
-          h-[186px]
-          lg:h-[186px]
-        "
-      />
     </>
+  );
+}
+
+/* =========================================================
+   DESKTOP HEADER ICON
+========================================================= */
+
+function HeaderIcon({
+  href,
+  label,
+  badge,
+  children,
+}) {
+  return (
+    <Link
+      href={href}
+      aria-label={label}
+      className="
+        group
+        relative
+
+        flex
+        h-[38px]
+        w-[38px]
+        items-center
+        justify-center
+
+        rounded-full
+
+        text-[#202830]
+
+        transition-all
+        duration-300
+
+        hover:bg-[#E6F1F6]
+        hover:text-[#123B5D]
+      "
+    >
+      <span
+        className="
+          transition-transform
+          duration-300
+
+          group-hover:scale-110
+        "
+      >
+        {children}
+      </span>
+
+      {badge !== undefined && (
+        <span
+          className="
+            absolute
+            right-0
+            top-0
+
+            flex
+            h-[14px]
+            min-w-[14px]
+            items-center
+            justify-center
+
+            rounded-full
+            bg-[#F5A623]
+
+            px-[3px]
+
+            text-[8px]
+            font-black
+            text-[#123B5D]
+          "
+        >
+          {badge}
+        </span>
+      )}
+    </Link>
   );
 }

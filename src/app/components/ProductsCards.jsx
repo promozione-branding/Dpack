@@ -243,15 +243,11 @@ function ProductCard({ product }) {
         >
 
           <span
-            className={`
-              text-[14px]
-              font-semibold
-              ${
-                product.oldPrice
-                  ? "text-[#ef3973]"
-                  : "text-[#111]"
-              }
-            `}
+            className={[
+              "text-[14px]",
+              "font-semibold",
+              product.oldPrice ? "text-[#ef3973]" : "text-[#111]",
+            ].join(" ")}
           >
             {product.price}
           </span>

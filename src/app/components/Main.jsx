@@ -274,19 +274,16 @@ export default function Main() {
             "
           >
             <span
-              className={`
-                block
-                h-[3px]
-                rounded-full
-                transition-all
-                duration-500
-
-                ${
-                  activeSlide === index
-                    ? "w-[45px] bg-white"
-                    : "w-[20px] bg-white/40"
-                }
-              `}
+              className={[
+                "block",
+                "h-[3px]",
+                "rounded-full",
+                "transition-all",
+                "duration-500",
+                activeSlide === index
+                  ? "w-[45px] bg-white"
+                  : "w-[20px] bg-white/40",
+              ].join(" ")}
             />
           </button>
         ))}
