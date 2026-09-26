@@ -1,33 +1,35 @@
 import Image from "next/image";
-import Navbar from "./components/Navbaar";
+
 import Categories from "./components/Categories";
 import WhyChooseUs from "./components/WhyChoose";
 import PromoBanners from "./components/Banner";
 import Testimonials from "./components/Testimonials";
 import CategoryProducts from "./components/TabProducts";
-import Footer from "./components/Footer";
-// import ProductCards from "./components/Main";
+
 import Marquee from "./components/Marquee";
 import BannerProduct from "./components/BannerProduct";
 import Newbanner from "./components/NewBanner";
-import Main from "./components/Main";
+
 import Products from "./components/Products";
 import PackagingBanner from "./components/Box";
 import BestSellingProducts from "./components/BulkCta";
+import SaleNow from "./components/SaleNow";
+import CategoryMarquee from "./components/CategoryMarquee";
 
 
 export default function Home() {
   return (
     <>
-     <Navbar/>
+  
     {/* <Main/> */}
     <PackagingBanner/>
 {/* <BestSellingProducts/> */}
  <Products/>
+ <SaleNow/>
  <Categories/>
  {/* <ProductCards/> */}
  <PromoBanners/>
-  <Marquee/>
+  <CategoryMarquee/>
  <BannerProduct/>
   <Newbanner/>
  <CategoryProducts/>
@@ -35,7 +37,7 @@ export default function Home() {
 <WhyChooseUs/>
 <Marquee/>
  <Testimonials/>
- <Footer/>
+
 
  
 

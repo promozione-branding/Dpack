@@ -2,11 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "motion/react";
-import {
-  ArrowRight,
-  ArrowUpRight,
-} from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
 
 /* =========================================================
    CATEGORIES
@@ -14,728 +11,500 @@ import {
 
 const categories = [
   {
-    number: "01",
-    name: "Dunnage Bag",
-    image: "https://packingairbag.com/cat/1.webp",
-    link: "https://packingairbag.com/categories/dunnage-bag",
-    description:
-      "Secure cargo and prevent movement during transportation.",
-    tag: "Cargo Protection",
+   
+    name: "Dunnage Air Bags",
+    image: "/Dannage.webp",
+    href: "/products/dunnage-air-bags",
   },
-
   {
-    number: "02",
-    name: "Air Column Roll",
-    image: "https://packingairbag.com/cat/2.webp",
-    link: "https://packingairbag.com/categories/air-column-roll",
-    description:
-      "Flexible cushioning designed for fragile products.",
-    tag: "Cushioning",
+   
+    name: "Air Column Bags",
+    image: "/Air column bag (2).webp",
+    href: "/products/air-column-bags",
   },
-
   {
-    number: "03",
-    name: "Air Column Bag",
-    image: "https://packingairbag.com/cat/5.webp",
-    link: "https://packingairbag.com/categories/air-column-bag",
-    description:
-      "Lightweight inflatable protection for safer shipping.",
-    tag: "Product Protection",
+   
+    name: "Air Column Rolls",
+    image: "/Air Column Roll (2).webp",
+    href: "/products/air-column-rolls",
   },
-
   {
-    number: "04",
-    name: "Packaging Air Bag",
-    image: "https://packingairbag.com/cat/3.webp",
-    link: "https://packingairbag.com/categories/packaging-air-bag",
-    description:
-      "Efficient air packaging made for modern logistics.",
-    tag: "Air Packaging",
+   
+    name: "Packaging Air Bags",
+    image: "/packing bag.webp",
+    href: "/products/packaging-air-bags",
   },
-
   {
-    number: "05",
-    name: "Gap Filler",
-    image: "https://packingairbag.com/sideimg.png",
-    link: "https://packingairbag.com/categories/gap-filler",
-    description:
-      "Fill empty spaces and keep packages stable in transit.",
-    tag: "Void Fill",
+ 
+    name: "Gap Fillers",
+    image: "/Gap filler (3).webp",
+    href: "/products/gap-fillers",
   },
 ];
 
 /* =========================================================
-   CATEGORY CARD
+   CARD ANIMATION
 ========================================================= */
 
-function CategoryCard({ item, index }) {
+const cardVariants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+
+  show: (index) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      delay: index * 0.07,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  }),
+};
+
+/* =========================================================
+   COMPONENT
+========================================================= */
+
+export default function Categories() {
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        y: 35,
-      }}
-      whileInView={{
-        opacity: 1,
-        y: 0,
-      }}
-      viewport={{
-        once: true,
-        amount: 0.15,
-      }}
-      transition={{
-        duration: 0.65,
-        delay: index * 0.08,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-      className="h-full"
-    >
-      <Link
-        href={item.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="
-          group
-          relative
-          flex
-          h-full
-          flex-col
-          overflow-hidden
-          rounded-[18px]
-          border
-          border-[#E2E7EA]
-          bg-white
-          shadow-[0_5px_25px_rgba(18,59,93,0.04)]
-          transition-all
-          duration-500
-          hover:-translate-y-2
-          hover:border-[#D5DDE1]
-          hover:shadow-[0_18px_45px_rgba(18,59,93,0.12)]
-        "
-      >
-        {/* =================================================
-            IMAGE
-        ================================================= */}
+    <section className="w-full bg-[#F1EEE8] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+
+      <div className="mx-auto max-w-[1400px]">
+
+        {/* =====================================================
+            MAIN BOX
+        ===================================================== */}
 
         <div
           className="
             relative
-            h-[190px]
             overflow-hidden
-            bg-[#F4F6F7]
-
-            sm:h-[205px]
-
-            lg:h-[185px]
-
-            xl:h-[205px]
+            rounded-[14px]
+            bg-[#062033]
+            px-5
+            py-5
+            sm:px-6
+            sm:py-6
+            lg:px-7
+            lg:py-7
           "
         >
-          <Image
-            src={item.image}
-            alt={item.name}
-            fill
-            unoptimized
-            sizes="
-              (max-width: 640px) 100vw,
-              (max-width: 1024px) 50vw,
-              20vw
-            "
-            className="
-              object-cover
-              transition-transform
-              duration-700
-              ease-out
-              group-hover:scale-[1.08]
-            "
-          />
 
-          {/* IMAGE GRADIENT */}
+          {/* BACKGROUND GLOW */}
 
           <div
             className="
               pointer-events-none
               absolute
-              inset-0
-              bg-gradient-to-t
-              from-[#123B5D]/35
-              via-transparent
-              to-transparent
-              opacity-60
-              transition-opacity
-              duration-500
-              group-hover:opacity-90
+              -left-20
+              top-1/2
+              h-48
+              w-48
+              -translate-y-1/2
+              rounded-full
+              bg-[#133C5E]
+              blur-[80px]
             "
           />
 
-          {/* NUMBER */}
+          <div
+            className="
+              pointer-events-none
+              absolute
+              -right-20
+              top-1/2
+              h-52
+              w-52
+              -translate-y-1/2
+              rounded-full
+              bg-[#143D5E]/5
+              blur-[80px]
+            "
+          />
+
+          {/* =================================================
+              DESKTOP LAYOUT
+          ================================================= */}
 
           <div
             className="
-              absolute
-              left-4
-              top-4
+              relative
               z-10
               flex
-              h-8
-              min-w-8
-              items-center
-              justify-center
-              rounded-full
-              bg-white/95
-              px-2
-              shadow-sm
+              flex-col
+              gap-6
+
+              lg:flex-row
+              lg:items-center
+              lg:gap-7
             "
           >
-            <span
+
+            {/* =================================================
+                LEFT TITLE
+            ================================================= */}
+
+            <motion.div
+              initial={{
+                opacity: 0,
+                x: -25,
+              }}
+              whileInView={{
+                opacity: 1,
+                x: 0,
+              }}
+              viewport={{
+                once: true,
+              }}
+              transition={{
+                duration: 0.6,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               className="
-                font-mono
-                text-[10px]
-                font-bold
-                tracking-wide
-                text-[#123B5D]
+                shrink-0
+
+                lg:w-[205px]
+                xl:w-[220px]
               "
             >
-              {item.number}
-            </span>
-          </div>
 
-          {/* TAG */}
+              <div className="flex items-center gap-2">
 
-          <div
-            className="
-              absolute
-              right-4
-              top-4
-              z-10
-              rounded-full
-              bg-[#F5A623]
-              px-3
-              py-1.5
-              shadow-sm
-            "
-          >
-            <span
-              className="
-                text-[9px]
-                font-black
-                uppercase
-                tracking-[0.08em]
-                text-[#123B5D]
-              "
-            >
-              {item.tag}
-            </span>
-          </div>
+                <span
+                  className="
+                    font-quicksand
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-[0.18em]
+                    text-[#F5A623]
+                  "
+                >
+                  DPACK
+                </span>
 
-          {/* HOVER ARROW */}
+                <motion.span
+                  animate={{
+                    rotate: [0, 15, -10, 0],
+                    scale: [1, 1.15, 1],
+                  }}
+                  transition={{
+                    duration: 2.5,
+                    repeat: Infinity,
+                    repeatDelay: 2,
+                  }}
+                  className="text-[15px] text-[#F5A623]"
+                >
+                  ✦
+                </motion.span>
 
-          <div
-            className="
-              absolute
-              bottom-4
-              right-4
-              z-20
-              flex
-              h-10
-              w-10
-              translate-y-3
-              items-center
-              justify-center
-              rounded-full
-              bg-white
-              text-[#123B5D]
-              opacity-0
-              shadow-lg
-              transition-all
-              duration-300
-              group-hover:translate-y-0
-              group-hover:opacity-100
-            "
-          >
-            <ArrowUpRight
-              size={17}
-              strokeWidth={2}
-              className="
-                transition-transform
-                duration-300
-                group-hover:rotate-45
-              "
-            />
-          </div>
-        </div>
+              </div>
 
-        {/* =================================================
-            CONTENT
-        ================================================= */}
+              <h2
+                className="
+                  mt-1.5
+                  font-outfit
+                  text-[24px]
+                  font-semibold
+                  leading-[1.05]
+                  tracking-[-0.035em]
+                  text-white
 
-        <div
-          className="
-            flex
-            flex-1
-            flex-col
-            px-5
-            pb-5
-            pt-5
-          "
-        >
-          {/* SMALL LABEL */}
+                  sm:text-[27px]
+                  lg:text-[29px]
+                "
+              >
+                Explore
+                <br />
+                Categories
+              </h2>
 
-          <div
-            className="
-              mb-2
-              flex
-              items-center
-              gap-2
-            "
-          >
-            <span
-              className="
-                h-1.5
-                w-1.5
-                rounded-full
-                bg-[#F5A623]
-              "
-            />
+              <p
+                className="
+                  mt-2
+                  max-w-[190px]
+                  font-quicksand
+                  text-[14px]
+                  leading-4
+                  text-white/55
 
-            <span
-              className="
-                text-[10px]
-                font-bold
-                uppercase
-                tracking-[0.12em]
-                text-[#2F7180]
-              "
-            >
-              Packaging Solution
-            </span>
-          </div>
+                  sm:text-[11px]
+                  sm:leading-5
+                "
+              >
+                Protective packaging solutions
+                designed for safe and secure
+                transportation.
+              </p>
 
-          {/* TITLE */}
+              {/* SEE ALL */}
 
-          <h3
-            className="
-              text-[18px]
-              font-black
-              leading-[1.15]
-              tracking-[-0.025em]
-              text-[#202830]
-              transition-colors
-              duration-300
-              group-hover:text-[#123B5D]
-            "
-          >
-            {item.name}
-          </h3>
+              <Link
+                href="/products"
+                className="
+                  group
+                  mt-3
+                  inline-flex
+                  items-center
+                  gap-1.5
+                  border-b
+                  border-white/30
+                  pb-1
+                  font-quicksand
+                  text-[13px]
+                  font-semibold
+                  text-white/80
+                  transition-all
+                  duration-300
+                  hover:border-[#F5A623]
+                  hover:text-[#F5A623]
+                "
+              >
+                See all
 
-          {/* DESCRIPTION */}
+                <ArrowUpRight
+                  size={12}
+                  className="
+                    transition-transform
+                    duration-300
+                    group-hover:translate-x-0.5
+                    group-hover:-translate-y-0.5
+                  "
+                />
+              </Link>
 
-          <p
-            className="
-              mt-2
-              line-clamp-2
-              text-[12px]
-              leading-[1.6]
-              text-[#66737D]
-            "
-          >
-            {item.description}
-          </p>
+            </motion.div>
 
-          {/* CTA */}
+            {/* =================================================
+                CATEGORY CARDS
+            ================================================= */}
 
-          <div
-            className="
-              mt-5
-              flex
-              items-center
-              justify-between
-              border-t
-              border-[#E8ECEE]
-              pt-4
-            "
-          >
-            <span
-              className="
-                text-[11px]
-                font-black
-                uppercase
-                tracking-[0.08em]
-                text-[#123B5D]
-              "
-            >
-              Explore Category
-            </span>
-
-            <span
-              className="
-                flex
-                h-7
-                w-7
-                items-center
-                justify-center
-                rounded-full
-                bg-[#F5A623]/15
-                text-[#123B5D]
-                transition-all
-                duration-300
-                group-hover:bg-[#F5A623]
-                group-hover:translate-x-1
-              "
-            >
-              <ArrowRight size={13} />
-            </span>
-          </div>
-        </div>
-
-        {/* HOVER BORDER */}
-
-        <span
-          className="
-            absolute
-            bottom-0
-            left-0
-            h-[3px]
-            w-0
-            rounded-r-full
-            bg-[#F5A623]
-            transition-all
-            duration-500
-            group-hover:w-full
-          "
-        />
-      </Link>
-    </motion.div>
-  );
-}
-
-/* =========================================================
-   MAIN COMPONENT
-========================================================= */
-
-export default function Categories() {
-  return (
-    <section
-      className="
-        relative
-        w-full
-        overflow-hidden
-        bg-[#F7F8F9]
-
-        px-5
-        py-12
-
-        sm:px-8
-        sm:py-14
-
-        lg:flex
-        lg:min-h-screen
-        lg:items-center
-        lg:px-10
-        lg:py-10
-
-        xl:px-12
-      "
-    >
-      {/* =====================================================
-          SOFT BACKGROUND
-      ===================================================== */}
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          -right-[180px]
-          -top-[180px]
-          h-[450px]
-          w-[450px]
-          rounded-full
-          bg-[#F5A623]/[0.07]
-          blur-[100px]
-        "
-      />
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          -bottom-[200px]
-          -left-[180px]
-          h-[450px]
-          w-[450px]
-          rounded-full
-          bg-[#123B5D]/[0.035]
-          blur-[100px]
-        "
-      />
-
-      {/* =====================================================
-          MAIN CONTAINER
-      ===================================================== */}
-
-      <div
-        className="
-          relative
-          z-10
-          mx-auto
-          w-full
-          max-w-[1400px]
-        "
-      >
-        {/* =================================================
-            HEADER
-        ================================================= */}
-
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 25,
-          }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{
-            once: true,
-            amount: 0.2,
-          }}
-          transition={{
-            duration: 0.65,
-          }}
-          className="
-            mb-7
-            flex
-            flex-col
-            gap-5
-
-            sm:mb-8
-
-            lg:flex-row
-            lg:items-end
-            lg:justify-between
-          "
-        >
-          {/* LEFT */}
-
-          <div>
             <div
               className="
-                mb-3
-                flex
-                items-center
-                gap-3
+                min-w-0
+                flex-1
+                overflow-x-auto
+                scrollbar-hide
               "
             >
-              <span
-                className="
-                  h-[3px]
-                  w-8
-                  rounded-full
-                  bg-[#F5A623]
-                "
-              />
 
-              <span
+              <div
                 className="
-                  text-[11px]
-                  font-black
-                  uppercase
-                  tracking-[0.16em]
-                  text-[#2F7180]
+                  grid
+                  grid-flow-col
+                  auto-cols-[175px]
+                  gap-3
+
+                  sm:auto-cols-[190px]
+                  sm:gap-4
+
+                  lg:grid-flow-col
+                  lg:auto-cols-fr
                 "
               >
-                Shop by Category
-              </span>
+
+                {categories.map((category, index) => (
+
+                  <motion.div
+                   
+                    custom={index}
+                    variants={cardVariants}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{
+                      once: true,
+                      amount: 0.15,
+                    }}
+                    className="min-w-0"
+                  >
+
+                    <Link
+                      href={category.href}
+                      className="
+                        group
+                        relative
+                        block
+                        overflow-hidden
+                        rounded-[8px]
+                        bg-[#F5F2ED]
+                      "
+                    >
+
+                      {/* =================================================
+                          IMAGE
+                      ================================================= */}
+
+                      <div
+                        className="
+                          relative
+                          h-[125px]
+                          overflow-hidden
+
+                          sm:h-[135px]
+
+                          lg:h-[140px]
+                          xl:h-[145px]
+                        "
+                      >
+
+                        <Image
+                          src={category.image}
+                          alt={category.name}
+                          fill
+                          sizes="200px"
+                          className="
+                            object-contain
+                            p-3.5
+                            transition-transform
+                            duration-700
+                            ease-out
+                            group-hover:scale-[1.1]
+                          "
+                        />
+
+                        {/* IMAGE OVERLAY */}
+
+                        <div
+                          className="
+                            absolute
+                            inset-0
+                            bg-[#D95026]/0
+                            transition-all
+                            duration-500
+                            group-hover:bg-[#D95026]/[0.05]
+                          "
+                        />
+
+                        {/* NUMBER */}
+
+                        <span
+                          className="
+                            absolute
+                            left-2.5
+                            top-2.5
+                            flex
+                            h-6
+                            w-6
+                            items-center
+                            justify-center
+                            rounded-full
+                            bg-white/90
+                            font-outfit
+                            text-[8px]
+                            font-bold
+                            text-[#151515]
+                            shadow-sm
+                          "
+                        >
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+
+                        {/* ARROW */}
+
+                        <span
+                          className="
+                            absolute
+                            right-2.5
+                            top-2.5
+                            flex
+                            h-7
+                            w-7
+                            items-center
+                            justify-center
+                            rounded-full
+                            bg-[#143D5E]
+                            text-white
+                            opacity-0
+                            transition-all
+                            duration-300
+                            group-hover:opacity-100
+                            group-hover:rotate-[-8deg]
+                          "
+                        >
+                          <ArrowUpRight size={13} />
+                        </span>
+
+                      </div>
+
+                      {/* =================================================
+                          CARD TEXT
+                      ================================================= */}
+
+                      <div
+                        className="
+                          border-t
+                          border-black/[0.06]
+                          px-3
+                          py-2.5
+                        "
+                      >
+
+                        <h3
+                          className="
+                            line-clamp-1
+                            font-outfit
+                            text-[12px]
+                            font-semibold
+                            leading-tight
+                            text-[#181818]
+                            transition-colors
+                            duration-300
+                            group-hover:text-[#F5A623]
+
+                            sm:text-[13px]
+                          "
+                        >
+                          {category.name}
+                        </h3>
+
+                        <div
+                          className="
+                            mt-1.5
+                            h-[2px]
+                            w-5
+                            bg-[#F5A623]
+                            transition-all
+                            duration-500
+                            group-hover:w-9
+                          "
+                        />
+
+                      </div>
+
+                      {/* BOTTOM LINE */}
+
+                      <div
+                        className="
+                          absolute
+                          bottom-0
+                          left-0
+                          h-[2px]
+                          w-0
+                          bg-[#F5A623]
+                          transition-all
+                          duration-500
+                          group-hover:w-full
+                        "
+                      />
+
+                    </Link>
+
+                  </motion.div>
+
+                ))}
+
+              </div>
+
             </div>
 
-            <h2
-              className="
-                max-w-[700px]
-                text-[34px]
-                font-black
-                leading-[1]
-                tracking-[-0.045em]
-                text-[#202830]
-
-                sm:text-[42px]
-
-                lg:text-[48px]
-              "
-            >
-              Find the right{" "}
-              <span className="text-[#123B5D]">
-                packaging solution.
-              </span>
-            </h2>
           </div>
 
-          {/* RIGHT */}
-
-          <div
-            className="
-              max-w-[400px]
-              lg:pb-1
-            "
-          >
-            <p
-              className="
-                text-[13px]
-                leading-[1.65]
-                text-[#66737D]
-              "
-            >
-              Explore our complete range of protective
-              packaging solutions designed for safer,
-              smarter shipping.
-            </p>
-
-            <Link
-              href="/products"
-              className="
-                group/all
-                mt-3
-                inline-flex
-                items-center
-                gap-2.5
-                text-[11px]
-                font-black
-                uppercase
-                tracking-[0.08em]
-                text-[#123B5D]
-              "
-            >
-              View All Products
-
-              <span
-                className="
-                  flex
-                  h-7
-                  w-7
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-[#F5A623]
-                  transition-transform
-                  duration-300
-                  group-hover/all:translate-x-1
-                "
-              >
-                <ArrowRight size={13} />
-              </span>
-            </Link>
-          </div>
-        </motion.div>
-
-        {/* =================================================
-            CATEGORY CARDS
-        ================================================= */}
-
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-4
-
-            sm:grid-cols-2
-
-            lg:grid-cols-5
-            lg:gap-4
-          "
-        >
-          {categories.map((item, index) => (
-            <CategoryCard
-              key={item.number}
-              item={item}
-              index={index}
-            />
-          ))}
         </div>
 
-        {/* =================================================
-            BOTTOM INFO
-        ================================================= */}
-
-        <motion.div
-          initial={{
-            opacity: 0,
-          }}
-          whileInView={{
-            opacity: 1,
-          }}
-          viewport={{
-            once: true,
-          }}
-          transition={{
-            duration: 0.6,
-            delay: 0.25,
-          }}
-          className="
-            mt-5
-            flex
-            flex-col
-            gap-2
-
-            border-t
-            border-[#DCE3E7]
-
-            pt-4
-
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-          "
-        >
-          <span
-            className="
-              text-[10px]
-              font-bold
-              uppercase
-              tracking-[0.12em]
-              text-[#2F7180]
-            "
-          >
-            DPACK Protective Packaging
-          </span>
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-            <span
-              className="
-                text-[10px]
-                font-bold
-                text-[#66737D]
-              "
-            >
-              05 Categories
-            </span>
-
-            <span
-              className="
-                h-1.5
-                w-1.5
-                rounded-full
-                bg-[#F5A623]
-              "
-            />
-
-            <span
-              className="
-                text-[10px]
-                font-bold
-                text-[#66737D]
-              "
-            >
-              Protective Packaging Solutions
-            </span>
-          </div>
-        </motion.div>
       </div>
+
     </section>
   );
 }
-

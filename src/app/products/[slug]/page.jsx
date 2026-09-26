@@ -1,72 +1,234 @@
 "use client";
 
 import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  Minus,
+  Package,
+  Plus,
+  Quote,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Truck,
+  ZoomIn,
+} from "lucide-react";
+
+/* =========================================================
+   PRODUCT IMAGES
+========================================================= */
 
 const productImages = [
-  "https://images.unsplash.com/photo-1519314069741-9f69a9daddfa?auto=format&fit=crop&q=85&w=1400",
-  "https://images.unsplash.com/photo-1675301590589-c56007c935d4?auto=format&fit=crop&q=85&w=1400",
-  "https://images.unsplash.com/photo-1727622738048-29e6f37b2a8c?auto=format&fit=crop&q=85&w=1400",
-  "https://images.unsplash.com/photo-1675301590589-c56007c935d4?auto=format&fit=crop&q=85&w=1000",
+  "/Air column bag (2).webp",
+  "/Air column bag (2).webp",
+  "/Air column bag (2).webp",
+  "/Air column bag (2).webp",
 ];
 
-const colors = [
+/* =========================================================
+   PRODUCT OPTIONS
+========================================================= */
+
+const protectionTypes = [
   {
-    name: "Racing Red",
-    value: "#C62828",
+    name: "Standard Protection",
+    description: "Reliable cushioning for everyday shipping",
   },
   {
-    name: "Stealth Black",
-    value: "#171717",
-  },
-  {
-    name: "Electric Blue",
-    value: "#2563EB",
-  },
-  {
-    name: "Neon Green",
-    value: "#65A30D",
+    name: "Heavy Protection",
+    description: "Extra protection for fragile products",
   },
 ];
+
+const sizes = [
+  {
+    name: "Small",
+    description: "For compact electronic products",
+  },
+  {
+    name: "Large",
+    description: "For larger and delicate products",
+  },
+];
+
+/* =========================================================
+   RELATED PRODUCTS
+========================================================= */
 
 const relatedProducts = [
   {
-    name: "Mini Racing RC Car",
-    category: "2.4GHz Remote Control",
-    price: "₹1,499",
-    image:
-      "https://images.unsplash.com/photo-1519314069741-9f69a9daddfa?auto=format&fit=crop&q=80&w=700",
+    name: "Dunnage Air Bag",
+    category: "Load Stabilization Packaging",
+    image: "/products/dunnage-air-bag.webp",
   },
   {
-    name: "4WD Rock Crawler",
-    category: "Off-Road RC Vehicle",
-    price: "₹3,299",
-    image:
-      "https://images.unsplash.com/photo-1675301590589-c56007c935d4?auto=format&fit=crop&q=80&w=700",
+    name: "Air Column Roll",
+    category: "Protective Air Packaging",
+    image: "/products/air-column-roll.webp",
   },
   {
-    name: "Drift Speedster",
-    category: "High Speed RC Car",
-    price: "₹2,799",
-    image:
-      "https://images.unsplash.com/photo-1727622738048-29e6f37b2a8c?auto=format&fit=crop&q=80&w=700",
+    name: "Packaging Air Bag",
+    category: "Void Fill Packaging",
+    image: "/products/packaging-air-bag.webp",
   },
   {
-    name: "Monster Truck RC",
-    category: "All Terrain Truck",
-    price: "₹3,999",
-    image:
-      "https://images.unsplash.com/photo-1675301590589-c56007c935d4?auto=format&fit=crop&q=80&w=700",
+    name: "Gap Filler",
+    category: "Packaging Protection",
+    image: "/products/gap-filler.webp",
   },
 ];
+
+/* =========================================================
+   PRODUCT SPECS
+========================================================= */
+
+const specifications = [
+  ["Product Type", "Air Column Bag"],
+  ["Application", "Protective Product Packaging"],
+  ["Suitable For", "Electronics & Fragile Products"],
+  ["Protection Type", "Air Cushion Protection"],
+  ["Material", "High-Strength Packaging Film"],
+  ["Structure", "Air Column / Air Chamber"],
+  ["Usage", "Shipping, Storage & Transportation"],
+  ["Inflation", "Air Inflation"],
+  ["Packaging Benefit", "Lightweight & Space Efficient"],
+  ["Customization", "Available as per Requirement"],
+];
+
+/* =========================================================
+   REVIEWS
+========================================================= */
+
+const reviews = [
+  {
+    name: "Rahul Sharma",
+    role: "Packaging Buyer",
+    review: "Excellent protection for our products",
+  },
+  {
+    name: "Amit Verma",
+    role: "Ecommerce Business",
+    review: "Lightweight and easy to use",
+  },
+];
+
+/* =========================================================
+   ANIMATION VARIANTS
+========================================================= */
+
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 35,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const fadeLeft = {
+  hidden: {
+    opacity: 0,
+    x: -40,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.75,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const fadeRight = {
+  hidden: {
+    opacity: 0,
+    x: 40,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.75,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.09,
+    },
+  },
+};
+
+/* =========================================================
+   REVEAL
+========================================================= */
+
+function Reveal({
+  children,
+  className = "",
+  variants = fadeUp,
+}) {
+  return (
+    <motion.div
+      className={className}
+      variants={variants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{
+        once: true,
+        amount: 0.15,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* =========================================================
+   STARS
+========================================================= */
+
+function Stars({ size = 16 }) {
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={size}
+          className="fill-[#F5A623] text-[#F5A623]"
+        />
+      ))}
+    </div>
+  );
+}
+
+/* =========================================================
+   MAIN PAGE
+========================================================= */
 
 export default function Page() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState("Racing Red");
-  const [selectedVersion, setSelectedVersion] = useState("4WD Standard");
-
-  const price = 2499;
-  const totalPrice = price * quantity;
+  const [selectedProtection, setSelectedProtection] = useState(
+    "Standard Protection"
+  );
+  const [selectedSize, setSelectedSize] = useState("Small");
+  const [zoomOpen, setZoomOpen] = useState(false);
 
   const increaseQuantity = () => {
     setQuantity((prev) => prev + 1);
@@ -76,785 +238,1549 @@ export default function Page() {
     setQuantity((prev) => Math.max(1, prev - 1));
   };
 
+  const nextImage = () => {
+    setSelectedImage(
+      (prev) => (prev + 1) % productImages.length
+    );
+  };
+
+  const previousImage = () => {
+    setSelectedImage(
+      (prev) =>
+        (prev - 1 + productImages.length) %
+        productImages.length
+    );
+  };
+
   return (
-    <main className="min-h-screen bg-[#f7f7f5] text-[#171717]">
-      {/* Breadcrumb */}
-      <section className="mx-auto max-w-7xl px-4 pb-4 pt-6 sm:px-6 lg:px-8 lg:pt-8">
-        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
-          <span className="cursor-pointer transition hover:text-black">
-            Home
-          </span>
+ <main className="min-h-screen overflow-x-clip bg-[#f7f7f5] text-[#171717]">
 
-          <span>/</span>
+      {/* =====================================================
+          BACKGROUND DECORATION
+      ===================================================== */}
 
-          <span className="cursor-pointer transition hover:text-black">
-            Toys
-          </span>
+      <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
+        <motion.div
+          animate={{
+            y: [0, -20, 0],
+            x: [0, 10, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute left-[-120px] top-[20%] h-[280px] w-[280px] rounded-full bg-[#F5A623]/5 blur-3xl"
+        />
 
-          <span>/</span>
-
-          <span className="cursor-pointer transition hover:text-black">
-            Remote Control Cars
-          </span>
-
-          <span>/</span>
-
-          <span className="text-[#d1432d]">TurboX RC Car</span>
-        </div>
-      </section>
-
-      {/* Product Hero */}
-      <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 xl:gap-12">
-          {/* ================= GALLERY ================= */}
-          <section className="lg:col-span-7">
-      <div className="lg:sticky lg:top-6">
-
-        <div className="flex flex-col gap-4 md:flex-row">
-
-          {/* Thumbnails */}
-          <div className="order-2 flex gap-3 overflow-x-auto pb-1 md:order-1 md:w-24 md:flex-col md:overflow-visible">
-            {productImages.map((image, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => setSelectedImage(index)}
-                className={`h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl bg-white p-1 transition sm:h-24 sm:w-24 ${
-                  selectedImage === index
-                    ? "border-2 border-[#d1432d]"
-                    : "border border-neutral-200 hover:border-neutral-400"
-                }`}
-              >
-                <img
-                  src={image}
-                  alt={`TurboX remote car view ${index + 1}`}
-                  className="h-full w-full rounded-xl object-cover"
-                />
-              </button>
-            ))}
-          </div>
-
-          {/* Fixed Height Image */}
-          <div
-            className="
-              order-1
-              relative
-              w-full
-              overflow-hidden
-              rounded-3xl
-              border
-              border-neutral-200
-              bg-white
-              shadow-sm
-              md:order-2
-              md:h-[550px]
-              
-            "
-          >
-            {/* Badges */}
-            <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-2 sm:left-6 sm:top-6">
-              <span className="rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-neutral-900 shadow-sm backdrop-blur">
-                Bestseller
-              </span>
-
-              <span className="rounded-full bg-[#171717] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white">
-                4WD
-              </span>
-            </div>
-
-            {/* Zoom */}
-            <button
-              type="button"
-              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow-md backdrop-blur transition hover:scale-105 sm:right-6 sm:top-6"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="1.8"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-4.35-4.35m2.35-5.65a8 8 0 11-16 0 8 8 0 0116 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M10 7v6m3-3H7"
-                />
-              </svg>
-            </button>
-
-            {/* Main Image */}
-            <img
-              src={productImages[selectedImage]}
-              alt="TurboX RC Off-Road Remote Car"
-              className="h-full w-full object-cover transition duration-700 hover:scale-[1.03]"
-            />
-
-            {/* Previous */}
-            <button
-              type="button"
-              onClick={() =>
-                setSelectedImage((prev) =>
-                  prev === 0 ? productImages.length - 1 : prev - 1
-                )
-              }
-              className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow-md transition hover:scale-110 sm:left-5"
-              aria-label="Previous image"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-
-            {/* Next */}
-            <button
-              type="button"
-              onClick={() =>
-                setSelectedImage(
-                  (prev) => (prev + 1) % productImages.length
-                )
-              }
-              className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-[#171717] text-white shadow-md transition hover:scale-110 sm:right-5"
-              aria-label="Next image"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-
-            {/* Counter */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/70 px-3 py-1 text-[11px] font-medium text-white">
-              {selectedImage + 1} / {productImages.length}
-            </div>
-          </div>
-        </div>
+        <motion.div
+          animate={{
+            y: [0, 25, 0],
+            x: [0, -15, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute right-[-100px] top-[50%] h-[300px] w-[300px] rounded-full bg-[#0B1F3A]/5 blur-3xl"
+        />
       </div>
-    </section>
 
+      {/* =====================================================
+          BREADCRUMB
+      ===================================================== */}
 
-          {/* ================= PRODUCT INFO ================= */}
-          <section className="lg:col-span-5">
-            {/* Rating */}
-            <div className="flex flex-col gap-3 border-b border-neutral-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex text-sm text-yellow-500">
-                  ★★★★★
-                </div>
+      <section className="relative z-10 border-b border-black/5 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center px-5 py-4 sm:px-8 lg:px-10">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-neutral-500 sm:text-sm">
+            <span className="transition-colors hover:text-[#F5A623]">
+              Home
+            </span>
 
-                <span className="text-xs font-bold text-[#171717]">
-                  4.8 / 5
-                </span>
+            <span>/</span>
 
-                <span className="text-xs text-neutral-500 underline">
-                  327 Reviews
-                </span>
-              </div>
+            <span className="transition-colors hover:text-[#F5A623]">
+              Products
+            </span>
 
-              <span className="w-fit rounded-full bg-red-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-red-600">
-                Only 6 left
-              </span>
-            </div>
+            <span>/</span>
 
-            {/* Title */}
-            <div className="mt-5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#d1432d]">
-                High Performance RC Vehicle
-              </p>
+            <span className="transition-colors hover:text-[#F5A623]">
+              Protective Packaging
+            </span>
 
-              <h1 className="mt-2 text-3xl font-bold leading-tight tracking-tight text-neutral-950 sm:text-4xl xl:text-5xl">
-                TurboX 4WD Remote Control Off-Road Car
-              </h1>
+            <span>/</span>
 
-              <p className="mt-2 text-sm text-neutral-500">
-                Fast • Durable • All-Terrain • Rechargeable
-              </p>
-            </div>
+            <span className="font-semibold text-[#0B1F3A]">
+              Air Column Bag
+            </span>
+          </div>
+        </div>
+      </section>
 
-            {/* Price */}
-            <div className="mt-6 rounded-2xl border border-neutral-200 bg-white p-4 sm:p-5">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-3xl font-bold tracking-tight text-neutral-950 sm:text-4xl">
-                  ₹2,499
-                </span>
+    {/* =====================================================
+    HERO
+===================================================== */}
 
-                <span className="text-lg text-neutral-400 line-through">
-                  ₹3,499
-                </span>
+<section className="relative z-10 mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-10 lg:py-16">
+  <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-14">
 
-                <span className="rounded-md bg-red-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-red-600">
-                  29% OFF
-                </span>
-              </div>
+    {/* =================================================
+        GALLERY - STICKY
+    ================================================= */}
 
-              <p className="mt-2 text-xs text-neutral-500">
-                Inclusive of all taxes • Free delivery on this product
-              </p>
-            </div>
+    <div className="lg:col-span-7 lg:self-start">
 
-            {/* Product Description */}
-            <p className="mt-5 text-sm leading-7 text-neutral-600 sm:text-base">
-              Built for exciting off-road adventures, the TurboX RC Car
-              features 4-wheel drive, rugged tyres, responsive steering and a
-              powerful rechargeable motor. Perfect for indoor and outdoor play.
-            </p>
+      {/* IMPORTANT:
+          Sticky is directly on this wrapper.
+          Do NOT put Framer Motion transform on this element.
+      */}
 
-            {/* Version */}
-            <div className="mt-6">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-800">
-                  Select Version
-                </span>
+      <div className="lg:sticky lg:top-28 lg:h-fit">
 
-                <span className="text-xs text-neutral-500">
-                  Choose your setup
-                </span>
-              </div>
+        <motion.div
+          initial={{
+            opacity: 0,
+            x: -40,
+          }}
+          whileInView={{
+            opacity: 1,
+            x: 0,
+          }}
+          viewport={{
+            once: true,
+            amount: 0.15,
+          }}
+          transition={{
+            duration: 0.75,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="relative"
+        >
 
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {["4WD Standard", "4WD Pro Speed"].map((version) => (
-                  <button
-                    key={version}
-                    type="button"
-                    onClick={() => setSelectedVersion(version)}
-                    className={`rounded-xl border px-4 py-3 text-left text-xs font-semibold transition ${
-                      selectedVersion === version
-                        ? "border-[#d1432d] bg-red-50 text-[#d1432d]"
-                        : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-400"
-                    }`}
-                  >
-                    {version}
+          {/* FLOATING BADGE */}
 
-                    <span className="mt-1 block text-[10px] font-normal text-neutral-500">
-                      {version === "4WD Standard"
-                        ? "Top speed up to 20 km/h"
-                        : "Top speed up to 28 km/h"}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
+          <motion.div
+            animate={{
+              y: [0, -8, 0],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute -right-2 -top-3 z-30 hidden rounded-full bg-[#F5A623] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white shadow-xl sm:block"
+          >
+            Premium Protection
+          </motion.div>
 
-            {/* Color */}
-            <div className="mt-6">
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-800">
-                  Color:
-                  <span className="ml-1 text-neutral-950">
-                    {selectedColor}
-                  </span>
-                </span>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[82px_1fr]">
 
-                <span className="text-xs text-neutral-500">
-                  4 colors available
-                </span>
-              </div>
+            {/* =================================================
+                THUMBNAILS
+            ================================================= */}
 
-              <div className="flex flex-wrap items-center gap-4">
-                {colors.map((color) => (
-                  <button
-                    key={color.name}
-                    type="button"
-                    onClick={() => setSelectedColor(color.name)}
-                    title={color.name}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full transition ${
-                      selectedColor === color.name
-                        ? "ring-2 ring-[#f7f7f5] ring-offset-2 ring-offset-[#171717]"
-                        : "border-2 border-white shadow-sm"
-                    }`}
-                    style={{ backgroundColor: color.value }}
-                  />
-                ))}
-              </div>
-            </div>
+            <div className="order-2 flex gap-3 overflow-x-auto sm:order-1 sm:flex-col">
 
-            {/* Features */}
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-neutral-200 bg-white p-3">
-                <p className="text-sm font-bold">2.4GHz</p>
-                <p className="mt-1 text-[11px] text-neutral-500">
-                  Stable Remote Control
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-neutral-200 bg-white p-3">
-                <p className="text-sm font-bold">4WD</p>
-                <p className="mt-1 text-[11px] text-neutral-500">
-                  All Terrain Drive
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-neutral-200 bg-white p-3">
-                <p className="text-sm font-bold">30 Min</p>
-                <p className="mt-1 text-[11px] text-neutral-500">
-                  Play Time
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-neutral-200 bg-white p-3">
-                <p className="text-sm font-bold">LED</p>
-                <p className="mt-1 text-[11px] text-neutral-500">
-                  Front Lights
-                </p>
-              </div>
-            </div>
-
-            {/* Quantity + Cart */}
-            <div className="mt-7 border-t border-neutral-200 pt-6">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                {/* Quantity */}
-                <div className="flex h-14 items-center justify-between rounded-2xl border border-neutral-200 bg-white px-3 sm:w-36">
-                  <button
-                    type="button"
-                    onClick={decreaseQuantity}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl text-lg font-semibold text-neutral-600 transition hover:bg-neutral-100"
-                  >
-                    −
-                  </button>
-
-                  <span className="text-sm font-bold">
-                    {String(quantity).padStart(2, "0")}
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={increaseQuantity}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl text-lg font-semibold text-neutral-600 transition hover:bg-neutral-100"
-                  >
-                    +
-                  </button>
-                </div>
-
-                {/* Add To Cart */}
-                <button
+              {productImages.map((image, index) => (
+                <motion.button
+                  key={index}
                   type="button"
-                  className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#d1432d] px-6 text-sm font-bold text-white shadow-sm transition hover:bg-[#b93623] hover:shadow-md"
+                  onClick={() => setSelectedImage(index)}
+                  whileHover={{
+                    y: -4,
+                  }}
+                  whileTap={{
+                    scale: 0.96,
+                  }}
+                  className={`group relative h-[78px] min-w-[78px] overflow-hidden rounded-2xl border bg-white transition-all ${
+                    selectedImage === index
+                      ? "border-[#F5A623] shadow-[0_8px_25px_rgba(217,80,38,0.15)]"
+                      : "border-neutral-200 hover:border-[#F5A623]/40"
+                  }`}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 2h13m-8 4a1 1 0 100-2 1 1 0 000 2zm7 0a1 1 0 100-2 1 1 0 000 2z"
+
+                  <img
+                    src={image}
+                    alt={`Air Column Bag ${index + 1}`}
+                    className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-110"
+                  />
+
+                  {selectedImage === index && (
+                    <motion.div
+                      layoutId="activeThumbnail"
+                      className="absolute bottom-0 left-2 right-2 h-[3px] rounded-full bg-[#F5A623]"
                     />
-                  </svg>
+                  )}
 
-                  Add to Cart • ₹{totalPrice.toLocaleString("en-IN")}
-                </button>
-              </div>
+                </motion.button>
+              ))}
 
-              {/* Buy Now */}
-              <button
-                type="button"
-                className="mt-3 h-12 w-full rounded-2xl border-2 border-neutral-900 bg-white text-sm font-bold text-neutral-900 transition hover:bg-neutral-900 hover:text-white"
-              >
-                Buy It Now
-              </button>
             </div>
 
-            {/* Trust Features */}
-            <div className="mt-6 grid grid-cols-3 gap-2 border-t border-neutral-200 pt-5">
-              <div className="rounded-xl bg-white p-3 text-center">
-                <span className="block text-sm font-bold">6 Months</span>
-                <span className="mt-1 block text-[10px] leading-4 text-neutral-500">
-                  Warranty
-                </span>
-              </div>
+            {/* =================================================
+                MAIN IMAGE
+            ================================================= */}
 
-              <div className="rounded-xl bg-white p-3 text-center">
-                <span className="block text-sm font-bold">Free</span>
-                <span className="mt-1 block text-[10px] leading-4 text-neutral-500">
-                  Shipping
-                </span>
-              </div>
+            <div className="order-1 sm:order-2 ">
 
-              <div className="rounded-xl bg-white p-3 text-center">
-                <span className="block text-sm font-bold">7 Days</span>
-                <span className="mt-1 block text-[10px] leading-4 text-neutral-500">
-                  Easy Returns
-                </span>
-              </div>
-            </div>
-          </section>
-        </div>
-      </section>
+              <div className="group relative min-h-[430px] overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-[0_20px_70px_rgba(11,31,58,0.08)] sm:min-h-[560px]">
 
-      {/* ================= PRODUCT DETAILS ================= */}
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
-          {/* Left */}
-          <div className="lg:col-span-7">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#d1432d]">
-              Product Details
-            </p>
+                {/* BACKGROUND CIRCLE */}
 
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-neutral-950 sm:text-4xl">
-              Built for Fast, Fun Adventures
-            </h2>
-
-            <p className="mt-4 leading-7 text-neutral-600">
-              TurboX is designed for kids and hobby users who want an RC car
-              that can handle everyday play, sharp turns and different
-              surfaces. Its rugged construction and high-grip tyres make it
-              suitable for both indoor floors and outdoor tracks.
-            </p>
-
-            {/* Feature Cards */}
-            <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-neutral-200 bg-white p-5">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-[#d1432d]">
-                  ⚡
-                </div>
-
-                <h3 className="text-sm font-bold uppercase tracking-wide">
-                  High Speed Motor
-                </h3>
-
-                <p className="mt-2 text-xs leading-6 text-neutral-600">
-                  Responsive acceleration and smooth control for exciting
-                  racing sessions.
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-neutral-200 bg-white p-5">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-[#d1432d]">
-                  🛞
-                </div>
-
-                <h3 className="text-sm font-bold uppercase tracking-wide">
-                  All-Terrain Tyres
-                </h3>
-
-                <p className="mt-2 text-xs leading-6 text-neutral-600">
-                  Large-grip tyres provide stability across tiles, concrete,
-                  dirt and rough surfaces.
-                </p>
-              </div>
-            </div>
-
-            {/* Specifications */}
-            <div className="mt-8 overflow-hidden rounded-2xl border border-neutral-200 bg-white">
-              <div className="border-b border-neutral-200 px-5 py-4">
-                <h3 className="text-sm font-bold uppercase tracking-wider">
-                  Specifications
-                </h3>
-              </div>
-
-              <div className="divide-y divide-neutral-100">
-                {[
-                  ["Product Type", "Remote Control Off-Road Car"],
-                  ["Drive System", "4-Wheel Drive"],
-                  ["Remote Frequency", "2.4GHz"],
-                  ["Battery", "Rechargeable Lithium Battery"],
-                  ["Charging Time", "Approx. 3 Hours"],
-                  ["Play Time", "Up to 30 Minutes"],
-                  ["Top Speed", "Up to 20 km/h"],
-                  ["Recommended Age", "8+ Years"],
-                  ["Control Distance", "Up to 50 Metres"],
-                  ["Lighting", "Front LED Headlights"],
-                ].map(([label, value]) => (
-                  <div
-                    key={label}
-                    className="grid grid-cols-1 gap-1 px-5 py-3 sm:grid-cols-2"
-                  >
-                    <span className="text-xs font-semibold text-neutral-500">
-                      {label}
-                    </span>
-
-                    <span className="text-xs font-medium text-neutral-900 sm:text-right">
-                      {value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Image */}
-          <div className="lg:col-span-5">
-            <div className="relative overflow-hidden rounded-3xl border border-neutral-200 bg-white aspect-[4/5]">
-              <img
-                src={productImages[1]}
-                alt="TurboX remote control off road car"
-                className="h-full w-full object-cover transition duration-700 hover:scale-105"
-              />
-
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-
-              <div className="absolute bottom-6 left-6 right-6 text-white">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
-                  TurboX Performance
-                </span>
-
-                <p className="mt-2 text-2xl font-bold leading-tight">
-                  Built to race. Ready for every terrain.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ================= HIGHLIGHT BANNER ================= */}
-      <section className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-3xl bg-[#171717] px-6 py-10 text-white sm:px-10 lg:px-16 lg:py-14">
-          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-7">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-red-400">
-                Performance Package
-              </p>
-
-              <h2 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                More speed.
-                <br />
-                More control.
-                <br />
-                More fun.
-              </h2>
-
-              <p className="mt-4 max-w-xl text-sm leading-7 text-neutral-400">
-                From quick indoor races to outdoor off-road adventures,
-                TurboX brings responsive controls and rugged performance to
-                every drive.
-              </p>
-
-              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-xs font-semibold uppercase tracking-wider text-neutral-300">
-                <span>✓ 4WD DRIVE</span>
-                <span>✓ LED LIGHTS</span>
-                <span>✓ RECHARGEABLE</span>
-              </div>
-            </div>
-
-            <div className="flex justify-center lg:col-span-5">
-              <div className="h-64 w-64 overflow-hidden rounded-full border-4 border-white/10 p-2 shadow-2xl sm:h-80 sm:w-80">
-                <img
-                  src={productImages[0]}
-                  alt="Remote control car detail"
-                  className="h-full w-full rounded-full object-cover"
+                <motion.div
+                  animate={{
+                    scale: [1, 1.08, 1],
+                  }}
+                  transition={{
+                    duration: 7,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#F5A623]/5"
                 />
+
+                <motion.div
+                  animate={{
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-[#0B1F3A]/5"
+                />
+
+                {/* =================================================
+                    BADGES
+                ================================================= */}
+
+                <div className="absolute left-5 top-5 z-20 flex flex-wrap gap-2">
+
+                  <span className="rounded-full bg-[#0B1F3A] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white">
+                    Dpack
+                  </span>
+
+                  <span className="rounded-full bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0B1F3A] shadow-md">
+                    Protective Packaging
+                  </span>
+
+                </div>
+
+                {/* =================================================
+                    ZOOM
+                ================================================= */}
+
+                <motion.button
+                  type="button"
+                  onClick={() => setZoomOpen(true)}
+                  whileHover={{
+                    scale: 1.08,
+                  }}
+                  whileTap={{
+                    scale: 0.95,
+                  }}
+                  className="absolute right-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-neutral-200 bg-white text-[#0B1F3A] shadow-lg transition-colors hover:bg-[#F5A623] hover:text-white"
+                >
+                  <ZoomIn size={18} />
+                </motion.button>
+
+                {/* =================================================
+                    IMAGE
+                ================================================= */}
+
+                <div className="flex min-h-[430px] items-center justify-center p-8 sm:min-h-[560px] sm:p-14">
+
+                  <AnimatePresence mode="wait">
+
+                    <motion.img
+                      key={selectedImage}
+                      src={productImages[selectedImage]}
+                      alt="Air Column Bag for Electronics"
+
+                      initial={{
+                        opacity: 0,
+                        scale: 0.94,
+                        x: 18,
+                      }}
+
+                      animate={{
+                        opacity: 1,
+                        scale: 1,
+                        x: 0,
+                      }}
+
+                      exit={{
+                        opacity: 0,
+                        scale: 0.96,
+                        x: -18,
+                      }}
+
+                      transition={{
+                        duration: 0.45,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+
+                      className="relative z-10 max-h-[390px] w-full object-contain transition-transform duration-700 group-hover:scale-[1.025] sm:max-h-[470px]"
+                    />
+
+                  </AnimatePresence>
+
+                </div>
+
+                {/* =================================================
+                    PREVIOUS
+                ================================================= */}
+
+                <motion.button
+                  type="button"
+                  onClick={previousImage}
+                  whileHover={{
+                    scale: 1.08,
+                    x: -2,
+                  }}
+                  whileTap={{
+                    scale: 0.94,
+                  }}
+                  className="absolute left-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/95 text-[#0B1F3A] shadow-lg backdrop-blur transition-colors hover:bg-[#0B1F3A] hover:text-white"
+                >
+                  <ArrowLeft size={17} />
+                </motion.button>
+
+                {/* =================================================
+                    NEXT
+                ================================================= */}
+
+                <motion.button
+                  type="button"
+                  onClick={nextImage}
+                  whileHover={{
+                    scale: 1.08,
+                    x: 2,
+                  }}
+                  whileTap={{
+                    scale: 0.94,
+                  }}
+                  className="absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/95 text-[#0B1F3A] shadow-lg backdrop-blur transition-colors hover:bg-[#0B1F3A] hover:text-white"
+                >
+                  <ArrowRight size={17} />
+                </motion.button>
+
+                {/* =================================================
+                    COUNTER
+                ================================================= */}
+
+                <div className="absolute bottom-5 left-1/2 z-20 -translate-x-1/2 rounded-full bg-[#0B1F3A]/90 px-4 py-2 text-xs font-semibold text-white backdrop-blur">
+                  {String(selectedImage + 1).padStart(2, "0")} /{" "}
+                  {String(productImages.length).padStart(2, "0")}
+                </div>
+
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ================= RELATED PRODUCTS ================= */}
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
-        <div className="mb-8">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#d1432d]">
-            You May Also Like
+          </div>
+
+        </motion.div>
+
+      </div>
+    </div>
+
+    {/* =================================================
+        PRODUCT INFO
+        This content determines the sticky height
+    ================================================= */}
+
+    <motion.div
+      initial={{
+        opacity: 0,
+        x: 40,
+      }}
+      whileInView={{
+        opacity: 1,
+        x: 0,
+      }}
+      viewport={{
+        once: true,
+        amount: 0.15,
+      }}
+      transition={{
+        duration: 0.75,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="lg:col-span-5"
+    >
+
+      <div className="flex h-full flex-col">
+
+        {/* RATING */}
+
+        <div className="mb-5 flex flex-wrap items-center gap-3">
+
+          <div className="flex items-center gap-2 rounded-full bg-[#F5A623]/10 px-3 py-2">
+            <Stars size={13} />
+
+            <span className="text-xs font-bold text-[#0B1F3A]">
+              4.8 / 5
+            </span>
+          </div>
+
+          <span className="text-xs font-medium text-neutral-500">
+            Customer Reviews
+          </span>
+
+          <span className="hidden h-1 w-1 rounded-full bg-neutral-300 sm:block" />
+
+          <span className="text-xs font-semibold text-[#F5A623]">
+            Packaging Solution
+          </span>
+
+        </div>
+
+        {/* TITLE */}
+
+        <div>
+
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.22em] text-[#F5A623]">
+            Protective Packaging
           </p>
 
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-neutral-950 sm:text-4xl">
-            More RC Cars
-          </h2>
+          <h1 className="max-w-xl text-4xl font-bold leading-[1.05] tracking-tight text-[#0B1F3A] sm:text-5xl">
+          Air Column Bag for Electronics
+          </h1>
+
+          <p className="mt-4 max-w-xl text-sm leading-7 text-neutral-500 sm:text-base">
+            Lightweight
+            <span className="mx-1 text-[#F5A623]">•</span>
+            Shock Protection
+            <span className="mx-1 text-[#F5A623]">•</span>
+            Space Saving
+            <span className="mx-1 text-[#F5A623]">•</span>
+            Easy to Use
+          </p>
+
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {relatedProducts.map((product) => (
-            <div
-              key={product.name}
-              className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="relative aspect-square overflow-hidden bg-neutral-100">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                />
-              </div>
+        {/* =================================================
+            ECOMMERCE PRODUCT BOX
+        ================================================= */}
 
-              <div className="p-4">
-                <div className="mb-1 text-xs text-yellow-500">★★★★★</div>
+        <motion.div
+          whileHover={{
+            y: -3,
+          }}
+          className="relative mt-8 overflow-hidden rounded-[8px] border border-neutral-200 bg-white shadow-[0_15px_45px_rgba(11,31,58,0.06)]"
+        >
 
-                <h3 className="text-base font-bold text-neutral-900">
-                  {product.name}
-                </h3>
+          <div className="relative overflow-hidden bg-[#0B1F3A] p-6">
 
-                <p className="mt-1 text-xs text-neutral-500">
-                  {product.category}
+            <div className="absolute right-[-40px] top-[-60px] h-40 w-40 rounded-full bg-[#F5A623]/20 blur-2xl" />
+
+            <div className="relative flex items-start justify-between gap-4">
+
+              <div>
+
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#F5A623]">
+                  Premium Packaging
                 </p>
 
-                <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-3">
-                  <span className="text-base font-bold">
-                    {product.price}
+                <h3 className="mt-2 text-2xl font-bold text-white">
+                  Air Column Bag
+                </h3>
+
+                <p className="mt-2 text-sm leading-6 text-white/65">
+                  Reliable protection for electronics and fragile products.
+                </p>
+
+              </div>
+
+              <motion.div
+                animate={{
+                  y: [0, -5, 0],
+                  rotate: [0, 2, 0],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#F5A623] text-white"
+              >
+                <Package size={21} />
+              </motion.div>
+
+            </div>
+
+            <div className="relative mt-6 grid grid-cols-3 gap-2">
+
+              <div className="border border-white/10 bg-white/5 p-3">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-white/40">
+                  Delivery
+                </p>
+
+                <p className="mt-1 text-xs font-bold text-white">
+                  Pan India
+                </p>
+              </div>
+
+              <div className="border border-white/10 bg-white/5 p-3">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-white/40">
+                  Quality
+                </p>
+
+                <p className="mt-1 text-xs font-bold text-white">
+                  Premium
+                </p>
+              </div>
+
+              <div className="border border-white/10 bg-white/5 p-3">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-white/40">
+                  Supply
+                </p>
+
+                <p className="mt-1 text-xs font-bold text-white">
+                  Bulk
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+
+        </motion.div>
+
+        {/* DESCRIPTION */}
+
+        <p className="mt-7 text-sm leading-7 text-neutral-600 sm:text-[15px]">
+          Air Column Bags provide effective cushioning for electronics
+          and fragile products during shipping, storage and
+          transportation. Their lightweight structure offers reliable
+          protection while taking minimal storage space.
+        </p>
+
+        {/* PROTECTION TYPE */}
+
+        <div className="mt-7">
+
+          <div className="mb-3 flex items-center justify-between">
+
+            <h3 className="text-sm font-bold text-[#0B1F3A]">
+              Protection Type
+            </h3>
+
+            <span className="text-xs font-semibold text-[#F5A623]">
+              {selectedProtection}
+            </span>
+
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+
+            {protectionTypes.map((item) => {
+
+              const active =
+                selectedProtection === item.name;
+
+              return (
+                <motion.button
+                  key={item.name}
+                  type="button"
+                  onClick={() =>
+                    setSelectedProtection(item.name)
+                  }
+                  whileHover={{
+                    y: -3,
+                  }}
+                  whileTap={{
+                    scale: 0.98,
+                  }}
+                  className={`relative overflow-hidden border p-4 text-left transition-all ${
+                    active
+                      ? "border-[#F5A623] bg-[#F5A623]/5 shadow-[0_10px_30px_rgba(217,80,38,0.08)]"
+                      : "border-neutral-200 bg-white hover:border-[#F5A623]/40"
+                  }`}
+                >
+
+                  {active && (
+                    <motion.div
+                      layoutId="protectionActive"
+                      className="absolute left-0 top-0 h-full w-1 bg-[#F5A623]"
+                    />
+                  )}
+
+                  <div className="flex items-start gap-3">
+
+                    <div
+                      className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center ${
+                        active
+                          ? "bg-[#F5A623] text-white"
+                          : "bg-[#0B1F3A]/5 text-[#0B1F3A]"
+                      }`}
+                    >
+                      <ShieldCheck size={16} />
+                    </div>
+
+                    <div>
+
+                      <p className="text-sm font-bold text-[#0B1F3A]">
+                        {item.name}
+                      </p>
+
+                      <p className="mt-1 text-xs leading-5 text-neutral-500">
+                        {item.description}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </motion.button>
+              );
+            })}
+
+          </div>
+
+        </div>
+
+
+        {/* FEATURES */}
+
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{
+            once: true,
+            amount: 0.2,
+          }}
+          className="mt-7 grid grid-cols-2 gap-3"
+        >
+
+          {[
+            {
+              title: "Shock Protection",
+              icon: ShieldCheck,
+            },
+            {
+              title: "Lightweight",
+              icon: Sparkles,
+            },
+            {
+              title: "Flexible",
+              icon: Package,
+            },
+            {
+              title: "Compact",
+              icon: ArrowUpRight,
+            },
+          ].map((item) => {
+
+            const Icon = item.icon;
+
+            return (
+              <motion.div
+                key={item.title}
+                variants={fadeUp}
+                whileHover={{
+                  y: -4,
+                }}
+                className="group border border-neutral-200 bg-white p-4 transition-shadow hover:shadow-[0_12px_35px_rgba(11,31,58,0.07)]"
+              >
+
+                <div className="flex items-center gap-3">
+
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#0B1F3A]/5 text-[#F5A623] transition-colors group-hover:bg-[#F5A623] group-hover:text-white">
+                    <Icon size={16} />
+                  </div>
+
+                  <span className="text-xs font-bold text-[#0B1F3A]">
+                    {item.title}
                   </span>
 
-                  <button
-                    type="button"
-                    className="rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-[#d1432d] transition hover:bg-[#d1432d] hover:text-white"
-                  >
-                    + Add
-                  </button>
+                </div>
+
+              </motion.div>
+            );
+          })}
+
+        </motion.div>
+
+        {/* =================================================
+            QUANTITY + ADD TO CART
+        ================================================= */}
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+
+          {/* QUANTITY */}
+
+          <div className="flex h-14 items-center justify-between border border-neutral-200 bg-white px-3 sm:w-[145px]">
+
+            <motion.button
+              type="button"
+              whileTap={{
+                scale: 0.85,
+              }}
+              onClick={decreaseQuantity}
+              className="flex h-9 w-9 items-center justify-center text-[#0B1F3A] transition-colors hover:bg-[#0B1F3A]/5"
+            >
+              <Minus size={16} />
+            </motion.button>
+
+            <span className="text-sm font-bold text-[#0B1F3A]">
+              {quantity}
+            </span>
+
+            <motion.button
+              type="button"
+              whileTap={{
+                scale: 0.85,
+              }}
+              onClick={increaseQuantity}
+              className="flex h-9 w-9 items-center justify-center text-[#0B1F3A] transition-colors hover:bg-[#0B1F3A]/5"
+            >
+              <Plus size={16} />
+            </motion.button>
+
+          </div>
+
+          {/* ADD TO CART */}
+
+          <motion.button
+            type="button"
+            whileHover={{
+              y: -3,
+            }}
+            whileTap={{
+              scale: 0.98,
+            }}
+            className="group relative flex h-14 flex-1 items-center justify-center gap-3 overflow-hidden bg-[#0B1F3A] px-6 text-sm font-bold text-white shadow-[0_12px_30px_rgba(11,31,58,0.18)] transition-colors duration-300 hover:bg-[#F5A623]"
+          >
+
+            <span className="relative z-10">
+              Add to Cart
+            </span>
+
+            <motion.span
+              animate={{
+                x: [0, 4, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="relative z-10"
+            >
+              <ArrowRight size={18} />
+            </motion.span>
+
+            <span className="absolute inset-0 -translate-x-full bg-white/10 transition-transform duration-700 group-hover:translate-x-full" />
+
+          </motion.button>
+
+        </div>
+
+        {/* BUY NOW */}
+
+        <motion.button
+          type="button"
+          whileHover={{
+            y: -2,
+          }}
+          whileTap={{
+            scale: 0.98,
+          }}
+          className="mt-3 flex h-13 w-full items-center justify-center gap-2 border border-[#0B1F3A] bg-white px-5 py-4 text-sm font-bold text-[#0B1F3A] transition-all hover:bg-[#F5A623] hover:border-[#F5A623] hover:text-white"
+        >
+          Buy Now
+          <ArrowUpRight size={16} />
+        </motion.button>
+
+        {/* TRUST FEATURES */}
+
+        <div className="mt-7 grid grid-cols-3 divide-x border border-neutral-200 bg-white py-4">
+
+          <div className="px-3 text-center">
+
+            <Package
+              size={17}
+              className="mx-auto text-[#F5A623]"
+            />
+
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-[#0B1F3A]">
+              Bulk Orders
+            </p>
+
+          </div>
+
+          <div className="px-3 text-center">
+
+            <Sparkles
+              size={17}
+              className="mx-auto text-[#F5A623]"
+            />
+
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-[#0B1F3A]">
+              Custom
+            </p>
+
+          </div>
+
+          <div className="px-3 text-center">
+
+            <Truck
+              size={17}
+              className="mx-auto text-[#F5A623]"
+            />
+
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-[#0B1F3A]">
+              Pan India
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+    </motion.div>
+
+  </div>
+</section>
+
+      {/* =====================================================
+          PRODUCT DETAILS
+      ===================================================== */}
+
+      <section className="relative z-10 border-y border-black/5 bg-white">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
+
+            {/* LEFT */}
+
+            <Reveal
+              variants={fadeLeft}
+              className="lg:col-span-7"
+            >
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F5A623]">
+                Product Details
+              </p>
+
+              <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight tracking-tight text-[#0B1F3A] sm:text-4xl">
+                Reliable Protection for Fragile Products
+              </h2>
+
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-500 sm:text-base">
+                Dpack Air Column Bags are designed to provide cushioning and
+                protection for delicate products during shipping, storage and
+                transportation. The air-filled structure absorbs impact while
+                keeping the packaging lightweight and space efficient.
+              </p>
+
+              {/* DETAIL CARDS */}
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+
+                <motion.div
+                  whileHover={{
+                    y: -5,
+                  }}
+                  className="group rounded-3xl border border-neutral-200 bg-[#f7f7f5] p-6 transition-shadow hover:shadow-xl"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F5A623] text-white">
+                    <ShieldCheck size={20} />
+                  </div>
+
+                  <h3 className="mt-5 text-lg font-bold text-[#0B1F3A]">
+                    Impact Protection
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-neutral-500">
+                    Helps protect products against shocks, movement and
+                    handling impact.
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{
+                    y: -5,
+                  }}
+                  className="group rounded-3xl border border-neutral-200 bg-[#f7f7f5] p-6 transition-shadow hover:shadow-xl"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0B1F3A] text-white">
+                    <Package size={20} />
+                  </div>
+
+                  <h3 className="mt-5 text-lg font-bold text-[#0B1F3A]">
+                    Space Efficient
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-neutral-500">
+                    Lightweight packaging design requires less storage space
+                    before and after use.
+                  </p>
+                </motion.div>
+              </div>
+
+              {/* SPECS */}
+
+              <div className="mt-9 overflow-hidden rounded-3xl border border-neutral-200">
+                <div className="border-b border-neutral-200 bg-[#0B1F3A] px-5 py-4">
+                  <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-white">
+                    Product Specifications
+                  </h3>
+                </div>
+
+                <div>
+                  {specifications.map(([label, value], index) => (
+                    <motion.div
+                      key={label}
+                      initial={{
+                        opacity: 0,
+                        x: -15,
+                      }}
+                      whileInView={{
+                        opacity: 1,
+                        x: 0,
+                      }}
+                      viewport={{
+                        once: true,
+                        amount: 0.4,
+                      }}
+                      transition={{
+                        delay: index * 0.035,
+                        duration: 0.4,
+                      }}
+                      className={`grid grid-cols-1 gap-1 px-5 py-4 sm:grid-cols-[190px_1fr] sm:gap-5 ${
+                        index % 2 === 0
+                          ? "bg-[#fafafa]"
+                          : "bg-white"
+                      }`}
+                    >
+                      <span className="text-xs font-bold uppercase tracking-wide text-neutral-400">
+                        {label}
+                      </span>
+
+                      <span className="text-sm font-semibold text-[#0B1F3A]">
+                        {value}
+                      </span>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            </Reveal>
 
-      {/* ================= REVIEWS ================= */}
-      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-neutral-200 bg-white p-6 sm:p-8 lg:p-10">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-            {/* Rating Summary */}
-            <div className="border-b border-neutral-200 pb-8 lg:col-span-4 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#d1432d]">
-                Customer Reviews
-              </p>
+            {/* RIGHT */}
 
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-6xl font-bold">4.8</span>
-                <span className="text-lg text-neutral-400">/ 5</span>
-              </div>
+            <Reveal
+              variants={fadeRight}
+              className="lg:col-span-5"
+            >
+              <div className="group relative overflow-hidden rounded-[30px] bg-[#0B1F3A] p-5 shadow-[0_25px_70px_rgba(11,31,58,0.16)] sm:p-7">
 
-              <div className="mt-1 text-lg text-yellow-500">
-                ★★★★★
-              </div>
+                <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#F5A623]/25 blur-3xl" />
 
-              <p className="mt-2 text-xs text-neutral-500">
-                Based on 327 verified customer reviews.
-              </p>
+                <div className="relative overflow-hidden rounded-[24px] bg-white">
+                  <motion.img
+                    src="/Air column bag (2).webp"
+                    alt="Dpack Protective Packaging"
+                    whileHover={{
+                      scale: 1.045,
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      ease: "easeOut",
+                    }}
+                    className="h-[500px] w-full object-contain p-8"
+                  />
+                </div>
 
-              <div className="mt-6 space-y-2">
-                {[
-                  ["5 Stars", "92%"],
-                  ["4 Stars", "6%"],
-                  ["3 Stars", "2%"],
-                ].map(([label, percentage]) => (
-                  <div
-                    key={label}
-                    className="flex items-center gap-2 text-xs"
-                  >
-                    <span className="w-14 text-neutral-600">
-                      {label}
-                    </span>
-
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100">
-                      <div
-                        className="h-full rounded-full bg-[#171717]"
-                        style={{ width: percentage }}
-                      />
-                    </div>
-
-                    <span className="w-9 text-right text-neutral-500">
-                      {percentage}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                className="mt-7 w-full rounded-xl border border-neutral-900 py-3 text-xs font-bold uppercase tracking-wider transition hover:bg-neutral-900 hover:text-white"
-              >
-                Write A Review
-              </button>
-            </div>
-
-            {/* Reviews */}
-            <div className="lg:col-span-8">
-              <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <h3 className="text-xl font-bold">What Customers Say</h3>
-
-                <span className="text-xs font-bold uppercase tracking-wide text-[#d1432d]">
-                  Most Helpful
-                </span>
-              </div>
-
-              <div className="space-y-4">
-                <article className="rounded-2xl border border-neutral-200 bg-[#fafafa] p-5">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <div className="text-xs text-yellow-500">
-                        ★★★★★
-                      </div>
-
-                      <h4 className="mt-1 text-sm font-bold">
-                        “Really fast and surprisingly strong”
-                      </h4>
-                    </div>
-
-                    <span className="text-[11px] text-neutral-400">
-                      Verified Buyer • 2 weeks ago
-                    </span>
-                  </div>
-
-                  <p className="mt-3 text-xs leading-6 text-neutral-600">
-                    The car is much faster than I expected. It works well on
-                    the floor and outside on rough ground. My son has been
-                    playing with it every day.
+                <div className="relative mt-6">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#F5A623]">
+                    Dpack Protective Packaging
                   </p>
 
-                  <div className="mt-3 text-[11px] text-neutral-400">
-                    Rahul • Delhi
-                  </div>
-                </article>
+                  <h3 className="mt-2 text-2xl font-bold leading-tight text-white">
+                    Protect products from packing to delivery.
+                  </h3>
 
-                <article className="rounded-2xl border border-neutral-200 bg-[#fafafa] p-5">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <div className="text-xs text-yellow-500">
-                        ★★★★★
-                      </div>
-
-                      <h4 className="mt-1 text-sm font-bold">
-                        “Great remote control and battery”
-                      </h4>
-                    </div>
-
-                    <span className="text-[11px] text-neutral-400">
-                      Verified Buyer • 1 month ago
-                    </span>
+                  <div className="mt-5 flex items-center gap-2 text-sm text-white/65">
+                    <Check size={16} className="text-[#F5A623]" />
+                    Reliable cushioning
                   </div>
 
-                  <p className="mt-3 text-xs leading-6 text-neutral-600">
-                    Controls are easy to understand and the steering feels
-                    very responsive. Battery life is also good for regular
-                    play sessions.
-                  </p>
-
-                  <div className="mt-3 text-[11px] text-neutral-400">
-                    Amit • Gurugram
+                  <div className="mt-2 flex items-center gap-2 text-sm text-white/65">
+                    <Check size={16} className="text-[#F5A623]" />
+                    Lightweight structure
                   </div>
-                </article>
+
+                  <div className="mt-2 flex items-center gap-2 text-sm text-white/65">
+                    <Check size={16} className="text-[#F5A623]" />
+                    Efficient storage
+                  </div>
+                </div>
               </div>
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
+
+      {/* =====================================================
+          HIGHLIGHT BANNER
+      ===================================================== */}
+
+      <section className="relative z-10 overflow-hidden bg-[#f7f7f5] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+        <Reveal>
+          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[34px] bg-[#0B1F3A] px-6 py-10 shadow-[0_30px_80px_rgba(11,31,58,0.15)] sm:px-10 sm:py-12 lg:px-14">
+
+            <motion.div
+              animate={{
+                rotate: [0, 360],
+              }}
+              transition={{
+                duration: 30,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="absolute -right-20 -top-40 h-[450px] w-[450px] rounded-full border border-white/5"
+            />
+
+            <motion.div
+              animate={{
+                y: [0, -12, 0],
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute bottom-[-100px] left-[20%] h-[250px] w-[250px] rounded-full bg-[#F5A623]/10 blur-3xl"
+            />
+
+            <div className="relative grid grid-cols-1 items-center gap-10 lg:grid-cols-[1fr_330px]">
+
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F5A623]">
+                  Dpack Packaging Solutions
+                </p>
+
+                <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-white sm:text-4xl">
+                  Better protection. Less space. Smarter packaging.
+                </h2>
+
+                <p className="mt-5 max-w-2xl text-sm leading-7 text-white/60 sm:text-base">
+                  Designed for modern shipping and storage requirements, Dpack
+                  protective packaging helps businesses improve product
+                  protection while keeping packaging lightweight and efficient.
+                </p>
+
+                <div className="mt-7 flex flex-wrap gap-3">
+                  {[
+                    "IMPACT PROTECTION",
+                    "LIGHTWEIGHT",
+                    "SPACE EFFICIENT",
+                  ].map((item) => (
+                    <motion.div
+                      key={item}
+                      whileHover={{
+                        y: -3,
+                      }}
+                      className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2.5"
+                    >
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#F5A623] text-white">
+                        <Check size={11} />
+                      </span>
+
+                      <span className="text-[10px] font-bold tracking-wider text-white/80">
+                        {item}
+                      </span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              <motion.div
+                animate={{
+                  y: [0, -8, 0],
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="relative mx-auto w-full max-w-[310px]"
+              >
+                <div className="absolute inset-5 rounded-full bg-[#F5A623]/20 blur-3xl" />
+
+                <div className="relative overflow-hidden rounded-full border-[10px] border-white/5 bg-white/5 p-4">
+                  <img
+                    src="/Air column bag (2).webp"
+                    alt="Dpack Air Column Bag"
+                    className="aspect-square w-full rounded-full bg-white object-contain p-8"
+                  />
+                </div>
+
+                <div className="absolute -bottom-3 -left-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F5A623] text-white shadow-xl">
+                  <ShieldCheck size={25} />
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* =====================================================
+          RELATED PRODUCTS
+      ===================================================== */}
+
+      <section className="relative z-10 bg-white">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+
+          <Reveal className="text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F5A623]">
+              Explore More
+            </p>
+
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#0B1F3A] sm:text-4xl">
+              Related Packaging Products
+            </h2>
+
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-neutral-500">
+              Explore more Dpack packaging solutions designed for protection,
+              transportation and efficient product handling.
+            </p>
+          </Reveal>
+
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{
+              once: true,
+              amount: 0.1,
+            }}
+            className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {relatedProducts.map((product) => (
+              <motion.div
+                key={product.name}
+                variants={fadeUp}
+                whileHover={{
+                  y: -8,
+                }}
+                className="group overflow-hidden rounded-[26px] border border-neutral-200 bg-white transition-all duration-500 hover:border-[#F5A623]/30 hover:shadow-[0_20px_50px_rgba(11,31,58,0.1)]"
+              >
+
+                {/* IMAGE */}
+
+                <div className="relative overflow-hidden bg-[#f7f7f5] p-5">
+
+                  <div className="absolute left-4 top-4 z-10 rounded-full bg-white px-3 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[#0B1F3A] shadow-sm">
+                    Dpack
+                  </div>
+
+                  <motion.img
+                    src={product.image}
+                    alt={product.name}
+                    whileHover={{
+                      scale: 1.08,
+                    }}
+                    transition={{
+                      duration: 0.6,
+                    }}
+                    className="h-56 w-full object-contain"
+                  />
+
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                      scale: 0.8,
+                    }}
+                    whileHover={{
+                      opacity: 1,
+                      scale: 1,
+                    }}
+                    className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#F5A623] text-white shadow-lg"
+                  >
+                    <ArrowUpRight size={17} />
+                  </motion.div>
+                </div>
+
+                {/* CONTENT */}
+
+                <div className="p-5">
+
+                  <div className="flex items-center justify-between">
+                    <Stars size={11} />
+
+                    <span className="text-[10px] font-bold text-neutral-400">
+                      4.8 / 5
+                    </span>
+                  </div>
+
+                  <h3 className="mt-4 text-lg font-bold text-[#0B1F3A] transition-colors group-hover:text-[#F5A623]">
+                    {product.name}
+                  </h3>
+
+                  <p className="mt-1 text-xs leading-5 text-neutral-500">
+                    {product.category}
+                  </p>
+
+                  {/* INQUIRY */}
+
+                  <button
+                    type="button"
+                    className="group/btn mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#F5A623] px-4 py-3.5 text-xs font-bold text-white transition-all hover:bg-[#0B1F3A]"
+                  >
+                   Add to Cart
+
+                    <ArrowRight
+                      size={14}
+                      className="transition-transform duration-300 group-hover/btn:translate-x-1"
+                    />
+                  </button>
+
+                  <button
+                    type="button"
+                    className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-[#0B1F3A]/10 px-4 py-3 text-xs font-bold text-[#0B1F3A] transition-all hover:border-[#F5A623] hover:text-[#F5A623]"
+                  >
+                    View Product
+                    <ArrowUpRight size={14} />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* =====================================================
+          REVIEWS
+      ===================================================== */}
+
+      <section className="relative z-10 bg-[#f7f7f5]">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+
+            {/* RATING */}
+
+            <Reveal
+              variants={fadeLeft}
+              className="lg:col-span-4"
+            >
+              <div className="sticky top-28 rounded-[30px] border border-neutral-200 bg-white p-7 shadow-[0_15px_50px_rgba(11,31,58,0.06)]">
+
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F5A623]">
+                  Customer Feedback
+                </p>
+
+                <h2 className="mt-3 text-3xl font-bold text-[#0B1F3A]">
+                  Customer Reviews
+                </h2>
+
+                <div className="mt-7 flex items-end gap-3">
+                  <span className="text-6xl font-bold tracking-tight text-[#0B1F3A]">
+                    4.8
+                  </span>
+
+                  <div className="pb-2">
+                    <Stars size={14} />
+
+                    <p className="mt-1 text-xs text-neutral-500">
+                      Based on customer feedback
+                    </p>
+                  </div>
+                </div>
+
+                {/* REVIEW BARS */}
+
+                <div className="mt-8 space-y-4">
+                  {[
+                    ["5", "92%"],
+                    ["4", "6%"],
+                    ["3", "2%"],
+                  ].map(([star, percentage]) => (
+                    <div
+                      key={star}
+                      className="flex items-center gap-3"
+                    >
+                      <span className="w-4 text-xs font-bold text-neutral-500">
+                        {star}
+                      </span>
+
+                      <Star
+                        size={12}
+                        className="fill-[#F5A623] text-[#F5A623]"
+                      />
+
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100">
+                        <motion.div
+                          initial={{
+                            width: 0,
+                          }}
+                          whileInView={{
+                            width: percentage,
+                          }}
+                          viewport={{
+                            once: true,
+                          }}
+                          transition={{
+                            duration: 1,
+                            ease: "easeOut",
+                          }}
+                          className="h-full rounded-full bg-[#F5A623]"
+                        />
+                      </div>
+
+                      <span className="w-10 text-right text-xs font-bold text-neutral-500">
+                        {percentage}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0B1F3A] px-5 py-4 text-sm font-bold text-white transition-all hover:bg-[#F5A623]"
+                >
+                  Share Your Experience
+                  <ArrowUpRight size={16} />
+                </button>
+              </div>
+            </Reveal>
+
+            {/* REVIEWS */}
+
+            <Reveal
+              variants={fadeRight}
+              className="lg:col-span-8"
+            >
+              <div className="space-y-5">
+
+                {reviews.map((review, index) => (
+                  <motion.div
+                    key={review.name}
+                    initial={{
+                      opacity: 0,
+                      y: 25,
+                    }}
+                    whileInView={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    viewport={{
+                      once: true,
+                      amount: 0.2,
+                    }}
+                    transition={{
+                      delay: index * 0.12,
+                      duration: 0.6,
+                    }}
+                    whileHover={{
+                      y: -4,
+                    }}
+                    className="relative overflow-hidden rounded-[28px] border border-neutral-200 bg-white p-6 shadow-[0_10px_35px_rgba(11,31,58,0.04)] sm:p-8"
+                  >
+
+                    <div className="absolute right-6 top-6 text-[#F5A623]/10">
+                      <Quote size={50} />
+                    </div>
+
+                    <div className="relative">
+                      <Stars size={14} />
+
+                      <h3 className="mt-5 text-xl font-bold text-[#0B1F3A]">
+                        “{review.review}”
+                      </h3>
+
+                      <p className="mt-3 max-w-2xl text-sm leading-7 text-neutral-500">
+                        Dpack protective packaging offers a practical solution
+                        for businesses looking for lightweight and reliable
+                        product protection during transportation.
+                      </p>
+
+                      <div className="mt-6 flex items-center gap-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0B1F3A] text-sm font-bold text-white">
+                          {review.name.charAt(0)}
+                        </div>
+
+                        <div>
+                          <p className="text-sm font-bold text-[#0B1F3A]">
+                            {review.name}
+                          </p>
+
+                          <p className="mt-0.5 text-xs text-neutral-400">
+                            {review.role}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+
+                {/* REVIEW CTA */}
+
+                <motion.div
+                  whileHover={{
+                    y: -4,
+                  }}
+                  className="rounded-[28px] border border-dashed border-[#F5A623]/30 bg-[#F5A623]/5 p-7"
+                >
+                  <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+
+                    <div>
+                      <p className="text-sm font-bold text-[#0B1F3A]">
+                        Have you used this product?
+                      </p>
+
+                      <p className="mt-1 text-xs leading-5 text-neutral-500">
+                        Share your experience with the Dpack team.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="flex items-center justify-center gap-2 rounded-xl bg-[#F5A623] px-5 py-3 text-xs font-bold text-white transition-all hover:bg-[#0B1F3A]"
+                    >
+                      Write a Review
+                      <ArrowUpRight size={14} />
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================
+          FINAL INQUIRY CTA
+      ===================================================== */}
+
+      <section className="relative z-10 overflow-hidden bg-white px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+        <Reveal>
+          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[34px] bg-[#F5A623] px-6 py-10 sm:px-10 lg:px-14 lg:py-12">
+
+            <motion.div
+              animate={{
+                scale: [1, 1.08, 1],
+              }}
+              transition={{
+                duration: 7,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute -right-24 -top-32 h-80 w-80 rounded-full bg-white/10 blur-3xl"
+            />
+
+            <div className="relative flex flex-col justify-between gap-8 lg:flex-row lg:items-center">
+
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-white/65">
+                  Dpack Packaging Solutions
+                </p>
+
+                <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-white sm:text-4xl">
+                  Need more information about this product?
+                </h2>
+
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70">
+                  Send your product requirements and our team will help you
+                  with suitable size, quantity and packaging details.
+                </p>
+              </div>
+
+              <motion.button
+                type="button"
+                whileHover={{
+                  scale: 1.03,
+                  y: -3,
+                }}
+                whileTap={{
+                  scale: 0.97,
+                }}
+                className="group flex shrink-0 items-center justify-center gap-3 rounded-2xl bg-white px-7 py-4 text-sm font-bold text-[#0B1F3A] shadow-xl"
+              >
+                Shop Now 
+
+                <motion.span
+                  animate={{
+                    x: [0, 5, 0],
+                  }}
+                  transition={{
+                    duration: 1.4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <ArrowRight size={18} />
+                </motion.span>
+              </motion.button>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* =====================================================
+          IMAGE LIGHTBOX
+      ===================================================== */}
+
+      <AnimatePresence>
+        {zoomOpen && (
+          <motion.div
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+            }}
+            exit={{
+              opacity: 0,
+            }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0B1F3A]/90 p-5 backdrop-blur-md"
+            onClick={() => setZoomOpen(false)}
+          >
+            <motion.div
+              initial={{
+                opacity: 0,
+                scale: 0.9,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.9,
+              }}
+              transition={{
+                duration: 0.35,
+              }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative flex max-h-[90vh] w-full max-w-5xl items-center justify-center overflow-hidden rounded-[30px] bg-white p-6 sm:p-10"
+            >
+              <button
+                type="button"
+                onClick={() => setZoomOpen(false)}
+                className="absolute right-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-[#0B1F3A] text-white transition-colors hover:bg-[#F5A623]"
+              >
+                <span className="text-xl leading-none">
+                  ×
+                </span>
+              </button>
+
+              <img
+                src={productImages[selectedImage]}
+                alt="Air Column Bag for Electronics"
+                className="max-h-[78vh] w-full object-contain"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </main>
   );
 }
