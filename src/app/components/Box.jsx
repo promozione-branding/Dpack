@@ -1,1179 +1,407 @@
+
 "use client";
 
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Sparkles,
-  ShieldCheck,
-} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 
-/* =========================================================
-   DPACK BANNER DATA
-   EXISTING LOCAL IMAGES — NO EXTERNAL IMAGE LINKS
-========================================================= */
+const WORD = "DPACK";
 
-const banners = {
-  main: {
-    tag: "FRAGILE PROTECTION",
-    title: "Air Column Bags",
-    highlight: "360° Protection",
+const products = [
+  {
+    name: "Air Column Bag",
+    src: "/Air column bag (2).webp",
+    category: "AIR CUSHION PACKAGING",
     description:
-      "Advanced inflatable cushioning designed to protect fragile products from impact during storage and transportation.",
-    image: "/Air column bag (2).webp",
-    href: "/",
+      "Flexible air-column protection designed to cushion delicate products during shipping and handling.",
   },
-
-  dunnage: {
-    tag: "CARGO PROTECTION",
-    title: "Dunnage Air Bags",
+  {
+    name: "Dunnage Air Bag",
+    src: "/Dunnage.webp",
+    category: "CARGO PROTECTION",
     description:
-      "Keep your cargo stable, secure and protected from movement during transportation.",
-    image: "/Dannage.webp",
-    href: "/products/dunnage-air-bags",
+      "Reliable void-filling protection designed to help stabilize cargo during transportation.",
   },
-
-  airRoll: {
-    tag: "SMART PACKAGING",
-    title: "Air Column Roll",
+  {
+    name: "Air Column Roll",
+    src: "/Air Column Roll (2).webp",
+    category: "FLEXIBLE PACKAGING",
     description:
-      "Flexible inflatable cushioning for safe and efficient protection of packaged products.",
-    image: "/Air Column Roll (2).webp",
-    href: "/products/air-column-roll",
+      "Versatile air-column packaging material for creating protective cushioning around products.",
   },
-
-  packaging: {
-    tag: "PROTECTIVE PACKAGING",
-    title: "Packaging Air Bags",
+  {
+    name: "Packaging Air Bag",
+    src: "/packing bag.webp",
+    category: "PRODUCT PROTECTION",
     description:
-      "Lightweight inflatable packaging solutions for fragile products and safer shipping.",
-    image: "/packing bag.webp",
-    href: "/products/packaging-air-bag",
+      "Practical protective packaging solutions for safer handling, storage and delivery.",
   },
-
-  gapFiller: {
-    tag: "VOID FILL SOLUTION",
-    title: "Gap Filler",
+  {
+    name: "Gap Filler",
+    src: "/Gap filler (3).webp",
+    category: "SMART PACKAGING",
     description:
-      "Fill empty spaces and prevent product movement during transportation.",
-    image: "/Gap filler (3).webp",
-    href: "/products/gap-filler",
+      "Efficient void-filling solutions designed to minimize movement inside shipping cartons.",
   },
+];
+
+const letterVariants = {
+  hidden: {
+    opacity: 0,
+    y: 100,
+    rotateX: -90,
+  },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    rotateX: 0,
+    transition: {
+      delay: 0.25 + i * 0.12,
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  }),
 };
 
-/* =========================================================
-   FLOATING DOTS
-========================================================= */
-
-function FloatingDots() {
-  return (
-    <>
-      <span className="absolute left-[8%] top-[18%] h-1 w-1 rounded-full bg-[#D95026]/40" />
-      <span className="absolute left-[18%] bottom-[20%] h-1.5 w-1.5 rounded-full bg-[#17384D]/20" />
-      <span className="absolute right-[18%] top-[15%] h-1 w-1 rounded-full bg-[#D95026]/35" />
-      <span className="absolute right-[8%] bottom-[18%] h-1.5 w-1.5 rounded-full bg-[#17384D]/15" />
-    </>
-  );
-}
-
-/* =========================================================
-   MAIN LARGE BANNER
-========================================================= */
-
-function MainBanner({ item }) {
-  return (
-    <Link href={item.href} className="block h-full">
-      <motion.div
-        whileHover={{ y: -4 }}
-        transition={{
-          duration: 0.35,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-        className="
-          group
-          relative
-          h-full
-          min-h-[430px]
-          overflow-hidden
-          rounded-[22px]
-          border
-          border-[#17384D]/8
-          bg-[#DDF4F8]
-          shadow-[0_18px_60px_rgba(18,59,93,0.08)]
-          sm:min-h-[500px]
-          lg:min-h-[590px]
-        "
-      >
-        {/* BACKGROUND */}
-        <div className="absolute inset-0 bg-[#DDF4F8]" />
-
-        <div
-          className="
-            absolute
-            inset-0
-            bg-[radial-gradient(circle_at_78%_22%,rgba(255,255,255,0.98),transparent_28%),radial-gradient(circle_at_5%_100%,rgba(217,80,38,0.08),transparent_35%),linear-gradient(145deg,#DDF4F8,#C8E9EF)]
-          "
-        />
-
-        {/* Decorative large circle */}
-        <div
-          className="
-            absolute
-            -right-24
-            -top-24
-            h-72
-            w-72
-            rounded-full
-            border
-            border-white/60
-            sm:h-96
-            sm:w-96
-          "
-        />
-
-        <div
-          className="
-            absolute
-            -right-12
-            -top-12
-            h-48
-            w-48
-            rounded-full
-            border
-            border-[#D95026]/10
-            sm:h-64
-            sm:w-64
-          "
-        />
-
-        {/* Orange glow */}
-        <div
-          className="
-            absolute
-            bottom-[-140px]
-            left-[-100px]
-            h-[360px]
-            w-[360px]
-            rounded-full
-            bg-[#D95026]/10
-            blur-[90px]
-          "
-        />
-
-        <FloatingDots />
-
-        {/* TOP LABEL */}
-        <div
-          className="
-            absolute
-            left-6
-            top-6
-            z-30
-            sm:left-8
-            sm:top-8
-            lg:left-10
-            lg:top-10
-          "
-        >
-          <div
-            className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-full
-              border
-              border-[#17384D]/8
-              bg-white/55
-              px-3
-              py-2
-              backdrop-blur-md
-            "
-          >
-            <span className="h-[6px] w-[6px] rounded-full bg-[#D95026]" />
-
-            <span
-              className="
-                text-[8px]
-                font-black
-                uppercase
-                tracking-[0.2em]
-                text-[#17384D]
-              "
-            >
-              {item.tag}
-            </span>
-          </div>
-        </div>
-
-        {/* TEXT */}
-        <div
-          className="
-            absolute
-            left-6
-            top-[82px]
-            z-30
-            max-w-[390px]
-            sm:left-8
-            sm:top-[96px]
-            lg:left-10
-            lg:top-[105px]
-          "
-        >
-          <div className="mb-3 flex items-center gap-2">
-            <Sparkles
-              size={13}
-              className="text-[#D95026]"
-            />
-
-            <span
-              className="
-                text-[8px]
-                font-bold
-                uppercase
-                tracking-[0.18em]
-                text-[#D95026]
-              "
-            >
-              Premium Packaging
-            </span>
-          </div>
-
-          <h1
-            className="
-              max-w-[360px]
-              text-[43px]
-              font-black
-              uppercase
-              leading-[0.9]
-              tracking-[-0.065em]
-              text-[#123B5D]
-              sm:text-[54px]
-              lg:text-[64px]
-            "
-          >
-            {item.title}
-          </h1>
-
-          <p
-            className="
-              mt-5
-              max-w-[330px]
-              text-[11px]
-              font-medium
-              leading-6
-              text-[#46616D]
-              sm:text-[12px]
-            "
-          >
-            {item.description}
-          </p>
-        </div>
-
-        {/* PRODUCT IMAGE */}
-        <motion.div
-          className="
-            absolute
-            bottom-[-18px]
-            right-[-12px]
-            z-10
-            h-[57%]
-            w-[79%]
-            sm:bottom-[-15px]
-            sm:right-[-5px]
-            sm:h-[64%]
-            sm:w-[72%]
-            lg:right-[0px]
-            lg:h-[67%]
-            lg:w-[69%]
-          "
-          whileHover={{
-            scale: 1.055,
-            x: -7,
-            y: -6,
-          }}
-          transition={{
-            duration: 0.55,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-        >
-          {/* soft image backdrop */}
-          <div
-            className="
-              absolute
-              bottom-[8%]
-              right-[7%]
-              h-[55%]
-              w-[65%]
-              rounded-full
-              bg-white/45
-              blur-3xl
-            "
-          />
-
-          <img
-            src={item.image}
-            alt={item.title}
-            className="
-              relative
-              h-full
-              w-full
-              object-contain
-              object-right-bottom
-              drop-shadow-[0_30px_35px_rgba(18,59,93,0.20)]
-            "
-          />
-        </motion.div>
-
-        {/* BOTTOM INFO */}
-        <div
-          className="
-            absolute
-            bottom-7
-            left-6
-            z-30
-            sm:bottom-9
-            sm:left-8
-            lg:bottom-10
-            lg:left-10
-          "
-        >
-          <div className="mb-3 flex items-center gap-2">
-            <ShieldCheck
-              size={14}
-              className="text-[#D95026]"
-            />
-
-            <span
-              className="
-                text-[8px]
-                font-black
-                uppercase
-                tracking-[0.15em]
-                text-[#17384D]
-              "
-            >
-              {item.highlight}
-            </span>
-          </div>
-
-          <span
-            className="
-              inline-flex
-              items-center
-              gap-3
-              bg-[#17384D]
-              px-5
-              py-3.5
-              text-[8px]
-              font-black
-              uppercase
-              tracking-[0.1em]
-              text-white
-              transition-all
-              duration-300
-              group-hover:bg-[#D95026]
-            "
-          >
-            Explore Product
-
-            <ArrowUpRight
-              size={14}
-              className="
-                transition-transform
-                duration-300
-                group-hover:-translate-y-1
-                group-hover:translate-x-1
-              "
-            />
-          </span>
-        </div>
-
-        {/* NUMBER */}
-        <span
-          className="
-            absolute
-            bottom-8
-            right-7
-            z-20
-            text-[10px]
-            font-black
-            tracking-[0.2em]
-            text-[#123B5D]/20
-          "
-        >
-          01
-        </span>
-
-        {/* HOVER BORDER */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            rounded-[22px]
-            border
-            border-transparent
-            transition-all
-            duration-300
-            group-hover:border-[#D95026]/30
-          "
-        />
-      </motion.div>
-    </Link>
-  );
-}
-
-/* =========================================================
-   SMALL BANNER
-========================================================= */
-
-function SmallBanner({ item, number }) {
-  return (
-    <Link href={item.href} className="block h-full">
-      <motion.div
-        whileHover={{ y: -4 }}
-        transition={{
-          duration: 0.35,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-        className="
-          group
-          relative
-          h-full
-          min-h-[205px]
-          overflow-hidden
-          rounded-[22px]
-          border
-          border-[#17384D]/8
-          bg-[#EFF7F9]
-          shadow-[0_15px_45px_rgba(18,59,93,0.06)]
-          sm:min-h-[225px]
-        "
-      >
-        {/* Background */}
-        <div
-          className="
-            absolute
-            inset-0
-            bg-[radial-gradient(circle_at_78%_25%,rgba(255,255,255,0.98),transparent_30%),linear-gradient(145deg,#EFF7F9,#DDEEF1)]
-          "
-        />
-
-        {/* Decorative ring */}
-        <div
-          className="
-            absolute
-            -right-16
-            -top-16
-            h-40
-            w-40
-            rounded-full
-            border
-            border-[#D95026]/10
-          "
-        />
-
-        <div
-          className="
-            absolute
-            bottom-[-70px]
-            right-[-50px]
-            h-44
-            w-44
-            rounded-full
-            bg-[#D95026]/10
-            blur-3xl
-          "
-        />
-
-        {/* Content */}
-        <div
-          className="
-            relative
-            z-20
-            flex
-            h-full
-            flex-col
-            justify-between
-            p-5
-            sm:p-6
-          "
-        >
-          <div className="max-w-[52%]">
-            <span
-              className="
-                inline-flex
-                rounded-full
-                bg-[#D95026]/10
-                px-2.5
-                py-1.5
-                text-[7px]
-                font-black
-                uppercase
-                tracking-[0.17em]
-                text-[#D95026]
-              "
-            >
-              {item.tag}
-            </span>
-
-            <h2
-              className="
-                mt-3
-                text-[22px]
-                font-black
-                uppercase
-                leading-[0.92]
-                tracking-[-0.055em]
-                text-[#17384D]
-                sm:text-[25px]
-              "
-            >
-              {item.title}
-            </h2>
-
-            <span
-              className="
-                mt-5
-                inline-flex
-                items-center
-                gap-2
-                text-[8px]
-                font-black
-                uppercase
-                tracking-[0.1em]
-                text-[#17384D]
-              "
-            >
-              View Product
-
-              <ArrowRight
-                size={12}
-                className="
-                  transition-transform
-                  duration-300
-                  group-hover:translate-x-1
-                "
-              />
-            </span>
-          </div>
-        </div>
-
-        {/* Image */}
-        <motion.div
-          className="
-            absolute
-            bottom-[-10px]
-            right-[-6px]
-            z-10
-            h-[86%]
-            w-[61%]
-            sm:h-[90%]
-            sm:w-[62%]
-          "
-          whileHover={{
-            scale: 1.09,
-            x: -5,
-            y: -5,
-          }}
-          transition={{
-            duration: 0.45,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-        >
-          <div
-            className="
-              absolute
-              bottom-[12%]
-              right-[8%]
-              h-[50%]
-              w-[65%]
-              rounded-full
-              bg-white/60
-              blur-2xl
-            "
-          />
-
-          <img
-            src={item.image}
-            alt={item.title}
-            className="
-              relative
-              h-full
-              w-full
-              object-contain
-              object-right-bottom
-              drop-shadow-[0_20px_25px_rgba(18,59,93,0.16)]
-            "
-          />
-        </motion.div>
-
-        {/* Number */}
-        <span
-          className="
-            absolute
-            bottom-5
-            left-5
-            z-20
-            text-[8px]
-            font-black
-            tracking-[0.15em]
-            text-[#123B5D]/20
-          "
-        >
-          {number}
-        </span>
-
-        {/* Border */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            rounded-[22px]
-            border
-            border-transparent
-            transition-all
-            duration-300
-            group-hover:border-[#D95026]/30
-          "
-        />
-      </motion.div>
-    </Link>
-  );
-}
-
-/* =========================================================
-   TALL RIGHT BANNER
-========================================================= */
-
-function TallBanner({ item }) {
-  return (
-    <Link href={item.href} className="block h-full">
-      <motion.div
-        whileHover={{ y: -4 }}
-        transition={{
-          duration: 0.35,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-        className="
-          group
-          relative
-          h-full
-          min-h-[430px]
-          overflow-hidden
-          rounded-[22px]
-          border
-          border-[#17384D]/8
-          bg-[#FFF0EB]
-          shadow-[0_18px_55px_rgba(18,59,93,0.07)]
-          sm:min-h-[500px]
-          lg:min-h-[590px]
-        "
-      >
-        {/* Background */}
-        <div
-          className="
-            absolute
-            inset-0
-            bg-[radial-gradient(circle_at_50%_25%,rgba(255,255,255,0.98),transparent_33%),linear-gradient(145deg,#FFF3EE,#F2D7CC)]
-          "
-        />
-
-        {/* Decorative circle */}
-        <div
-          className="
-            absolute
-            -right-20
-            -top-20
-            h-56
-            w-56
-            rounded-full
-            border
-            border-white/70
-          "
-        />
-
-        <div
-          className="
-            absolute
-            bottom-[-100px]
-            left-1/2
-            h-72
-            w-72
-            -translate-x-1/2
-            rounded-full
-            bg-[#D95026]/10
-            blur-3xl
-          "
-        />
-
-        <FloatingDots />
-
-        {/* Content */}
-        <div
-          className="
-            relative
-            z-20
-            h-full
-            p-6
-            sm:p-7
-            lg:p-8
-          "
-        >
-          <span
-            className="
-              inline-flex
-              rounded-full
-              bg-white/60
-              px-3
-              py-2
-              text-[7px]
-              font-black
-              uppercase
-              tracking-[0.18em]
-              text-[#D95026]
-              backdrop-blur-md
-            "
-          >
-            {item.tag}
-          </span>
-
-          <h2
-            className="
-              mt-4
-              max-w-[245px]
-              text-[31px]
-              font-black
-              uppercase
-              leading-[0.9]
-              tracking-[-0.06em]
-              text-[#17384D]
-              sm:text-[35px]
-              lg:text-[39px]
-            "
-          >
-            {item.title}
-          </h2>
-
-          <p
-            className="
-              mt-4
-              max-w-[225px]
-              text-[9px]
-              leading-5
-              text-[#62696D]
-              sm:text-[10px]
-            "
-          >
-            {item.description}
-          </p>
-
-          {/* Button */}
-          <span
-            className="
-              mt-6
-              inline-flex
-              items-center
-              gap-2
-              bg-[#17384D]
-              px-4
-              py-3.5
-              text-[8px]
-              font-black
-              uppercase
-              tracking-[0.1em]
-              text-white
-              transition-all
-              duration-300
-              group-hover:bg-[#D95026]
-            "
-          >
-            Shop Now
-
-            <ArrowUpRight
-              size={13}
-              className="
-                transition-transform
-                duration-300
-                group-hover:-translate-y-0.5
-                group-hover:translate-x-0.5
-              "
-            />
-          </span>
-
-          {/* Product Image */}
-          <motion.div
-            className="
-              absolute
-              bottom-[-18px]
-              left-[2%]
-              right-[2%]
-              z-10
-              h-[57%]
-            "
-            whileHover={{
-              scale: 1.07,
-              y: -6,
-            }}
-            transition={{
-              duration: 0.5,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-          >
-            <div
-              className="
-                absolute
-                bottom-[5%]
-                left-[15%]
-                h-[45%]
-                w-[70%]
-                rounded-full
-                bg-white/55
-                blur-3xl
-              "
-            />
-
-            <img
-              src={item.image}
-              alt={item.title}
-              className="
-                relative
-                h-full
-                w-full
-                object-contain
-                object-bottom
-                drop-shadow-[0_25px_30px_rgba(0,0,0,0.15)]
-              "
-            />
-          </motion.div>
-
-          {/* Bottom label */}
-          <div
-            className="
-              absolute
-              bottom-7
-              left-7
-              z-20
-              flex
-              items-center
-              gap-2
-              sm:bottom-8
-              sm:left-8
-            "
-          >
-            <span className="h-[5px] w-[5px] rounded-full bg-[#D95026]" />
-
-            <span
-              className="
-                text-[7px]
-                font-black
-                uppercase
-                tracking-[0.15em]
-                text-[#17384D]/65
-              "
-            >
-              Safe • Light • Reliable
-            </span>
-          </div>
-        </div>
-
-        {/* Border */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            rounded-[22px]
-            border
-            border-transparent
-            transition-all
-            duration-300
-            group-hover:border-[#D95026]/30
-          "
-        />
-      </motion.div>
-    </Link>
-  );
-}
-
-/* =========================================================
-   GAP FILLER BANNER
-========================================================= */
-
-function GapFillerBanner({ item }) {
-  return (
-    <Link href={item.href} className="group block">
-      <motion.div
-        whileHover={{ y: -3 }}
-        transition={{ duration: 0.35 }}
-        className="
-          relative
-          min-h-[125px]
-          overflow-hidden
-          rounded-[22px]
-          border
-          border-[#17384D]/8
-          bg-[#EEF7F4]
-          shadow-[0_15px_45px_rgba(18,59,93,0.05)]
-          sm:min-h-[145px]
-        "
-      >
-        {/* Background */}
-        <div
-          className="
-            absolute
-            inset-0
-            bg-[radial-gradient(circle_at_75%_50%,rgba(255,255,255,0.95),transparent_32%),linear-gradient(110deg,#EEF7F4,#D7EAE4)]
-          "
-        />
-
-        {/* Decorative ring */}
-        <div
-          className="
-            absolute
-            -left-16
-            -bottom-20
-            h-44
-            w-44
-            rounded-full
-            border
-            border-[#D95026]/10
-          "
-        />
-
-        <div
-          className="
-            absolute
-            right-[28%]
-            top-[-50px]
-            h-32
-            w-32
-            rounded-full
-            bg-white/50
-            blur-2xl
-          "
-        />
-
-        {/* Text */}
-        <div
-          className="
-            relative
-            z-20
-            flex
-            min-h-[125px]
-            items-center
-            px-6
-            py-5
-            sm:min-h-[145px]
-            sm:px-8
-          "
-        >
-          <div>
-            <span
-              className="
-                inline-flex
-                rounded-full
-                bg-[#D95026]/10
-                px-3
-                py-1.5
-                text-[7px]
-                font-black
-                uppercase
-                tracking-[0.18em]
-                text-[#D95026]
-              "
-            >
-              {item.tag}
-            </span>
-
-            <h3
-              className="
-                mt-2
-                text-[26px]
-                font-black
-                uppercase
-                leading-none
-                tracking-[-0.055em]
-                text-[#17384D]
-                sm:text-[30px]
-              "
-            >
-              {item.title}
-            </h3>
-
-            <p
-              className="
-                mt-2
-                hidden
-                max-w-[300px]
-                text-[9px]
-                leading-4
-                text-[#687878]
-                sm:block
-              "
-            >
-              {item.description}
-            </p>
-          </div>
-        </div>
-
-        {/* Image */}
-        <motion.div
-          className="
-            absolute
-            bottom-[-24px]
-            right-[4%]
-            z-10
-            h-[165px]
-            w-[300px]
-            sm:right-[12%]
-            sm:h-[185px]
-            sm:w-[350px]
-          "
-          whileHover={{
-            scale: 1.07,
-            x: -5,
-          }}
-          transition={{
-            duration: 0.45,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-        >
-          <img
-            src={item.image}
-            alt={item.title}
-            className="
-              h-full
-              w-full
-              object-contain
-              object-right-bottom
-              drop-shadow-[0_20px_25px_rgba(18,59,93,0.13)]
-            "
-          />
-        </motion.div>
-
-        {/* Button */}
-        <div
-          className="
-            absolute
-            right-6
-            top-1/2
-            z-20
-            hidden
-            -translate-y-1/2
-            sm:block
-            lg:right-8
-          "
-        >
-          <span
-            className="
-              inline-flex
-              items-center
-              gap-2
-              bg-[#17384D]
-              px-5
-              py-3.5
-              text-[8px]
-              font-black
-              uppercase
-              tracking-[0.1em]
-              text-white
-              transition-all
-              duration-300
-              group-hover:bg-[#D95026]
-            "
-          >
-            Explore
-
-            <ArrowRight
-              size={12}
-              className="transition-transform duration-300 group-hover:translate-x-1"
-            />
-          </span>
-        </div>
-
-        {/* Border */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            rounded-[22px]
-            border
-            border-transparent
-            transition-all
-            duration-300
-            group-hover:border-[#D95026]/30
-          "
-        />
-      </motion.div>
-    </Link>
-  );
-}
-
-/* =========================================================
-   MAIN COMPONENT
-========================================================= */
-
 export default function Main() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  const product = products[activeIndex];
+
+  const nextProduct = () => {
+    setActiveIndex((prev) => (prev + 1) % products.length);
+  };
+
+  const prevProduct = () => {
+    setActiveIndex(
+      (prev) => (prev - 1 + products.length) % products.length
+    );
+  };
+
+  useEffect(() => {
+    if (paused) return;
+
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % products.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [paused]);
+
   return (
     <section
-      className="
-        w-full
-        bg-[#FAFCFC]
-        px-4
-        py-6
-        sm:px-6
-        sm:py-8
-        lg:px-8
-        lg:py-10
-      "
+      className="relative isolate h-[100svh] min-h-[650px] w-full overflow-hidden bg-[#f3f3f0] text-[#151719]"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
     >
-      <div className="mx-auto max-w-[1500px]">
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 -z-10">
+        {/* Dark top panel */}
+        <div className="absolute inset-x-0 top-0 h-[43%] bg-[#101820]" />
 
-        {/* MAIN GRID */}
+        {/* Soft light glow */}
+        <div className="absolute right-[12%] top-[12%] h-[420px] w-[420px] rounded-full bg-[#b5c8d8]/10 blur-[120px]" />
+
+        {/* Light bottom panel */}
+        <div className="absolute inset-x-0 bottom-0 h-[61%] bg-gradient-to-b from-[#d9dcda] via-[#efefeb] to-[#f7f6f2]" />
+
+        {/* Technical grid */}
         <div
-          className="
-            grid
-            grid-cols-1
-            gap-4
-            lg:grid-cols-[1.35fr_0.92fr_0.82fr]
-          "
+          className="absolute inset-0 opacity-[0.055]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right,#7b8790 1px,transparent 1px),linear-gradient(to bottom,#7b8790 1px,transparent 1px)",
+            backgroundSize: "100px 100px",
+          }}
+        />
+
+        {/* Atmospheric glow */}
+        <div className="absolute bottom-[17%] left-[30%] h-[180px] w-[40%] rounded-full bg-white/70 blur-[90px]" />
+
+        {/* Ground shadow */}
+        <div className="absolute bottom-[13%] left-1/2 h-12 w-[48%] -translate-x-1/2 rounded-[100%] bg-black/20 blur-2xl sm:bottom-[10%]" />
+
+        {/* Orbit line */}
+        <div className="absolute left-[9%] top-[21%] h-[35%] w-[82%] rounded-[50%] border border-white/20" />
+      </div>
+
+      {/* HEADER LABEL */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="absolute left-5 top-6 z-40 flex items-center gap-3 sm:left-10 sm:top-8 lg:left-16"
+      >
+        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 sm:h-11 sm:w-11">
+          <span className="h-3 w-3 rounded-full bg-[#D95026]" />
+        </span>
+
+        <div>
+          <p className="text-sm font-bold tracking-[0.2em] text-white sm:text-base">
+            DPACK
+          </p>
+          <p className="text-[8px] tracking-[0.22em] text-white/50 sm:text-[9px]">
+            SMART PACKAGING SOLUTIONS
+          </p>
+        </div>
+      </motion.div>
+
+      {/* TOP RIGHT BUTTON */}
+      <motion.div
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+        className="absolute right-5 top-6 z-40 sm:right-10 sm:top-8 lg:right-16"
+      >
+        <Link
+          href="/contact"
+          className="group flex items-center gap-2 rounded-full border border-white/30 bg-white/10 py-1.5 pl-4 pr-1.5 text-[10px] font-medium text-white backdrop-blur-md transition-all hover:bg-white hover:text-black sm:gap-3 sm:py-2 sm:pl-5 sm:pr-2 sm:text-xs"
         >
-          {/* LEFT */}
-          <MainBanner item={banners.main} />
+          Let's Talk
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black transition-transform group-hover:rotate-45 sm:h-9 sm:w-9">
+            <ArrowUpRight size={17} />
+          </span>
+        </Link>
+      </motion.div>
 
-          {/* CENTER */}
-          <div
-            className="
-              grid
-              grid-cols-1
-              gap-4
-              sm:grid-cols-2
-              lg:grid-cols-1
-            "
+      {/* MAIN HEADING: LETTER-BY-LETTER ANIMATION */}
+      <div className="absolute left-0 right-0 top-[18%] z-10 flex justify-center overflow-hidden px-2 sm:top-[13%]">
+        <motion.h1
+          initial="hidden"
+          animate="visible"
+          className="flex select-none whitespace-nowrap font-black leading-none tracking-[-0.075em] text-[#f2f2ef]"
+          style={{
+            fontSize: "clamp(100px, 22vw, 300px)",
+          }}
+          aria-label="DPACK"
+        >
+          {WORD.split("").map((letter, i) => (
+            <motion.span
+              key={i}
+              custom={i}
+              variants={letterVariants}
+              className="inline-block"
+              style={{
+                textShadow: "0 10px 35px rgba(0,0,0,0.16)",
+              }}
+            >
+              {letter}
+            </motion.span>
+          ))}
+        </motion.h1>
+      </div>
+
+      {/* PRODUCT SLIDE */}
+      <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={product.src}
+            initial={{
+              opacity: 0,
+              scale: 0.55,
+              y: 120,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.8,
+              y: -40,
+            }}
+            transition={{
+              delay: 0.15,
+              duration: 1.1,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="absolute inset-0 flex items-center justify-center"
           >
-            <SmallBanner
-              item={banners.dunnage}
-              number="02"
+            {/* Product shadow */}
+            <motion.div
+              animate={{
+                scale: [1, 0.9, 1],
+                opacity: [0.22, 0.13, 0.22],
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute bottom-[12%] left-1/2 h-10 w-[55%] -translate-x-1/2 rounded-[100%] bg-black/40 blur-2xl sm:bottom-[9%] sm:w-[38%]"
             />
 
-            <SmallBanner
-              item={banners.airRoll}
-              number="03"
-            />
-          </div>
+            {/* Floating product */}
+            <motion.div
+              animate={{
+                y: [0, -12, 0],
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="relative mt-[7%] h-[52vh] max-h-[540px] min-h-[280px] w-[90vw] max-w-[820px] sm:mt-[6%] sm:h-[65vh]"
+            >
+              <Image
+                src={product.src}
+                alt={product.name}
+                fill
+                priority
+                sizes="(max-width: 768px) 90vw, 820px"
+                className="object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.22)]"
+              />
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-          {/* RIGHT */}
-          <TallBanner item={banners.packaging} />
+      {/* LEFT CONTENT */}
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1.3, duration: 0.9 }}
+        className="absolute bottom-[9%] left-5 z-30 max-w-[230px] sm:bottom-[10%] sm:left-10 sm:max-w-[310px] lg:left-16 lg:max-w-[370px]"
+      >
+        <div className="mb-3 flex items-center gap-2 sm:mb-4">
+          <span className="h-[2px] w-7 bg-[#D95026] sm:w-8" />
+          <span className="text-[8px] font-semibold uppercase tracking-[0.22em] text-[#777] sm:text-[10px]">
+            Engineered Protection
+          </span>
         </div>
 
-        {/* GAP FILLER */}
-        <div className="mt-4">
-          <GapFillerBanner item={banners.gapFiller} />
+        <h2 className="text-[27px] font-semibold leading-[1.08] tracking-tight sm:text-4xl lg:text-5xl">
+          Safer Products.
+          <br />
+          <span className="text-[#D95026]">Smarter Shipping.</span>
+        </h2>
+
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={product.name}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.35 }}
+            className="mt-3 max-w-[320px] text-[10px] leading-5 text-[#686b6d] sm:mt-4 sm:text-sm sm:leading-6"
+          >
+            {product.description}
+          </motion.p>
+        </AnimatePresence>
+
+        <Link
+          href="/products"
+          className="group mt-4 inline-flex items-center gap-3 border-b border-[#111]/30 pb-2 text-[9px] font-bold uppercase tracking-[0.15em] transition-colors hover:border-[#D95026] sm:mt-6 sm:gap-4 sm:text-xs"
+        >
+          Explore Collection
+          <ArrowUpRight
+            size={17}
+            className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+          />
+        </Link>
+      </motion.div>
+
+      {/* RIGHT PRODUCT DETAILS */}
+      <motion.div
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1.5, duration: 0.8 }}
+        className="absolute bottom-[10%] right-5 z-40 max-w-[145px] text-right sm:bottom-[11%] sm:right-10 sm:max-w-[220px] lg:right-16"
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={product.name}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.35 }}
+          >
+            <div className="mb-2 flex items-center justify-end gap-2 sm:mb-3">
+              <Sparkles size={14} className="text-[#D95026]" />
+
+              <span className="text-[7px] font-semibold uppercase tracking-[0.17em] text-[#777] sm:text-[10px] sm:tracking-[0.2em]">
+                Featured Product
+              </span>
+            </div>
+
+            <p className="text-[8px] uppercase tracking-[0.15em] text-[#888] sm:text-[10px]">
+              {product.category}
+            </p>
+
+            <h3 className="mt-2 text-lg font-bold leading-tight tracking-tight sm:text-3xl">
+              {product.name}
+            </h3>
+
+            <div className="mt-3 flex items-center justify-end gap-2 sm:mt-4">
+              <button
+                type="button"
+                onClick={prevProduct}
+                aria-label="Previous product"
+                className="pointer-events-auto flex h-8 w-8 items-center justify-center rounded-full border border-black/20 transition hover:bg-black hover:text-white sm:h-9 sm:w-9"
+              >
+                <ChevronLeft size={17} />
+              </button>
+
+              <span className="min-w-[43px] text-center text-[10px] tracking-widest text-[#777]">
+                {String(activeIndex + 1).padStart(2, "0")} /{" "}
+                {String(products.length).padStart(2, "0")}
+              </span>
+
+              <button
+                type="button"
+                onClick={nextProduct}
+                aria-label="Next product"
+                className="pointer-events-auto flex h-8 w-8 items-center justify-center rounded-full border border-black/20 transition hover:bg-black hover:text-white sm:h-9 sm:w-9"
+              >
+                <ChevronRight size={17} />
+              </button>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* PRODUCT THUMBNAILS */}
+        <div className="pointer-events-auto mt-3 flex justify-end gap-1.5 sm:mt-5 sm:gap-2">
+          {products.map((item, index) => (
+            <button
+              key={item.src}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              aria-label={`Show ${item.name}`}
+              aria-pressed={activeIndex === index}
+              className={`relative h-8 w-8 overflow-hidden border bg-white/70 transition-all sm:h-10 sm:w-10 ${
+                activeIndex === index
+                  ? "border-[#D95026] ring-1 ring-[#D95026]/30"
+                  : "border-black/10 opacity-65 hover:opacity-100"
+              }`}
+            >
+              <Image
+                src={item.src}
+                alt={item.name}
+                fill
+                sizes="40px"
+                className="object-contain p-0.5"
+              />
+            </button>
+          ))}
         </div>
+      </motion.div>
+
+      {/* SUBTLE SLIDE PROGRESS */}
+      <div className="absolute bottom-0 left-0 z-50 h-[3px] w-full bg-black/5">
+        <motion.div
+          key={activeIndex}
+          initial={{ width: "0%" }}
+          animate={{ width: "100%" }}
+          transition={{
+            duration: paused ? 0 : 5,
+            ease: "linear",
+          }}
+          className="h-full bg-[#D95026]"
+        />
       </div>
     </section>
   );

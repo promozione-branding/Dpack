@@ -632,15 +632,7 @@ export default function TrendingProducts() {
     products.length - itemsPerView
   );
 
-  /* =========================================================
-     FIX CURRENT AFTER RESIZE
-  ========================================================= */
-
-  useEffect(() => {
-    if (current > maxSlide) {
-      setCurrent(maxSlide);
-    }
-  }, [maxSlide, current]);
+  const safeCurrent = Math.min(current, maxSlide);
 
   /* =========================================================
      AUTO SLIDE
@@ -677,6 +669,8 @@ export default function TrendingProducts() {
       prev >= maxSlide ? 0 : prev + 1
     );
   };
+
+  const activeDot = safeCurrent;
 
   const dots = Array.from(
     { length: maxSlide + 1 },
@@ -1058,7 +1052,7 @@ export default function TrendingProducts() {
               "
               style={{
                 transform: `translateX(-${
-                  current * (100 / itemsPerView)
+                  safeCurrent * (100 / itemsPerView)
                 }%)`,
               }}
             >
@@ -1107,7 +1101,7 @@ export default function TrendingProducts() {
                   "h-[5px]",
                   "transition-all",
                   "duration-500",
-                  current === dot
+                  activeDot === dot
                     ? "w-8 bg-[#123B5D]"
                     : "w-2 bg-[#C9D1D6] hover:bg-[#F5A623]",
                 ].join(" ")}

@@ -308,7 +308,7 @@ export default function Categories() {
                 {categories.map((category, index) => (
 
                   <motion.div
-                   
+                    key={category.href}
                     custom={index}
                     variants={cardVariants}
                     initial="hidden"

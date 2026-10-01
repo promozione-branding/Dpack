@@ -47,7 +47,7 @@ export default function CategoryMarquee() {
         " />
 
         {/* MOVING TRACK */}
-        <div className="flex w-max animate-marquee">
+        <div className="dpack-marquee-track flex w-max">
 
           {/* FIRST SET */}
           <div className="flex shrink-0 items-center">
@@ -163,30 +163,6 @@ export default function CategoryMarquee() {
         </div>
       </div>
 
-      {/* =====================================================
-          MARQUEE ANIMATION
-      ===================================================== */}
-
-      <style jsx>{`
-        @keyframes marquee {
-          from {
-            transform: translateX(0);
-          }
-
-          to {
-            transform: translateX(-50%);
-          }
-        }
-
-        .animate-marquee {
-          animation: marquee 35s linear infinite;
-          will-change: transform;
-        }
-
-        .animate-marquee:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
     </section>
   );
 }

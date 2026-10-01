@@ -37,6 +37,15 @@ p {
   font-family: var(--font-body);
 }
 
+.dpack-marquee-track {
+  animation: dpackMarquee 35s linear infinite;
+  will-change: transform;
+}
+
+.dpack-marquee-track:hover {
+  animation-play-state: paused;
+}
+
 @keyframes dpackMarquee {
   from {
     transform: translate3d(0, 0, 0);
