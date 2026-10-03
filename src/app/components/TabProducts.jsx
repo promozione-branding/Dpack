@@ -618,20 +618,23 @@ export default function CategoryProducts() {
 
   const active = categories[activeCategory];
 
-  /* =======================================================
-     FILTER ACTIVE PRODUCTS
-  ======================================================= */
+/* =======================================================
+   FILTER ACTIVE PRODUCTS — MAXIMUM 4
+======================================================= */
 
-  const activeProducts = useMemo(() => {
-    if (!active) return [];
+const activeProducts = useMemo(() => {
+  if (!active) return [];
 
-    return products.filter((product) => {
+  return products
+    .filter((product) => {
       return (
-        normalizeCategory(product.category) ===
-        active.id
+        normalizeCategory(product.category) === active.id
       );
-    });
-  }, [products, active]);
+    })
+    .slice(0, 4);
+}, [products, active]);
+
+
 
   /* =======================================================
      ACTIVE CATEGORY IMAGE
@@ -671,13 +674,13 @@ export default function CategoryProducts() {
           <div
             className="
               grid
-              grid-cols-2
+              grid-cols-1
               gap-3
               sm:gap-4
               lg:grid-cols-4
             "
           >
-            {Array.from({ length: 8 }).map((_, index) => (
+            {Array.from({ length: 4 }).map((_, index) => (
               <ProductSkeleton key={index} />
             ))}
           </div>

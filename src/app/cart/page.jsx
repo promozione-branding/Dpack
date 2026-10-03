@@ -618,16 +618,17 @@ export default function CartPage() {
 
                   {/* CHECKOUT */}
 
-                  <button className="cart-shine mt-6 flex h-14 w-full items-center justify-center gap-3 bg-[#F5A623] text-sm font-black uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:-translate-y-1 hover:bg-[#ffb735] hover:shadow-xl">
+                 <Link
+  href="/checkout"
+  className="cart-shine mt-6 flex h-14 w-full items-center justify-center gap-3 bg-[#F5A623] text-sm font-black uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:-translate-y-1 hover:bg-[#ffb735] hover:shadow-xl"
+>
+  Proceed to Checkout
 
-                    Proceed to Checkout
-
-                    <ArrowRight
-                      size={18}
-                      className="transition-transform duration-300 group-hover:translate-x-1"
-                    />
-
-                  </button>
+  <ArrowRight
+    size={18}
+    className="transition-transform duration-300 group-hover:translate-x-1"
+  />
+</Link>
 
                   {/* PAYMENT NOTE */}
 
