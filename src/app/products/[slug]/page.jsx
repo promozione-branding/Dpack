@@ -1,1785 +1,1606 @@
 "use client";
 
-import React, { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+import Link from "next/link";
 import {
-  ArrowLeft,
-  ArrowRight,
-  ArrowUpRight,
-  Check,
-  Minus,
-  Package,
-  Plus,
-  Quote,
-  ShieldCheck,
-  Sparkles,
-  Star,
+  ShoppingCart,
+  Heart,
+  GitCompare,
   Truck,
+  ShieldCheck,
+  RotateCcw,
+  ChevronRight,
+  Minus,
+  Plus,
+  Star,
   ZoomIn,
+  Check,
+  MapPin,
 } from "lucide-react";
 
-/* =========================================================
-   PRODUCT IMAGES
-========================================================= */
-
-const productImages = [
-  "/Air column bag (2).webp",
-  "/Air column bag (2).webp",
-  "/Air column bag (2).webp",
-  "/Air column bag (2).webp",
-];
+import products, {
+  getProductBySlug,
+  getRelatedProducts,
+} from "@/app/Data/products";
 
 /* =========================================================
-   PRODUCT OPTIONS
+   PRODUCT SPECIFICATIONS
+   Fallback specifications for products which don't have
+   custom specs inside products.js
 ========================================================= */
 
-const protectionTypes = [
-  {
-    name: "Standard Protection",
-    description: "Reliable cushioning for everyday shipping",
-  },
-  {
-    name: "Heavy Protection",
-    description: "Extra protection for fragile products",
-  },
-];
-
-const sizes = [
-  {
-    name: "Small",
-    description: "For compact electronic products",
-  },
-  {
-    name: "Large",
-    description: "For larger and delicate products",
-  },
-];
-
-/* =========================================================
-   RELATED PRODUCTS
-========================================================= */
-
-const relatedProducts = [
-  {
-    name: "Dunnage Air Bag",
-    category: "Load Stabilization Packaging",
-    image: "/products/dunnage-air-bag.webp",
-  },
-  {
-    name: "Air Column Roll",
-    category: "Protective Air Packaging",
-    image: "/products/air-column-roll.webp",
-  },
-  {
-    name: "Packaging Air Bag",
-    category: "Void Fill Packaging",
-    image: "/products/packaging-air-bag.webp",
-  },
-  {
-    name: "Gap Filler",
-    category: "Packaging Protection",
-    image: "/products/gap-filler.webp",
-  },
-];
-
-/* =========================================================
-   PRODUCT SPECS
-========================================================= */
-
-const specifications = [
-  ["Product Type", "Air Column Bag"],
-  ["Application", "Protective Product Packaging"],
-  ["Suitable For", "Electronics & Fragile Products"],
-  ["Protection Type", "Air Cushion Protection"],
-  ["Material", "High-Strength Packaging Film"],
-  ["Structure", "Air Column / Air Chamber"],
+const defaultSpecs = [
+  ["Product Type", "Protective Packaging Solution"],
+  ["Application", "Product Protection & Packaging"],
+  ["Suitable For", "Fragile & Sensitive Products"],
+  ["Protection Type", "Cushioning & Impact Protection"],
+  ["Material", "High-Strength Packaging Material"],
+  ["Structure", "Protective Packaging Structure"],
   ["Usage", "Shipping, Storage & Transportation"],
-  ["Inflation", "Air Inflation"],
   ["Packaging Benefit", "Lightweight & Space Efficient"],
   ["Customization", "Available as per Requirement"],
+  ["Dispatch", "Fast & Secure Dispatch"],
 ];
 
 /* =========================================================
-   REVIEWS
+   PRODUCT-SPECIFIC CONTENT
 ========================================================= */
 
-const reviews = [
-  {
-    name: "Rahul Sharma",
-    role: "Packaging Buyer",
-    review: "Excellent protection for our products",
+const productContent = {
+  "air-column-bag": {
+    category: "Packaging & Protection",
+
+    description:
+      "High-quality air column packaging solution designed to protect fragile products during shipping, storage and transportation.",
+
+    keyFeatures: [
+      "Lightweight & durable",
+      "Excellent impact protection",
+      "Space efficient storage",
+      "Ideal for fragile products",
+      "Easy air inflation",
+      "Custom sizes available",
+    ],
+
+    overviewTitle: "Protection that travels",
+    overviewTitleSecond: "with your product.",
+
+    overviewParagraphs: [
+      "The Air Column Bag is designed to provide effective cushioning and protection for fragile products during transportation, handling and storage.",
+      "Its air-filled column structure absorbs external impact while keeping the packaging lightweight, space efficient and easy to handle.",
+    ],
+
+    advantages: [
+      "Excellent cushioning against impact",
+      "Lightweight compared with traditional packaging",
+      "Efficient use of warehouse space",
+      "Suitable for fragile and sensitive products",
+      "Simple inflation and application",
+      "Customization available",
+    ],
+
+    specs: [
+      ["Product Type", "Air Column Bag"],
+      ["Application", "Protective Product Packaging"],
+      ["Suitable For", "Electronics & Fragile Products"],
+      ["Protection Type", "Air Cushion Protection"],
+      ["Material", "High-Strength Packaging Film"],
+      ["Structure", "Air Column / Air Chamber"],
+      ["Usage", "Shipping, Storage & Transportation"],
+      ["Inflation", "Air Inflation"],
+      ["Packaging Benefit", "Lightweight & Space Efficient"],
+      ["Customization", "Available as per Requirement"],
+    ],
   },
-  {
-    name: "Amit Verma",
-    role: "Ecommerce Business",
-    review: "Lightweight and easy to use",
+
+  "dunnage-air-bag": {
+    category: "Dunnage Packaging",
+
+    description:
+      "Reliable dunnage air bag solution designed to secure cargo, reduce movement and provide effective protection during transportation and handling.",
+
+    keyFeatures: [
+      "Strong cargo stabilization",
+      "Reduces product movement",
+      "Lightweight construction",
+      "Easy to install",
+      "Suitable for transportation",
+      "Multiple sizes available",
+    ],
+
+    overviewTitle: "Cargo protection that",
+    overviewTitleSecond: "moves with your shipment.",
+
+    overviewParagraphs: [
+      "Dunnage Air Bags are designed to stabilize cargo and reduce unwanted movement inside transport containers, trucks and shipping loads.",
+      "The air-filled structure creates cushioning between cargo units and helps minimize shifting, impact and damage during transportation.",
+    ],
+
+    advantages: [
+      "Helps prevent cargo movement",
+      "Provides effective cushioning",
+      "Lightweight and easy to handle",
+      "Quick installation and inflation",
+      "Suitable for multiple transportation applications",
+      "Available in different sizes",
+    ],
+
+    specs: [
+      ["Product Type", "Dunnage Air Bag"],
+      ["Application", "Cargo Stabilization"],
+      ["Suitable For", "Industrial & Transport Cargo"],
+      ["Protection Type", "Air Cushion Protection"],
+      ["Material", "High-Strength Packaging Film"],
+      ["Structure", "Inflatable Air Chamber"],
+      ["Usage", "Shipping & Transportation"],
+      ["Inflation", "Air Inflation"],
+      ["Packaging Benefit", "Lightweight & Reusable"],
+      ["Customization", "Available as per Requirement"],
+    ],
   },
-];
+
+  "air-column-roll": {
+    category: "Air Column Packaging",
+
+    description:
+      "Flexible air column roll packaging solution designed to provide cushioning and protection for fragile products during storage, handling and transportation.",
+
+    keyFeatures: [
+      "Flexible protective packaging",
+      "Excellent shock absorption",
+      "Lightweight design",
+      "Easy to cut and use",
+      "Suitable for fragile products",
+      "Space saving solution",
+    ],
+
+    overviewTitle: "Flexible protection for",
+    overviewTitleSecond: "every packaging requirement.",
+
+    overviewParagraphs: [
+      "Air Column Roll provides a flexible cushioning solution for businesses that need protective packaging for products of different sizes and shapes.",
+      "The air-filled structure helps absorb external impact while offering lightweight handling, easy storage and efficient packaging.",
+    ],
+
+    advantages: [
+      "Effective impact and shock protection",
+      "Flexible for different product sizes",
+      "Lightweight packaging solution",
+      "Efficient storage before inflation",
+      "Easy to cut and apply",
+      "Suitable for fragile products",
+    ],
+
+    specs: [
+      ["Product Type", "Air Column Roll"],
+      ["Application", "Protective Product Packaging"],
+      ["Suitable For", "Fragile & Sensitive Products"],
+      ["Protection Type", "Air Cushion Protection"],
+      ["Material", "High-Strength Packaging Film"],
+      ["Structure", "Air Column Roll"],
+      ["Usage", "Shipping, Storage & Transportation"],
+      ["Inflation", "Air Inflation"],
+      ["Packaging Benefit", "Flexible & Space Efficient"],
+      ["Customization", "Available as per Requirement"],
+    ],
+  },
+
+  "packaging-air-bag": {
+    category: "Packaging Air Bags",
+
+    description:
+      "Protective packaging air bag designed to fill empty spaces, cushion products and reduce the risk of damage during transportation and storage.",
+
+    keyFeatures: [
+      "Effective void protection",
+      "Lightweight packaging",
+      "Shock absorbing structure",
+      "Easy to use",
+      "Space efficient storage",
+      "Suitable for multiple products",
+    ],
+
+    overviewTitle: "Smarter cushioning for",
+    overviewTitleSecond: "safer product delivery.",
+
+    overviewParagraphs: [
+      "Packaging Air Bags provide lightweight cushioning and protection for products during transportation, handling and storage.",
+      "Their air-filled construction helps absorb external impact and fill packaging spaces while reducing unnecessary packaging weight.",
+    ],
+
+    advantages: [
+      "Helps reduce product damage",
+      "Lightweight alternative to bulky packaging",
+      "Efficient void filling",
+      "Easy handling and application",
+      "Space efficient before inflation",
+      "Suitable for multiple packaging applications",
+    ],
+
+    specs: defaultSpecs,
+  },
+
+  "gap-filler": {
+    category: "Gap Fillers",
+
+    description:
+      "Efficient gap filling packaging solution designed to reduce product movement and provide additional protection during shipping and transportation.",
+
+    keyFeatures: [
+      "Effective void filling",
+      "Reduces product movement",
+      "Lightweight packaging",
+      "Easy application",
+      "Shock absorption",
+      "Space efficient",
+    ],
+
+    overviewTitle: "Fill the gap.",
+    overviewTitleSecond: "Protect every shipment.",
+
+    overviewParagraphs: [
+      "Gap Fillers are designed to secure products inside cartons and shipping containers by reducing empty spaces around the packed items.",
+      "They help minimize product movement and provide additional cushioning during transportation and handling.",
+    ],
+
+    advantages: [
+      "Reduces movement inside packaging",
+      "Provides additional cushioning",
+      "Lightweight and easy to handle",
+      "Efficient use of packaging space",
+      "Quick and simple application",
+      "Suitable for shipping applications",
+    ],
+
+    specs: defaultSpecs,
+  },
+
+  "air-pillow-packaging": {
+    category: "Packaging Air Bags",
+
+    description:
+      "Lightweight air pillow packaging solution designed to cushion products, fill empty spaces and provide reliable protection during shipping and storage.",
+
+    keyFeatures: [
+      "Lightweight cushioning",
+      "Excellent void filling",
+      "Easy handling",
+      "Space saving design",
+      "Impact protection",
+      "Suitable for fragile products",
+    ],
+
+    overviewTitle: "Lightweight protection.",
+    overviewTitleSecond: "Maximum packaging efficiency.",
+
+    overviewParagraphs: [
+      "Air Pillow Packaging provides lightweight cushioning and void filling for products that require additional protection during transportation.",
+      "The air-based structure helps reduce product movement while minimizing packaging weight and storage requirements.",
+    ],
+
+    advantages: [
+      "Excellent void filling",
+      "Lightweight construction",
+      "Easy to store before inflation",
+      "Helps reduce product movement",
+      "Simple application",
+      "Suitable for multiple packaging applications",
+    ],
+
+    specs: defaultSpecs,
+  },
+
+  "air-bubble-roll": {
+    category: "Protective Packaging",
+
+    description:
+      "Protective air bubble roll designed to cushion and protect products from scratches, impacts and handling damage during storage and transportation.",
+
+    keyFeatures: [
+      "Impact cushioning",
+      "Scratch protection",
+      "Lightweight design",
+      "Flexible packaging",
+      "Easy to cut and use",
+      "Suitable for fragile products",
+    ],
+
+    overviewTitle: "Every layer of protection",
+    overviewTitleSecond: "for every shipment.",
+
+    overviewParagraphs: [
+      "Air Bubble Roll provides an effective protective layer around products during handling, storage and transportation.",
+      "Its flexible bubble structure helps absorb minor impacts and reduce the risk of scratches and surface damage.",
+    ],
+
+    advantages: [
+      "Helps absorb minor impacts",
+      "Protects surfaces from scratches",
+      "Lightweight and flexible",
+      "Easy to cut and apply",
+      "Suitable for different product sizes",
+      "Convenient storage and handling",
+    ],
+
+    specs: defaultSpecs,
+  },
+
+  "epe-foam-roll": {
+    category: "Protective Packaging",
+
+    description:
+      "EPE Foam Roll provides lightweight cushioning and surface protection for products during packing, transportation and storage.",
+
+    keyFeatures: [
+      "Lightweight cushioning",
+      "Surface protection",
+      "Flexible material",
+      "Easy handling",
+      "Shock absorption",
+      "Multiple applications",
+    ],
+
+    overviewTitle: "Soft cushioning.",
+    overviewTitleSecond: "Reliable product protection.",
+
+    overviewParagraphs: [
+      "EPE Foam Roll provides a lightweight protective layer for products that require cushioning and surface protection during transportation.",
+      "Its flexible foam structure makes it suitable for wrapping, separating and protecting a wide range of products.",
+    ],
+
+    advantages: [
+      "Provides cushioning against impact",
+      "Protects product surfaces",
+      "Lightweight and flexible",
+      "Easy to cut and handle",
+      "Suitable for multiple applications",
+      "Efficient packaging solution",
+    ],
+
+    specs: defaultSpecs,
+  },
+
+  "protective-packaging-film": {
+    category: "Protective Packaging",
+
+    description:
+      "Protective packaging film designed to provide an additional layer of protection against scratches, dust and handling damage during transportation and storage.",
+
+    keyFeatures: [
+      "Surface protection",
+      "Helps prevent scratches",
+      "Lightweight material",
+      "Easy application",
+      "Flexible packaging",
+      "Suitable for multiple products",
+    ],
+
+    overviewTitle: "A protective layer",
+    overviewTitleSecond: "between your product and damage.",
+
+    overviewParagraphs: [
+      "Protective Packaging Film is designed to provide an additional layer of protection for products during handling, storage and transportation.",
+      "The flexible film helps reduce the risk of scratches, dust and surface-level handling damage.",
+    ],
+
+    advantages: [
+      "Helps protect product surfaces",
+      "Reduces scratches and dust exposure",
+      "Lightweight packaging solution",
+      "Easy application",
+      "Flexible for different products",
+      "Suitable for shipping and storage",
+    ],
+
+    specs: defaultSpecs,
+  },
+
+  "protective-air-packaging": {
+    category: "Air Column Packaging",
+
+    description:
+      "Advanced protective air packaging solution designed to cushion fragile products and provide reliable protection throughout shipping, handling and storage.",
+
+    keyFeatures: [
+      "Advanced impact protection",
+      "Lightweight construction",
+      "Excellent cushioning",
+      "Space efficient",
+      "Easy handling",
+      "Suitable for fragile products",
+    ],
+
+    overviewTitle: "Advanced protection.",
+    overviewTitleSecond: "Built for safer shipping.",
+
+    overviewParagraphs: [
+      "Protective Air Packaging is designed to provide reliable cushioning for products that require additional protection throughout the shipping and handling process.",
+      "Its air-based construction provides effective impact absorption while maintaining a lightweight and space-efficient packaging format.",
+    ],
+
+    advantages: [
+      "Reliable impact protection",
+      "Lightweight alternative to bulky packaging",
+      "Excellent cushioning performance",
+      "Efficient storage",
+      "Easy application",
+      "Suitable for fragile products",
+    ],
+
+    specs: defaultSpecs,
+  },
+};
 
 /* =========================================================
-   ANIMATION VARIANTS
+   HELPERS
 ========================================================= */
 
-const fadeUp = {
-  hidden: {
-    opacity: 0,
-    y: 35,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.7,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
+function getContent(slug, product) {
+  const customContent = productContent[slug];
 
-const fadeLeft = {
-  hidden: {
-    opacity: 0,
-    x: -40,
-  },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.75,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
+  if (customContent) {
+    return customContent;
+  }
 
-const fadeRight = {
-  hidden: {
-    opacity: 0,
-    x: 40,
-  },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.75,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
+  return {
+    category: product.category || "Packaging & Protection",
 
-const staggerContainer = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.09,
-    },
-  },
-};
+    description:
+      product.description ||
+      "High-quality protective packaging solution designed to protect products during shipping, storage and transportation.",
 
-/* =========================================================
-   REVEAL
-========================================================= */
+    keyFeatures: [
+      "Lightweight & durable",
+      "Excellent impact protection",
+      "Space efficient storage",
+      "Easy to use",
+      "Suitable for multiple products",
+      "Custom solutions available",
+    ],
 
-function Reveal({
-  children,
-  className = "",
-  variants = fadeUp,
-}) {
-  return (
-    <motion.div
-      className={className}
-      variants={variants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{
-        once: true,
-        amount: 0.15,
-      }}
-    >
-      {children}
-    </motion.div>
-  );
+    overviewTitle: "Reliable protection",
+    overviewTitleSecond: "for every shipment.",
+
+    overviewParagraphs: [
+      "This packaging solution is designed to provide reliable product protection during transportation, handling and storage.",
+      "Its lightweight construction helps improve packaging efficiency while providing effective protection against common handling risks.",
+    ],
+
+    advantages: [
+      "Reliable product protection",
+      "Lightweight packaging solution",
+      "Easy handling and application",
+      "Efficient use of storage space",
+      "Suitable for multiple applications",
+      "Customization available",
+    ],
+
+    specs: defaultSpecs,
+  };
 }
 
 /* =========================================================
-   STARS
+   PAGE
 ========================================================= */
 
-function Stars({ size = 16 }) {
-  return (
-    <div className="flex items-center gap-1">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Star
-          key={star}
-          size={size}
-          className="fill-[#F5A623] text-[#F5A623]"
-        />
-      ))}
-    </div>
-  );
-}
-
-/* =========================================================
-   MAIN PAGE
-========================================================= */
-
-export default function Page() {
+export default function ProductPage({ params }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedProtection, setSelectedProtection] = useState(
-    "Standard Protection"
+  const [activeTab, setActiveTab] = useState("description");
+  const [zoom, setZoom] = useState(false);
+  const [wishlist, setWishlist] = useState(false);
+
+  /*
+    Next.js dynamic params support.
+    If params is a Promise in your Next.js version,
+    use the synchronous route fallback below.
+  */
+
+  const slug =
+    typeof params?.then === "function"
+      ? null
+      : params?.slug;
+
+  const currentProduct =
+    getProductBySlug(slug) || products[0];
+
+  const content = getContent(
+    currentProduct?.slug || slug,
+    currentProduct
   );
-  const [selectedSize, setSelectedSize] = useState("Small");
-  const [zoomOpen, setZoomOpen] = useState(false);
 
-  const increaseQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
+  const relatedProducts = getRelatedProducts
+    ? getRelatedProducts(currentProduct?.slug, 4)
+    : products
+        .filter(
+          (item) =>
+            item.slug !== currentProduct?.slug
+        )
+        .slice(0, 4);
 
-  const decreaseQuantity = () => {
-    setQuantity((prev) => Math.max(1, prev - 1));
-  };
+  const images =
+    currentProduct?.images?.length > 0
+      ? currentProduct.images
+      : [currentProduct?.image];
 
-  const nextImage = () => {
-    setSelectedImage(
-      (prev) => (prev + 1) % productImages.length
-    );
-  };
+  const price = Number(currentProduct?.price || 0);
+  const oldPrice = Number(
+    currentProduct?.oldPrice || 0
+  );
 
-  const previousImage = () => {
-    setSelectedImage(
-      (prev) =>
-        (prev - 1 + productImages.length) %
-        productImages.length
-    );
+  const discount =
+    oldPrice > price
+      ? Math.round(
+          ((oldPrice - price) / oldPrice) * 100
+        )
+      : 0;
+
+  const increaseQty = () =>
+    setQuantity((q) => q + 1);
+
+  const decreaseQty = () =>
+    setQuantity((q) => (q > 1 ? q - 1 : 1));
+
+  /* =======================================================
+     ADD TO CART
+  ======================================================= */
+
+  const addToCart = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("dpack-cart-add", {
+          detail: {
+            ...currentProduct,
+            quantity,
+          },
+        })
+      );
+    }
   };
 
   return (
- <main className="min-h-screen overflow-x-clip bg-[#f7f7f5] text-[#171717]">
-
-      {/* =====================================================
-          BACKGROUND DECORATION
-      ===================================================== */}
-
-      <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
-        <motion.div
-          animate={{
-            y: [0, -20, 0],
-            x: [0, 10, 0],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute left-[-120px] top-[20%] h-[280px] w-[280px] rounded-full bg-[#F5A623]/5 blur-3xl"
-        />
-
-        <motion.div
-          animate={{
-            y: [0, 25, 0],
-            x: [0, -15, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute right-[-100px] top-[50%] h-[300px] w-[300px] rounded-full bg-[#0B1F3A]/5 blur-3xl"
-        />
-      </div>
+    <main className="min-h-screen bg-white text-[#1d2939]">
 
       {/* =====================================================
           BREADCRUMB
       ===================================================== */}
 
-      <section className="relative z-10 border-b border-black/5 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center px-5 py-4 sm:px-8 lg:px-10">
-          <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-neutral-500 sm:text-sm">
-            <span className="transition-colors hover:text-[#F5A623]">
-              Home
-            </span>
+      <div className="border-b border-gray-100 bg-[#F7F8FA]">
+        <div className="mx-auto flex max-w-[1400px] items-center gap-2 px-5 py-4 text-sm text-gray-500">
 
-            <span>/</span>
-
-            <span className="transition-colors hover:text-[#F5A623]">
-              Products
-            </span>
-
-            <span>/</span>
-
-            <span className="transition-colors hover:text-[#F5A623]">
-              Protective Packaging
-            </span>
-
-            <span>/</span>
-
-            <span className="font-semibold text-[#0B1F3A]">
-              Air Column Bag
-            </span>
-          </div>
-        </div>
-      </section>
-
-    {/* =====================================================
-    HERO
-===================================================== */}
-
-<section className="relative z-10 mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-10 lg:py-16">
-  <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-14">
-
-    {/* =================================================
-        GALLERY - STICKY
-    ================================================= */}
-
-    <div className="lg:col-span-7 lg:self-start">
-
-      {/* IMPORTANT:
-          Sticky is directly on this wrapper.
-          Do NOT put Framer Motion transform on this element.
-      */}
-
-      <div className="lg:sticky lg:top-28 lg:h-fit">
-
-        <motion.div
-          initial={{
-            opacity: 0,
-            x: -40,
-          }}
-          whileInView={{
-            opacity: 1,
-            x: 0,
-          }}
-          viewport={{
-            once: true,
-            amount: 0.15,
-          }}
-          transition={{
-            duration: 0.75,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="relative"
-        >
-
-          {/* FLOATING BADGE */}
-
-          <motion.div
-            animate={{
-              y: [0, -8, 0],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="absolute -right-2 -top-3 z-30 hidden rounded-full bg-[#F5A623] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white shadow-xl sm:block"
+          <Link
+            href="/"
+            className="font-medium text-[#081A33] hover:text-[#F5A623]"
           >
-            Premium Protection
-          </motion.div>
+            Home
+          </Link>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[82px_1fr]">
+          <ChevronRight size={15} />
 
-            {/* =================================================
-                THUMBNAILS
-            ================================================= */}
+          <Link
+            href="/products"
+            className="font-medium text-[#081A33]"
+          >
+            Products
+          </Link>
 
-            <div className="order-2 flex gap-3 overflow-x-auto sm:order-1 sm:flex-col">
+          <ChevronRight size={15} />
 
-              {productImages.map((image, index) => (
-                <motion.button
-                  key={index}
-                  type="button"
-                  onClick={() => setSelectedImage(index)}
-                  whileHover={{
-                    y: -4,
-                  }}
-                  whileTap={{
-                    scale: 0.96,
-                  }}
-                  className={`group relative h-[78px] min-w-[78px] overflow-hidden rounded-2xl border bg-white transition-all ${
-                    selectedImage === index
-                      ? "border-[#F5A623] shadow-[0_8px_25px_rgba(217,80,38,0.15)]"
-                      : "border-neutral-200 hover:border-[#F5A623]/40"
-                  }`}
-                >
+          <span>
+            {currentProduct.name}
+          </span>
 
-                  <img
-                    src={image}
-                    alt={`Air Column Bag ${index + 1}`}
-                    className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-110"
-                  />
+        </div>
+      </div>
 
-                  {selectedImage === index && (
-                    <motion.div
-                      layoutId="activeThumbnail"
-                      className="absolute bottom-0 left-2 right-2 h-[3px] rounded-full bg-[#F5A623]"
+      {/* =====================================================
+          PRODUCT SECTION
+      ===================================================== */}
+
+      <section className="mx-auto max-w-[1400px] px-5 py-10">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+
+          {/* LEFT: STICKY GALLERY */}
+
+          <div className="lg:sticky lg:top-5 lg:self-start">
+
+            <div className="grid grid-cols-[95px_1fr] gap-5">
+
+              {/* THUMBNAILS */}
+
+              <div className="flex flex-col gap-4">
+
+                {images.map((image, index) => (
+                  <button
+                    key={`${image}-${index}`}
+                    onClick={() =>
+                      setSelectedImage(index)
+                    }
+                    className={`flex h-[90px] items-center justify-center border bg-white p-2 transition ${
+                      selectedImage === index
+                        ? "border-2 border-[#F5A623]"
+                        : "border-gray-200 hover:border-[#081A33]"
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${currentProduct.name} view ${
+                        index + 1
+                      }`}
+                      className="h-full w-full object-contain"
                     />
-                  )}
+                  </button>
+                ))}
 
-                </motion.button>
-              ))}
+              </div>
+
+              {/* MAIN VIEWER */}
+
+              <div className="relative flex min-h-[570px] items-center justify-center overflow-hidden border border-gray-200 bg-[#F7F9FB]">
+
+                <div className="absolute left-5 top-5 z-20 bg-[#081A33] px-4 py-2 text-[15px] font-bold uppercase tracking-wider text-white">
+                  {currentProduct.badge ||
+                    "Featured Product"}
+                </div>
+
+                <img
+                  src={images[selectedImage]}
+                  alt={currentProduct.name}
+                  className="h-[500px] w-full object-contain p-8 transition duration-300 hover:scale-105"
+                />
+
+                <button
+                  onClick={() => setZoom(true)}
+                  className="absolute bottom-5 right-5 z-20 flex h-11 w-11 items-center justify-center border border-gray-200 bg-white text-[#081A33] shadow-sm transition hover:bg-[#F5A623]"
+                  aria-label="Zoom product image"
+                >
+                  <ZoomIn size={19} />
+                </button>
+
+              </div>
 
             </div>
 
-            {/* =================================================
-                MAIN IMAGE
-            ================================================= */}
+            {/* TRUST STRIP */}
 
-            <div className="order-1 sm:order-2 ">
+            <div className="mt-5 grid grid-cols-3 border border-gray-200">
 
-              <div className="group relative min-h-[430px] overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-[0_20px_70px_rgba(11,31,58,0.08)] sm:min-h-[560px]">
+              <div className="flex items-center gap-3 border-r border-gray-200 px-5 py-4">
 
-                {/* BACKGROUND CIRCLE */}
-
-                <motion.div
-                  animate={{
-                    scale: [1, 1.08, 1],
-                  }}
-                  transition={{
-                    duration: 7,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#F5A623]/5"
+                <ShieldCheck
+                  className="text-[#F5A623]"
+                  size={25}
                 />
 
-                <motion.div
-                  animate={{
-                    scale: [1, 1.05, 1],
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-[#0B1F3A]/5"
-                />
+                <div>
+                  <p className="text-[15px] font-bold text-[#081A33]">
+                    Quality Assured
+                  </p>
 
-                {/* =================================================
-                    BADGES
-                ================================================= */}
-
-                <div className="absolute left-5 top-5 z-20 flex flex-wrap gap-2">
-
-                  <span className="rounded-full bg-[#0B1F3A] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white">
-                    Dpack
-                  </span>
-
-                  <span className="rounded-full bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0B1F3A] shadow-md">
-                    Protective Packaging
-                  </span>
-
-                </div>
-
-                {/* =================================================
-                    ZOOM
-                ================================================= */}
-
-                <motion.button
-                  type="button"
-                  onClick={() => setZoomOpen(true)}
-                  whileHover={{
-                    scale: 1.08,
-                  }}
-                  whileTap={{
-                    scale: 0.95,
-                  }}
-                  className="absolute right-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-neutral-200 bg-white text-[#0B1F3A] shadow-lg transition-colors hover:bg-[#F5A623] hover:text-white"
-                >
-                  <ZoomIn size={18} />
-                </motion.button>
-
-                {/* =================================================
-                    IMAGE
-                ================================================= */}
-
-                <div className="flex min-h-[430px] items-center justify-center p-8 sm:min-h-[560px] sm:p-14">
-
-                  <AnimatePresence mode="wait">
-
-                    <motion.img
-                      key={selectedImage}
-                      src={productImages[selectedImage]}
-                      alt="Air Column Bag for Electronics"
-
-                      initial={{
-                        opacity: 0,
-                        scale: 0.94,
-                        x: 18,
-                      }}
-
-                      animate={{
-                        opacity: 1,
-                        scale: 1,
-                        x: 0,
-                      }}
-
-                      exit={{
-                        opacity: 0,
-                        scale: 0.96,
-                        x: -18,
-                      }}
-
-                      transition={{
-                        duration: 0.45,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-
-                      className="relative z-10 max-h-[390px] w-full object-contain transition-transform duration-700 group-hover:scale-[1.025] sm:max-h-[470px]"
-                    />
-
-                  </AnimatePresence>
-
-                </div>
-
-                {/* =================================================
-                    PREVIOUS
-                ================================================= */}
-
-                <motion.button
-                  type="button"
-                  onClick={previousImage}
-                  whileHover={{
-                    scale: 1.08,
-                    x: -2,
-                  }}
-                  whileTap={{
-                    scale: 0.94,
-                  }}
-                  className="absolute left-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/95 text-[#0B1F3A] shadow-lg backdrop-blur transition-colors hover:bg-[#0B1F3A] hover:text-white"
-                >
-                  <ArrowLeft size={17} />
-                </motion.button>
-
-                {/* =================================================
-                    NEXT
-                ================================================= */}
-
-                <motion.button
-                  type="button"
-                  onClick={nextImage}
-                  whileHover={{
-                    scale: 1.08,
-                    x: 2,
-                  }}
-                  whileTap={{
-                    scale: 0.94,
-                  }}
-                  className="absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/95 text-[#0B1F3A] shadow-lg backdrop-blur transition-colors hover:bg-[#0B1F3A] hover:text-white"
-                >
-                  <ArrowRight size={17} />
-                </motion.button>
-
-                {/* =================================================
-                    COUNTER
-                ================================================= */}
-
-                <div className="absolute bottom-5 left-1/2 z-20 -translate-x-1/2 rounded-full bg-[#0B1F3A]/90 px-4 py-2 text-xs font-semibold text-white backdrop-blur">
-                  {String(selectedImage + 1).padStart(2, "0")} /{" "}
-                  {String(productImages.length).padStart(2, "0")}
+                  <p className="text-[11px] text-gray-500">
+                    Premium materials
+                  </p>
                 </div>
 
               </div>
+
+              <div className="flex items-center gap-3 border-r border-gray-200 px-5 py-4">
+
+                <Truck
+                  className="text-[#F5A623]"
+                  size={25}
+                />
+
+                <div>
+                  <p className="text-[15px] font-bold text-[#081A33]">
+                    Fast Delivery
+                  </p>
+
+                  <p className="text-[11px] text-gray-500">
+                    Across India
+                  </p>
+                </div>
+
+              </div>
+
+              <div className="flex items-center gap-3 px-5 py-4">
+
+                <RotateCcw
+                  className="text-[#F5A623]"
+                  size={25}
+                />
+
+                <div>
+                  <p className="text-[15px] font-bold text-[#081A33]">
+                    Easy Support
+                  </p>
+
+                  <p className="text-[11px] text-gray-500">
+                    Expert assistance
+                  </p>
+                </div>
+
+              </div>
+
             </div>
 
           </div>
 
-        </motion.div>
+          {/* =================================================
+              RIGHT: PRODUCT INFORMATION
+          ================================================= */}
 
-      </div>
-    </div>
+          <div>
 
-    {/* =================================================
-        PRODUCT INFO
-        This content determines the sticky height
-    ================================================= */}
+            <div className="mb-3 flex items-center gap-3">
 
-    <motion.div
-      initial={{
-        opacity: 0,
-        x: 40,
-      }}
-      whileInView={{
-        opacity: 1,
-        x: 0,
-      }}
-      viewport={{
-        once: true,
-        amount: 0.15,
-      }}
-      transition={{
-        duration: 0.75,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      className="lg:col-span-5"
-    >
+              <span className="bg-[#081A33] px-3 py-1 text-[15px] font-bold uppercase tracking-wider text-white">
+                {content.category}
+              </span>
 
-      <div className="flex h-full flex-col">
+              <span className="bg-green-50 px-3 py-1 text-[15px] font-bold text-green-700">
+                In Stock
+              </span>
 
-        {/* RATING */}
+            </div>
 
-        <div className="mb-5 flex flex-wrap items-center gap-3">
+            <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-[#081A33] md:text-5xl">
+              {currentProduct.name}
+            </h1>
 
-          <div className="flex items-center gap-2 rounded-full bg-[#F5A623]/10 px-3 py-2">
-            <Stars size={13} />
+            <div className="mt-5 flex flex-wrap items-center gap-4 border-b border-gray-200 pb-5">
 
-            <span className="text-xs font-bold text-[#0B1F3A]">
-              4.8 / 5
-            </span>
-          </div>
+              <div className="flex items-center gap-1">
 
-          <span className="text-xs font-medium text-neutral-500">
-            Customer Reviews
-          </span>
+                {[1, 2, 3, 4, 5].map(
+                  (item) => (
+                    <Star
+                      key={item}
+                      size={17}
+                      fill={
+                        item <=
+                        Math.round(
+                          Number(
+                            currentProduct.rating ||
+                              0
+                          )
+                        )
+                          ? "#F5A623"
+                          : "none"
+                      }
+                      className="text-[#F5A623]"
+                    />
+                  )
+                )}
 
-          <span className="hidden h-1 w-1 rounded-full bg-neutral-300 sm:block" />
+              </div>
 
-          <span className="text-xs font-semibold text-[#F5A623]">
-            Packaging Solution
-          </span>
+              <span className="text-sm font-bold text-[#081A33]">
+                {currentProduct.rating || "4.5"}
+              </span>
 
-        </div>
+              <span className="text-sm text-gray-500">
+                ({currentProduct.reviews || 0} Reviews)
+              </span>
 
-        {/* TITLE */}
+              <span className="text-gray-300">
+                |
+              </span>
 
-        <div>
+              <span className="text-sm text-gray-500">
+                SKU:{" "}
+                <span className="font-bold text-[#081A33]">
+                  {currentProduct.sku || "N/A"}
+                </span>
+              </span>
 
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.22em] text-[#F5A623]">
-            Protective Packaging
-          </p>
+            </div>
 
-          <h1 className="max-w-xl text-4xl font-bold leading-[1.05] tracking-tight text-[#0B1F3A] sm:text-5xl">
-          Air Column Bag for Electronics
-          </h1>
+            <p className="mt-6 text-[16px] leading-8 text-gray-600">
+              {content.description}
+            </p>
 
-          <p className="mt-4 max-w-xl text-sm leading-7 text-neutral-500 sm:text-base">
-            Lightweight
-            <span className="mx-1 text-[#F5A623]">•</span>
-            Shock Protection
-            <span className="mx-1 text-[#F5A623]">•</span>
-            Space Saving
-            <span className="mx-1 text-[#F5A623]">•</span>
-            Easy to Use
-          </p>
+            {/* PRICE */}
 
-        </div>
+            <div className="mt-7 bg-[#F7F8FA] p-6">
 
-        {/* =================================================
-            ECOMMERCE PRODUCT BOX
-        ================================================= */}
+              <div className="flex items-end gap-4">
 
-        <motion.div
-          whileHover={{
-            y: -3,
-          }}
-          className="relative mt-8 overflow-hidden rounded-[8px] border border-neutral-200 bg-white shadow-[0_15px_45px_rgba(11,31,58,0.06)]"
-        >
+                <span className="text-4xl font-black text-[#081A33]">
+                  ₹{price.toLocaleString("en-IN")}
+                </span>
 
-          <div className="relative overflow-hidden bg-[#0B1F3A] p-6">
+                {oldPrice > price && (
+                  <span className="pb-1 text-lg text-gray-400 line-through">
+                    ₹{oldPrice.toLocaleString(
+                      "en-IN"
+                    )}
+                  </span>
+                )}
 
-            <div className="absolute right-[-40px] top-[-60px] h-40 w-40 rounded-full bg-[#F5A623]/20 blur-2xl" />
+                {discount > 0 && (
+                  <span className="mb-1 bg-[#F5A623] px-3 py-1 text-[15px] font-extrabold text-[#081A33]">
+                    SAVE {discount}%
+                  </span>
+                )}
 
-            <div className="relative flex items-start justify-between gap-4">
+              </div>
+
+              <p className="mt-2 text-[15px] text-gray-500">
+                Inclusive of applicable taxes
+              </p>
+
+            </div>
+
+            {/* KEY FEATURES */}
+
+            <div className="mt-7">
+
+              <h3 className="mb-4 text-sm font-extrabold uppercase tracking-wider text-[#081A33]">
+                Key Features
+              </h3>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+                {content.keyFeatures.map(
+                  (feature) => (
+                    <div
+                      key={feature}
+                      className="flex items-center gap-3"
+                    >
+
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#081A33] text-white">
+                        <Check size={12} />
+                      </span>
+
+                      <span className="text-sm text-gray-600">
+                        {feature}
+                      </span>
+
+                    </div>
+                  )
+                )}
+
+              </div>
+
+            </div>
+
+            <div className="my-7 border-t border-gray-200" />
+
+            {/* QUANTITY */}
+
+            <div className="flex flex-wrap items-center gap-5">
 
               <div>
 
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#F5A623]">
-                  Premium Packaging
+                <p className="mb-2 text-[15px] font-bold uppercase tracking-wider text-gray-500">
+                  Quantity
                 </p>
 
-                <h3 className="mt-2 text-2xl font-bold text-white">
-                  Air Column Bag
-                </h3>
+                <div className="flex h-12 border border-gray-300">
 
-                <p className="mt-2 text-sm leading-6 text-white/65">
-                  Reliable protection for electronics and fragile products.
-                </p>
+                  <button
+                    onClick={decreaseQty}
+                    className="flex w-12 items-center justify-center bg-gray-50 transition hover:bg-[#081A33] hover:text-white"
+                  >
+                    <Minus size={16} />
+                  </button>
 
-              </div>
-
-              <motion.div
-                animate={{
-                  y: [0, -5, 0],
-                  rotate: [0, 2, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#F5A623] text-white"
-              >
-                <Package size={21} />
-              </motion.div>
-
-            </div>
-
-            <div className="relative mt-6 grid grid-cols-3 gap-2">
-
-              <div className="border border-white/10 bg-white/5 p-3">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-white/40">
-                  Delivery
-                </p>
-
-                <p className="mt-1 text-xs font-bold text-white">
-                  Pan India
-                </p>
-              </div>
-
-              <div className="border border-white/10 bg-white/5 p-3">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-white/40">
-                  Quality
-                </p>
-
-                <p className="mt-1 text-xs font-bold text-white">
-                  Premium
-                </p>
-              </div>
-
-              <div className="border border-white/10 bg-white/5 p-3">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-white/40">
-                  Supply
-                </p>
-
-                <p className="mt-1 text-xs font-bold text-white">
-                  Bulk
-                </p>
-              </div>
-
-            </div>
-
-          </div>
-
-        </motion.div>
-
-        {/* DESCRIPTION */}
-
-        <p className="mt-7 text-sm leading-7 text-neutral-600 sm:text-[15px]">
-          Air Column Bags provide effective cushioning for electronics
-          and fragile products during shipping, storage and
-          transportation. Their lightweight structure offers reliable
-          protection while taking minimal storage space.
-        </p>
-
-        {/* PROTECTION TYPE */}
-
-        <div className="mt-7">
-
-          <div className="mb-3 flex items-center justify-between">
-
-            <h3 className="text-sm font-bold text-[#0B1F3A]">
-              Protection Type
-            </h3>
-
-            <span className="text-xs font-semibold text-[#F5A623]">
-              {selectedProtection}
-            </span>
-
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-
-            {protectionTypes.map((item) => {
-
-              const active =
-                selectedProtection === item.name;
-
-              return (
-                <motion.button
-                  key={item.name}
-                  type="button"
-                  onClick={() =>
-                    setSelectedProtection(item.name)
-                  }
-                  whileHover={{
-                    y: -3,
-                  }}
-                  whileTap={{
-                    scale: 0.98,
-                  }}
-                  className={`relative overflow-hidden border p-4 text-left transition-all ${
-                    active
-                      ? "border-[#F5A623] bg-[#F5A623]/5 shadow-[0_10px_30px_rgba(217,80,38,0.08)]"
-                      : "border-neutral-200 bg-white hover:border-[#F5A623]/40"
-                  }`}
-                >
-
-                  {active && (
-                    <motion.div
-                      layoutId="protectionActive"
-                      className="absolute left-0 top-0 h-full w-1 bg-[#F5A623]"
-                    />
-                  )}
-
-                  <div className="flex items-start gap-3">
-
-                    <div
-                      className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center ${
-                        active
-                          ? "bg-[#F5A623] text-white"
-                          : "bg-[#0B1F3A]/5 text-[#0B1F3A]"
-                      }`}
-                    >
-                      <ShieldCheck size={16} />
-                    </div>
-
-                    <div>
-
-                      <p className="text-sm font-bold text-[#0B1F3A]">
-                        {item.name}
-                      </p>
-
-                      <p className="mt-1 text-xs leading-5 text-neutral-500">
-                        {item.description}
-                      </p>
-
-                    </div>
-
+                  <div className="flex w-14 items-center justify-center border-x border-gray-300 font-bold">
+                    {quantity}
                   </div>
 
-                </motion.button>
-              );
-            })}
-
-          </div>
-
-        </div>
-
-
-        {/* FEATURES */}
-
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{
-            once: true,
-            amount: 0.2,
-          }}
-          className="mt-7 grid grid-cols-2 gap-3"
-        >
-
-          {[
-            {
-              title: "Shock Protection",
-              icon: ShieldCheck,
-            },
-            {
-              title: "Lightweight",
-              icon: Sparkles,
-            },
-            {
-              title: "Flexible",
-              icon: Package,
-            },
-            {
-              title: "Compact",
-              icon: ArrowUpRight,
-            },
-          ].map((item) => {
-
-            const Icon = item.icon;
-
-            return (
-              <motion.div
-                key={item.title}
-                variants={fadeUp}
-                whileHover={{
-                  y: -4,
-                }}
-                className="group border border-neutral-200 bg-white p-4 transition-shadow hover:shadow-[0_12px_35px_rgba(11,31,58,0.07)]"
-              >
-
-                <div className="flex items-center gap-3">
-
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#0B1F3A]/5 text-[#F5A623] transition-colors group-hover:bg-[#F5A623] group-hover:text-white">
-                    <Icon size={16} />
-                  </div>
-
-                  <span className="text-xs font-bold text-[#0B1F3A]">
-                    {item.title}
-                  </span>
+                  <button
+                    onClick={increaseQty}
+                    className="flex w-12 items-center justify-center bg-gray-50 transition hover:bg-[#081A33] hover:text-white"
+                  >
+                    <Plus size={16} />
+                  </button>
 
                 </div>
 
-              </motion.div>
-            );
-          })}
+              </div>
 
-        </motion.div>
+              <button
+                onClick={addToCart}
+                className="mt-5 flex h-12 flex-1 items-center justify-center gap-3 bg-[#F5A623] px-8 text-sm font-extrabold uppercase tracking-wide text-[#081A33] transition hover:bg-[#081A33] hover:text-white"
+              >
+                <ShoppingCart size={19} />
+                Add to Cart
+              </button>
 
-        {/* =================================================
-            QUANTITY + ADD TO CART
-        ================================================= */}
+              <button
+                onClick={() =>
+                  setWishlist(!wishlist)
+                }
+                className={`mt-5 flex h-12 w-12 items-center justify-center border transition ${
+                  wishlist
+                    ? "border-[#F5A623] bg-[#F5A623]"
+                    : "border-gray-300 bg-white hover:border-[#081A33]"
+                }`}
+              >
+                <Heart
+                  size={20}
+                  fill={
+                    wishlist
+                      ? "#081A33"
+                      : "none"
+                  }
+                  className="text-[#081A33]"
+                />
+              </button>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button className="mt-5 flex h-12 w-12 items-center justify-center border border-gray-300 bg-white transition hover:border-[#081A33]">
+                <GitCompare
+                  size={20}
+                  className="text-[#081A33]"
+                />
+              </button>
 
-          {/* QUANTITY */}
+            </div>
 
-          <div className="flex h-14 items-center justify-between border border-neutral-200 bg-white px-3 sm:w-[145px]">
+            {/* BUY NOW */}
 
-            <motion.button
-              type="button"
-              whileTap={{
-                scale: 0.85,
-              }}
-              onClick={decreaseQuantity}
-              className="flex h-9 w-9 items-center justify-center text-[#0B1F3A] transition-colors hover:bg-[#0B1F3A]/5"
-            >
-              <Minus size={16} />
-            </motion.button>
+            <button className="mt-4 h-12 w-full border-2 border-[#081A33] bg-[#081A33] text-sm font-extrabold uppercase tracking-wide text-white transition hover:bg-white hover:text-[#081A33]">
+              Buy It Now
+            </button>
 
-            <span className="text-sm font-bold text-[#0B1F3A]">
-              {quantity}
-            </span>
+            {/* DELIVERY INFO */}
 
-            <motion.button
-              type="button"
-              whileTap={{
-                scale: 0.85,
-              }}
-              onClick={increaseQuantity}
-              className="flex h-9 w-9 items-center justify-center text-[#0B1F3A] transition-colors hover:bg-[#0B1F3A]/5"
-            >
-              <Plus size={16} />
-            </motion.button>
+            <div className="mt-7 divide-y divide-gray-200 border-y border-gray-200">
+
+              <div className="flex items-center gap-4 py-5">
+
+                <div className="flex h-11 w-11 items-center justify-center bg-[#F7F8FA] text-[#081A33]">
+                  <Truck size={21} />
+                </div>
+
+                <div>
+
+                  <p className="text-sm font-bold text-[#081A33]">
+                    Fast & Secure Delivery
+                  </p>
+
+                  <p className="mt-1 text-[15px] text-gray-500">
+                    Estimated delivery within 3–7 working days.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div className="flex items-center gap-4 py-5">
+
+                <div className="flex h-11 w-11 items-center justify-center bg-[#F7F8FA] text-[#081A33]">
+                  <ShieldCheck size={21} />
+                </div>
+
+                <div>
+
+                  <p className="text-sm font-bold text-[#081A33]">
+                    Quality Guaranteed
+                  </p>
+
+                  <p className="mt-1 text-[15px] text-gray-500">
+                    Carefully inspected before dispatch.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div className="flex items-center gap-4 py-5">
+
+                <div className="flex h-11 w-11 items-center justify-center bg-[#F7F8FA] text-[#081A33]">
+                  <MapPin size={21} />
+                </div>
+
+                <div>
+
+                  <p className="text-sm font-bold text-[#081A33]">
+                    Bulk Orders Welcome
+                  </p>
+
+                  <p className="mt-1 text-[15px] text-gray-500">
+                    Contact our team for customized pricing.
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
 
           </div>
-
-          {/* ADD TO CART */}
-
-          <motion.button
-            type="button"
-            whileHover={{
-              y: -3,
-            }}
-            whileTap={{
-              scale: 0.98,
-            }}
-            className="group relative flex h-14 flex-1 items-center justify-center gap-3 overflow-hidden bg-[#0B1F3A] px-6 text-sm font-bold text-white shadow-[0_12px_30px_rgba(11,31,58,0.18)] transition-colors duration-300 hover:bg-[#F5A623]"
-          >
-
-            <span className="relative z-10">
-              Add to Cart
-            </span>
-
-            <motion.span
-              animate={{
-                x: [0, 4, 0],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="relative z-10"
-            >
-              <ArrowRight size={18} />
-            </motion.span>
-
-            <span className="absolute inset-0 -translate-x-full bg-white/10 transition-transform duration-700 group-hover:translate-x-full" />
-
-          </motion.button>
 
         </div>
+      </section>
 
-        {/* BUY NOW */}
+      {/* =====================================================
+          BLUE FEATURE BAND
+      ===================================================== */}
 
-        <motion.button
-          type="button"
-          whileHover={{
-            y: -2,
-          }}
-          whileTap={{
-            scale: 0.98,
-          }}
-          className="mt-3 flex h-13 w-full items-center justify-center gap-2 border border-[#0B1F3A] bg-white px-5 py-4 text-sm font-bold text-[#0B1F3A] transition-all hover:bg-[#F5A623] hover:border-[#F5A623] hover:text-white"
-        >
-          Buy Now
-          <ArrowUpRight size={16} />
-        </motion.button>
+      <section className="bg-[#081A33]">
 
-        {/* TRUST FEATURES */}
+        <div className="mx-auto grid max-w-[1400px] grid-cols-1 md:grid-cols-3">
 
-        <div className="mt-7 grid grid-cols-3 divide-x border border-neutral-200 bg-white py-4">
+          <div className="flex items-center gap-5 border-b border-white/10 px-8 py-8 md:border-b-0 md:border-r">
 
-          <div className="px-3 text-center">
-
-            <Package
-              size={17}
-              className="mx-auto text-[#F5A623]"
+            <ShieldCheck
+              size={34}
+              className="text-[#F5A623]"
             />
 
-            <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-[#0B1F3A]">
-              Bulk Orders
-            </p>
+            <div>
+
+              <h3 className="font-bold text-white">
+                Premium Protection
+              </h3>
+
+              <p className="mt-1 text-sm text-white/60">
+                Built for fragile products
+              </p>
+
+            </div>
 
           </div>
 
-          <div className="px-3 text-center">
-
-            <Sparkles
-              size={17}
-              className="mx-auto text-[#F5A623]"
-            />
-
-            <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-[#0B1F3A]">
-              Custom
-            </p>
-
-          </div>
-
-          <div className="px-3 text-center">
+          <div className="flex items-center gap-5 border-b border-white/10 px-8 py-8 md:border-b-0 md:border-r">
 
             <Truck
-              size={17}
-              className="mx-auto text-[#F5A623]"
+              size={34}
+              className="text-[#F5A623]"
             />
 
-            <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-[#0B1F3A]">
-              Pan India
-            </p>
+            <div>
+
+              <h3 className="font-bold text-white">
+                Reliable Delivery
+              </h3>
+
+              <p className="mt-1 text-sm text-white/60">
+                Secure nationwide shipping
+              </p>
+
+            </div>
+
+          </div>
+
+          <div className="flex items-center gap-5 px-8 py-8">
+
+            <Heart
+              size={34}
+              className="text-[#F5A623]"
+            />
+
+            <div>
+
+              <h3 className="font-bold text-white">
+                Customer First
+              </h3>
+
+              <p className="mt-1 text-sm text-white/60">
+                Support when you need it
+              </p>
+
+            </div>
 
           </div>
 
         </div>
 
-      </div>
-    </motion.div>
-
-  </div>
-</section>
+      </section>
 
       {/* =====================================================
           PRODUCT DETAILS
       ===================================================== */}
 
-      <section className="relative z-10 border-y border-black/5 bg-white">
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+      <section className="border-t border-gray-200">
 
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
+        <div className="mx-auto max-w-[1400px] px-5 py-16">
 
-            {/* LEFT */}
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[200px_1fr]">
 
-            <Reveal
-              variants={fadeLeft}
-              className="lg:col-span-7"
-            >
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F5A623]">
-                Product Details
-              </p>
+            {/* LEFT STICKY TABS */}
 
-              <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight tracking-tight text-[#0B1F3A] sm:text-4xl">
-                Reliable Protection for Fragile Products
-              </h2>
+            <aside className="lg:sticky lg:top-8 lg:self-start">
 
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-500 sm:text-base">
-                Dpack Air Column Bags are designed to provide cushioning and
-                protection for delicate products during shipping, storage and
-                transportation. The air-filled structure absorbs impact while
-                keeping the packaging lightweight and space efficient.
-              </p>
+              <div className="border border-gray-200 bg-white">
 
-              {/* DETAIL CARDS */}
+                <div className="bg-[#081A33] px-5 py-4">
 
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-white/60">
+                    Product Details
+                  </span>
 
-                <motion.div
-                  whileHover={{
-                    y: -5,
-                  }}
-                  className="group rounded-3xl border border-neutral-200 bg-[#f7f7f5] p-6 transition-shadow hover:shadow-xl"
-                >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F5A623] text-white">
-                    <ShieldCheck size={20} />
-                  </div>
-
-                  <h3 className="mt-5 text-lg font-bold text-[#0B1F3A]">
-                    Impact Protection
-                  </h3>
-
-                  <p className="mt-2 text-sm leading-6 text-neutral-500">
-                    Helps protect products against shocks, movement and
-                    handling impact.
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{
-                    y: -5,
-                  }}
-                  className="group rounded-3xl border border-neutral-200 bg-[#f7f7f5] p-6 transition-shadow hover:shadow-xl"
-                >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0B1F3A] text-white">
-                    <Package size={20} />
-                  </div>
-
-                  <h3 className="mt-5 text-lg font-bold text-[#0B1F3A]">
-                    Space Efficient
-                  </h3>
-
-                  <p className="mt-2 text-sm leading-6 text-neutral-500">
-                    Lightweight packaging design requires less storage space
-                    before and after use.
-                  </p>
-                </motion.div>
-              </div>
-
-              {/* SPECS */}
-
-              <div className="mt-9 overflow-hidden rounded-3xl border border-neutral-200">
-                <div className="border-b border-neutral-200 bg-[#0B1F3A] px-5 py-4">
-                  <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-white">
-                    Product Specifications
-                  </h3>
                 </div>
 
-                <div>
-                  {specifications.map(([label, value], index) => (
-                    <motion.div
-                      key={label}
-                      initial={{
-                        opacity: 0,
-                        x: -15,
-                      }}
-                      whileInView={{
-                        opacity: 1,
-                        x: 0,
-                      }}
-                      viewport={{
-                        once: true,
-                        amount: 0.4,
-                      }}
-                      transition={{
-                        delay: index * 0.035,
-                        duration: 0.4,
-                      }}
-                      className={`grid grid-cols-1 gap-1 px-5 py-4 sm:grid-cols-[190px_1fr] sm:gap-5 ${
-                        index % 2 === 0
-                          ? "bg-[#fafafa]"
-                          : "bg-white"
+                <div className="flex flex-row lg:flex-col">
+
+                  {/* DESCRIPTION TAB */}
+
+                  <button
+                    onClick={() =>
+                      setActiveTab("description")
+                    }
+                    className={`group relative flex flex-1 items-center gap-3 px-5 py-5 text-left transition lg:flex-none ${
+                      activeTab === "description"
+                        ? "bg-[#F7F8FA]"
+                        : "bg-white hover:bg-[#F7F8FA]"
+                    }`}
+                  >
+
+                    <span
+                      className={`text-xs font-black ${
+                        activeTab === "description"
+                          ? "text-[#F5A623]"
+                          : "text-gray-300"
                       }`}
                     >
-                      <span className="text-xs font-bold uppercase tracking-wide text-neutral-400">
-                        {label}
-                      </span>
+                      01
+                    </span>
 
-                      <span className="text-sm font-semibold text-[#0B1F3A]">
-                        {value}
-                      </span>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-
-            {/* RIGHT */}
-
-            <Reveal
-              variants={fadeRight}
-              className="lg:col-span-5"
-            >
-              <div className="group relative overflow-hidden rounded-[30px] bg-[#0B1F3A] p-5 shadow-[0_25px_70px_rgba(11,31,58,0.16)] sm:p-7">
-
-                <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#F5A623]/25 blur-3xl" />
-
-                <div className="relative overflow-hidden rounded-[24px] bg-white">
-                  <motion.img
-                    src="/Air column bag (2).webp"
-                    alt="Dpack Protective Packaging"
-                    whileHover={{
-                      scale: 1.045,
-                    }}
-                    transition={{
-                      duration: 0.8,
-                      ease: "easeOut",
-                    }}
-                    className="h-[500px] w-full object-contain p-8"
-                  />
-                </div>
-
-                <div className="relative mt-6">
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#F5A623]">
-                    Dpack Protective Packaging
-                  </p>
-
-                  <h3 className="mt-2 text-2xl font-bold leading-tight text-white">
-                    Protect products from packing to delivery.
-                  </h3>
-
-                  <div className="mt-5 flex items-center gap-2 text-sm text-white/65">
-                    <Check size={16} className="text-[#F5A623]" />
-                    Reliable cushioning
-                  </div>
-
-                  <div className="mt-2 flex items-center gap-2 text-sm text-white/65">
-                    <Check size={16} className="text-[#F5A623]" />
-                    Lightweight structure
-                  </div>
-
-                  <div className="mt-2 flex items-center gap-2 text-sm text-white/65">
-                    <Check size={16} className="text-[#F5A623]" />
-                    Efficient storage
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* =====================================================
-          HIGHLIGHT BANNER
-      ===================================================== */}
-
-      <section className="relative z-10 overflow-hidden bg-[#f7f7f5] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
-        <Reveal>
-          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[34px] bg-[#0B1F3A] px-6 py-10 shadow-[0_30px_80px_rgba(11,31,58,0.15)] sm:px-10 sm:py-12 lg:px-14">
-
-            <motion.div
-              animate={{
-                rotate: [0, 360],
-              }}
-              transition={{
-                duration: 30,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              className="absolute -right-20 -top-40 h-[450px] w-[450px] rounded-full border border-white/5"
-            />
-
-            <motion.div
-              animate={{
-                y: [0, -12, 0],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute bottom-[-100px] left-[20%] h-[250px] w-[250px] rounded-full bg-[#F5A623]/10 blur-3xl"
-            />
-
-            <div className="relative grid grid-cols-1 items-center gap-10 lg:grid-cols-[1fr_330px]">
-
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F5A623]">
-                  Dpack Packaging Solutions
-                </p>
-
-                <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-white sm:text-4xl">
-                  Better protection. Less space. Smarter packaging.
-                </h2>
-
-                <p className="mt-5 max-w-2xl text-sm leading-7 text-white/60 sm:text-base">
-                  Designed for modern shipping and storage requirements, Dpack
-                  protective packaging helps businesses improve product
-                  protection while keeping packaging lightweight and efficient.
-                </p>
-
-                <div className="mt-7 flex flex-wrap gap-3">
-                  {[
-                    "IMPACT PROTECTION",
-                    "LIGHTWEIGHT",
-                    "SPACE EFFICIENT",
-                  ].map((item) => (
-                    <motion.div
-                      key={item}
-                      whileHover={{
-                        y: -3,
-                      }}
-                      className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2.5"
+                    <span
+                      className={`text-xs font-extrabold uppercase tracking-[1.2px] ${
+                        activeTab === "description"
+                          ? "text-[#081A33]"
+                          : "text-gray-400"
+                      }`}
                     >
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#F5A623] text-white">
-                        <Check size={11} />
-                      </span>
+                      Description
+                    </span>
 
-                      <span className="text-[10px] font-bold tracking-wider text-white/80">
-                        {item}
-                      </span>
-                    </motion.div>
-                  ))}
+                    {activeTab ===
+                      "description" && (
+                      <span className="absolute left-0 top-0 h-full w-[3px] bg-[#F5A623]" />
+                    )}
+
+                  </button>
+
+                  {/* SPECIFICATION TAB */}
+
+                  <button
+                    onClick={() =>
+                      setActiveTab(
+                        "specification"
+                      )
+                    }
+                    className={`group relative flex flex-1 items-center gap-3 border-t border-gray-200 px-5 py-5 text-left transition lg:flex-none ${
+                      activeTab ===
+                      "specification"
+                        ? "bg-[#F7F8FA]"
+                        : "bg-white hover:bg-[#F7F8FA]"
+                    }`}
+                  >
+
+                    <span
+                      className={`text-xs font-black ${
+                        activeTab ===
+                        "specification"
+                          ? "text-[#F5A623]"
+                          : "text-gray-300"
+                      }`}
+                    >
+                      02
+                    </span>
+
+                    <span
+                      className={`text-xs font-extrabold uppercase tracking-[1.2px] ${
+                        activeTab ===
+                        "specification"
+                          ? "text-[#081A33]"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      Specifications
+                    </span>
+
+                    {activeTab ===
+                      "specification" && (
+                      <span className="absolute left-0 top-0 h-full w-[3px] bg-[#F5A623]" />
+                    )}
+
+                  </button>
+
                 </div>
+
               </div>
 
-              <motion.div
-                animate={{
-                  y: [0, -8, 0],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                className="relative mx-auto w-full max-w-[310px]"
-              >
-                <div className="absolute inset-5 rounded-full bg-[#F5A623]/20 blur-3xl" />
+            </aside>
 
-                <div className="relative overflow-hidden rounded-full border-[10px] border-white/5 bg-white/5 p-4">
-                  <img
-                    src="/Air column bag (2).webp"
-                    alt="Dpack Air Column Bag"
-                    className="aspect-square w-full rounded-full bg-white object-contain p-8"
-                  />
-                </div>
+            {/* RIGHT CONTENT */}
 
-                <div className="absolute -bottom-3 -left-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F5A623] text-white shadow-xl">
-                  <ShieldCheck size={25} />
+            <div className="min-w-0">
+
+              {/* DESCRIPTION */}
+
+              {activeTab === "description" && (
+                <div className="space-y-12">
+
+                  <div className="grid grid-cols-1 gap-10 lg:grid-cols-[100px_1fr]">
+
+                    <div className="hidden lg:block">
+
+                      <div className="text-7xl font-black leading-none text-[#081A33]/10">
+                        01
+                      </div>
+
+                      <div className="mt-4 h-16 w-[2px] bg-[#F5A623]" />
+
+                    </div>
+
+                    <div>
+
+                      <span className="text-xs font-extrabold uppercase tracking-[3px] text-[#F5A623]">
+                        Product Overview
+                      </span>
+
+                      <h2 className="mt-4 text-3xl font-black leading-tight text-[#081A33] md:text-5xl">
+
+                        {content.overviewTitle}
+
+                        <span className="block">
+                          {content.overviewTitleSecond}
+                        </span>
+
+                      </h2>
+
+                      {content.overviewParagraphs.map(
+                        (paragraph) => (
+                          <p
+                            key={paragraph}
+                            className="mt-6 max-w-3xl text-[16px] leading-8 text-gray-600"
+                          >
+                            {paragraph}
+                          </p>
+                        )
+                      )}
+
+                    </div>
+
+                  </div>
+
+                  {/* PROTECTION CARDS */}
+
+                  <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+
+                    {[
+                      {
+                        no: "01",
+                        title: "Impact Protection",
+                        text: "Air-based cushioning helps absorb external shocks and reduce the impact transferred to the packed product.",
+                      },
+                      {
+                        no: "02",
+                        title: "Lightweight Design",
+                        text: "Provides reliable protection without adding unnecessary weight to the overall packaging.",
+                      },
+                      {
+                        no: "03",
+                        title: "Space Efficient",
+                        text: "Efficient packaging construction makes storage and transportation easier.",
+                      },
+                    ].map((item) => (
+                      <div
+                        key={item.no}
+                        className="group border border-gray-200 bg-white p-7 transition hover:border-[#F5A623]"
+                      >
+
+                        <span className="text-xs font-black text-gray-300 group-hover:text-[#F5A623]">
+                          {item.no}
+                        </span>
+
+                        <div className="mt-7 h-[3px] w-10 bg-[#F5A623] transition-all duration-300 group-hover:w-16" />
+
+                        <h3 className="mt-5 text-xl font-black text-[#081A33]">
+                          {item.title}
+                        </h3>
+
+                        <p className="mt-3 text-sm leading-7 text-gray-500">
+                          {item.text}
+                        </p>
+
+                      </div>
+                    ))}
+
+                  </div>
+
+                  {/* ADVANTAGES */}
+
+                  <div className="bg-[#081A33] p-8 md:p-12">
+
+                    <span className="text-xs font-bold uppercase tracking-[3px] text-[#F5A623]">
+                      Packaging Advantage
+                    </span>
+
+                    <h3 className="mt-3 text-2xl font-black text-white md:text-3xl">
+                      Why Choose{" "}
+                      {currentProduct.name}?
+                    </h3>
+
+                    <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-5 md:grid-cols-2">
+
+                      {content.advantages.map(
+                        (item, index) => (
+                          <div
+                            key={item}
+                            className="flex items-start gap-4 border-b border-white/10 pb-4"
+                          >
+
+                            <span className="text-xs font-bold text-[#F5A623]">
+                              0{index + 1}
+                            </span>
+
+                            <span className="text-sm leading-6 text-white/75">
+                              {item}
+                            </span>
+
+                          </div>
+                        )
+                      )}
+
+                    </div>
+
+                  </div>
+
                 </div>
-              </motion.div>
+              )}
+
+              {/* SPECIFICATIONS */}
+
+              {activeTab ===
+                "specification" && (
+                <div>
+
+                  <div className="mb-10 border-b border-gray-200 pb-8">
+
+                    <span className="text-xs font-extrabold uppercase tracking-[3px] text-[#F5A623]">
+                      Technical Details
+                    </span>
+
+                    <h2 className="mt-3 text-3xl font-black text-[#081A33] md:text-5xl">
+                      Product Specifications
+                    </h2>
+
+                    <p className="mt-4 max-w-2xl text-sm leading-7 text-gray-500">
+                      Detailed technical information
+                      and product characteristics for{" "}
+                      {currentProduct.name}.
+                    </p>
+
+                  </div>
+
+                  {/* SPECIFICATION GRID */}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2">
+
+                    {(
+                      content.specs ||
+                      defaultSpecs
+                    ).map(
+                      ([label, value], index) => (
+                        <div
+                          key={label}
+                          className="group relative border-b border-gray-200 py-7 md:odd:border-r md:odd:pr-10 md:even:pl-10"
+                        >
+
+                          <span className="absolute left-0 top-0 h-full w-[3px] origin-top scale-y-0 bg-[#F5A623] transition-transform duration-300 group-hover:scale-y-100" />
+
+                          <div className="flex gap-5">
+
+                            <span className="w-8 shrink-0 text-xs font-black text-gray-300 group-hover:text-[#F5A623]">
+                              {String(
+                                index + 1
+                              ).padStart(
+                                2,
+                                "0"
+                              )}
+                            </span>
+
+                            <div>
+
+                              <p className="text-[11px] font-extrabold uppercase tracking-[2px] text-gray-400">
+                                {label}
+                              </p>
+
+                              <p className="mt-2 text-base font-bold text-[#081A33] transition group-hover:translate-x-1">
+                                {value}
+                              </p>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+                      )
+                    )}
+
+                  </div>
+
+                </div>
+              )}
+
             </div>
+
           </div>
-        </Reveal>
+
+        </div>
+
       </section>
 
       {/* =====================================================
           RELATED PRODUCTS
       ===================================================== */}
 
-      <section className="relative z-10 bg-white">
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+      <section className="border-t border-gray-200 bg-[#F7F8FA] py-16">
 
-          <Reveal className="text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F5A623]">
-              Explore More
-            </p>
+        <div className="mx-auto max-w-[1400px] px-5">
 
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#0B1F3A] sm:text-4xl">
-              Related Packaging Products
-            </h2>
+          <div className="mb-9 flex items-end justify-between">
 
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-neutral-500">
-              Explore more Dpack packaging solutions designed for protection,
-              transportation and efficient product handling.
-            </p>
-          </Reveal>
+            <div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{
-              once: true,
-              amount: 0.1,
-            }}
-            className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
-          >
-            {relatedProducts.map((product) => (
-              <motion.div
-                key={product.name}
-                variants={fadeUp}
-                whileHover={{
-                  y: -8,
-                }}
-                className="group overflow-hidden rounded-[26px] border border-neutral-200 bg-white transition-all duration-500 hover:border-[#F5A623]/30 hover:shadow-[0_20px_50px_rgba(11,31,58,0.1)]"
-              >
+              <span className="text-[15px] font-extrabold uppercase tracking-[2px] text-[#F5A623]">
+                You May Also Like
+              </span>
 
-                {/* IMAGE */}
+              <h2 className="mt-2 text-3xl font-black text-[#081A33]">
+                Related Products
+              </h2>
 
-                <div className="relative overflow-hidden bg-[#f7f7f5] p-5">
+            </div>
 
-                  <div className="absolute left-4 top-4 z-10 rounded-full bg-white px-3 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[#0B1F3A] shadow-sm">
-                    Dpack
-                  </div>
+            <Link
+              href="/products"
+              className="hidden items-center gap-2 text-sm font-bold text-[#081A33] md:flex"
+            >
+              View All
+              <ChevronRight size={17} />
+            </Link>
 
-                  <motion.img
-                    src={product.image}
-                    alt={product.name}
-                    whileHover={{
-                      scale: 1.08,
-                    }}
-                    transition={{
-                      duration: 0.6,
-                    }}
-                    className="h-56 w-full object-contain"
-                  />
+          </div>
 
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                      scale: 0.8,
-                    }}
-                    whileHover={{
-                      opacity: 1,
-                      scale: 1,
-                    }}
-                    className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#F5A623] text-white shadow-lg"
-                  >
-                    <ArrowUpRight size={17} />
-                  </motion.div>
-                </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
-                {/* CONTENT */}
+            {relatedProducts.map(
+              (item) => (
+                <article
+                  key={
+                    item.slug ||
+                    item.id ||
+                    item.name
+                  }
+                  className="group border border-gray-200 bg-white transition hover:-translate-y-1 hover:border-[#081A33] hover:shadow-xl"
+                >
 
-                <div className="p-5">
+                  <div className="relative flex h-[270px] items-center justify-center overflow-hidden bg-white p-6">
 
-                  <div className="flex items-center justify-between">
-                    <Stars size={11} />
-
-                    <span className="text-[10px] font-bold text-neutral-400">
-                      4.8 / 5
+                    <span className="absolute left-4 top-4 z-10 bg-[#081A33] px-3 py-1 text-[10px] font-bold uppercase text-white">
+                      Packaging
                     </span>
-                  </div>
 
-                  <h3 className="mt-4 text-lg font-bold text-[#0B1F3A] transition-colors group-hover:text-[#F5A623]">
-                    {product.name}
-                  </h3>
-
-                  <p className="mt-1 text-xs leading-5 text-neutral-500">
-                    {product.category}
-                  </p>
-
-                  {/* INQUIRY */}
-
-                  <button
-                    type="button"
-                    className="group/btn mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#F5A623] px-4 py-3.5 text-xs font-bold text-white transition-all hover:bg-[#0B1F3A]"
-                  >
-                   Add to Cart
-
-                    <ArrowRight
-                      size={14}
-                      className="transition-transform duration-300 group-hover/btn:translate-x-1"
-                    />
-                  </button>
-
-                  <button
-                    type="button"
-                    className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-[#0B1F3A]/10 px-4 py-3 text-xs font-bold text-[#0B1F3A] transition-all hover:border-[#F5A623] hover:text-[#F5A623]"
-                  >
-                    View Product
-                    <ArrowUpRight size={14} />
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* =====================================================
-          REVIEWS
-      ===================================================== */}
-
-      <section className="relative z-10 bg-[#f7f7f5]">
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
-
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-
-            {/* RATING */}
-
-            <Reveal
-              variants={fadeLeft}
-              className="lg:col-span-4"
-            >
-              <div className="sticky top-28 rounded-[30px] border border-neutral-200 bg-white p-7 shadow-[0_15px_50px_rgba(11,31,58,0.06)]">
-
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F5A623]">
-                  Customer Feedback
-                </p>
-
-                <h2 className="mt-3 text-3xl font-bold text-[#0B1F3A]">
-                  Customer Reviews
-                </h2>
-
-                <div className="mt-7 flex items-end gap-3">
-                  <span className="text-6xl font-bold tracking-tight text-[#0B1F3A]">
-                    4.8
-                  </span>
-
-                  <div className="pb-2">
-                    <Stars size={14} />
-
-                    <p className="mt-1 text-xs text-neutral-500">
-                      Based on customer feedback
-                    </p>
-                  </div>
-                </div>
-
-                {/* REVIEW BARS */}
-
-                <div className="mt-8 space-y-4">
-                  {[
-                    ["5", "92%"],
-                    ["4", "6%"],
-                    ["3", "2%"],
-                  ].map(([star, percentage]) => (
-                    <div
-                      key={star}
-                      className="flex items-center gap-3"
+                    <Link
+                      href={`/products/${item.slug}`}
+                      className="flex h-full w-full items-center justify-center"
                     >
-                      <span className="w-4 text-xs font-bold text-neutral-500">
-                        {star}
-                      </span>
-
-                      <Star
-                        size={12}
-                        className="fill-[#F5A623] text-[#F5A623]"
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
                       />
-
-                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100">
-                        <motion.div
-                          initial={{
-                            width: 0,
-                          }}
-                          whileInView={{
-                            width: percentage,
-                          }}
-                          viewport={{
-                            once: true,
-                          }}
-                          transition={{
-                            duration: 1,
-                            ease: "easeOut",
-                          }}
-                          className="h-full rounded-full bg-[#F5A623]"
-                        />
-                      </div>
-
-                      <span className="w-10 text-right text-xs font-bold text-neutral-500">
-                        {percentage}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0B1F3A] px-5 py-4 text-sm font-bold text-white transition-all hover:bg-[#F5A623]"
-                >
-                  Share Your Experience
-                  <ArrowUpRight size={16} />
-                </button>
-              </div>
-            </Reveal>
-
-            {/* REVIEWS */}
-
-            <Reveal
-              variants={fadeRight}
-              className="lg:col-span-8"
-            >
-              <div className="space-y-5">
-
-                {reviews.map((review, index) => (
-                  <motion.div
-                    key={review.name}
-                    initial={{
-                      opacity: 0,
-                      y: 25,
-                    }}
-                    whileInView={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    viewport={{
-                      once: true,
-                      amount: 0.2,
-                    }}
-                    transition={{
-                      delay: index * 0.12,
-                      duration: 0.6,
-                    }}
-                    whileHover={{
-                      y: -4,
-                    }}
-                    className="relative overflow-hidden rounded-[28px] border border-neutral-200 bg-white p-6 shadow-[0_10px_35px_rgba(11,31,58,0.04)] sm:p-8"
-                  >
-
-                    <div className="absolute right-6 top-6 text-[#F5A623]/10">
-                      <Quote size={50} />
-                    </div>
-
-                    <div className="relative">
-                      <Stars size={14} />
-
-                      <h3 className="mt-5 text-xl font-bold text-[#0B1F3A]">
-                        “{review.review}”
-                      </h3>
-
-                      <p className="mt-3 max-w-2xl text-sm leading-7 text-neutral-500">
-                        Dpack protective packaging offers a practical solution
-                        for businesses looking for lightweight and reliable
-                        product protection during transportation.
-                      </p>
-
-                      <div className="mt-6 flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0B1F3A] text-sm font-bold text-white">
-                          {review.name.charAt(0)}
-                        </div>
-
-                        <div>
-                          <p className="text-sm font-bold text-[#0B1F3A]">
-                            {review.name}
-                          </p>
-
-                          <p className="mt-0.5 text-xs text-neutral-400">
-                            {review.role}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-
-                {/* REVIEW CTA */}
-
-                <motion.div
-                  whileHover={{
-                    y: -4,
-                  }}
-                  className="rounded-[28px] border border-dashed border-[#F5A623]/30 bg-[#F5A623]/5 p-7"
-                >
-                  <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-
-                    <div>
-                      <p className="text-sm font-bold text-[#0B1F3A]">
-                        Have you used this product?
-                      </p>
-
-                      <p className="mt-1 text-xs leading-5 text-neutral-500">
-                        Share your experience with the Dpack team.
-                      </p>
-                    </div>
+                    </Link>
 
                     <button
-                      type="button"
-                      className="flex items-center justify-center gap-2 rounded-xl bg-[#F5A623] px-5 py-3 text-xs font-bold text-white transition-all hover:bg-[#0B1F3A]"
+                      className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center bg-white opacity-0 shadow-sm transition group-hover:opacity-100"
+                      aria-label="Add to wishlist"
                     >
-                      Write a Review
-                      <ArrowUpRight size={14} />
+                      <Heart size={16} />
                     </button>
+
                   </div>
-                </motion.div>
-              </div>
-            </Reveal>
+
+                  <div className="border-t border-gray-100 p-5">
+
+                    <div className="mb-2 flex gap-1">
+
+                      {[1, 2, 3, 4, 5].map(
+                        (star) => (
+                          <Star
+                            key={star}
+                            size={13}
+                            fill="#F5A623"
+                            className="text-[#F5A623]"
+                          />
+                        )
+                      )}
+
+                    </div>
+
+                    <Link
+                      href={`/products/${item.slug}`}
+                    >
+                      <h3 className="font-bold text-[#081A33] transition group-hover:text-[#F5A623]">
+                        {item.name}
+                      </h3>
+                    </Link>
+
+                    <div className="mt-3 flex items-center justify-between">
+
+                      <span className="text-xl font-black text-[#081A33]">
+                        ₹
+                        {Number(
+                          item.price || 0
+                        ).toLocaleString(
+                          "en-IN"
+                        )}
+                      </span>
+
+                      <button
+                        onClick={() => {
+                          if (
+                            typeof window !==
+                            "undefined"
+                          ) {
+                            window.dispatchEvent(
+                              new CustomEvent(
+                                "dpack-cart-add",
+                                {
+                                  detail: {
+                                    ...item,
+                                    quantity: 1,
+                                  },
+                                }
+                              )
+                            );
+                          }
+                        }}
+                        className="flex h-9 w-9 items-center justify-center bg-[#F5A623] text-[#081A33]"
+                      >
+                        <ShoppingCart size={16} />
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </article>
+              )
+            )}
+
           </div>
+
         </div>
+
       </section>
 
       {/* =====================================================
-          FINAL INQUIRY CTA
+          ZOOM MODAL
       ===================================================== */}
 
-      <section className="relative z-10 overflow-hidden bg-white px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
-        <Reveal>
-          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[34px] bg-[#F5A623] px-6 py-10 sm:px-10 lg:px-14 lg:py-12">
+      {zoom && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 p-5"
+          onClick={() => setZoom(false)}
+        >
 
-            <motion.div
-              animate={{
-                scale: [1, 1.08, 1],
-              }}
-              transition={{
-                duration: 7,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute -right-24 -top-32 h-80 w-80 rounded-full bg-white/10 blur-3xl"
-            />
-
-            <div className="relative flex flex-col justify-between gap-8 lg:flex-row lg:items-center">
-
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-white/65">
-                  Dpack Packaging Solutions
-                </p>
-
-                <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-white sm:text-4xl">
-                  Need more information about this product?
-                </h2>
-
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70">
-                  Send your product requirements and our team will help you
-                  with suitable size, quantity and packaging details.
-                </p>
-              </div>
-
-              <motion.button
-                type="button"
-                whileHover={{
-                  scale: 1.03,
-                  y: -3,
-                }}
-                whileTap={{
-                  scale: 0.97,
-                }}
-                className="group flex shrink-0 items-center justify-center gap-3 rounded-2xl bg-white px-7 py-4 text-sm font-bold text-[#0B1F3A] shadow-xl"
-              >
-                Shop Now 
-
-                <motion.span
-                  animate={{
-                    x: [0, 5, 0],
-                  }}
-                  transition={{
-                    duration: 1.4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <ArrowRight size={18} />
-                </motion.span>
-              </motion.button>
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      {/* =====================================================
-          IMAGE LIGHTBOX
-      ===================================================== */}
-
-      <AnimatePresence>
-        {zoomOpen && (
-          <motion.div
-            initial={{
-              opacity: 0,
-            }}
-            animate={{
-              opacity: 1,
-            }}
-            exit={{
-              opacity: 0,
-            }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0B1F3A]/90 p-5 backdrop-blur-md"
-            onClick={() => setZoomOpen(false)}
+          <button
+            onClick={() => setZoom(false)}
+            className="absolute right-5 top-5 z-20 flex h-12 w-12 items-center justify-center bg-white text-[#081A33]"
           >
-            <motion.div
-              initial={{
-                opacity: 0,
-                scale: 0.9,
-              }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-              }}
-              exit={{
-                opacity: 0,
-                scale: 0.9,
-              }}
-              transition={{
-                duration: 0.35,
-              }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative flex max-h-[90vh] w-full max-w-5xl items-center justify-center overflow-hidden rounded-[30px] bg-white p-6 sm:p-10"
-            >
-              <button
-                type="button"
-                onClick={() => setZoomOpen(false)}
-                className="absolute right-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-[#0B1F3A] text-white transition-colors hover:bg-[#F5A623]"
-              >
-                <span className="text-xl leading-none">
-                  ×
-                </span>
-              </button>
+            ×
+          </button>
 
-              <img
-                src={productImages[selectedImage]}
-                alt="Air Column Bag for Electronics"
-                className="max-h-[78vh] w-full object-contain"
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          <img
+            src={images[selectedImage]}
+            alt={currentProduct.name}
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+            className="max-h-[90vh] max-w-[90vw] object-contain"
+          />
+
+        </div>
+      )}
 
     </main>
   );

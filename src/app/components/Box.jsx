@@ -1,408 +1,503 @@
-
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
-const WORD = "DPACK";
+/* =========================================================
+   PRODUCTS
+========================================================= */
 
 const products = [
   {
-    name: "Air Column Bag",
-    src: "/Air column bag (2).webp",
-    category: "AIR CUSHION PACKAGING",
-    description:
-      "Flexible air-column protection designed to cushion delicate products during shipping and handling.",
+    id: 1,
+    name: "Air Column Bags",
+    category: "Protective Packaging",
+    description: "Shockproof. Safe. Reliable.",
+    image: "/Air column bag (2).webp",
   },
   {
-    name: "Dunnage Air Bag",
-    src: "/Dunnage.webp",
-    category: "CARGO PROTECTION",
-    description:
-      "Reliable void-filling protection designed to help stabilize cargo during transportation.",
+    id: 2,
+    name: "Dunnage Air Bags",
+    category: "Cargo Safety",
+    description: "Strong support for heavy loads.",
+    image: "/Dannage.webp",
   },
   {
-    name: "Air Column Roll",
-    src: "/Air Column Roll (2).webp",
-    category: "FLEXIBLE PACKAGING",
-    description:
-      "Versatile air-column packaging material for creating protective cushioning around products.",
+    id: 3,
+    name: "Air Column Rolls",
+    category: "Flexible Protection",
+    description: "Flexible protection for every shipment.",
+    image: "/Air Column Roll (2).webp",
   },
   {
-    name: "Packaging Air Bag",
-    src: "/packing bag.webp",
-    category: "PRODUCT PROTECTION",
-    description:
-      "Practical protective packaging solutions for safer handling, storage and delivery.",
+    id: 4,
+    name: "Gap Fillers",
+    category: "Smart Protection",
+    description: "Keep your products stable.",
+    image: "/Gap filler (3).webp",
   },
   {
-    name: "Gap Filler",
-    src: "/Gap filler (3).webp",
-    category: "SMART PACKAGING",
-    description:
-      "Efficient void-filling solutions designed to minimize movement inside shipping cartons.",
+    id: 5,
+    name: "Packaging Air Bags",
+    category: "Product Protection",
+    description: "Durable. Versatile. Secure.",
+    image: "/packing bag.webp",
   },
 ];
 
-const letterVariants = {
-  hidden: {
-    opacity: 0,
-    y: 100,
-    rotateX: -90,
-  },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    rotateX: 0,
-    transition: {
-      delay: 0.25 + i * 0.12,
-      duration: 0.9,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  }),
-};
-
 export default function Main() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [activeProduct, setActiveProduct] = useState(0);
 
-  const product = products[activeIndex];
-
-  const nextProduct = () => {
-    setActiveIndex((prev) => (prev + 1) % products.length);
-  };
-
-  const prevProduct = () => {
-    setActiveIndex(
-      (prev) => (prev - 1 + products.length) % products.length
-    );
-  };
+  /* =======================================================
+     AUTO CHANGE CENTER PRODUCT
+  ======================================================== */
 
   useEffect(() => {
-    if (paused) return;
+    const interval = setInterval(() => {
+      setActiveProduct((prev) => (prev + 1) % products.length);
+    }, 4500);
 
-    const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % products.length);
-    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
-    return () => clearInterval(timer);
-  }, [paused]);
+  const active = products[activeProduct];
 
   return (
-    <section
-      className="relative isolate h-[100svh] min-h-[650px] w-full overflow-hidden bg-[#f3f3f0] text-[#151719]"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 -z-10">
-        {/* Dark top panel */}
-        <div className="absolute inset-x-0 top-0 h-[43%] bg-[#101820]" />
+    <section className="relative h-[78vh] min-h-[590px] w-full overflow-hidden bg-[#F7F8FA] p-2 sm:p-3">
+      {/* =====================================================
+          MAIN GRID
+      ====================================================== */}
 
-        {/* Soft light glow */}
-        <div className="absolute right-[12%] top-[12%] h-[420px] w-[420px] rounded-full bg-[#b5c8d8]/10 blur-[120px]" />
+      <div className="grid h-full w-full grid-cols-1 gap-2 sm:gap-3 md:grid-cols-[0.85fr_1.7fr_0.85fr]">
 
-        {/* Light bottom panel */}
-        <div className="absolute inset-x-0 bottom-0 h-[61%] bg-gradient-to-b from-[#d9dcda] via-[#efefeb] to-[#f7f6f2]" />
+        {/* ===================================================
+            LEFT SIDE
+        ==================================================== */}
 
-        {/* Technical grid */}
-        <div
-          className="absolute inset-0 opacity-[0.055]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right,#7b8790 1px,transparent 1px),linear-gradient(to bottom,#7b8790 1px,transparent 1px)",
-            backgroundSize: "100px 100px",
-          }}
-        />
+        <div className="grid h-full grid-rows-2 gap-2 sm:gap-3">
+          <SideCard
+            product={products[0]}
+            color="#F7774F"
+            active={activeProduct === 0}
+            onClick={() => setActiveProduct(0)}
+          />
 
-        {/* Atmospheric glow */}
-        <div className="absolute bottom-[17%] left-[30%] h-[180px] w-[40%] rounded-full bg-white/70 blur-[90px]" />
-
-        {/* Ground shadow */}
-        <div className="absolute bottom-[13%] left-1/2 h-12 w-[48%] -translate-x-1/2 rounded-[100%] bg-black/20 blur-2xl sm:bottom-[10%]" />
-
-        {/* Orbit line */}
-        <div className="absolute left-[9%] top-[21%] h-[35%] w-[82%] rounded-[50%] border border-white/20" />
-      </div>
-
-      {/* HEADER LABEL */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="absolute left-5 top-6 z-40 flex items-center gap-3 sm:left-10 sm:top-8 lg:left-16"
-      >
-        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 sm:h-11 sm:w-11">
-          <span className="h-3 w-3 rounded-full bg-[#D95026]" />
-        </span>
-
-        <div>
-          <p className="text-sm font-bold tracking-[0.2em] text-white sm:text-base">
-            DPACK
-          </p>
-          <p className="text-[8px] tracking-[0.22em] text-white/50 sm:text-[9px]">
-            SMART PACKAGING SOLUTIONS
-          </p>
+          <SideCard
+            product={products[1]}
+            color="#19B895"
+            active={activeProduct === 1}
+            onClick={() => setActiveProduct(1)}
+          />
         </div>
-      </motion.div>
 
-      {/* TOP RIGHT BUTTON */}
-      <motion.div
-        initial={{ opacity: 0, x: 30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
-        className="absolute right-5 top-6 z-40 sm:right-10 sm:top-8 lg:right-16"
-      >
-        <Link
-          href="/contact"
-          className="group flex items-center gap-2 rounded-full border border-white/30 bg-white/10 py-1.5 pl-4 pr-1.5 text-[10px] font-medium text-white backdrop-blur-md transition-all hover:bg-white hover:text-black sm:gap-3 sm:py-2 sm:pl-5 sm:pr-2 sm:text-xs"
-        >
-          Let's Talk
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black transition-transform group-hover:rotate-45 sm:h-9 sm:w-9">
-            <ArrowUpRight size={17} />
-          </span>
-        </Link>
-      </motion.div>
+        {/* ===================================================
+            CENTER PRODUCT SHOWCASE
+        ==================================================== */}
 
-      {/* MAIN HEADING: LETTER-BY-LETTER ANIMATION */}
-      <div className="absolute left-0 right-0 top-[18%] z-10 flex justify-center overflow-hidden px-2 sm:top-[13%]">
-        <motion.h1
-          initial="hidden"
-          animate="visible"
-          className="flex select-none whitespace-nowrap font-black leading-none tracking-[-0.075em] text-[#f2f2ef]"
-          style={{
-            fontSize: "clamp(100px, 22vw, 300px)",
-          }}
-          aria-label="DPACK"
-        >
-          {WORD.split("").map((letter, i) => (
-            <motion.span
-              key={i}
-              custom={i}
-              variants={letterVariants}
-              className="inline-block"
-              style={{
-                textShadow: "0 10px 35px rgba(0,0,0,0.16)",
-              }}
-            >
-              {letter}
-            </motion.span>
-          ))}
-        </motion.h1>
-      </div>
+        <div className="relative overflow-hidden rounded-[20px] bg-[#4C9BC4]">
 
-      {/* PRODUCT SLIDE */}
-      <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
-        <AnimatePresence mode="wait">
+          {/* Soft background gradient */}
+
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(255,255,255,0.18),transparent_34%),radial-gradient(circle_at_20%_100%,rgba(0,45,80,0.22),transparent_40%)]" />
+
+          {/* Animated glow */}
+
           <motion.div
-            key={product.src}
-            initial={{
-              opacity: 0,
-              scale: 0.55,
-              y: 120,
-            }}
             animate={{
-              opacity: 1,
-              scale: 1,
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-              scale: 0.8,
-              y: -40,
+              x: [0, 25, 0],
+              y: [0, -15, 0],
+              scale: [1, 1.08, 1],
             }}
             transition={{
-              delay: 0.15,
-              duration: 1.1,
-              ease: [0.16, 1, 0.3, 1],
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut",
             }}
-            className="absolute inset-0 flex items-center justify-center"
-          >
-            {/* Product shadow */}
-            <motion.div
-              animate={{
-                scale: [1, 0.9, 1],
-                opacity: [0.22, 0.13, 0.22],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute bottom-[12%] left-1/2 h-10 w-[55%] -translate-x-1/2 rounded-[100%] bg-black/40 blur-2xl sm:bottom-[9%] sm:w-[38%]"
-            />
+            className="absolute -right-[15%] -top-[15%] h-[75%] w-[75%] rounded-full bg-white/[0.08]"
+          />
 
-            {/* Floating product */}
+          <motion.div
+            animate={{
+              x: [0, -20, 0],
+            }}
+            transition={{
+              duration: 7,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute bottom-[-25%] left-[-10%] h-[60%] w-[65%] rounded-full bg-[#236F9A]/30 blur-3xl"
+          />
+
+          {/* Decorative lines */}
+
+          <div className="absolute left-[7%] top-[18%] h-[1px] w-[30%] rotate-[-25deg] bg-white/10" />
+
+          <div className="absolute right-[8%] top-[30%] h-[1px] w-[22%] rotate-[25deg] bg-white/10" />
+
+          <div className="absolute bottom-[20%] left-[10%] h-[1px] w-[25%] rotate-[20deg] bg-white/10" />
+
+          {/* =================================================
+              CENTER TEXT
+          ================================================== */}
+
+          <div className="absolute left-[7%] top-[8%] z-20 max-w-[62%] sm:left-[8%] sm:top-[10%]">
+
             <motion.div
-              animate={{
-                y: [0, -12, 0],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="relative mt-[7%] h-[52vh] max-h-[540px] min-h-[280px] w-[90vw] max-w-[820px] sm:mt-[6%] sm:h-[65vh]"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-4 flex items-center gap-2"
             >
-              <Image
-                src={product.src}
-                alt={product.name}
-                fill
-                priority
-                sizes="(max-width: 768px) 90vw, 820px"
-                className="object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.22)]"
-              />
+              <span className="h-[1px] w-6 bg-white/60" />
+
+              <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-white/75 sm:text-[10px]">
+                Smart Packaging Solutions
+              </p>
             </motion.div>
-          </motion.div>
-        </AnimatePresence>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.1,
+              }}
+              className="text-[31px] font-extrabold leading-[0.98] tracking-[-0.045em] text-white sm:text-[41px] md:text-[44px] lg:text-[40px] xl:text-[43px]"
+            >
+              Reliable Packaging
+              <br />
+              for a{" "}
+              <span className="relative inline-block text-[#FFE15A]">
+                Safer Tomorrow
+              </span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.7,
+                delay: 0.25,
+              }}
+              className="mt-4 max-w-[340px] text-[10px] leading-[1.55] text-white/70 sm:text-[11px]"
+            >
+              Protective packaging solutions designed to keep your products
+              secure throughout storage, handling and transportation.
+            </motion.p>
+
+            <Link
+              href="/products"
+              className="group mt-5 inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-[11px] font-bold text-[#172333] shadow-lg shadow-black/10 transition-all duration-300 hover:gap-5 hover:bg-[#FFE15A] sm:px-6 sm:py-3.5 sm:text-[12px]"
+            >
+              Explore Collection
+
+              <ArrowRight
+                size={15}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </Link>
+          </div>
+
+          {/* =================================================
+              CENTER PRODUCT IMAGE
+          ================================================== */}
+
+          <div className="absolute bottom-[2%] left-[23%] right-[1%] top-[27%] z-10">
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeProduct}
+                initial={{
+                  opacity: 0,
+                  scale: 0.75,
+                  x: 80,
+                }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  x: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.9,
+                  x: -45,
+                }}
+                transition={{
+                  duration: 0.85,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="absolute inset-0"
+              >
+                <motion.div
+                  animate={{
+                    y: [0, -10, 0],
+                    rotate: [0, 0.5, 0],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="relative h-full w-full"
+                >
+                  <Image
+                    src={active.image}
+                    alt={active.name}
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 100vw, 60vw"
+                    className="object-contain object-center drop-shadow-[0_25px_30px_rgba(0,40,70,0.18)]"
+                  />
+                </motion.div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* =================================================
+              PRODUCT INDICATORS
+          ================================================== */}
+
+          <div className="absolute bottom-[5%] left-[7%] z-20">
+
+            <div className="flex items-center gap-2">
+
+              {products.map((product, index) => (
+                <button
+                  key={product.id}
+                  type="button"
+                  onClick={() => setActiveProduct(index)}
+                  className="group"
+                  aria-label={`Show ${product.name}`}
+                >
+                  <span
+                    className={`block h-[4px] rounded-full transition-all duration-500 ${
+                      activeProduct === index
+                        ? "w-8 bg-white"
+                        : "w-2 bg-white/35 group-hover:bg-white/60"
+                    }`}
+                  />
+                </button>
+              ))}
+
+              <span className="ml-2 text-[8px] font-semibold uppercase tracking-[0.16em] text-white/50">
+                05 Products
+              </span>
+
+            </div>
+          </div>
+
+          {/* =================================================
+              CURRENT PRODUCT
+          ================================================== */}
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeProduct}
+              initial={{
+                opacity: 0,
+                y: 10,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                y: -10,
+              }}
+              className="absolute bottom-[5%] right-[6%] z-20 hidden text-right sm:block"
+            >
+              <p className="text-[8px] uppercase tracking-[0.18em] text-white/45">
+                Featured Product
+              </p>
+
+              <p className="mt-1 text-[12px] font-bold text-white">
+                {active.name}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+        </div>
+
+        {/* ===================================================
+            RIGHT SIDE
+        ==================================================== */}
+
+        <div className="grid h-full grid-rows-2 gap-2 sm:gap-3">
+
+          <SideCard
+            product={products[3]}
+            color="#ED4D78"
+            active={activeProduct === 3}
+            onClick={() => setActiveProduct(3)}
+          />
+
+          <SideCard
+            product={products[4]}
+            color="#9155E8"
+            active={activeProduct === 4}
+            onClick={() => setActiveProduct(4)}
+          />
+
+        </div>
       </div>
 
-      {/* LEFT CONTENT */}
-      <motion.div
-        initial={{ opacity: 0, x: -40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1.3, duration: 0.9 }}
-        className="absolute bottom-[9%] left-5 z-30 max-w-[230px] sm:bottom-[10%] sm:left-10 sm:max-w-[310px] lg:left-16 lg:max-w-[370px]"
-      >
-        <div className="mb-3 flex items-center gap-2 sm:mb-4">
-          <span className="h-[2px] w-7 bg-[#D95026] sm:w-8" />
-          <span className="text-[8px] font-semibold uppercase tracking-[0.22em] text-[#777] sm:text-[10px]">
-            Engineered Protection
-          </span>
-        </div>
+      {/* =====================================================
+          MOBILE PRODUCT NAVIGATION
+      ====================================================== */}
 
-        <h2 className="text-[27px] font-semibold leading-[1.08] tracking-tight sm:text-4xl lg:text-5xl">
-          Safer Products.
-          <br />
-          <span className="text-[#D95026]">Smarter Shipping.</span>
-        </h2>
-
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={product.name}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.35 }}
-            className="mt-3 max-w-[320px] text-[10px] leading-5 text-[#686b6d] sm:mt-4 sm:text-sm sm:leading-6"
+      <div className="absolute bottom-4 left-4 right-4 z-40 flex gap-2 overflow-x-auto md:hidden">
+        {products.map((product, index) => (
+          <button
+            key={product.id}
+            type="button"
+            onClick={() => setActiveProduct(index)}
+            className={`shrink-0 rounded-full px-4 py-2 text-[10px] font-semibold shadow-sm transition-all ${
+              activeProduct === index
+                ? "bg-[#081A33] text-white"
+                : "bg-white/95 text-[#111827]"
+            }`}
           >
-            {product.description}
-          </motion.p>
-        </AnimatePresence>
-
-        <Link
-          href="/products"
-          className="group mt-4 inline-flex items-center gap-3 border-b border-[#111]/30 pb-2 text-[9px] font-bold uppercase tracking-[0.15em] transition-colors hover:border-[#D95026] sm:mt-6 sm:gap-4 sm:text-xs"
-        >
-          Explore Collection
-          <ArrowUpRight
-            size={17}
-            className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
-          />
-        </Link>
-      </motion.div>
-
-      {/* RIGHT PRODUCT DETAILS */}
-      <motion.div
-        initial={{ opacity: 0, x: 30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1.5, duration: 0.8 }}
-        className="absolute bottom-[10%] right-5 z-40 max-w-[145px] text-right sm:bottom-[11%] sm:right-10 sm:max-w-[220px] lg:right-16"
-      >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={product.name}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.35 }}
-          >
-            <div className="mb-2 flex items-center justify-end gap-2 sm:mb-3">
-              <Sparkles size={14} className="text-[#D95026]" />
-
-              <span className="text-[7px] font-semibold uppercase tracking-[0.17em] text-[#777] sm:text-[10px] sm:tracking-[0.2em]">
-                Featured Product
-              </span>
-            </div>
-
-            <p className="text-[8px] uppercase tracking-[0.15em] text-[#888] sm:text-[10px]">
-              {product.category}
-            </p>
-
-            <h3 className="mt-2 text-lg font-bold leading-tight tracking-tight sm:text-3xl">
-              {product.name}
-            </h3>
-
-            <div className="mt-3 flex items-center justify-end gap-2 sm:mt-4">
-              <button
-                type="button"
-                onClick={prevProduct}
-                aria-label="Previous product"
-                className="pointer-events-auto flex h-8 w-8 items-center justify-center rounded-full border border-black/20 transition hover:bg-black hover:text-white sm:h-9 sm:w-9"
-              >
-                <ChevronLeft size={17} />
-              </button>
-
-              <span className="min-w-[43px] text-center text-[10px] tracking-widest text-[#777]">
-                {String(activeIndex + 1).padStart(2, "0")} /{" "}
-                {String(products.length).padStart(2, "0")}
-              </span>
-
-              <button
-                type="button"
-                onClick={nextProduct}
-                aria-label="Next product"
-                className="pointer-events-auto flex h-8 w-8 items-center justify-center rounded-full border border-black/20 transition hover:bg-black hover:text-white sm:h-9 sm:w-9"
-              >
-                <ChevronRight size={17} />
-              </button>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-
-        {/* PRODUCT THUMBNAILS */}
-        <div className="pointer-events-auto mt-3 flex justify-end gap-1.5 sm:mt-5 sm:gap-2">
-          {products.map((item, index) => (
-            <button
-              key={item.src}
-              type="button"
-              onClick={() => setActiveIndex(index)}
-              aria-label={`Show ${item.name}`}
-              aria-pressed={activeIndex === index}
-              className={`relative h-8 w-8 overflow-hidden border bg-white/70 transition-all sm:h-10 sm:w-10 ${
-                activeIndex === index
-                  ? "border-[#D95026] ring-1 ring-[#D95026]/30"
-                  : "border-black/10 opacity-65 hover:opacity-100"
-              }`}
-            >
-              <Image
-                src={item.src}
-                alt={item.name}
-                fill
-                sizes="40px"
-                className="object-contain p-0.5"
-              />
-            </button>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* SUBTLE SLIDE PROGRESS */}
-      <div className="absolute bottom-0 left-0 z-50 h-[3px] w-full bg-black/5">
-        <motion.div
-          key={activeIndex}
-          initial={{ width: "0%" }}
-          animate={{ width: "100%" }}
-          transition={{
-            duration: paused ? 0 : 5,
-            ease: "linear",
-          }}
-          className="h-full bg-[#D95026]"
-        />
+            {product.name}
+          </button>
+        ))}
       </div>
     </section>
+  );
+}
+
+/* =========================================================
+   SIDE PRODUCT CARD
+========================================================= */
+
+function SideCard({
+  product,
+  color,
+  active,
+  onClick,
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{
+        scale: 0.985,
+      }}
+      whileTap={{
+        scale: 0.975,
+      }}
+      className="group relative min-h-0 overflow-hidden rounded-[17px] text-left shadow-sm"
+      style={{
+        backgroundColor: color,
+      }}
+    >
+      {/* Soft gradient */}
+
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.10] via-transparent to-black/[0.08]" />
+
+      {/* Decorative circle */}
+
+      <motion.div
+        animate={{
+          scale: [1, 1.08, 1],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute -right-[25%] -top-[30%] h-[90%] w-[90%] rounded-full bg-white/[0.10]"
+      />
+
+      {/* Decorative diagonal */}
+
+      <div className="absolute bottom-[-25%] left-[20%] h-[65%] w-[90%] rotate-[-15deg] bg-white/[0.08]" />
+
+      {/* =================================================
+          PRODUCT IMAGE
+      ================================================== */}
+
+      <motion.div
+        animate={{
+          y: [0, -5, 0],
+          rotate: [0, 1, 0],
+        }}
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute bottom-[5%] right-[1%] top-[15%] w-[61%]"
+      >
+        <Image
+          src={product.image}
+          alt={product.name}
+          fill
+          sizes="(max-width: 768px) 50vw, 25vw"
+          className="object-contain transition-transform duration-700 group-hover:scale-[1.07] drop-shadow-[0_18px_18px_rgba(0,0,0,0.12)]"
+        />
+      </motion.div>
+
+      {/* =================================================
+          TEXT
+      ================================================== */}
+
+      <div className="relative z-10 flex h-full flex-col justify-between p-4 sm:p-5 lg:p-6">
+
+        <div className="max-w-[55%]">
+
+          <div className="flex items-center gap-2">
+            <span className="h-[1px] w-4 bg-white/60" />
+
+            <p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-white/75 sm:text-[9px]">
+              {product.category}
+            </p>
+          </div>
+
+          <h2 className="mt-3 text-[17px] font-extrabold leading-[1.05] tracking-[-0.035em] text-white sm:text-[20px] lg:text-[23px]">
+            {product.name}
+          </h2>
+
+          <p className="mt-2 max-w-[165px] text-[10px] leading-[1.4] text-white/75 sm:text-[11px]">
+            {product.description}
+          </p>
+        </div>
+
+        {/* Bottom */}
+
+        <div className="relative z-20 flex items-end justify-between gap-2">
+
+          <div>
+            <div className="h-[2px] w-7 bg-white/80 transition-all duration-300 group-hover:w-10" />
+          </div>
+
+          <span className="flex items-center gap-1 text-[9px] font-semibold text-white/90 transition-all duration-300 group-hover:gap-2 sm:text-[10px]">
+            View Details
+            <ArrowUpRight
+              size={13}
+              className="transition-transform duration-300 group-hover:translate-x-0.5"
+            />
+          </span>
+
+        </div>
+      </div>
+
+      {/* Active Border */}
+
+      <motion.div
+        initial={false}
+        animate={{
+          opacity: active ? 1 : 0,
+        }}
+        className="pointer-events-none absolute inset-0 rounded-[17px] border-2 border-white/75"
+      />
+
+      {/* Hover overlay */}
+
+      <div className="pointer-events-none absolute inset-0 bg-white/0 transition-all duration-300 group-hover:bg-white/[0.035]" />
+    </motion.button>
   );
 }

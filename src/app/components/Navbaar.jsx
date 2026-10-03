@@ -601,24 +601,16 @@ export default function Navbar() {
                     className="
                       block
                       whitespace-nowrap
-                      text-[13px]
+                      text-[15px]
                       font-semibold
                       text-[#171717]
                       transition-colors
                       hover:text-[#F5A623]
                     "
                   >
-                    +91 (766) 998-8825
+                    +91-9999999999
                   </a>
 
-                  <span className="
-                    block
-                    whitespace-nowrap
-                    text-[10px]
-                    text-[#777]
-                  ">
-                    Monday-Saturday: 10 AM-7 PM EST
-                  </span>
 
                 </div>
 
