@@ -1,6 +1,7 @@
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbaar";
 import LenisScroll from "./components/Smooth";
+import { AuthProvider } from "./context/AuthContext";
 import "./globals.css";
 
 import { Outfit, Quicksand } from "next/font/google";
@@ -28,21 +29,12 @@ export default function RootLayout({ children }) {
       className={`${outfit.variable} ${quicksand.variable}`}
     >
       <body className="min-h-screen flex flex-col">
-
-        {/* HEADER */}
-        <Navbar />
-
-        {/* MAIN CONTENT */}
-        <main className="flex-1">
-          {children}
-        </main>
-
-        {/* SMOOTH SCROLL */}
-        <LenisScroll />
-
-        {/* FOOTER */}
-        <Footer />
-
+        <AuthProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <LenisScroll />
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

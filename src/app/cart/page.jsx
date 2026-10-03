@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { removeFromCart, updateQty, useCart } from "@/lib/cartBus";
 import {
   Minus,
   Plus,
@@ -14,54 +16,22 @@ import {
   X,
 } from "lucide-react";
 
-const initialCart = [
-  {
-    id: 1,
-    name: "Air Column Bag",
-    category: "Packaging & Protection",
-    sku: "ACB-001",
-    price: 1499,
-    image: "/Air column bag (2).webp",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "Dunnage Air Bag",
-    category: "Packaging & Protection",
-    sku: "DAB-001",
-    price: 1299,
-    image: "/Dunnage.webp",
-    quantity: 2,
-  },
-];
-
 export default function CartPage() {
-  const [cart, setCart] = useState(initialCart);
+  const cart = useCart();
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
 
   const updateQuantity = (id, type) => {
-    setCart((items) =>
-      items.map((item) => {
-        if (item.id !== id) return item;
-
-        return {
-          ...item,
-          quantity:
-            type === "increase"
-              ? item.quantity + 1
-              : Math.max(1, item.quantity - 1),
-        };
-      })
-    );
+    const item = cart.find((entry) => entry.key === id);
+    if (item) updateQty(id, type === "increase" ? item.qty + 1 : Math.max(1, item.qty - 1));
   };
 
   const removeItem = (id) => {
-    setCart((items) => items.filter((item) => item.id !== id));
+    removeFromCart(id);
   };
 
   const subtotal = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total, item) => total + item.price * item.qty,
     0
   );
 
@@ -163,12 +133,12 @@ export default function CartPage() {
       <div className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-[1400px] items-center gap-2 px-5 py-4 text-sm text-gray-500">
 
-          <a
+          <Link
             href="/"
             className="font-semibold text-[#081A33] transition-colors hover:text-[#F5A623]"
           >
             Home
-          </a>
+          </Link>
 
           <ChevronRight size={15} />
 
@@ -240,18 +210,18 @@ export default function CartPage() {
             </h2>
 
             <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-gray-500">
-              Looks like you haven't added any products to your cart yet.
+              Looks like you haven&apos;t added any products to your cart yet.
               Explore our packaging solutions and find the right products
               for your requirements.
             </p>
 
-            <a
+            <Link
               href="/products"
               className="cart-shine mt-8 inline-flex h-14 items-center gap-3 bg-[#F5A623] px-8 text-sm font-black uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:-translate-y-1 hover:bg-[#ffb735] hover:shadow-xl"
             >
               Continue Shopping
               <ArrowRight size={18} />
-            </a>
+            </Link>
 
           </div>
 
@@ -293,7 +263,7 @@ export default function CartPage() {
                 {cart.map((item) => (
 
                   <div
-                    key={item.id}
+                    key={item.key}
                     className="group relative border border-gray-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-[#F5A623] hover:shadow-lg sm:p-5"
                   >
 
@@ -327,12 +297,12 @@ export default function CartPage() {
                           </h3>
 
                           <p className="mt-1 text-xs text-gray-400">
-                            SKU: {item.sku}
+                            SKU: {item.sku || item.slug || item.key}
                           </p>
 
                           <div className="mt-3 flex items-center gap-2">
                             <span className="text-xl font-black text-[#081A33]">
-                              ₹{item.price.toLocaleString("en-IN")}
+                              ₹{Number(item.price || 0).toLocaleString("en-IN")}
                             </span>
 
                             <span className="text-xs text-gray-400">
@@ -354,7 +324,7 @@ export default function CartPage() {
 
                             <button
                               onClick={() =>
-                                updateQuantity(item.id, "decrease")
+                                updateQuantity(item.key, "decrease")
                               }
                               className="flex w-9 items-center justify-center text-[#081A33] transition-colors hover:bg-[#081A33] hover:text-white"
                             >
@@ -362,12 +332,12 @@ export default function CartPage() {
                             </button>
 
                             <span className="flex w-10 items-center justify-center border-x border-gray-300 text-sm font-bold text-[#081A33]">
-                              {item.quantity}
+                              {item.qty}
                             </span>
 
                             <button
                               onClick={() =>
-                                updateQuantity(item.id, "increase")
+                                updateQuantity(item.key, "increase")
                               }
                               className="flex w-9 items-center justify-center text-[#081A33] transition-colors hover:bg-[#081A33] hover:text-white"
                             >
@@ -392,7 +362,7 @@ export default function CartPage() {
 
                           <span className="mt-1 block text-xl font-black text-[#081A33]">
                             ₹
-                            {(item.price * item.quantity).toLocaleString(
+                            {(item.price * item.qty).toLocaleString(
                               "en-IN"
                             )}
                           </span>
@@ -400,7 +370,7 @@ export default function CartPage() {
                         </div>
 
                         <button
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeItem(item.key)}
                           className="group/remove flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-gray-400 transition-colors hover:text-red-500"
                         >
                           <Trash2
@@ -424,7 +394,7 @@ export default function CartPage() {
 
               <div className="mt-5">
 
-                <a
+                <Link
                   href="/products"
                   className="group inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-[#081A33] transition-colors hover:text-[#F5A623]"
                 >
@@ -434,7 +404,7 @@ export default function CartPage() {
                   />
 
                   Continue Shopping
-                </a>
+                </Link>
 
               </div>
 

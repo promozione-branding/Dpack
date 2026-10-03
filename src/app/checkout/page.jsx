@@ -1,6 +1,11 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuth } from "@/app/context/AuthContext";
+import { ordersAPI, paymentsAPI } from "@/lib/apiClient";
+import { clearCart, updateQty, useCart } from "@/lib/cartBus";
 import {
   ChevronRight,
   MapPin,
@@ -17,29 +22,15 @@ import {
   Plus,
 } from "lucide-react";
 
-const initialItems = [
-  {
-    id: 1,
-    name: "Air Column Bag",
-    sku: "ACB-001",
-    price: 1499,
-    image: "/Air column bag (2).webp",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "Dunnage Air Bag",
-    sku: "DAB-001",
-    price: 1299,
-    image: "/Dunnage.webp",
-    quantity: 2,
-  },
-];
-
 export default function CheckoutPage() {
-  const [items, setItems] = useState(initialItems);
+  const router = useRouter();
+  const items = useCart();
+  const { user, isLoggedIn, hydrated } = useAuth();
 
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [paymentMethod, setPaymentMethod] = useState("online");
+  const [submitting, setSubmitting] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+  const [orderComplete, setOrderComplete] = useState(false);
 
   const [form, setForm] = useState({
     firstName: "",
@@ -55,24 +46,27 @@ export default function CheckoutPage() {
 
   const [errors, setErrors] = useState({});
 
-  const updateQuantity = (id, type) => {
-    setItems((currentItems) =>
-      currentItems.map((item) => {
-        if (item.id !== id) return item;
+  const nameParts = (user?.name || "").split(/\s+/);
+  const checkoutValues = {
+    ...form,
+    firstName: form.firstName || nameParts[0] || "",
+    lastName: form.lastName || nameParts.slice(1).join(" "),
+    email: form.email || user?.email || "",
+    phone: form.phone || user?.mobile || "",
+    address: form.address || user?.address?.line1 || "",
+    apartment: form.apartment || user?.address?.line2 || "",
+    city: form.city || user?.address?.city || "",
+    state: form.state || user?.address?.state || "",
+    pincode: form.pincode || user?.address?.pincode || "",
+  };
 
-        return {
-          ...item,
-          quantity:
-            type === "increase"
-              ? item.quantity + 1
-              : Math.max(1, item.quantity - 1),
-        };
-      })
-    );
+  const updateQuantity = (id, type) => {
+    const item = items.find((entry) => entry.key === id);
+    if (item) updateQty(id, type === "increase" ? item.qty + 1 : Math.max(1, item.qty - 1));
   };
 
   const subtotal = items.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total, item) => total + item.price * item.qty,
     0
   );
 
@@ -97,35 +91,35 @@ export default function CheckoutPage() {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!form.firstName.trim()) {
+    if (!checkoutValues.firstName.trim()) {
       newErrors.firstName = "First name is required";
     }
 
-    if (!form.lastName.trim()) {
+    if (!checkoutValues.lastName.trim()) {
       newErrors.lastName = "Last name is required";
     }
 
-    if (!form.email.trim()) {
+    if (!checkoutValues.email.trim()) {
       newErrors.email = "Email address is required";
     }
 
-    if (!form.phone.trim()) {
+    if (!checkoutValues.phone.trim()) {
       newErrors.phone = "Phone number is required";
     }
 
-    if (!form.address.trim()) {
+    if (!checkoutValues.address.trim()) {
       newErrors.address = "Address is required";
     }
 
-    if (!form.city.trim()) {
+    if (!checkoutValues.city.trim()) {
       newErrors.city = "City is required";
     }
 
-    if (!form.state.trim()) {
+    if (!checkoutValues.state.trim()) {
       newErrors.state = "State is required";
     }
 
-    if (!form.pincode.trim()) {
+    if (!checkoutValues.pincode.trim()) {
       newErrors.pincode = "Pincode is required";
     }
 
@@ -134,7 +128,20 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const placeOrder = () => {
+  const placeOrder = async () => {
+    setCheckoutError("");
+    if (!items.length) {
+      setCheckoutError("Your cart is empty. Add a product before checkout.");
+      return;
+    }
+    if (!isLoggedIn) {
+      setCheckoutError("Please sign in before placing your order.");
+      return;
+    }
+    if (paymentMethod !== "online") {
+      setCheckoutError("Only online payment is currently available.");
+      return;
+    }
     if (!validateForm()) {
       window.scrollTo({
         top: 250,
@@ -144,8 +151,96 @@ export default function CheckoutPage() {
       return;
     }
 
-    alert("Order placed successfully!");
+    setSubmitting(true);
+    try {
+      const { order, razorpay } = await ordersAPI.create({
+        items: items.map((item) => ({ productId: item.key, qty: item.qty })),
+        customerName: `${checkoutValues.firstName} ${checkoutValues.lastName}`.trim(),
+        customerEmail: checkoutValues.email,
+        customerMobile: checkoutValues.phone,
+        shippingAddress: {
+          line1: checkoutValues.address,
+          line2: checkoutValues.apartment,
+          city: checkoutValues.city,
+          state: checkoutValues.state,
+          pincode: checkoutValues.pincode,
+          country: "India",
+        },
+        sameAsShipping: true,
+      });
+
+      if (!window.Razorpay) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.onload = resolve;
+          script.onerror = () => reject(new Error("Unable to load secure payment checkout."));
+          document.body.appendChild(script);
+        });
+      }
+      if (!window.Razorpay) throw new Error("Secure payment checkout is unavailable.");
+
+      const checkout = new window.Razorpay({
+        key: razorpay.keyId,
+        amount: razorpay.amount,
+        currency: razorpay.currency,
+        name: "DPack",
+        description: "Packaging products order",
+        order_id: razorpay.orderId,
+        prefill: {
+          name: `${checkoutValues.firstName} ${checkoutValues.lastName}`.trim(),
+          email: checkoutValues.email,
+          contact: checkoutValues.phone,
+        },
+        handler: async (response) => {
+          try {
+            await paymentsAPI.verify({
+              orderId: order._id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            clearCart();
+            setOrderComplete(true);
+          } catch (error) {
+            setCheckoutError(error.message || "Payment verification failed. Contact support before retrying.");
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            paymentsAPI.markFailed(order._id).catch((error) => {
+              console.error("Unable to mark payment as failed:", error);
+            });
+          },
+        },
+      });
+      checkout.open();
+    } catch (error) {
+      setCheckoutError(error.message || "Unable to start checkout. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (!hydrated) {
+    return (
+      <main className="flex min-h-[50vh] items-center justify-center text-sm text-gray-500">
+        Loading checkout…
+      </main>
+    );
+  }
+
+  if (orderComplete) {
+    return (
+      <main className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-[#F7F8FA] px-5 text-center text-[#081A33]">
+        <h1 className="text-3xl font-black">Payment successful</h1>
+        <p className="text-sm text-gray-500">Your order has been confirmed.</p>
+        <Link href="/my-account" className="bg-[#081A33] px-6 py-3 text-sm font-bold text-white">
+          View your account
+        </Link>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#F7F8FA] text-[#1d2939]">
@@ -233,21 +328,21 @@ export default function CheckoutPage() {
       <div className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-[1400px] items-center gap-2 px-5 py-4 text-sm text-gray-500">
 
-          <a
+          <Link
             href="/"
             className="font-semibold text-[#081A33] transition-colors hover:text-[#F5A623]"
           >
             Home
-          </a>
+          </Link>
 
           <ChevronRight size={15} />
 
-          <a
+          <Link
             href="/cart"
             className="font-semibold text-[#081A33] transition-colors hover:text-[#F5A623]"
           >
             Cart
-          </a>
+          </Link>
 
           <ChevronRight size={15} />
 
@@ -360,7 +455,7 @@ export default function CheckoutPage() {
                     <input
                       type="text"
                       name="firstName"
-                      value={form.firstName}
+                      value={checkoutValues.firstName}
                       onChange={handleChange}
                       placeholder="Enter first name"
                       className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
@@ -387,7 +482,7 @@ export default function CheckoutPage() {
                     <input
                       type="text"
                       name="lastName"
-                      value={form.lastName}
+                      value={checkoutValues.lastName}
                       onChange={handleChange}
                       placeholder="Enter last name"
                       className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
@@ -414,7 +509,7 @@ export default function CheckoutPage() {
                     <input
                       type="email"
                       name="email"
-                      value={form.email}
+                      value={checkoutValues.email}
                       onChange={handleChange}
                       placeholder="you@example.com"
                       className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
@@ -441,7 +536,7 @@ export default function CheckoutPage() {
                     <input
                       type="tel"
                       name="phone"
-                      value={form.phone}
+                      value={checkoutValues.phone}
                       onChange={handleChange}
                       placeholder="+91 XXXXX XXXXX"
                       className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
@@ -511,7 +606,7 @@ export default function CheckoutPage() {
                     <input
                       type="text"
                       name="address"
-                      value={form.address}
+                      value={checkoutValues.address}
                       onChange={handleChange}
                       placeholder="House / Flat / Street address"
                       className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
@@ -541,7 +636,7 @@ export default function CheckoutPage() {
                     <input
                       type="text"
                       name="apartment"
-                      value={form.apartment}
+                      value={checkoutValues.apartment}
                       onChange={handleChange}
                       placeholder="Apartment, floor or landmark"
                       className="h-12 w-full border border-gray-300 bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623]"
@@ -560,7 +655,7 @@ export default function CheckoutPage() {
                       <input
                         type="text"
                         name="city"
-                        value={form.city}
+                        value={checkoutValues.city}
                         onChange={handleChange}
                         placeholder="City"
                         className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
@@ -585,7 +680,7 @@ export default function CheckoutPage() {
                       <input
                         type="text"
                         name="state"
-                        value={form.state}
+                        value={checkoutValues.state}
                         onChange={handleChange}
                         placeholder="State"
                         className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
@@ -610,7 +705,7 @@ export default function CheckoutPage() {
                       <input
                         type="text"
                         name="pincode"
-                        value={form.pincode}
+                        value={checkoutValues.pincode}
                         onChange={handleChange}
                         placeholder="110001"
                         maxLength={6}
@@ -746,7 +841,7 @@ export default function CheckoutPage() {
                 {/* COD */}
 
                 <button
-                  onClick={() => setPaymentMethod("cod")}
+                  disabled
                   className={`flex w-full items-center gap-4 border p-5 text-left transition-all duration-300 ${
                     paymentMethod === "cod"
                       ? "border-[#F5A623] bg-[#FFF9EF]"
@@ -840,7 +935,7 @@ export default function CheckoutPage() {
                 {/* BANK */}
 
                 <button
-                  onClick={() => setPaymentMethod("bank")}
+                  disabled
                   className={`flex w-full items-center gap-4 border p-5 text-left transition-all duration-300 ${
                     paymentMethod === "bank"
                       ? "border-[#F5A623] bg-[#FFF9EF]"
@@ -935,7 +1030,7 @@ export default function CheckoutPage() {
                   {items.map((item) => (
 
                     <div
-                      key={item.id}
+                      key={item.key}
                       className="group flex gap-4 border-b border-gray-100 pb-4 last:border-0 last:pb-0"
                     >
 
@@ -948,7 +1043,7 @@ export default function CheckoutPage() {
                         />
 
                         <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center bg-[#F5A623] text-[10px] font-black text-[#081A33]">
-                          {item.quantity}
+                          {item.qty}
                         </span>
 
                       </div>
@@ -969,7 +1064,7 @@ export default function CheckoutPage() {
 
                             <button
                               onClick={() =>
-                                updateQuantity(item.id, "decrease")
+                                updateQuantity(item.key, "decrease")
                               }
                               className="flex w-7 items-center justify-center text-gray-500 hover:bg-[#081A33] hover:text-white"
                             >
@@ -977,12 +1072,12 @@ export default function CheckoutPage() {
                             </button>
 
                             <span className="flex w-8 items-center justify-center border-x border-gray-200 text-xs font-bold">
-                              {item.quantity}
+                              {item.qty}
                             </span>
 
                             <button
                               onClick={() =>
-                                updateQuantity(item.id, "increase")
+                                updateQuantity(item.key, "increase")
                               }
                               className="flex w-7 items-center justify-center text-gray-500 hover:bg-[#081A33] hover:text-white"
                             >
@@ -993,7 +1088,7 @@ export default function CheckoutPage() {
 
                           <span className="text-sm font-black text-[#081A33]">
                             ₹
-                            {(item.price * item.quantity).toLocaleString(
+                            {(item.price * item.qty).toLocaleString(
                               "en-IN"
                             )}
                           </span>
@@ -1072,11 +1167,25 @@ export default function CheckoutPage() {
 
                 {/* PLACE ORDER */}
 
+                {!isLoggedIn && (
+                  <p className="mt-4 text-sm text-gray-600">
+                    <Link href="/login?next=%2Fcheckout" className="font-semibold text-[#081A33] underline">
+                      Sign in
+                    </Link>{" "}
+                    with your account before paying.
+                  </p>
+                )}
+                {checkoutError && (
+                  <p role="alert" className="mt-4 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {checkoutError}
+                  </p>
+                )}
                 <button
                   onClick={placeOrder}
-                  className="checkout-shine mt-6 flex h-14 w-full items-center justify-center gap-3 bg-[#F5A623] text-sm font-black uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:-translate-y-1 hover:bg-[#ffb735] hover:shadow-xl"
+                  disabled={submitting || items.length === 0}
+                  className="checkout-shine mt-6 flex h-14 w-full items-center justify-center gap-3 bg-[#F5A623] text-sm font-black uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:-translate-y-1 hover:bg-[#ffb735] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Place Order
+                  {submitting ? "Starting payment…" : "Pay securely"}
                   <ArrowRight size={18} />
                 </button>
 

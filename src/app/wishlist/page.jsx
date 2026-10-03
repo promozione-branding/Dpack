@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/app/context/AuthContext";
+import { addToCart as addCartItem } from "@/lib/cartBus";
 import {
   Heart,
   ShoppingCart,
@@ -16,69 +18,16 @@ import {
   ShoppingBag,
 } from "lucide-react";
 
-const initialWishlist = [
-  {
-    id: 1,
-    name: "Air Column Bag",
-    category: "Packaging & Protection",
-    sku: "ACB-001",
-    price: 1499,
-    oldPrice: 1799,
-    rating: 4.8,
-    reviews: 24,
-    image: "/Air column bag (2).webp",
-  },
-  {
-    id: 2,
-    name: "Dunnage Air Bag",
-    category: "Packaging & Protection",
-    sku: "DAB-001",
-    price: 1299,
-    oldPrice: 1599,
-    rating: 4.7,
-    reviews: 18,
-    image: "/Dunnage.webp",
-  },
-  {
-    id: 3,
-    name: "Air Column Roll",
-    category: "Protective Packaging",
-    sku: "ACR-001",
-    price: 1199,
-    oldPrice: 1399,
-    rating: 4.6,
-    reviews: 16,
-    image: "/Air Column Roll (2).webp",
-  },
-  {
-    id: 4,
-    name: "Packaging Air Bag",
-    category: "Packaging Solutions",
-    sku: "PAB-001",
-    price: 999,
-    oldPrice: 1199,
-    rating: 4.7,
-    reviews: 21,
-    image: "/packing bag.webp",
-  },
-];
-
 export default function WishlistPage() {
-  const [wishlist, setWishlist] = useState(initialWishlist);
-  const [cartItems, setCartItems] = useState([]);
+  const { wishlist, removeWishlistItem, clearWishlist } = useAuth();
 
   const removeItem = (id) => {
-    setWishlist((prev) =>
-      prev.filter((item) => item.id !== id)
-    );
+    removeWishlistItem(id);
   };
 
   const addToCart = (product) => {
-    setCartItems((prev) => [...prev, product]);
-
-    setWishlist((prev) =>
-      prev.filter((item) => item.id !== product.id)
-    );
+    addCartItem(product);
+    removeWishlistItem(product._id || product.id);
 
     alert(`${product.name} added to cart.`);
   };
@@ -86,10 +35,10 @@ export default function WishlistPage() {
   const addAllToCart = () => {
     if (wishlist.length === 0) return;
 
-    setCartItems((prev) => [...prev, ...wishlist]);
-    setWishlist([]);
-
-    alert("All wishlist items added to cart.");
+    wishlist.forEach((product) => addCartItem(product));
+    clearWishlist()
+      .then(() => alert("All wishlist items added to cart."))
+      .catch(() => alert("Products were added to cart, but the wishlist could not be cleared."));
   };
 
   return (
@@ -346,7 +295,7 @@ export default function WishlistPage() {
 
                 {wishlist.map((product, index) => (
                   <article
-                    key={product.id}
+                    key={product._id || product.id}
                     className="wishlist-card border border-[#081A33]/10 bg-white"
                     style={{
                       animationDelay: `${index * 80}ms`,
@@ -356,12 +305,13 @@ export default function WishlistPage() {
                     {/* Image */}
                     <div className="relative aspect-square overflow-hidden bg-[#F3F5F7]">
 
-                      <Link href={`/products/${product.id}`}>
+                      <Link href={`/products/${product.slug || ""}`}>
                         <Image
-                          src={product.image}
+                          src={product.image || "/images/placeholder.png"}
                           alt={product.name}
                           fill
                           className="wishlist-image object-contain p-7"
+                          unoptimized
                         />
                       </Link>
 
@@ -369,7 +319,7 @@ export default function WishlistPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          removeItem(product.id)
+                          removeItem(product._id || product.id)
                         }
                         aria-label="Remove from wishlist"
                         className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center border border-[#081A33]/10 bg-white text-[#081A33]/60 shadow-sm transition hover:bg-[#081A33] hover:text-white"
@@ -381,13 +331,11 @@ export default function WishlistPage() {
                       </button>
 
                       {/* Sale Badge */}
-                      <div className="absolute left-3 top-3 bg-[#F5A623] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-[#081A33]">
-                        Save ₹
-                        {(
-                          product.oldPrice -
-                          product.price
-                        ).toLocaleString("en-IN")}
-                      </div>
+                      {Number(product.compareAtPrice || product.oldPrice || 0) > Number(product.price || 0) && (
+                        <div className="absolute left-3 top-3 bg-[#F5A623] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-[#081A33]">
+                          Save ₹{(Number(product.compareAtPrice || product.oldPrice) - Number(product.price || 0)).toLocaleString("en-IN")}
+                        </div>
+                      )}
 
                     </div>
 
@@ -399,7 +347,7 @@ export default function WishlistPage() {
                       </p>
 
                       <Link
-                        href={`/products/${product.id}`}
+                        href={`/products/${product.slug || ""}`}
                         className="mt-1 block"
                       >
                         <h3 className="line-clamp-1 text-base font-black text-[#081A33] transition hover:text-[#F5A623]">
@@ -408,7 +356,7 @@ export default function WishlistPage() {
                       </Link>
 
                       <p className="mt-1 text-[10px] font-medium text-[#081A33]/35">
-                        SKU: {product.sku}
+                        SKU: {product.sku || product.slug}
                       </p>
 
                       {/* Rating */}
@@ -427,7 +375,7 @@ export default function WishlistPage() {
                         </div>
 
                         <span className="text-[10px] font-bold text-[#081A33]/40">
-                          {product.rating} ({product.reviews})
+                          {product.rating || "—"} ({product.reviews || 0})
                         </span>
 
                       </div>
@@ -437,17 +385,16 @@ export default function WishlistPage() {
 
                         <span className="text-xl font-black text-[#081A33]">
                           ₹
-                          {product.price.toLocaleString(
+                          {Number(product.price || 0).toLocaleString(
                             "en-IN"
                           )}
                         </span>
 
-                        <span className="pb-0.5 text-xs font-medium text-[#081A33]/30 line-through">
-                          ₹
-                          {product.oldPrice.toLocaleString(
-                            "en-IN"
-                          )}
-                        </span>
+                        {Number(product.compareAtPrice || product.oldPrice || 0) > Number(product.price || 0) && (
+                          <span className="pb-0.5 text-xs font-medium text-[#081A33]/30 line-through">
+                            ₹{Number(product.compareAtPrice || product.oldPrice).toLocaleString("en-IN")}
+                          </span>
+                        )}
 
                       </div>
 
@@ -465,7 +412,7 @@ export default function WishlistPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          removeItem(product.id)
+                          removeItem(product._id || product.id)
                         }
                         className="wishlist-button mt-3 flex w-full items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#081A33]/35 hover:text-red-500"
                       >
@@ -503,7 +450,7 @@ export default function WishlistPage() {
                 </h2>
 
                 <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#081A33]/50">
-                  You haven't saved any products yet. Explore
+                  You haven&apos;t saved any products yet. Explore
                   our packaging solutions and add your favourite
                   products to your wishlist.
                 </p>

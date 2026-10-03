@@ -2,25 +2,48 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 import {
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
+  Phone,
   ArrowRight,
   ShieldCheck,
   ShoppingBag,
   CheckCircle2,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
+  const router = useRouter();
+  const { sendOtp, loginWithOtp } = useAuth();
+  const [mobile, setMobile] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      if (!otpSent) {
+        const result = await sendOtp(mobile);
+        if (!result.ok) throw new Error(result.error || "Could not send verification code.");
+        setOtpSent(true);
+        return;
+      }
 
-    alert("Login functionality will be connected with your authentication system.");
+      const result = await loginWithOtp(mobile, otp);
+      if (!result.ok) throw new Error(result.error || "Could not verify the code.");
+      const destination = new URLSearchParams(window.location.search).get("next");
+      router.replace(destination?.startsWith("/") && !destination.startsWith("//") ? destination : "/my-account");
+    } catch (submitError) {
+      setError(submitError.message || "Sign-in failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -163,7 +186,7 @@ export default function LoginPage() {
               </h2>
 
               <p className="mt-3 text-sm leading-6 text-[#081A33]/50">
-                Login to continue to your DPACK account.
+                Sign in securely with a one-time code sent to your mobile.
               </p>
             </div>
 
@@ -172,103 +195,76 @@ export default function LoginPage() {
               className="border border-[#081A33]/10 bg-white p-6 shadow-[0_20px_60px_rgba(8,26,51,0.06)] sm:p-8"
             >
 
-              {/* Email */}
-
               <div>
                 <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#081A33]/55">
-                  Email Address
+                  Mobile Number
                 </label>
 
                 <div className="relative">
-                  <Mail
+                  <Phone
                     size={18}
                     className="absolute left-4 top-1/2 -translate-y-1/2 text-[#081A33]/30"
                   />
 
                   <input
-                    type="email"
+                    type="tel"
                     required
-                    placeholder="Enter your email"
+                    inputMode="numeric"
+                    autoComplete="tel"
+                    pattern="[0-9]{10}"
+                    maxLength={10}
+                    value={mobile}
+                    onChange={(event) => setMobile(event.target.value.replace(/\D/g, ""))}
+                    disabled={otpSent}
+                    placeholder="10-digit mobile number"
                     className="h-13 w-full border border-[#081A33]/15 bg-[#F7F8FA] pl-12 pr-4 text-sm text-[#081A33] outline-none transition placeholder:text-[#081A33]/25 focus:border-[#F5A623] focus:bg-white"
                   />
                 </div>
               </div>
 
-              {/* Password */}
-
-              <div className="mt-5">
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#081A33]/55">
-                  Password
-                </label>
-
-                <div className="relative">
-                  <Lock
-                    size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#081A33]/30"
-                  />
-
+              {otpSent && (
+                <div className="mt-5">
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#081A33]/55">
+                    Verification Code
+                  </label>
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    pattern="[0-9]{6}"
+                    maxLength={6}
                     required
-                    placeholder="Enter your password"
-                    className="h-13 w-full border border-[#081A33]/15 bg-[#F7F8FA] pl-12 pr-12 text-sm text-[#081A33] outline-none transition placeholder:text-[#081A33]/25 focus:border-[#F5A623] focus:bg-white"
+                    value={otp}
+                    onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))}
+                    placeholder="Enter 6-digit code"
+                    className="h-13 w-full border border-[#081A33]/15 bg-[#F7F8FA] px-4 text-sm tracking-[0.3em] text-[#081A33] outline-none focus:border-[#F5A623]"
                   />
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowPassword(!showPassword)
-                    }
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#081A33]/35 transition hover:text-[#F5A623]"
-                  >
-                    {showPassword ? (
-                      <EyeOff size={18} />
-                    ) : (
-                      <Eye size={18} />
-                    )}
-                  </button>
                 </div>
-              </div>
+              )}
 
-              {/* Remember */}
-
-              <div className="mt-5 flex items-center justify-between gap-4">
-
-                <label className="flex cursor-pointer items-center gap-2 text-xs text-[#081A33]/55">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={(e) =>
-                      setRemember(e.target.checked)
-                    }
-                    className="h-4 w-4 accent-[#F5A623]"
-                  />
-
-                  Remember me
-                </label>
-
-                <Link
-                  href="/forgot-password"
-                  className="text-xs font-semibold text-[#081A33] transition hover:text-[#F5A623]"
-                >
-                  Forgot Password?
-                </Link>
-
-              </div>
+              {error && (
+                <p role="alert" className="mt-5 flex items-start gap-2 text-sm text-red-600">
+                  <AlertCircle size={17} className="mt-0.5 shrink-0" />
+                  {error}
+                </p>
+              )}
+              <div id="recaptcha-container" />
 
               {/* Login */}
 
               <button
                 type="submit"
-                className="group mt-7 flex h-13 w-full items-center justify-center gap-3 bg-[#F5A623] text-sm font-bold text-[#081A33] transition hover:bg-[#081A33] hover:text-white"
+                disabled={loading}
+                className="group mt-7 flex h-13 w-full items-center justify-center gap-3 bg-[#F5A623] text-sm font-bold text-[#081A33] transition hover:bg-[#081A33] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Login to Account
-
-                <ArrowRight
-                  size={18}
-                  className="transition group-hover:translate-x-1"
-                />
+                {loading ? <Loader2 size={18} className="animate-spin" /> : otpSent ? "Verify and Sign In" : "Send Verification Code"}
+                {!loading && <ArrowRight size={18} className="transition group-hover:translate-x-1" />}
               </button>
+              {otpSent && (
+                <button type="button" onClick={() => { setOtpSent(false); setOtp(""); setError(""); }} className="mt-4 w-full text-xs font-semibold text-[#081A33]/60 hover:text-[#F5A623]">
+                  Change mobile number
+                </button>
+              )}
 
               {/* Security */}
 
@@ -282,7 +278,7 @@ export default function LoginPage() {
 
             <div className="mt-6 border border-[#081A33]/10 bg-white p-5 text-center">
               <p className="text-sm text-[#081A33]/55">
-                Don't have an account?
+                Don&apos;t have an account?
               </p>
 
               <Link

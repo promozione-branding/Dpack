@@ -1,490 +1,661 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   ArrowUpRight,
-  Mail,
   Phone,
+  Mail,
   MapPin,
   Clock3,
-  MessageSquare,
   Send,
 } from "lucide-react";
 
+/* =========================================================
+   CONTACT PAGE
+========================================================= */
+
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-[#F7F8FA] text-[#081A33]">
+    <main className="min-h-screen overflow-hidden bg-[#F6F7F9] text-[#123B5D]">
 
       {/* =====================================================
-          HERO
+          COMPACT HERO
       ====================================================== */}
 
-      <section className="relative overflow-hidden bg-[#081A33] px-5 py-20 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+      <section className="relative overflow-hidden bg-[#123B5D]">
 
-        {/* Background shapes */}
+        {/* Decorative circles */}
 
-        <div className="absolute -right-32 -top-32 h-[420px] w-[420px] rounded-full bg-[#F5A623]/10 blur-3xl" />
+        <motion.div
+          animate={{
+            x: [0, 15, 0],
+            y: [0, -10, 0],
+            rotate: [0, 4, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute -right-32 -top-36 h-[400px] w-[400px] rounded-full border border-white/[0.07]"
+        />
 
-        <div className="absolute -bottom-40 -left-32 h-[420px] w-[420px] rounded-full bg-white/[0.04] blur-3xl" />
+        <motion.div
+          animate={{
+            scale: [1, 1.08, 1],
+          }}
+          transition={{
+            duration: 7,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute -right-16 -top-20 h-[260px] w-[260px] rounded-full border border-[#F5A623]/40"
+        />
 
-        <div className="absolute right-[18%] top-[35%] h-px w-32 rotate-[25deg] bg-white/10" />
+        <div className="absolute -bottom-32 -left-20 h-[280px] w-[280px] rounded-full bg-[#F5A623]/15 blur-3xl" />
 
-        <div className="relative mx-auto max-w-[1400px]">
+        {/* Decorative lines */}
 
-          <div className="max-w-[760px]">
+        <div className="absolute left-[38%] top-[28%] h-px w-32 rotate-[25deg] bg-white/[0.08]" />
 
-            <div className="mb-5 flex items-center gap-3">
-              <span className="h-px w-8 bg-[#F5A623]" />
+        <div className="absolute right-[20%] bottom-[20%] h-px w-24 rotate-[-25deg] bg-white/[0.08]" />
 
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-white/60">
-                Get In Touch
-              </p>
+        {/* Hero Content */}
+
+        <div className="relative mx-auto flex min-h-[245px] max-w-[1450px] items-center px-5 py-10 sm:min-h-[265px] sm:px-8 lg:px-12">
+
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="max-w-[850px]"
+          >
+
+            {/* Small Label */}
+
+            <div className="mb-4 flex items-center gap-3">
+
+              <span className="h-[2px] w-8 bg-[#F5A623]" />
+
+              <span className="text-[9px] font-bold uppercase tracking-[0.28em] text-white/50">
+                Contact DPACK
+              </span>
+
             </div>
 
-            <h1 className="text-[42px] font-extrabold leading-[0.98] tracking-[-0.045em] text-white sm:text-[58px] lg:text-[72px]">
-              Let&apos;s Talk About
-              <br />
-              Your{" "}
+            {/* Heading */}
+
+            <h1 className="text-[40px] font-extrabold leading-[0.95] tracking-[-0.055em] text-white sm:text-[52px] lg:text-[62px]">
+
+              Let&apos;s talk about{" "}
+
               <span className="text-[#F5A623]">
-                Packaging Needs.
+                your packaging.
               </span>
+
             </h1>
 
-            <p className="mt-6 max-w-[620px] text-[13px] leading-7 text-white/65 sm:text-[15px]">
-              Looking for reliable protective packaging solutions?
-              Connect with DPACK and let our team help you find the
-              right solution for your products and shipments.
-            </p>
-
-          </div>
-
-          {/* Hero bottom */}
-
-          <div className="mt-12 flex flex-wrap items-center gap-4">
-
-            <Link
-              href="#contact-form"
-              className="group inline-flex items-center gap-3 rounded-full bg-[#F5A623] px-6 py-3.5 text-[12px] font-bold text-[#081A33] transition-all duration-300 hover:gap-5 hover:bg-white"
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: 0.2,
+              }}
+              className="mt-4 max-w-[600px] text-[11px] leading-6 text-white/55 sm:text-[12px]"
             >
-              Send an Enquiry
+              Have a product enquiry, packaging requirement or business
+              question? Get in touch with the DPACK team.
+            </motion.p>
 
-              <ArrowRight
-                size={15}
-                className="transition-transform duration-300 group-hover:translate-x-1"
+          </motion.div>
+
+        </div>
+      </section>
+
+
+      {/* =====================================================
+          MAIN CONTACT AREA
+      ====================================================== */}
+
+      <section className="relative px-4 sm:px-6 lg:px-10">
+
+        <div className="mx-auto max-w-[1350px]">
+
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.7 }}
+            className="relative z-10 -mt-5 grid overflow-hidden bg-white shadow-[0_18px_55px_rgba(8,26,51,0.09)] sm:-mt-7 lg:grid-cols-[0.72fr_1.28fr]"
+          >
+
+            {/* =================================================
+                LEFT CONTACT INFORMATION
+            ================================================== */}
+
+            <div className="relative overflow-hidden bg-[#0D2443] p-6 sm:p-8 lg:p-9">
+
+              {/* Decorative circle */}
+
+              <motion.div
+                animate={{
+                  scale: [1, 1.08, 1],
+                  rotate: [0, 8, 0],
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#F5A623]/90"
               />
-            </Link>
 
-            <Link
-              href="/products"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3.5 text-[12px] font-semibold text-white transition-all duration-300 hover:border-white/50 hover:bg-white/5"
-            >
-              Explore Products
+              <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full border border-white/[0.05]" />
 
-              <ArrowUpRight size={15} />
-            </Link>
+              <div className="relative z-10">
 
-          </div>
+                {/* Label */}
 
-        </div>
-      </section>
-
-
-      {/* =====================================================
-          CONTACT INFO
-      ====================================================== */}
-
-      <section className="px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
-
-        <div className="mx-auto max-w-[1400px]">
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-
-            <ContactCard
-              icon={<Phone size={21} />}
-              title="Call Us"
-              value="+91 00000 00000"
-              description="Speak directly with our team."
-            />
-
-            <ContactCard
-              icon={<Mail size={21} />}
-              title="Email Us"
-              value="info@dpack.in"
-              description="Send us your requirements."
-            />
-
-            <ContactCard
-              icon={<MapPin size={21} />}
-              title="Visit Us"
-              value="New Delhi, India"
-              description="Connect with our team."
-            />
-
-            <ContactCard
-              icon={<Clock3 size={21} />}
-              title="Working Hours"
-              value="Mon – Sat"
-              description="10:00 AM – 6:00 PM"
-            />
-
-          </div>
-
-        </div>
-      </section>
-
-
-      {/* =====================================================
-          FORM + INFORMATION
-      ====================================================== */}
-
-      <section
-        id="contact-form"
-        className="px-5 pb-16 sm:px-8 lg:px-12 lg:pb-24"
-      >
-
-        <div className="mx-auto grid max-w-[1400px] gap-5 lg:grid-cols-[0.8fr_1.2fr]">
-
-          {/* =================================================
-              LEFT INFORMATION
-          ================================================== */}
-
-          <div className="relative overflow-hidden bg-[#081A33] p-7 sm:p-9 lg:p-11">
-
-            <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-[#F5A623]/10 blur-3xl" />
-
-            <div className="relative">
-
-              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-[#F5A623] text-[#081A33]">
-                <MessageSquare size={21} />
-              </div>
-
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
-                Start A Conversation
-              </p>
-
-              <h2 className="mt-3 max-w-[440px] text-[32px] font-extrabold leading-[1.02] tracking-[-0.04em] text-white sm:text-[42px]">
-                Tell us what you
-                <br />
-                <span className="text-[#F5A623]">
-                  need.
-                </span>
-              </h2>
-
-              <p className="mt-5 max-w-[430px] text-[12px] leading-6 text-white/60 sm:text-[13px]">
-                Whether you need protective packaging for e-commerce,
-                logistics, industrial products or transportation,
-                share your requirements with us.
-              </p>
-
-              {/* Points */}
-
-              <div className="mt-9 space-y-5">
-
-                <InfoPoint
-                  number="01"
-                  title="Share Your Requirement"
-                  text="Tell us about your product and packaging needs."
-                />
-
-                <InfoPoint
-                  number="02"
-                  title="Get The Right Solution"
-                  text="Our team will help identify a suitable packaging option."
-                />
-
-                <InfoPoint
-                  number="03"
-                  title="Move Forward"
-                  text="Discuss quantity, specifications and delivery requirements."
-                />
-
-              </div>
-
-            </div>
-          </div>
-
-
-          {/* =================================================
-              CONTACT FORM
-          ================================================== */}
-
-          <div className="bg-white p-6 shadow-[0_15px_50px_rgba(8,26,51,0.06)] sm:p-9 lg:p-11">
-
-            <div className="mb-8">
-
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#F5A623]">
-                Contact Form
-              </p>
-
-              <h2 className="mt-2 text-[30px] font-extrabold tracking-[-0.04em] text-[#081A33] sm:text-[38px]">
-                Send An Enquiry
-              </h2>
-
-              <p className="mt-2 max-w-[520px] text-[12px] leading-6 text-slate-500">
-                Fill in the details below and our team will get back
-                to you with the required information.
-              </p>
-
-            </div>
-
-            <form className="space-y-5">
-
-              <div className="grid gap-5 sm:grid-cols-2">
-
-                <InputField
-                  label="Your Name"
-                  placeholder="Enter your name"
-                  type="text"
-                />
-
-                <InputField
-                  label="Company Name"
-                  placeholder="Enter company name"
-                  type="text"
-                />
-
-              </div>
-
-              <div className="grid gap-5 sm:grid-cols-2">
-
-                <InputField
-                  label="Email Address"
-                  placeholder="Enter your email"
-                  type="email"
-                />
-
-                <InputField
-                  label="Phone Number"
-                  placeholder="Enter phone number"
-                  type="tel"
-                />
-
-              </div>
-
-              <div>
-
-                <label className="mb-2 block text-[11px] font-bold text-[#081A33]">
-                  Product / Requirement
-                </label>
-
-                <select
-                  defaultValue=""
-                  className="h-12 w-full appearance-none border border-slate-200 bg-[#F8F9FA] px-4 text-[12px] text-slate-600 outline-none transition-all focus:border-[#F5A623]"
-                >
-                  <option value="" disabled>
-                    Select a product
-                  </option>
-
-                  <option>Air Column Bags</option>
-                  <option>Dunnage Air Bags</option>
-                  <option>Air Column Rolls</option>
-                  <option>Gap Fillers</option>
-                  <option>Packaging Air Bags</option>
-                  <option>Other Requirement</option>
-                </select>
-
-              </div>
-
-              <div>
-
-                <label className="mb-2 block text-[11px] font-bold text-[#081A33]">
-                  Message
-                </label>
-
-                <textarea
-                  rows={5}
-                  placeholder="Tell us about your packaging requirement..."
-                  className="w-full resize-none border border-slate-200 bg-[#F8F9FA] px-4 py-3 text-[12px] text-[#081A33] outline-none transition-all placeholder:text-slate-400 focus:border-[#F5A623]"
-                />
-
-              </div>
-
-              <div className="flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
-
-                <p className="max-w-[320px] text-[10px] leading-5 text-slate-400">
-                  By submitting this form, you agree to be contacted
-                  regarding your enquiry.
+                <p className="text-[16px] font-bold uppercase tracking-[0.24em] text-white/40">
+                  Contact Information
                 </p>
 
-                <button
-                  type="submit"
-                  className="group inline-flex shrink-0 items-center justify-center gap-3 rounded-full bg-[#081A33] px-7 py-3.5 text-[11px] font-bold text-white transition-all duration-300 hover:gap-5 hover:bg-[#F5A623] hover:text-[#081A33]"
-                >
-                  Send Enquiry
+                <h2 className="mt-2 text-[27px] font-extrabold leading-[1.02] tracking-[-0.04em] text-white sm:text-[31px]">
 
-                  <Send
-                    size={14}
-                    className="transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </button>
+                  Talk to our{" "}
 
-              </div>
+                  <span className="text-[#F5A623]">
+                    team.
+                  </span>
 
-            </form>
-          </div>
-
-        </div>
-      </section>
+                </h2>
 
 
-      {/* =====================================================
-          LOCATION / BOTTOM CTA
-      ====================================================== */}
+                {/* Contact Items */}
 
-      <section className="px-5 pb-8 sm:px-8 lg:px-12">
+                <div className="mt-7 space-y-5">
 
-        <div className="mx-auto max-w-[1400px]">
+                  {/* PHONE */}
 
-          <div className="relative overflow-hidden bg-[#EDEFF2] p-7 sm:p-10 lg:p-14">
+                  <motion.a
+                    href="tel:+917669988825"
+                    whileHover={{ x: 4 }}
+                    transition={{ duration: 0.25 }}
+                    className="group block"
+                  >
 
-            {/* Decorative */}
+                    <div className="flex gap-3">
 
-            <div className="absolute right-[-100px] top-[-100px] h-[300px] w-[300px] rounded-full bg-[#F5A623]/10" />
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/[0.07] text-[#F5A623] transition-all duration-300 group-hover:bg-[#F5A623] group-hover:text-[#123B5D]">
+                        <Phone size={15} />
+                      </div>
 
-            <div className="relative grid items-center gap-8 md:grid-cols-[1fr_auto]">
+                      <div>
 
-              <div>
+                        <p className="text-[16px] font-semibold uppercase tracking-[0.16em] text-white/35">
+                          Call Us
+                        </p>
 
-                <div className="mb-4 flex items-center gap-3">
-                  <MapPin size={16} className="text-[#F5A623]" />
+                        <p className="mt-1 text-[15px] font-semibold text-white transition-colors group-hover:text-[#F5A623]">
+                          +91-7669988825
+                        </p>
 
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#081A33]/50">
-                    Our Location
-                  </p>
+                      </div>
+
+                    </div>
+
+                  </motion.a>
+
+
+                  {/* EMAIL */}
+
+                  <motion.a
+                    href="mailto:dpacksolutionindia@gmail.com"
+                    whileHover={{ x: 4 }}
+                    transition={{ duration: 0.25 }}
+                    className="group block"
+                  >
+
+                    <div className="flex gap-3">
+
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/[0.07] text-[#F5A623] transition-all duration-300 group-hover:bg-[#F5A623] group-hover:text-[#123B5D]">
+                        <Mail size={15} />
+                      </div>
+
+                      <div className="min-w-0">
+
+                        <p className="text-[16px] font-semibold uppercase tracking-[0.16em] text-white/35">
+                          Send An Email
+                        </p>
+
+                        <p className="mt-1 break-all text-[15px] font-semibold text-white transition-colors group-hover:text-[#F5A623]">
+                          dpacksolutionindia@gmail.com
+                        </p>
+
+                      </div>
+
+                    </div>
+
+                  </motion.a>
+
+
+                  {/* ADDRESS */}
+
+                  <motion.div
+                    whileHover={{ x: 4 }}
+                    transition={{ duration: 0.25 }}
+                  >
+
+                    <div className="flex gap-3">
+
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/[0.07] text-[#F5A623]">
+                        <MapPin size={15} />
+                      </div>
+
+                      <div>
+
+                        <p className="text-[16px] font-semibold uppercase tracking-[0.16em] text-white/35">
+                          Our Address
+                        </p>
+
+                        <p className="mt-1 max-w-[290px] text-[15px] leading-5 text-white/70">
+                          Shakti Auto, Second Floor,
+                          24/54B, Lala Ganesh Das Marg,
+                          Tilak Nagar, West Delhi,
+                          New Delhi - 110018, Delhi, India.
+                        </p>
+
+                      </div>
+
+                    </div>
+
+                  </motion.div>
+
                 </div>
 
-                <h3 className="text-[27px] font-extrabold tracking-[-0.035em] text-[#081A33] sm:text-[36px]">
-                  DPACK — New Delhi, India
-                </h3>
+            
+              </div>
+            </div>
 
-                <p className="mt-3 max-w-[650px] text-[12px] leading-6 text-slate-500">
-                  Connect with DPACK for protective packaging solutions,
-                  product information and business enquiries.
-                </p>
+
+            {/* =================================================
+                RIGHT ENQUIRY FORM
+            ================================================== */}
+
+            <div
+              id="contact-form"
+              className="bg-white p-6 sm:p-8 lg:p-9"
+            >
+
+              {/* Form Header */}
+
+              <div className="flex items-start justify-between gap-5">
+
+                <div>
+
+                  <p className="text-[16px] font-bold uppercase tracking-[0.24em] text-[#F5A623]">
+                    Send An Enquiry
+                  </p>
+
+                  <h2 className="mt-2 text-[28px] font-extrabold leading-none tracking-[-0.045em] text-[#123B5D] sm:text-[34px]">
+                    How can we help?
+                  </h2>
+
+                </div>
+
+                <motion.div
+                  animate={{
+                    y: [0, -4, 0],
+                    rotate: [0, 3, 0],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="hidden h-10 w-10 items-center justify-center rounded-full bg-[#F6F7F9] sm:flex"
+                >
+                  <Send
+                    size={16}
+                    className="text-[#123B5D]"
+                  />
+                </motion.div>
 
               </div>
 
-              <Link
-                href="/products"
-                className="group inline-flex items-center justify-center gap-3 rounded-full bg-[#081A33] px-6 py-3.5 text-[11px] font-bold text-white transition-all duration-300 hover:gap-5 hover:bg-[#F5A623] hover:text-[#081A33]"
-              >
-                View Products
+              <p className="mt-3 max-w-[560px] text-[14px] leading-5 text-slate-500">
+                Tell us about your requirement and our team will get
+                back to you with the right packaging solution.
+              </p>
 
-                <ArrowUpRight
-                  size={15}
-                  className="transition-transform duration-300 group-hover:translate-x-0.5"
-                />
-              </Link>
+
+              {/* Form */}
+
+              <form
+                className="mt-6 space-y-4"
+                onSubmit={(e) => e.preventDefault()}
+              >
+
+                {/* Row 1 */}
+
+                <div className="grid gap-4 sm:grid-cols-2">
+
+                  <InputField
+                    label="Your Name"
+                    placeholder="Enter your name"
+                    type="text"
+                  />
+
+                  <InputField
+                    label="Company Name"
+                    placeholder="Enter company name"
+                    type="text"
+                  />
+
+                </div>
+
+
+                {/* Row 2 */}
+
+                <div className="grid gap-4 sm:grid-cols-2">
+
+                  <InputField
+                    label="Email Address"
+                    placeholder="Enter your email"
+                    type="email"
+                  />
+
+                  <InputField
+                    label="Phone Number"
+                    placeholder="Enter phone number"
+                    type="tel"
+                  />
+
+                </div>
+
+
+
+                {/* Message */}
+
+                <div>
+
+                  <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.08em] text-[#123B5D]">
+                    Message
+                  </label>
+
+                  <textarea
+                    rows={3}
+                    placeholder="Tell us about your requirement..."
+                    className="w-full resize-none border-b border-slate-200 bg-[#FAFBFC] px-3 py-2.5 text-[10px] text-[#123B5D] outline-none transition-all placeholder:text-slate-400 focus:border-[#F5A623]"
+                  />
+
+                </div>
+
+
+                {/* Submit */}
+
+                <div className="flex flex-col gap-4 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+
+                  <p className="max-w-[310px] text-[16px] leading-4 text-slate-400">
+                    Your information will only be used to respond to
+                    your enquiry.
+                  </p>
+
+                  <button
+                    type="submit"
+                    className="group inline-flex items-center justify-center gap-3 rounded-full bg-[#123B5D] px-6 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-white transition-all duration-300 hover:gap-5 hover:bg-[#F5A623] hover:text-[#123B5D]"
+                  >
+
+                    Send Enquiry
+
+                    <ArrowRight
+                      size={13}
+                      className="transition-transform duration-300 group-hover:translate-x-1"
+                    />
+
+                  </button>
+
+                </div>
+
+              </form>
 
             </div>
 
-          </div>
+          </motion.div>
 
         </div>
 
       </section>
+
+
+      {/* =====================================================
+          COMPACT LOCATION SECTION
+      ====================================================== */}
+
+      <section className="px-4 py-9 sm:px-6 lg:px-10 lg:py-11">
+
+        <div className="mx-auto max-w-[1350px]">
+
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="grid overflow-hidden bg-[#E9EDF1] lg:grid-cols-[1.35fr_0.65fr]"
+          >
+
+            {/* LOCATION */}
+
+            <div className="relative min-h-[190px] overflow-hidden p-6 sm:p-8 lg:p-9">
+
+              {/* Abstract map circles */}
+
+              <div className="absolute inset-0 opacity-40">
+
+                <div className="absolute right-[12%] top-[5%] h-32 w-32 rounded-full border border-[#123B5D]/10" />
+
+                <div className="absolute right-[20%] top-[15%] h-48 w-48 rounded-full border border-[#123B5D]/10" />
+
+                <div className="absolute bottom-[5%] right-[5%] h-24 w-24 rounded-full border border-[#123B5D]/10" />
+
+                <div className="absolute left-[8%] top-[55%] h-px w-[60%] rotate-[-15deg] bg-[#123B5D]/10" />
+
+                <div className="absolute left-[25%] top-[30%] h-px w-[50%] rotate-[18deg] bg-[#123B5D]/10" />
+
+              </div>
+
+
+              <div className="relative z-10">
+
+                <div className="flex items-center gap-2">
+
+                  <MapPin
+                    size={14}
+                    className="text-[#F5A623]"
+                  />
+
+                  <span className="text-[16px] font-bold uppercase tracking-[0.22em] text-[#123B5D]/45">
+                    Find Us
+                  </span>
+
+                </div>
+
+                <h3 className="mt-3 text-[25px] font-extrabold leading-none tracking-[-0.04em] text-[#123B5D] sm:text-[32px]">
+
+                  Shakti Auto,{" "}
+
+                  <span className="text-[#F5A623]">
+                    Tilak Nagar.
+                  </span>
+
+                </h3>
+
+                <p className="mt-3 max-w-[620px] text-[15px] leading-5 text-slate-500">
+                  Second Floor, 24/54B, Lala Ganesh Das Marg,
+                  Tilak Nagar, West Delhi, New Delhi - 110018,
+                  Delhi, India.
+                </p>
+
+              </div>
+
+
+              {/* Floating Pin */}
+
+              <motion.div
+                animate={{
+                  y: [0, -5, 0],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute bottom-6 right-7 flex h-10 w-10 items-center justify-center rounded-full bg-[#123B5D] text-[#F5A623] shadow-lg sm:bottom-8 sm:right-9"
+              >
+                <MapPin size={17} />
+              </motion.div>
+
+            </div>
+
+
+            {/* QUICK CONTACT */}
+
+            <div className="flex min-h-[190px] flex-col justify-center bg-[#123B5D] p-6 sm:p-8 lg:p-9">
+
+              <p className="text-[16px] font-bold uppercase tracking-[0.22em] text-white/35">
+                Need help?
+              </p>
+
+              <h3 className="mt-2 text-[24px] font-extrabold leading-[1.05] tracking-[-0.04em] text-white">
+                Let&apos;s discuss your
+                <br />
+                <span className="text-[#F5A623]">
+                  requirement.
+                </span>
+              </h3>
+
+              <div className="mt-5 flex flex-wrap gap-2">
+
+                <a
+                  href="tel:+917669988825"
+                  className="group inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-[16px] font-bold uppercase tracking-[0.06em] text-[#123B5D] transition-all hover:bg-[#F5A623]"
+                >
+                  <Phone size={12} />
+                  Call Us
+                </a>
+
+                <a
+                  href="mailto:dpacksolutionindia@gmail.com"
+                  className="group inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-[16px] font-bold uppercase tracking-[0.06em] text-white transition-all hover:border-[#F5A623] hover:text-[#F5A623]"
+                >
+                  <Mail size={12} />
+                  Email Us
+                </a>
+
+              </div>
+
+            </div>
+
+          </motion.div>
+
+        </div>
+
+      </section>
+
+      {/* =====================================================
+    FULL WIDTH GOOGLE MAP
+====================================================== */}
+
+<section className="w-full px-0 pb-0 pt-6 sm:pt-8">
+
+  <div className="relative h-[280px] w-full overflow-hidden sm:h-[340px] lg:h-[390px]">
+
+    {/* Google Map */}
+
+    <iframe
+      src="https://www.google.com/maps?q=Shakti%20Auto,%20Second%20Floor,%2024/54B,%20Lala%20Ganesh%20Das%20Marg,%20Tilak%20Nagar,%20West%20Delhi,%20New%20Delhi%20110018,%20Delhi,%20India&output=embed"
+      width="100%"
+      height="100%"
+      style={{
+        border: 0,
+      }}
+      allowFullScreen=""
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+      title="DPACK Location - Shakti Auto, Tilak Nagar"
+    />
+
+    {/* Map Label */}
+
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className="absolute left-4 top-4 z-10 sm:left-6 sm:top-6"
+    >
+
+      <div className="flex items-center gap-3 bg-[#123B5D] px-4 py-3 shadow-lg sm:px-5">
+
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5A623] text-[#123B5D]">
+          <MapPin size={15} />
+        </div>
+
+        <div>
+
+          <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-white/45">
+            Visit Us
+          </p>
+
+          <p className="mt-0.5 text-[10px] font-semibold text-white sm:text-[11px]">
+            Tilak Nagar, New Delhi
+          </p>
+
+        </div>
+
+      </div>
+
+    </motion.div>
+
+  </div>
+
+</section>
 
     </main>
   );
 }
 
 
-/* =========================================================
-   CONTACT CARD
-========================================================= */
-
-function ContactCard({
-  icon,
-  title,
-  value,
-  description,
-}) {
-  return (
-    <div className="group bg-white p-6 shadow-[0_10px_35px_rgba(8,26,51,0.05)] transition-all duration-300 hover:-translate-y-1">
-
-      <div className="flex items-start justify-between">
-
-        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#081A33] text-[#F5A623] transition-all duration-300 group-hover:bg-[#F5A623] group-hover:text-[#081A33]">
-          {icon}
-        </div>
-
-        <ArrowUpRight
-          size={17}
-          className="text-slate-300 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-[#F5A623]"
-        />
-
-      </div>
-
-      <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-        {title}
-      </p>
-
-      <h3 className="mt-2 text-[16px] font-extrabold text-[#081A33]">
-        {value}
-      </h3>
-
-      <p className="mt-1 text-[11px] text-slate-500">
-        {description}
-      </p>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   INFO POINT
-========================================================= */
-
-function InfoPoint({
-  number,
-  title,
-  text,
-}) {
-  return (
-    <div className="flex gap-4">
-
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 text-[9px] font-bold text-[#F5A623]">
-        {number}
-      </span>
-
-      <div>
-        <h4 className="text-[12px] font-bold text-white">
-          {title}
-        </h4>
-
-        <p className="mt-1 text-[10px] leading-5 text-white/45">
-          {text}
-        </p>
-      </div>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
+  /* =========================================================
    INPUT FIELD
-========================================================= */
+  ========================================================= */
 
-function InputField({
+   function InputField({
   label,
   placeholder,
   type,
-}) {
+     }) {
   return (
     <div>
 
-      <label className="mb-2 block text-[11px] font-bold text-[#081A33]">
+      <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.08em] text-[#123B5D]">
         {label}
       </label>
 
       <input
         type={type}
         placeholder={placeholder}
-        className="h-12 w-full border border-slate-200 bg-[#F8F9FA] px-4 text-[12px] text-[#081A33] outline-none transition-all placeholder:text-slate-400 focus:border-[#F5A623]"
+        className="h-11 w-full border-b border-slate-200 bg-[#FAFBFC] px-3 text-[10px] text-[#123B5D] outline-none transition-all placeholder:text-slate-400 focus:border-[#F5A623]"
       />
 
     </div>
+
+    
   );
+
+  
 }

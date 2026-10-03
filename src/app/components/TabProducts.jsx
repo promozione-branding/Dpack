@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -12,181 +12,237 @@ import {
 } from "lucide-react";
 
 /* =========================================================
-   PRODUCT DATA
+   CATEGORY DESIGN DATA
 ========================================================= */
 
-const categories = [
-  {
-    id: "dunnage",
+const categoryDesign = {
+  dunnage: {
     number: "01",
     name: "Dunnage Bags",
-    shortName: "Dunnage Bags",
     description:
       "Reliable cargo protection designed to prevent shifting and movement during transportation.",
     image: "/dunnage.webp",
-
-    products: [
-      {
-        name: "Dunnage Air Bags",
-        image: "https://packingairbag.com/cat/1.webp",
-        tag: "DUNNAGE",
-      },
-      {
-        name: "PP Dunnage Bag",
-        image: "https://packingairbag.com/cat/1.webp",
-        tag: "POPULAR",
-      },
-      {
-        name: "Square Dunnage Air Bags",
-        image: "https://packingairbag.com/cat/1.webp",
-        tag: "CARGO",
-      },
-      {
-        name: "Heavy Duty Dunnage Bag",
-        image: "https://packingairbag.com/cat/1.webp",
-        tag: "HEAVY DUTY",
-      },
-    ],
   },
 
-  {
-    id: "air-column-bags",
+  "dunnage-bags": {
+    number: "01",
+    name: "Dunnage Bags",
+    description:
+      "Reliable cargo protection designed to prevent shifting and movement during transportation.",
+    image: "/dunnage.webp",
+  },
+
+  "air-column-bags": {
     number: "02",
     name: "Air Column Bags",
-    shortName: "Air Column Bags",
     description:
       "Inflatable cushioning solutions for protecting fragile and high-value products.",
     image: "/Air column bag (2).webp",
-
-    products: [
-      {
-        name: "Air Column Bag for Laptop",
-        image: "https://packingairbag.com/cat/5.webp",
-        tag: "FRAGILE",
-      },
-      {
-        name: "Air Column Bag for Electronics",
-        image: "https://packingairbag.com/cat/5.webp",
-        tag: "ELECTRONICS",
-      },
-      {
-        name: "Bottle Air Column Bag",
-        image: "https://packingairbag.com/cat/5.webp",
-        tag: "BOTTLE",
-      },
-      {
-        name: "Custom Air Column Bag",
-        image: "https://packingairbag.com/cat/5.webp",
-        tag: "CUSTOM",
-      },
-    ],
   },
 
-  {
-    id: "air-column-roll",
+  "air-column-roll": {
     number: "03",
     name: "Air Column Rolls",
-    shortName: "Air Column Rolls",
     description:
       "Flexible roll-format cushioning for efficient product protection and packing.",
     image: "/Air Column Roll (2).webp",
-
-    products: [
-      {
-        name: "Air Column Roll",
-        image: "https://packingairbag.com/cat/2.webp",
-        tag: "ROLL",
-      },
-      {
-        name: "Protective Air Roll",
-        image: "https://packingairbag.com/cat/2.webp",
-        tag: "PROTECTION",
-      },
-      {
-        name: "Industrial Air Roll",
-        image: "https://packingairbag.com/cat/2.webp",
-        tag: "INDUSTRIAL",
-      },
-      {
-        name: "Custom Air Column Roll",
-        image: "https://packingairbag.com/cat/2.webp",
-        tag: "CUSTOM",
-      },
-    ],
   },
 
-  {
-    id: "packaging-air-bags",
+  "air-column-rolls": {
+    number: "03",
+    name: "Air Column Rolls",
+    description:
+      "Flexible roll-format cushioning for efficient product protection and packing.",
+    image: "/Air Column Roll (2).webp",
+  },
+
+  "packaging-air-bags": {
     number: "04",
     name: "Packaging Air Bags",
-    shortName: "Packaging Air Bags",
     description:
       "Lightweight air-filled packaging solutions for faster and cleaner product packing.",
     image: "/packing bag.webp",
-
-    products: [
-      {
-        name: "Packaging Air Bag",
-        image: "https://packingairbag.com/cat/3.webp",
-        tag: "PACKAGING",
-      },
-      {
-        name: "Air Cushion Bag",
-        image: "https://packingairbag.com/cat/3.webp",
-        tag: "CUSHION",
-      },
-      {
-        name: "Void Fill Air Bag",
-        image: "https://packingairbag.com/cat/3.webp",
-        tag: "VOID FILL",
-      },
-      {
-        name: "Protective Air Bag",
-        image: "https://packingairbag.com/cat/3.webp",
-        tag: "PROTECTION",
-      },
-    ],
   },
 
-  {
-    id: "gap-fillers",
+  "gap-fillers": {
     number: "05",
     name: "Gap Fillers",
-    shortName: "Gap Fillers",
     description:
       "Practical void-filling solutions that keep products stable throughout transportation.",
     image: "/Gap filler (3).webp",
-
-    products: [
-      {
-        name: "Paper Gap Filler",
-        image: "https://packingairbag.com/sideimg.png",
-        tag: "GAP FILL",
-      },
-      {
-        name: "Air Gap Filler",
-        image: "https://packingairbag.com/sideimg.png",
-        tag: "AIR",
-      },
-      {
-        name: "Cargo Gap Filler",
-        image: "https://packingairbag.com/sideimg.png",
-        tag: "CARGO",
-      },
-      {
-        name: "Heavy Duty Gap Filler",
-        image: "https://packingairbag.com/sideimg.png",
-        tag: "HEAVY DUTY",
-      },
-    ],
   },
-];
+
+  "gap-filler": {
+    number: "05",
+    name: "Gap Fillers",
+    description:
+      "Practical void-filling solutions that keep products stable throughout transportation.",
+    image: "/Gap filler (3).webp",
+  },
+};
+
+/* =========================================================
+   DEFAULT CATEGORY IMAGE
+========================================================= */
+
+const defaultCategoryImage = "/dunnage.webp";
+
+/* =========================================================
+   NORMALIZE CATEGORY
+========================================================= */
+
+function normalizeCategory(category) {
+  if (!category) return "";
+
+  if (typeof category === "object") {
+    return (
+      category.slug ||
+      category.name ||
+      category.title ||
+      ""
+    )
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+  }
+
+  return category
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+}
+
+/* =========================================================
+   CATEGORY DISPLAY NAME
+========================================================= */
+
+function getCategoryName(category) {
+  const key = normalizeCategory(category);
+
+  if (categoryDesign[key]?.name) {
+    return categoryDesign[key].name;
+  }
+
+  if (!category) return "Products";
+
+  if (typeof category === "object") {
+    return category.name || category.title || "Products";
+  }
+
+  return category
+    .toString()
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+/* =========================================================
+   CATEGORY NUMBER
+========================================================= */
+
+function getCategoryNumber(category, index) {
+  const key = normalizeCategory(category);
+
+  if (categoryDesign[key]?.number) {
+    return categoryDesign[key].number;
+  }
+
+  return String(index + 1).padStart(2, "0");
+}
+
+/* =========================================================
+   CATEGORY DESCRIPTION
+========================================================= */
+
+function getCategoryDescription(category) {
+  const key = normalizeCategory(category);
+
+  return (
+    categoryDesign[key]?.description ||
+    "Explore reliable packaging solutions designed for safer transportation and efficient product protection."
+  );
+}
+
+/* =========================================================
+   CATEGORY IMAGE
+========================================================= */
+
+function getCategoryImage(category, products = []) {
+  const key = normalizeCategory(category);
+
+  if (categoryDesign[key]?.image) {
+    return categoryDesign[key].image;
+  }
+
+  const firstProduct = products?.[0];
+
+  if (firstProduct) {
+    const image = getProductImage(firstProduct);
+
+    if (image) {
+      return image;
+    }
+  }
+
+  return defaultCategoryImage;
+}
+
+/* =========================================================
+   PRODUCT IMAGE
+========================================================= */
+
+function getProductImage(product) {
+  if (!product) {
+    return "/dunnage.webp";
+  }
+
+  /* Main image can be string */
+  if (typeof product.image === "string") {
+    return product.image;
+  }
+
+  /* Main image can be object */
+  if (product.image?.url) {
+    return product.image.url;
+  }
+
+  /* Extra images fallback */
+  if (
+    Array.isArray(product.extraImages) &&
+    product.extraImages.length > 0
+  ) {
+    const firstImage = product.extraImages[0];
+
+    if (typeof firstImage === "string") {
+      return firstImage;
+    }
+
+    if (firstImage?.url) {
+      return firstImage.url;
+    }
+  }
+
+  return "/dunnage.webp";
+}
 
 /* =========================================================
    PRODUCT CARD
 ========================================================= */
 
 function ProductCard({ product, index }) {
+  const image = getProductImage(product);
+
+  const tag =
+    product.badge ||
+    product.tag ||
+    getCategoryName(product.category);
+
+  const slug =
+    product.slug ||
+    product._id ||
+    product.id;
+
   return (
     <motion.div
       initial={{
@@ -205,28 +261,25 @@ function ProductCard({ product, index }) {
       className="h-full min-w-0"
     >
       <Link
-        href="/products"
+        href={`/products/${slug}`}
         className="
           group
           flex
           h-full
           flex-col
           overflow-hidden
-
           rounded-[18px]
           border
           border-[#DFE6EA]
           bg-white
-
           transition-all
           duration-500
-
           hover:-translate-y-2
           hover:border-[#2F7180]/30
           hover:shadow-[0_24px_55px_rgba(18,59,93,0.14)]
         "
       >
-        {/* ================= IMAGE ================= */}
+        {/* IMAGE */}
 
         <div
           className="
@@ -236,7 +289,7 @@ function ProductCard({ product, index }) {
             bg-[#F4F7F9]
           "
         >
-          {/* Product Tag */}
+          {/* PRODUCT TAG */}
 
           <span
             className="
@@ -244,13 +297,10 @@ function ProductCard({ product, index }) {
               left-3
               top-3
               z-20
-
               rounded-[6px]
               bg-[#F5A623]
-
               px-3
               py-1.5
-
               text-[10px]
               font-black
               uppercase
@@ -258,38 +308,35 @@ function ProductCard({ product, index }) {
               text-[#123B5D]
             "
           >
-            {product.tag}
+            {tag}
           </span>
 
-          {/* Wishlist */}
+          {/* WISHLIST */}
 
           <button
             type="button"
             aria-label="Add to wishlist"
-            onClick={(e) => e.preventDefault()}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
             className="
               absolute
               right-3
               top-3
               z-20
-
               flex
               h-9
               w-9
               items-center
               justify-center
-
               rounded-full
               bg-white
-
               text-[18px]
               text-[#123B5D]
-
               shadow-sm
-
               transition-all
               duration-300
-
               hover:bg-[#123B5D]
               hover:text-white
             "
@@ -297,29 +344,27 @@ function ProductCard({ product, index }) {
             ♡
           </button>
 
-          {/* Product Image */}
+          {/* PRODUCT IMAGE */}
 
           <div className="absolute inset-5 sm:inset-6">
             <Image
-              src={product.image}
-              alt={product.name}
+              src={image}
+              alt={product.name || "DPack Product"}
               fill
               unoptimized
               sizes="(max-width: 768px) 50vw, 260px"
               className="
                 object-contain
-
                 transition-all
                 duration-700
                 ease-out
-
                 group-hover:scale-110
                 group-hover:-rotate-2
               "
             />
           </div>
 
-          {/* Hover Button */}
+          {/* HOVER BUTTON */}
 
           <div
             className="
@@ -328,13 +373,10 @@ function ProductCard({ product, index }) {
               left-3
               right-3
               z-20
-
               translate-y-4
               opacity-0
-
               transition-all
               duration-300
-
               group-hover:translate-y-0
               group-hover:opacity-100
             "
@@ -345,13 +387,10 @@ function ProductCard({ product, index }) {
                 items-center
                 justify-center
                 gap-2
-
                 rounded-full
                 bg-[#123B5D]
-
                 px-4
                 py-3
-
                 text-[11px]
                 font-bold
                 uppercase
@@ -365,7 +404,7 @@ function ProductCard({ product, index }) {
           </div>
         </div>
 
-        {/* ================= DETAILS ================= */}
+        {/* DETAILS */}
 
         <div
           className="
@@ -392,7 +431,6 @@ function ProductCard({ product, index }) {
             className="
               mt-2
               min-h-[42px]
-
               text-[15px]
               font-bold
               leading-5
@@ -403,7 +441,7 @@ function ProductCard({ product, index }) {
             {product.name}
           </h3>
 
-          {/* Rating */}
+          {/* RATING */}
 
           <div
             className="
@@ -417,6 +455,12 @@ function ProductCard({ product, index }) {
             <span className="text-[12px] tracking-[1px] text-[#F5A623]">
               ★★★★★
             </span>
+
+            {product.reviews ? (
+              <span className="text-[10px] text-gray-400">
+                ({product.reviews})
+              </span>
+            ) : null}
           </div>
         </div>
       </Link>
@@ -425,30 +469,302 @@ function ProductCard({ product, index }) {
 }
 
 /* =========================================================
+   SKELETON
+========================================================= */
+
+function ProductSkeleton() {
+  return (
+    <div
+      className="
+        overflow-hidden
+        rounded-[18px]
+        border
+        border-[#DFE6EA]
+        bg-white
+      "
+    >
+      <div className="aspect-square animate-pulse bg-[#E9EEF1]" />
+
+      <div className="space-y-3 p-5">
+        <div className="h-2.5 w-24 animate-pulse rounded bg-[#E9EEF1]" />
+        <div className="h-4 w-4/5 animate-pulse rounded bg-[#E9EEF1]" />
+        <div className="h-3 w-20 animate-pulse rounded bg-[#E9EEF1]" />
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
    MAIN COMPONENT
 ========================================================= */
 
 export default function CategoryProducts() {
+  const [products, setProducts] = useState([]);
   const [activeCategory, setActiveCategory] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  /* =======================================================
+     FETCH PRODUCTS FROM ADMIN DATABASE
+  ======================================================= */
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch(
+          "/api/products?limit=100",
+          {
+            method: "GET",
+            cache: "no-store",
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data?.success) {
+          throw new Error(
+            data?.error || "Unable to load products"
+          );
+        }
+
+        if (mounted) {
+          setProducts(
+            Array.isArray(data.products)
+              ? data.products
+              : []
+          );
+        }
+      } catch (err) {
+        console.error("Products fetch error:", err);
+
+        if (mounted) {
+          setError("Unable to load products.");
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchProducts();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  /* =======================================================
+     CREATE CATEGORIES FROM PRODUCTS
+  ======================================================= */
+
+  const categories = useMemo(() => {
+    const categoryMap = new Map();
+
+    products.forEach((product) => {
+      const rawCategory = product.category;
+
+      if (!rawCategory) return;
+
+      const key = normalizeCategory(rawCategory);
+
+      if (!key) return;
+
+      if (!categoryMap.has(key)) {
+        categoryMap.set(key, {
+          id: key,
+          number: getCategoryNumber(
+            rawCategory,
+            categoryMap.size
+          ),
+          name: getCategoryName(rawCategory),
+          shortName: getCategoryName(rawCategory),
+          description: getCategoryDescription(rawCategory),
+        });
+      }
+    });
+
+    return Array.from(categoryMap.values()).map(
+      (category, index) => ({
+        ...category,
+        number:
+          categoryDesign[category.id]?.number ||
+          String(index + 1).padStart(2, "0"),
+      })
+    );
+  }, [products]);
+
+  /* =======================================================
+     KEEP ACTIVE TAB VALID
+  ======================================================= */
+
+  useEffect(() => {
+    if (
+      categories.length > 0 &&
+      activeCategory >= categories.length
+    ) {
+      setActiveCategory(0);
+    }
+  }, [categories, activeCategory]);
+
+  /* =======================================================
+     ACTIVE CATEGORY
+  ======================================================= */
 
   const active = categories[activeCategory];
+
+  /* =======================================================
+     FILTER ACTIVE PRODUCTS
+  ======================================================= */
+
+  const activeProducts = useMemo(() => {
+    if (!active) return [];
+
+    return products.filter((product) => {
+      return (
+        normalizeCategory(product.category) ===
+        active.id
+      );
+    });
+  }, [products, active]);
+
+  /* =======================================================
+     ACTIVE CATEGORY IMAGE
+  ======================================================= */
+
+  const activeCategoryImage = active
+    ? getCategoryImage(
+        active.id,
+        activeProducts
+      )
+    : defaultCategoryImage;
+
+  /* =======================================================
+     LOADING
+  ======================================================= */
+
+  if (loading) {
+    return (
+      <section className="bg-[#F4F7F9] py-12 sm:py-14 lg:py-16">
+        <div
+          className="
+            mx-auto
+            w-full
+            max-w-[1500px]
+            px-4
+            sm:px-6
+            lg:px-10
+            xl:px-12
+          "
+        >
+          <div className="mb-7">
+            <div className="mb-3 h-3 w-28 animate-pulse rounded bg-[#DCE5EA]" />
+
+            <div className="h-12 w-[60%] animate-pulse rounded bg-[#DCE5EA]" />
+          </div>
+
+          <div
+            className="
+              grid
+              grid-cols-2
+              gap-3
+              sm:gap-4
+              lg:grid-cols-4
+            "
+          >
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ProductSkeleton key={index} />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /* =======================================================
+     ERROR
+  ======================================================= */
+
+  if (error) {
+    return (
+      <section className="bg-[#F4F7F9] py-16">
+        <div className="mx-auto max-w-[700px] px-5 text-center">
+          <div className="rounded-2xl border border-red-100 bg-white p-8">
+            <p className="text-sm font-semibold text-red-600">
+              {error}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="
+                mt-5
+                rounded-full
+                bg-[#123B5D]
+                px-5
+                py-3
+                text-xs
+                font-bold
+                text-white
+              "
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /* =======================================================
+     EMPTY
+  ======================================================= */
+
+  if (!products.length) {
+    return (
+      <section className="bg-[#F4F7F9] py-16">
+        <div className="mx-auto max-w-[700px] px-5 text-center">
+          <div className="rounded-2xl border border-[#DFE6EA] bg-white p-10">
+            <Package
+              className="mx-auto text-[#123B5D]"
+              size={35}
+            />
+
+            <h3 className="mt-4 text-xl font-bold text-[#172321]">
+              No products available
+            </h3>
+
+            <p className="mt-2 text-sm text-gray-500">
+              Products added from the admin panel will
+              appear here automatically.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /* =======================================================
+     MAIN
+  ======================================================= */
 
   return (
     <section
       className="
         relative
         overflow-hidden
-
         bg-[#F4F7F9]
-
         py-12
         sm:py-14
         lg:py-16
       "
     >
-      {/* ===================================================
-          BACKGROUND DECORATION
-      =================================================== */}
+      {/* BACKGROUND */}
 
       <div
         className="
@@ -456,13 +772,10 @@ export default function CategoryProducts() {
           absolute
           -right-40
           top-10
-
           h-[450px]
           w-[450px]
-
           rounded-full
           bg-[#DCE7ED]
-
           blur-[120px]
         "
       />
@@ -473,39 +786,28 @@ export default function CategoryProducts() {
           absolute
           -left-40
           bottom-0
-
           h-[350px]
           w-[350px]
-
           rounded-full
           bg-[#E7EEF2]
-
           blur-[100px]
         "
       />
-
-      {/* ===================================================
-          CONTAINER
-      =================================================== */}
 
       <div
         className="
           relative
           z-10
-
           mx-auto
           w-full
           max-w-[1500px]
-
           px-4
           sm:px-6
           lg:px-10
           xl:px-12
         "
       >
-        {/* =================================================
-            HEADER
-        ================================================= */}
+        {/* HEADER */}
 
         <motion.div
           initial={{
@@ -525,18 +827,14 @@ export default function CategoryProducts() {
           }}
           className="
             mb-7
-
             flex
             flex-col
             gap-5
-
             lg:flex-row
             lg:items-end
             lg:justify-between
           "
         >
-          {/* LEFT */}
-
           <div>
             <div
               className="
@@ -571,13 +869,11 @@ export default function CategoryProducts() {
             <h2
               className="
                 max-w-[700px]
-
                 text-[34px]
                 font-black
                 leading-[0.95]
                 tracking-[-0.05em]
                 text-[#172321]
-
                 sm:text-[44px]
                 lg:text-[54px]
               "
@@ -590,8 +886,6 @@ export default function CategoryProducts() {
             </h2>
           </div>
 
-          {/* RIGHT */}
-
           <div className="max-w-[420px]">
             <p
               className="
@@ -600,9 +894,10 @@ export default function CategoryProducts() {
                 text-[#66737D]
               "
             >
-              Explore protective packaging solutions designed
-              for safer transportation, efficient packing and
-              reliable product protection.
+              Explore protective packaging solutions
+              designed for safer transportation,
+              efficient packing and reliable product
+              protection.
             </p>
 
             <Link
@@ -610,11 +905,9 @@ export default function CategoryProducts() {
               className="
                 group
                 mt-4
-
                 inline-flex
                 items-center
                 gap-3
-
                 text-[11px]
                 font-black
                 uppercase
@@ -631,13 +924,10 @@ export default function CategoryProducts() {
                   w-8
                   items-center
                   justify-center
-
                   rounded-full
                   bg-[#F5A623]
-
                   transition-transform
                   duration-300
-
                   group-hover:translate-x-1
                 "
               >
@@ -647,27 +937,20 @@ export default function CategoryProducts() {
           </div>
         </motion.div>
 
-        {/* =================================================
-            CATEGORY TABS
-        ================================================= */}
+        {/* CATEGORY TABS */}
 
         <div
           className="
             mb-5
-
             flex
             gap-2
             overflow-x-auto
-
             rounded-[15px]
             border
             border-[#DDE5EA]
             bg-white
-
             p-1.5
-
             shadow-[0_8px_30px_rgba(18,59,93,0.04)]
-
             [scrollbar-width:none]
             [&::-webkit-scrollbar]:hidden
           "
@@ -679,7 +962,9 @@ export default function CategoryProducts() {
               <button
                 key={category.id}
                 type="button"
-                onClick={() => setActiveCategory(index)}
+                onClick={() =>
+                  setActiveCategory(index)
+                }
                 className={[
                   "relative",
                   "flex",
@@ -702,8 +987,6 @@ export default function CategoryProducts() {
                     : "text-[#66737D] hover:bg-[#F4F7F9] hover:text-[#123B5D]",
                 ].join(" ")}
               >
-                {/* ACTIVE BACKGROUND */}
-
                 {selected && (
                   <motion.div
                     layoutId="activeCategory"
@@ -715,14 +998,11 @@ export default function CategoryProducts() {
                     className="
                       absolute
                       inset-0
-
                       rounded-[10px]
                       bg-[#123B5D]
                     "
                   />
                 )}
-
-                {/* NUMBER */}
 
                 <span
                   className={[
@@ -740,8 +1020,6 @@ export default function CategoryProducts() {
                   {category.number}
                 </span>
 
-                {/* NAME */}
-
                 <span className="relative z-10">
                   {category.shortName}
                 </span>
@@ -750,326 +1028,279 @@ export default function CategoryProducts() {
           })}
         </div>
 
-        {/* =================================================
-            ACTIVE CATEGORY
-        ================================================= */}
+        {/* ACTIVE CATEGORY */}
 
         <AnimatePresence mode="wait">
-          <motion.div
-            key={active.id}
-            initial={{
-              opacity: 0,
-              y: 15,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-              y: -10,
-            }}
-            transition={{
-              duration: 0.4,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-          >
-            <div
-              className="
-                grid
-                gap-4
-
-                lg:grid-cols-[1.05fr_2.95fr]
-              "
+          {active && (
+            <motion.div
+              key={active.id}
+              initial={{
+                opacity: 0,
+                y: 15,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                y: -10,
+              }}
+              transition={{
+                duration: 0.4,
+                ease: [0.16, 1, 0.3, 1],
+              }}
             >
-              {/* ===========================================
-                  FEATURED CATEGORY
-              =========================================== */}
-
-              <Link
-                href="/products"
-                className="
-                  group
-                  relative
-
-                  min-h-[350px]
-                  overflow-hidden
-
-                  rounded-[20px]
-
-                  bg-[#E5EDF2]
-
-                  sm:min-h-[380px]
-                  lg:min-h-[390px]
-                "
-              >
-                {/* Decorative Circle */}
-
-                <div
-                  className="
-                    absolute
-                    -right-20
-                    -top-20
-
-                    h-64
-                    w-64
-
-                    rounded-full
-                    bg-[#F5A623]/15
-
-                    transition-transform
-                    duration-700
-
-                    group-hover:scale-125
-                  "
-                />
-
-                {/* Blue Decorative Circle */}
-
-                <div
-                  className="
-                    absolute
-                    -bottom-24
-                    -left-24
-
-                    h-56
-                    w-56
-
-                    rounded-full
-                    bg-[#123B5D]/[0.05]
-
-                    transition-transform
-                    duration-700
-
-                    group-hover:scale-125
-                  "
-                />
-
-                {/* TEXT */}
-
-                <div
-                  className="
-                    relative
-                    z-20
-
-                    p-6
-                    sm:p-7
-                  "
-                >
-                  {/* Badge */}
-
-                  <span
-                    className="
-                      inline-flex
-
-                      rounded-full
-                      bg-[#123B5D]
-
-                      px-3.5
-                      py-2
-
-                      text-[10px]
-                      font-black
-                      uppercase
-                      tracking-[0.08em]
-                      text-white
-                    "
-                  >
-                    Featured Category
-                  </span>
-
-                  {/* Category Number */}
-
-                  <p
-                    className="
-                      mt-5
-
-                      font-mono
-                      text-[10px]
-                      font-bold
-                      uppercase
-                      tracking-[0.08em]
-                      text-[#2F7180]
-                    "
-                  >
-                    Category {active.number}
-                  </p>
-
-                  {/* Category Name */}
-
-                  <h3
-                    className="
-                      mt-2
-                      max-w-[310px]
-
-                      text-[30px]
-                      font-black
-                      leading-[0.95]
-                      tracking-[-0.05em]
-                      text-[#123B5D]
-
-                      sm:text-[36px]
-                    "
-                  >
-                    {active.name}
-                  </h3>
-
-                  {/* Description */}
-
-                  <p
-                    className="
-                      mt-3
-                      max-w-[330px]
-
-                      text-[12px]
-                      leading-5
-                      text-[#66737D]
-                    "
-                  >
-                    {active.description}
-                  </p>
-                </div>
-
-                {/* GIANT NUMBER */}
-
-                <span
-                  className="
-                    pointer-events-none
-
-                    absolute
-                    -right-2
-                    top-3
-
-                    text-[130px]
-                    font-black
-                    leading-none
-
-                    text-[#123B5D]/[0.045]
-                  "
-                >
-                  {active.number}
-                </span>
-
-                {/* PRODUCT IMAGE */}
-
-                <motion.div
-                  key={active.image}
-                  initial={{
-                    opacity: 0,
-                    scale: 0.85,
-                    x: 25,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    x: 0,
-                    y: [0, -6, 0],
-                  }}
-                  transition={{
-                    opacity: {
-                      duration: 0.4,
-                    },
-
-                    scale: {
-                      duration: 0.6,
-                    },
-
-                    x: {
-                      duration: 0.6,
-                    },
-
-                    y: {
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    },
-                  }}
-                  className="
-                    absolute
-                    bottom-1
-                    right-0
-
-                    h-[46%]
-                    w-[62%]
-
-                    sm:h-[49%]
-                    sm:w-[62%]
-                  "
-                >
-                  <Image
-                    src={active.image}
-                    alt={active.name}
-                    fill
-                    unoptimized
-                    sizes="500px"
-                    className="
-                      object-contain
-
-                      drop-shadow-[0_20px_25px_rgba(18,59,93,0.16)]
-                    "
-                  />
-                </motion.div>
-
-                {/* CTA CIRCLE */}
-
-                <div
-                  className="
-                    absolute
-                    bottom-5
-                    left-6
-                    z-30
-
-                    flex
-                    h-11
-                    w-11
-                    items-center
-                    justify-center
-
-                    rounded-full
-                    bg-[#F5A623]
-
-                    text-[#123B5D]
-
-                    transition-all
-                    duration-300
-
-                    group-hover:rotate-45
-                    group-hover:scale-110
-                  "
-                >
-                  <ArrowUpRight size={17} />
-                </div>
-              </Link>
-
-              {/* ===========================================
-                  PRODUCT GRID
-              =========================================== */}
-
               <div
                 className="
                   grid
-                  grid-cols-2
-                  gap-3
-
-                  sm:gap-4
-                  xl:grid-cols-4
+                  gap-4
+                  lg:grid-cols-[1.05fr_2.95fr]
                 "
               >
-                {active.products.map((product, index) => (
-                  <ProductCard
-                    key={`${active.id}-${product.name}`}
-                    product={product}
-                    index={index}
+                {/* FEATURED CATEGORY */}
+
+                <Link
+                  href="/products"
+                  className="
+                    group
+                    relative
+                    min-h-[350px]
+                    overflow-hidden
+                    rounded-[20px]
+                    bg-[#E5EDF2]
+                    sm:min-h-[380px]
+                    lg:min-h-[390px]
+                  "
+                >
+                  <div
+                    className="
+                      absolute
+                      -right-20
+                      -top-20
+                      h-64
+                      w-64
+                      rounded-full
+                      bg-[#F5A623]/15
+                      transition-transform
+                      duration-700
+                      group-hover:scale-125
+                    "
                   />
-                ))}
+
+                  <div
+                    className="
+                      absolute
+                      -bottom-24
+                      -left-24
+                      h-56
+                      w-56
+                      rounded-full
+                      bg-[#123B5D]/[0.05]
+                      transition-transform
+                      duration-700
+                      group-hover:scale-125
+                    "
+                  />
+
+                  {/* TEXT */}
+
+                  <div
+                    className="
+                      relative
+                      z-20
+                      p-6
+                      sm:p-7
+                    "
+                  >
+                    <span
+                      className="
+                        inline-flex
+                        rounded-full
+                        bg-[#123B5D]
+                        px-3.5
+                        py-2
+                        text-[10px]
+                        font-black
+                        uppercase
+                        tracking-[0.08em]
+                        text-white
+                      "
+                    >
+                      Featured Category
+                    </span>
+
+                    <p
+                      className="
+                        mt-5
+                        font-mono
+                        text-[10px]
+                        font-bold
+                        uppercase
+                        tracking-[0.08em]
+                        text-[#2F7180]
+                      "
+                    >
+                      Category {active.number}
+                    </p>
+
+                    <h3
+                      className="
+                        mt-2
+                        max-w-[310px]
+                        text-[30px]
+                        font-black
+                        leading-[0.95]
+                        tracking-[-0.05em]
+                        text-[#123B5D]
+                        sm:text-[36px]
+                      "
+                    >
+                      {active.name}
+                    </h3>
+
+                    <p
+                      className="
+                        mt-3
+                        max-w-[330px]
+                        text-[12px]
+                        leading-5
+                        text-[#66737D]
+                      "
+                    >
+                      {active.description}
+                    </p>
+                  </div>
+
+                  {/* GIANT NUMBER */}
+
+                  <span
+                    className="
+                      pointer-events-none
+                      absolute
+                      -right-2
+                      top-3
+                      text-[130px]
+                      font-black
+                      leading-none
+                      text-[#123B5D]/[0.045]
+                    "
+                  >
+                    {active.number}
+                  </span>
+
+                  {/* CATEGORY IMAGE */}
+
+                  <motion.div
+                    key={activeCategoryImage}
+                    initial={{
+                      opacity: 0,
+                      scale: 0.85,
+                      x: 25,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                      x: 0,
+                      y: [0, -6, 0],
+                    }}
+                    transition={{
+                      opacity: {
+                        duration: 0.4,
+                      },
+                      scale: {
+                        duration: 0.6,
+                      },
+                      x: {
+                        duration: 0.6,
+                      },
+                      y: {
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      },
+                    }}
+                    className="
+                      absolute
+                      bottom-1
+                      right-0
+                      h-[46%]
+                      w-[62%]
+                      sm:h-[49%]
+                      sm:w-[62%]
+                    "
+                  >
+                    <Image
+                      src={activeCategoryImage}
+                      alt={active.name}
+                      fill
+                      unoptimized
+                      sizes="500px"
+                      className="
+                        object-contain
+                        drop-shadow-[0_20px_25px_rgba(18,59,93,0.16)]
+                      "
+                    />
+                  </motion.div>
+
+                  {/* CTA */}
+
+                  <div
+                    className="
+                      absolute
+                      bottom-5
+                      left-6
+                      z-30
+                      flex
+                      h-11
+                      w-11
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-[#F5A623]
+                      text-[#123B5D]
+                      transition-all
+                      duration-300
+                      group-hover:rotate-45
+                      group-hover:scale-110
+                    "
+                  >
+                    <ArrowUpRight size={17} />
+                  </div>
+                </Link>
+
+                {/* PRODUCT GRID */}
+
+                <div
+                  className="
+                    grid
+                    grid-cols-2
+                    gap-3
+                    sm:gap-4
+                    xl:grid-cols-4
+                  "
+                >
+                  {activeProducts.map(
+                    (product, index) => (
+                      <ProductCard
+                        key={
+                          product._id ||
+                          product.id ||
+                          product.slug ||
+                          index
+                        }
+                        product={product}
+                        index={index}
+                      />
+                    )
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
         </AnimatePresence>
 
-        {/* =================================================
-            BULK ORDER BANNER
-        ================================================= */}
+        {/* BULK ORDER BANNER */}
 
         <motion.div
           initial={{
@@ -1089,24 +1320,18 @@ export default function CategoryProducts() {
           className="
             relative
             mt-4
-
             overflow-hidden
-
             rounded-[18px]
             bg-[#123B5D]
           "
         >
-          {/* Decoration */}
-
           <div
             className="
               absolute
               -left-12
               -top-16
-
               h-40
               w-40
-
               rounded-full
               border-[30px]
               border-white/[0.03]
@@ -1118,42 +1343,31 @@ export default function CategoryProducts() {
               absolute
               -bottom-24
               right-[20%]
-
               h-52
               w-52
-
               rounded-full
               bg-[#2F7180]
-
               opacity-40
               blur-2xl
             "
           />
 
-          {/* CONTENT */}
-
           <div
             className="
               relative
               z-10
-
               flex
               flex-col
               gap-5
-
               px-6
               py-6
-
               sm:flex-row
               sm:items-center
               sm:justify-between
-
               lg:px-8
               lg:py-7
             "
           >
-            {/* LEFT */}
-
             <div className="flex items-center gap-4">
               <div
                 className="
@@ -1161,13 +1375,10 @@ export default function CategoryProducts() {
                   h-12
                   w-12
                   shrink-0
-
                   items-center
                   justify-center
-
                   rounded-full
                   bg-[#F5A623]
-
                   text-[#123B5D]
                 "
               >
@@ -1203,16 +1414,15 @@ export default function CategoryProducts() {
                 <h4
                   className="
                     mt-1.5
-
                     text-[17px]
                     font-bold
                     tracking-[-0.025em]
                     text-white
-
                     sm:text-[20px]
                   "
                 >
-                  Need custom sizes or bulk packaging?
+                  Need custom sizes or bulk
+                  packaging?
                 </h4>
 
                 <p
@@ -1223,40 +1433,32 @@ export default function CategoryProducts() {
                     text-white/60
                   "
                 >
-                  Talk to our team for custom requirements
-                  and business pricing.
+                  Talk to our team for custom
+                  requirements and business pricing.
                 </p>
               </div>
             </div>
-
-            {/* CTA */}
 
             <Link
               href="/contact"
               className="
                 group
-
                 flex
                 w-fit
                 shrink-0
                 items-center
                 gap-3
-
                 rounded-full
                 bg-[#F5A623]
-
                 px-5
                 py-3
-
                 text-[11px]
                 font-black
                 uppercase
                 tracking-[0.08em]
                 text-[#123B5D]
-
                 transition-all
                 duration-300
-
                 hover:-translate-y-1
                 hover:bg-white
                 hover:shadow-xl
@@ -1279,3 +1481,4 @@ export default function CategoryProducts() {
     </section>
   );
 }
+

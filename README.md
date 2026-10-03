@@ -20,6 +20,21 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Firebase phone sign-in
+
+Phone sign-in requires a Firebase project with the Phone authentication provider enabled. Add these public Firebase web-app settings to `.env.local` (get them from Firebase Console → Project settings → Your apps):
+
+- `NEXT_PUBLIC_FIREBASE_API_KEY`
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+- `NEXT_PUBLIC_FIREBASE_APP_ID`
+
+Restart the Next.js development server after changing environment variables. If these values are missing, the app remains usable and phone sign-in displays a configuration error instead of crashing during page load.
+
+## Admin sign-in
+
+Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in `.env.local` to credentials of your choice. Admin sign-in also requires `MONGODB_URI` and `JWT_SECRET`. Restart the Next.js server after changing these values. Do not use default or example passwords in a deployed environment.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

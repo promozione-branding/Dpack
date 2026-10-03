@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ordersAPI, userAPI } from "@/lib/apiClient";
+import { useAuth } from "@/app/context/AuthContext";
 import {
   User,
   Package,
@@ -20,33 +23,6 @@ import {
   Home,
   ShieldCheck,
 } from "lucide-react";
-
-const orders = [
-  {
-    id: "#DPK-10482",
-    date: "02 Oct 2026",
-    items: 2,
-    amount: 4097,
-    status: "Delivered",
-    statusType: "delivered",
-  },
-  {
-    id: "#DPK-10461",
-    date: "28 Sep 2026",
-    items: 1,
-    amount: 1499,
-    status: "Shipped",
-    statusType: "shipped",
-  },
-  {
-    id: "#DPK-10425",
-    date: "21 Sep 2026",
-    items: 3,
-    amount: 5297,
-    status: "Processing",
-    statusType: "processing",
-  },
-];
 
 const menuItems = [
   {
@@ -72,11 +48,125 @@ const menuItems = [
 ];
 
 export default function MyAccountPage() {
+  const router = useRouter();
+  const { user, hydrated, isLoggedIn, logout, wishlistCount } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [profileEdited, setProfileEdited] = useState(false);
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
+    address: { line1: "", line2: "", city: "", state: "", pincode: "", country: "India" },
+  });
+
+  useEffect(() => {
+    if (!hydrated || !isLoggedIn) return;
+    let cancelled = false;
+    ordersAPI.list()
+      .then((result) => {
+        if (!cancelled) setOrders(Array.isArray(result.orders) ? result.orders : []);
+      })
+      .catch((fetchError) => {
+        if (!cancelled) setError(fetchError.message || "Could not load your orders.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingOrders(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, isLoggedIn]);
+
+  const accountProfile = profileEdited
+    ? profile
+    : {
+        name: user?.name || "",
+        email: user?.email || "",
+        address: {
+          line1: user?.address?.line1 || "",
+          line2: user?.address?.line2 || "",
+          city: user?.address?.city || "",
+          state: user?.address?.state || "",
+          pincode: user?.address?.pincode || "",
+          country: user?.address?.country || "India",
+        },
+      };
 
   const handleLogout = () => {
-    alert("Logout functionality will be connected with your authentication system.");
+    logout();
+    router.replace("/");
   };
+
+  const saveProfile = async () => {
+    setSaving(true);
+    setError("");
+    setNotice("");
+    try {
+      const result = await userAPI.updateProfile({
+        name: accountProfile.name,
+        email: accountProfile.email,
+        address: accountProfile.address,
+      });
+      setProfile((current) => ({
+        ...current,
+        name: result.user.name || "",
+        email: result.user.email || "",
+        address: {
+          line1: result.user.address?.line1 || "",
+          line2: result.user.address?.line2 || "",
+          city: result.user.address?.city || "",
+          state: result.user.address?.state || "",
+          pincode: result.user.address?.pincode || "",
+          country: result.user.address?.country || "India",
+        },
+      }));
+      setProfileEdited(true);
+      setNotice("Account details saved.");
+    } catch (saveError) {
+      setError(saveError.message || "Could not save account details.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateAddress = (field, value) => {
+    setProfileEdited(true);
+    setProfile((current) => ({
+      ...current,
+      address: { ...accountProfile.address, [field]: value },
+    }));
+  };
+
+  if (!hydrated) {
+    return <main className="flex min-h-[50vh] items-center justify-center text-sm text-gray-500">Loading account…</main>;
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <main className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-5 text-center text-[#081A33]">
+        <h1 className="text-3xl font-bold">Sign in to your account</h1>
+        <p className="text-sm text-gray-500">Your orders, saved products, and account details are available after signing in.</p>
+        <Link href="/login?next=%2Fmy-account" className="bg-[#081A33] px-6 py-3 text-sm font-bold text-white">Sign in</Link>
+      </main>
+    );
+  }
+
+  const displayOrders = orders.map((order) => {
+    const status = order.status || "pending";
+    const statusType = ["delivered", "shipped", "cancelled"].includes(status) ? status : "processing";
+    return {
+      id: order._id,
+      date: order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-IN") : "—",
+      items: order.items?.length || 0,
+      amount: Number(order.total || 0),
+      status: status.charAt(0).toUpperCase() + status.slice(1),
+      statusType,
+    };
+  });
 
   return (
     <main className="min-h-screen bg-[#F7F8FA] text-[#081A33] overflow-hidden">
@@ -223,7 +313,7 @@ export default function MyAccountPage() {
                   </p>
 
                   <p className="font-semibold text-white">
-                    DPACK Customer
+                    {accountProfile.name || "Customer"}
                   </p>
                 </div>
               </div>
@@ -259,7 +349,7 @@ export default function MyAccountPage() {
                     </p>
 
                     <h3 className="mt-1 font-semibold text-white">
-                      DPACK Customer
+                      {accountProfile.name || "Customer"}
                     </h3>
                   </div>
                 </div>
@@ -369,7 +459,7 @@ export default function MyAccountPage() {
                       </p>
 
                       <h2 className="text-2xl font-bold text-[#081A33] sm:text-3xl">
-                        Hello, DPACK Customer
+                        Hello, {accountProfile.name || "Customer"}
                       </h2>
 
                       <p className="mt-3 max-w-2xl text-sm leading-7 text-[#081A33]/55">
@@ -397,28 +487,28 @@ export default function MyAccountPage() {
 
                   <AccountStat
                     icon={Package}
-                    number="03"
+                    number={String(orders.length).padStart(2, "0")}
                     label="Total Orders"
                     delay="account-delay-1"
                   />
 
                   <AccountStat
                     icon={Truck}
-                    number="01"
+                    number={String(orders.filter((order) => ["pending", "confirmed", "shipped"].includes(order.status)).length).padStart(2, "0")}
                     label="Active Order"
                     delay="account-delay-2"
                   />
 
                   <AccountStat
                     icon={CheckCircle2}
-                    number="02"
+                    number={String(orders.filter((order) => order.status === "delivered").length).padStart(2, "0")}
                     label="Delivered"
                     delay="account-delay-3"
                   />
 
                   <AccountStat
                     icon={Heart}
-                    number="04"
+                    number={String(wishlistCount).padStart(2, "0")}
                     label="Wishlist"
                     delay="account-delay-4"
                   />
@@ -477,7 +567,7 @@ export default function MyAccountPage() {
                       </thead>
 
                       <tbody>
-                        {orders.map((order) => (
+                        {displayOrders.slice(0, 5).map((order) => (
                           <OrderRow
                             key={order.id}
                             order={order}
@@ -519,11 +609,12 @@ export default function MyAccountPage() {
 
                     <div className="text-sm leading-7 text-[#081A33]/60">
                       <p className="font-semibold text-[#081A33]">
-                        DPACK Customer
+                        {accountProfile.name || "Customer"}
                       </p>
 
-                      <p>New Delhi, Delhi</p>
-                      <p>India - 110001</p>
+                      {accountProfile.address?.line1 && <p>{accountProfile.address.line1}</p>}
+                      {(accountProfile.address?.city || accountProfile.address?.state) && <p>{[accountProfile.address.city, accountProfile.address.state].filter(Boolean).join(", ")}</p>}
+                      {(accountProfile.address?.country || accountProfile.address?.pincode) && <p>{[accountProfile.address.country || "India", accountProfile.address.pincode].filter(Boolean).join(" - ")}</p>}
                     </div>
                   </div>
 
@@ -547,12 +638,12 @@ export default function MyAccountPage() {
                     <div className="space-y-3 text-sm">
                       <div className="flex items-center gap-3 text-[#081A33]/60">
                         <Mail size={16} className="text-[#F5A623]" />
-                        customer@example.com
+                        {accountProfile.email || "No email added"}
                       </div>
 
                       <div className="flex items-center gap-3 text-[#081A33]/60">
                         <Phone size={16} className="text-[#F5A623]" />
-                        +91 98765 43210
+                        {user?.mobile || "No phone number"}
                       </div>
                     </div>
 
@@ -582,7 +673,14 @@ export default function MyAccountPage() {
                 />
 
                 <div className="mt-6 space-y-4">
-                  {orders.map((order) => (
+                  {error && <p role="alert" className="border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p>}
+                  {loadingOrders ? (
+                    <p className="border border-gray-200 bg-white p-5 text-sm text-gray-500">Loading your orders…</p>
+                  ) : displayOrders.length === 0 ? (
+                    <div className="border border-gray-200 bg-white p-8 text-center text-sm text-gray-500">
+                      No orders yet. <Link href="/products" className="font-semibold text-[#081A33] underline">Browse products</Link>
+                    </div>
+                  ) : displayOrders.map((order) => (
                     <div
                       key={order.id}
                       className="group border border-[#081A33]/10 bg-white p-5 transition duration-300 hover:-translate-y-1 hover:border-[#F5A623]/40 hover:shadow-[0_15px_40px_rgba(8,26,51,0.07)] sm:p-6"
@@ -660,11 +758,19 @@ export default function MyAccountPage() {
                   <AddressCard
                     title="Billing Address"
                     label="Default"
+                    name={accountProfile.name}
+                    mobile={user?.mobile}
+                    address={user?.billingAddress?.line1 ? user.billingAddress : accountProfile.address}
+                    onEdit={() => setActiveTab("account")}
                   />
 
                   <AddressCard
                     title="Shipping Address"
                     label="Default"
+                    name={accountProfile.name}
+                    mobile={user?.mobile}
+                    address={accountProfile.address}
+                    onEdit={() => setActiveTab("account")}
                   />
 
                 </div>
@@ -688,7 +794,7 @@ export default function MyAccountPage() {
                       </div>
                     </div>
 
-                    <button className="inline-flex items-center justify-center gap-2 bg-[#081A33] px-5 py-3 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-[#F5A623] hover:text-[#081A33]">
+                    <button onClick={() => setActiveTab("account")} className="inline-flex items-center justify-center gap-2 bg-[#081A33] px-5 py-3 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-[#F5A623] hover:text-[#081A33]">
                       <Edit3 size={14} />
                       Edit Address
                     </button>
@@ -715,52 +821,87 @@ export default function MyAccountPage() {
 
                     <AccountInput
                       label="First Name"
-                      value="DPACK"
+                      value={accountProfile.name.split(/\s+/)[0] || ""}
+                      onChange={(value) => {
+                        setProfileEdited(true);
+                        setProfile((current) => ({
+                          ...current,
+                          name: `${value} ${accountProfile.name.split(/\s+/).slice(1).join(" ")}`.trim(),
+                        }));
+                      }}
                     />
 
                     <AccountInput
                       label="Last Name"
-                      value="Customer"
+                      value={accountProfile.name.split(/\s+/).slice(1).join(" ")}
+                      onChange={(value) => {
+                        setProfileEdited(true);
+                        setProfile((current) => ({
+                          ...current,
+                          name: `${accountProfile.name.split(/\s+/)[0] || ""} ${value}`.trim(),
+                        }));
+                      }}
                     />
 
                     <AccountInput
                       label="Email Address"
-                      value="customer@example.com"
+                      value={accountProfile.email}
                       type="email"
+                      onChange={(value) => {
+                        setProfileEdited(true);
+                        setProfile((current) => ({ ...current, email: value }));
+                      }}
                     />
 
                     <AccountInput
                       label="Phone Number"
-                      value="+91 98765 43210"
+                      value={user?.mobile || ""}
+                      disabled
                     />
 
                   </div>
 
                   <div className="mt-6 border-t border-[#081A33]/10 pt-6">
                     <h3 className="mb-5 font-bold text-[#081A33]">
-                      Password Change
+                      Delivery Address
                     </h3>
 
                     <div className="grid gap-5 md:grid-cols-2">
 
                       <AccountInput
-                        label="Current Password"
-                        placeholder="Enter current password"
-                        type="password"
+                        label="Street address"
+                        value={accountProfile.address.line1}
+                        onChange={(value) => updateAddress("line1", value)}
                       />
 
                       <AccountInput
-                        label="New Password"
-                        placeholder="Enter new password"
-                        type="password"
+                        label="Apartment / landmark"
+                        value={accountProfile.address.line2}
+                        onChange={(value) => updateAddress("line2", value)}
                       />
-
+                      <AccountInput
+                        label="City"
+                        value={accountProfile.address.city}
+                        onChange={(value) => updateAddress("city", value)}
+                      />
+                      <AccountInput
+                        label="State"
+                        value={accountProfile.address.state}
+                        onChange={(value) => updateAddress("state", value)}
+                      />
+                      <AccountInput
+                        label="Pincode"
+                        value={accountProfile.address.pincode}
+                        onChange={(value) => updateAddress("pincode", value)}
+                      />
                     </div>
                   </div>
 
+                  {error && <p role="alert" className="mt-5 text-sm text-red-600">{error}</p>}
+                  {notice && <p role="status" className="mt-5 text-sm text-green-700">{notice}</p>}
                   <div className="mt-7 flex justify-end">
-                    <button className="group inline-flex items-center gap-3 bg-[#F5A623] px-7 py-3.5 text-sm font-bold text-[#081A33] transition hover:bg-[#081A33] hover:text-white">
-                      Save Changes
+                    <button onClick={saveProfile} disabled={saving} className="group inline-flex items-center gap-3 bg-[#F5A623] px-7 py-3.5 text-sm font-bold text-[#081A33] transition hover:bg-[#081A33] hover:text-white disabled:opacity-50">
+                      {saving ? "Saving…" : "Save Changes"}
                       <ArrowRight
                         size={17}
                         className="transition group-hover:translate-x-1"
@@ -879,12 +1020,15 @@ function StatusBadge({ order }) {
       "bg-blue-50 text-blue-700 border-blue-200",
     processing:
       "bg-[#FFF4DD] text-[#A86600] border-[#F5A623]/30",
+    cancelled:
+      "bg-red-50 text-red-700 border-red-200",
   };
 
   const icons = {
     delivered: CheckCircle2,
     shipped: Truck,
     processing: Clock3,
+    cancelled: Clock3,
   };
 
   const Icon = icons[order.statusType];
@@ -923,7 +1067,7 @@ function AccountSectionHeader({
   );
 }
 
-function AddressCard({ title, label }) {
+function AddressCard({ title, label, name, mobile, address, onEdit }) {
   return (
     <div className="group border border-[#081A33]/10 bg-white p-6 transition duration-300 hover:-translate-y-1 hover:border-[#F5A623]/40 hover:shadow-[0_15px_35px_rgba(8,26,51,0.06)]">
       <div className="flex items-start justify-between">
@@ -943,20 +1087,22 @@ function AddressCard({ title, label }) {
           </div>
         </div>
 
-        <button className="text-[#081A33]/35 transition hover:text-[#F5A623]">
+        <button onClick={onEdit} className="text-[#081A33]/35 transition hover:text-[#F5A623]">
           <Edit3 size={17} />
         </button>
       </div>
 
       <div className="mt-6 border-t border-[#081A33]/10 pt-5 text-sm leading-7 text-[#081A33]/60">
         <p className="font-semibold text-[#081A33]">
-          DPACK Customer
+          {name || "Customer"}
         </p>
 
-        <p>123 Packaging Street</p>
-        <p>New Delhi, Delhi</p>
-        <p>India - 110001</p>
-        <p className="mt-2">+91 98765 43210</p>
+        {address?.line1 && <p>{address.line1}</p>}
+        {address?.line2 && <p>{address.line2}</p>}
+        {(address?.city || address?.state) && <p>{[address.city, address.state].filter(Boolean).join(", ")}</p>}
+        {(address?.country || address?.pincode) && <p>{[address.country || "India", address.pincode].filter(Boolean).join(" - ")}</p>}
+        {mobile && <p className="mt-2">{mobile}</p>}
+        {!address?.line1 && <p className="text-[#081A33]/40">No address saved yet.</p>}
       </div>
     </div>
   );
@@ -967,6 +1113,8 @@ function AccountInput({
   value,
   placeholder,
   type = "text",
+  onChange,
+  disabled = false,
 }) {
   return (
     <div>
@@ -976,9 +1124,11 @@ function AccountInput({
 
       <input
         type={type}
-        defaultValue={value}
+        value={value ?? ""}
+        onChange={(event) => onChange?.(event.target.value)}
+        disabled={disabled}
         placeholder={placeholder}
-        className="h-12 w-full border border-[#081A33]/15 bg-[#F7F8FA] px-4 text-sm text-[#081A33] outline-none transition placeholder:text-[#081A33]/25 focus:border-[#F5A623] focus:bg-white"
+        className="h-12 w-full border border-[#081A33]/15 bg-[#F7F8FA] px-4 text-sm text-[#081A33] outline-none transition placeholder:text-[#081A33]/25 focus:border-[#F5A623] focus:bg-white disabled:cursor-not-allowed disabled:opacity-60"
       />
     </div>
   );

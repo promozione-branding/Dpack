@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
+import { cartCount as countCartItems, cartSubtotal, formatINR, useCart } from "@/lib/cartBus";
 import {
   Search,
   Heart,
@@ -234,6 +236,10 @@ function HeaderIcon({
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { wishlistCount } = useAuth();
+  const cart = useCart();
+  const cartItemCount = countCartItems(cart);
+  const cartTotal = cartSubtotal(cart);
 
   /* =======================================================
      BODY LOCK
@@ -640,7 +646,7 @@ export default function Navbar() {
               <HeaderIcon
                 href="/wishlist"
                 label="Wishlist"
-                badge="0"
+                badge={wishlistCount}
               >
                 <Heart
                   size={23}
@@ -699,7 +705,7 @@ export default function Navbar() {
                     font-semibold
                     text-[#171717]
                   ">
-                    $0.00
+                    {formatINR(cartTotal)}
                   </span>
 
                 </div>
@@ -722,7 +728,7 @@ export default function Navbar() {
                   ring-2
                   ring-white
                 ">
-                  0
+                  {cartItemCount}
                 </span>
 
               </Link>
@@ -1245,7 +1251,7 @@ export default function Navbar() {
               >
                 <Heart size={18} />
                 <span className="text-[10px] font-semibold">
-                  Wishlist
+                  Wishlist ({wishlistCount})
                 </span>
               </Link>
 
@@ -1285,7 +1291,7 @@ export default function Navbar() {
               >
                 <ShoppingBag size={18} />
                 <span className="text-[10px] font-semibold">
-                  Cart
+                  Cart ({cartItemCount})
                 </span>
               </Link>
 

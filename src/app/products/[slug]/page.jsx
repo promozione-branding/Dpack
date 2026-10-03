@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
 import {
   ShoppingCart,
   Heart,
@@ -479,54 +480,141 @@ function getContent(slug, product) {
   };
 }
 
+function toSpecificationPairs(specifications) {
+  return specifications.map((specification, index) => {
+    const separator = specification.indexOf(":");
+    if (separator > 0) {
+      return [
+        specification.slice(0, separator).trim(),
+        specification.slice(separator + 1).trim(),
+      ];
+    }
+    return [`Specification ${index + 1}`, specification];
+  });
+}
+
 /* =========================================================
    PAGE
 ========================================================= */
 
 export default function ProductPage({ params }) {
+  const { slug } = use(params);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
   const [zoom, setZoom] = useState(false);
-  const [wishlist, setWishlist] = useState(false);
+  const { isWishlisted, toggleWishlist } = useAuth();
+  const [databaseProduct, setDatabaseProduct] = useState(null);
+  const [databaseRelated, setDatabaseRelated] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
-  /*
-    Next.js dynamic params support.
-    If params is a Promise in your Next.js version,
-    use the synchronous route fallback below.
-  */
+  useEffect(() => {
+    let cancelled = false;
 
-  const slug =
-    typeof params?.then === "function"
-      ? null
-      : params?.slug;
+    async function loadProduct() {
+      setLoading(true);
+      setLoadError("");
+      setDatabaseProduct(null);
+      setDatabaseRelated(null);
+      setSelectedImage(0);
 
-  const currentProduct =
-    getProductBySlug(slug) || products[0];
+      try {
+        const response = await fetch(`/api/products/${encodeURIComponent(slug)}`, {
+          cache: "no-store",
+        });
+        const data = await response.json();
 
-  const content = getContent(
-    currentProduct?.slug || slug,
-    currentProduct
-  );
+        if (!response.ok || !data.success) {
+          if (response.status !== 404) {
+            throw new Error(data.error || "Failed to load product.");
+          }
+          return;
+        }
 
-  const relatedProducts = getRelatedProducts
-    ? getRelatedProducts(currentProduct?.slug, 4)
-    : products
-        .filter(
-          (item) =>
-            item.slug !== currentProduct?.slug
-        )
-        .slice(0, 4);
+        if (!cancelled) {
+          setDatabaseProduct(data.product);
+          setDatabaseRelated(Array.isArray(data.related) ? data.related : []);
+        }
+      } catch (error) {
+        console.error("Product detail fetch error:", error);
+        if (!cancelled) setLoadError(error.message || "Failed to load product.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadProduct();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  const currentProduct = databaseProduct || getProductBySlug(slug);
+  const baseContent = currentProduct
+    ? getContent(currentProduct.slug || slug, currentProduct)
+    : null;
+  const content = databaseProduct
+    ? {
+        ...baseContent,
+        category: databaseProduct.category || baseContent.category,
+        description: databaseProduct.description || baseContent.description,
+        keyFeatures: databaseProduct.keyFeatures?.length
+          ? databaseProduct.keyFeatures
+          : baseContent.keyFeatures,
+        overviewParagraphs: databaseProduct.overview?.length
+          ? databaseProduct.overview
+          : baseContent.overviewParagraphs,
+        advantages: databaseProduct.applications?.length
+          ? databaseProduct.applications
+          : baseContent.advantages,
+        specs: databaseProduct.specs?.length
+          ? toSpecificationPairs(databaseProduct.specs)
+          : baseContent.specs,
+      }
+    : baseContent;
+
+  const relatedProducts =
+    databaseRelated ||
+    (currentProduct
+      ? getRelatedProducts(currentProduct.slug, 4)
+      : []);
 
   const images =
-    currentProduct?.images?.length > 0
+    (currentProduct?.images?.length > 0
       ? currentProduct.images
-      : [currentProduct?.image];
+      : [currentProduct?.image, ...(currentProduct?.extraImages || [])]
+    ).filter(Boolean);
 
   const price = Number(currentProduct?.price || 0);
   const oldPrice = Number(
-    currentProduct?.oldPrice || 0
+    currentProduct?.oldPrice || currentProduct?.compareAtPrice || 0
   );
+  const inStock =
+    !currentProduct?.trackInventory || Number(currentProduct?.stock || 0) > 0;
+  const saved = currentProduct ? isWishlisted(currentProduct._id || currentProduct.id) : false;
+
+  if (loading) {
+    return (
+      <main className="flex min-h-[60vh] items-center justify-center bg-[#F7F8FA] text-[#081A33]">
+        <p className="text-sm font-medium text-gray-500">Loading product…</p>
+      </main>
+    );
+  }
+
+  if (!currentProduct) {
+    return (
+      <main className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-[#F7F8FA] px-5 text-center text-[#081A33]">
+        <h1 className="text-3xl font-bold">Product not found</h1>
+        <p className="max-w-lg text-sm text-gray-500">
+          {loadError || "This product may have been removed or is not currently available."}
+        </p>
+        <Link href="/products" className="bg-[#081A33] px-5 py-3 text-sm font-semibold text-white">
+          Browse all products
+        </Link>
+      </main>
+    );
+  }
 
   const discount =
     oldPrice > price
@@ -738,8 +826,8 @@ export default function ProductPage({ params }) {
                 {content.category}
               </span>
 
-              <span className="bg-green-50 px-3 py-1 text-[15px] font-bold text-green-700">
-                In Stock
+              <span className={`px-3 py-1 text-[15px] font-bold ${inStock ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+              {inStock ? "In Stock" : "Out of Stock"}
               </span>
 
             </div>
@@ -903,18 +991,17 @@ export default function ProductPage({ params }) {
 
               <button
                 onClick={addToCart}
-                className="mt-5 flex h-12 flex-1 items-center justify-center gap-3 bg-[#F5A623] px-8 text-sm font-extrabold uppercase tracking-wide text-[#081A33] transition hover:bg-[#081A33] hover:text-white"
+                disabled={!inStock}
+                className="mt-5 flex h-12 flex-1 items-center justify-center gap-3 bg-[#F5A623] px-8 text-sm font-extrabold uppercase tracking-wide text-[#081A33] transition hover:bg-[#081A33] hover:text-white disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
               >
                 <ShoppingCart size={19} />
-                Add to Cart
+                {inStock ? "Add to Cart" : "Out of Stock"}
               </button>
 
               <button
-                onClick={() =>
-                  setWishlist(!wishlist)
-                }
+                onClick={() => toggleWishlist(currentProduct)}
                 className={`mt-5 flex h-12 w-12 items-center justify-center border transition ${
-                  wishlist
+                  saved
                     ? "border-[#F5A623] bg-[#F5A623]"
                     : "border-gray-300 bg-white hover:border-[#081A33]"
                 }`}
@@ -922,7 +1009,7 @@ export default function ProductPage({ params }) {
                 <Heart
                   size={20}
                   fill={
-                    wishlist
+                    saved
                       ? "#081A33"
                       : "none"
                   }
