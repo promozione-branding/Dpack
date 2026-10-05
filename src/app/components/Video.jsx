@@ -35,6 +35,7 @@ export default function VideoSection() {
   return (
   <section
   className="
+  hidden md:block
     relative
     w-full
     overflow-hidden
