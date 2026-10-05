@@ -364,7 +364,7 @@ function ProductCard({ product, index }) {
 export default function TrendingProducts() {
   return (
     <section
-      className="
+      className=" hidden md:block
         relative
         w-full
         overflow-hidden

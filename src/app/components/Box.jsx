@@ -76,7 +76,7 @@ export default function Main() {
   const active = products[activeProduct];
 
   return (
-    <section className=" hidden md:block mdrelative h-[78vh] min-h-[590px] w-full overflow-hidden bg-[#F4F6F8] p-2 sm:p-3">
+    <section className="  relative h-[78vh] min-h-[590px] w-full overflow-hidden bg-[#F4F6F8] p-2 sm:p-3">
 
       {/* =====================================================
           MAIN GRID
