@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ShieldCheck, Sparkles } from "lucide-react";
 
 /* =========================================================
    PRODUCTS
@@ -17,6 +17,7 @@ const products = [
     category: "Protective Packaging",
     description: "Shockproof. Safe. Reliable.",
     image: "/Air column bag (2).webp",
+    tag: "Impact Protection",
   },
   {
     id: 2,
@@ -24,6 +25,7 @@ const products = [
     category: "Cargo Safety",
     description: "Strong support for heavy loads.",
     image: "/Dannage.webp",
+    tag: "Heavy Duty",
   },
   {
     id: 3,
@@ -31,6 +33,7 @@ const products = [
     category: "Flexible Protection",
     description: "Flexible protection for every shipment.",
     image: "/Air Column Roll (2).webp",
+    tag: "Flexible Shield",
   },
   {
     id: 4,
@@ -38,6 +41,7 @@ const products = [
     category: "Smart Protection",
     description: "Keep your products stable.",
     image: "/Gap filler (3).webp",
+    tag: "Load Stability",
   },
   {
     id: 5,
@@ -45,20 +49,21 @@ const products = [
     category: "Product Protection",
     description: "Durable. Versatile. Secure.",
     image: "/packing bag.webp",
+    tag: "Safe Packaging",
   },
 ];
+
+/* =========================================================
+   MAIN
+========================================================= */
 
 export default function Main() {
   const [activeProduct, setActiveProduct] = useState(0);
 
-  /* =======================================================
-     AUTO CHANGE CENTER PRODUCT
-  ======================================================== */
-
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveProduct((prev) => (prev + 1) % products.length);
-    }, 4500);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -66,10 +71,11 @@ export default function Main() {
   const active = products[activeProduct];
 
   return (
-    <section className="relative h-[78vh] min-h-[590px] w-full overflow-hidden bg-[#F7F8FA] p-2 sm:p-3">
+    <section className="relative h-[78vh] min-h-[590px] w-full overflow-hidden bg-[#F4F6F8] p-2 sm:p-3">
+
       {/* =====================================================
           MAIN GRID
-      ====================================================== */}
+      ===================================================== */}
 
       <div className="grid h-full w-full grid-cols-1 gap-2 sm:gap-3 md:grid-cols-[0.85fr_1.7fr_0.85fr]">
 
@@ -94,66 +100,167 @@ export default function Main() {
         </div>
 
         {/* ===================================================
-            CENTER PRODUCT SHOWCASE
+            CENTER HERO
         ==================================================== */}
 
-        <div className="relative overflow-hidden rounded-[20px] bg-[#4C9BC4]">
+        <div className="relative overflow-hidden rounded-[22px] bg-[#438FB8]">
 
-          {/* Soft background gradient */}
+          {/* -------------------------------------------------
+              BASE GRADIENT
+          ------------------------------------------------- */}
 
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(255,255,255,0.18),transparent_34%),radial-gradient(circle_at_20%_100%,rgba(0,45,80,0.22),transparent_40%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,#397FA8_0%,#4C9BC4_48%,#276F98_100%)]" />
 
-          {/* Animated glow */}
+          {/* -------------------------------------------------
+              BIG SOFT LIGHT
+          ------------------------------------------------- */}
 
           <motion.div
             animate={{
+              scale: [1, 1.12, 1],
               x: [0, 25, 0],
               y: [0, -15, 0],
-              scale: [1, 1.08, 1],
+            }}
+            transition={{
+              duration: 9,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute -right-[18%] -top-[22%] h-[70%] w-[70%] rounded-full bg-white/[0.09] blur-[2px]"
+          />
+
+          <motion.div
+            animate={{
+              scale: [1, 1.15, 1],
+              x: [0, -20, 0],
             }}
             transition={{
               duration: 8,
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="absolute -right-[15%] -top-[15%] h-[75%] w-[75%] rounded-full bg-white/[0.08]"
+            className="absolute -bottom-[25%] -left-[18%] h-[65%] w-[65%] rounded-full bg-[#0D567C]/30 blur-3xl"
           />
+
+          {/* -------------------------------------------------
+              GRID / TECHNICAL PATTERN
+          ------------------------------------------------- */}
+
+          <div
+            className="absolute inset-0 opacity-[0.13]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.35) 1px, transparent 1px)",
+              backgroundSize: "42px 42px",
+              maskImage:
+                "radial-gradient(circle at 65% 55%, black 0%, transparent 65%)",
+            }}
+          />
+
+          {/* -------------------------------------------------
+              DIAGONAL LIGHT STREAKS
+          ------------------------------------------------- */}
 
           <motion.div
             animate={{
-              x: [0, -20, 0],
+              x: ["-20%", "120%"],
+              opacity: [0, 0.5, 0],
             }}
             transition={{
               duration: 7,
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="absolute bottom-[-25%] left-[-10%] h-[60%] w-[65%] rounded-full bg-[#236F9A]/30 blur-3xl"
+            className="absolute top-[28%] h-[1px] w-[65%] rotate-[-18deg] bg-gradient-to-r from-transparent via-white/60 to-transparent"
           />
 
-          {/* Decorative lines */}
+          <motion.div
+            animate={{
+              x: ["100%", "-30%"],
+              opacity: [0, 0.35, 0],
+            }}
+            transition={{
+              duration: 9,
+              repeat: Infinity,
+              delay: 2,
+              ease: "easeInOut",
+            }}
+            className="absolute top-[52%] h-[1px] w-[55%] rotate-[20deg] bg-gradient-to-r from-transparent via-white/50 to-transparent"
+          />
 
-          <div className="absolute left-[7%] top-[18%] h-[1px] w-[30%] rotate-[-25deg] bg-white/10" />
+          {/* =================================================
+              ORBIT SYSTEM
+          ================================================= */}
 
-          <div className="absolute right-[8%] top-[30%] h-[1px] w-[22%] rotate-[25deg] bg-white/10" />
+          <div className="absolute bottom-[5%] left-[38%] top-[25%] aspect-square w-[65%] max-w-[520px]">
 
-          <div className="absolute bottom-[20%] left-[10%] h-[1px] w-[25%] rotate-[20deg] bg-white/10" />
+            {/* Outer orbit */}
+
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 28,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="absolute inset-0 rounded-full border border-white/[0.15]"
+            />
+
+            {/* Middle orbit */}
+
+            <motion.div
+              animate={{ rotate: -360 }}
+              transition={{
+                duration: 20,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="absolute inset-[8%] rounded-full border border-dashed border-white/[0.18]"
+            />
+
+            {/* Inner orbit */}
+
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 14,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="absolute inset-[18%] rounded-full border border-white/[0.12]"
+            />
+
+            {/* Orbit dot */}
+
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 10,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="absolute inset-0"
+            >
+              <span className="absolute right-[8%] top-[22%] h-2 w-2 rounded-full bg-[#FFE15A] shadow-[0_0_18px_rgba(255,225,90,.8)]" />
+            </motion.div>
+
+          </div>
 
           {/* =================================================
               CENTER TEXT
-          ================================================== */}
+          ================================================= */}
 
-          <div className="absolute left-[7%] top-[8%] z-20 max-w-[62%] sm:left-[8%] sm:top-[10%]">
+          <div className="absolute left-[7%] top-[7%] z-30 max-w-[65%] sm:left-[8%] sm:top-[9%]">
 
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              initial={{ opacity: 0, x: -15 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7 }}
               className="mb-4 flex items-center gap-2"
             >
-              <span className="h-[1px] w-6 bg-white/60" />
+              <span className="h-[1px] w-7 bg-[#FFE15A]" />
 
-              <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-white/75 sm:text-[10px]">
+              <p className="text-[9px] font-semibold uppercase tracking-[0.25em] text-white/75 sm:text-[10px]">
                 Smart Packaging Solutions
               </p>
             </motion.div>
@@ -172,6 +279,13 @@ export default function Main() {
               for a{" "}
               <span className="relative inline-block text-[#FFE15A]">
                 Safer Tomorrow
+
+                <motion.span
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                  className="absolute bottom-[-4px] left-0 h-[2px] bg-[#FFE15A]/70"
+                />
               </span>
             </motion.h1>
 
@@ -190,7 +304,7 @@ export default function Main() {
 
             <Link
               href="/products"
-              className="group mt-5 inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-[11px] font-bold text-[#172333] shadow-lg shadow-black/10 transition-all duration-300 hover:gap-5 hover:bg-[#FFE15A] sm:px-6 sm:py-3.5 sm:text-[12px]"
+              className="group mt-5 inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-[11px] font-bold text-[#172333] shadow-xl shadow-black/10 transition-all duration-300 hover:gap-5 hover:bg-[#FFE15A] sm:px-6 sm:py-3.5 sm:text-[12px]"
             >
               Explore Collection
 
@@ -199,42 +313,80 @@ export default function Main() {
                 className="transition-transform duration-300 group-hover:translate-x-1"
               />
             </Link>
+
           </div>
 
           {/* =================================================
-              CENTER PRODUCT IMAGE
-          ================================================== */}
+              PRODUCT SHOWCASE
+          ================================================= */}
 
-          <div className="absolute bottom-[2%] left-[23%] right-[1%] top-[27%] z-10">
+          <div className="absolute bottom-[2%] left-[24%] right-[1%] top-[25%] z-20">
+
+            {/* Product spotlight */}
+
+            <motion.div
+              animate={{
+                scale: [0.95, 1.05, 0.95],
+                opacity: [0.12, 0.2, 0.12],
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute left-[15%] top-[12%] h-[65%] w-[65%] rounded-full bg-white blur-3xl"
+            />
 
             <AnimatePresence mode="wait">
+
               <motion.div
                 key={activeProduct}
                 initial={{
                   opacity: 0,
-                  scale: 0.75,
-                  x: 80,
+                  scale: 0.7,
+                  x: 90,
+                  rotate: 5,
                 }}
                 animate={{
                   opacity: 1,
                   scale: 1,
                   x: 0,
+                  rotate: 0,
                 }}
                 exit={{
                   opacity: 0,
-                  scale: 0.9,
-                  x: -45,
+                  scale: 0.88,
+                  x: -60,
+                  rotate: -4,
                 }}
                 transition={{
-                  duration: 0.85,
+                  duration: 0.9,
                   ease: [0.22, 1, 0.36, 1],
                 }}
                 className="absolute inset-0"
               >
+
+                {/* Floor shadow */}
+
                 <motion.div
                   animate={{
-                    y: [0, -10, 0],
-                    rotate: [0, 0.5, 0],
+                    scaleX: [0.85, 1, 0.85],
+                    opacity: [0.18, 0.28, 0.18],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute bottom-[9%] left-[20%] h-[7%] w-[65%] rounded-full bg-[#063C5B]/40 blur-xl"
+                />
+
+                {/* Floating product */}
+
+                <motion.div
+                  animate={{
+                    y: [0, -13, 0],
+                    rotate: [0, 0.7, 0],
                   }}
                   transition={{
                     duration: 5,
@@ -249,18 +401,93 @@ export default function Main() {
                     fill
                     priority
                     sizes="(max-width: 768px) 100vw, 60vw"
-                    className="object-contain object-center drop-shadow-[0_25px_30px_rgba(0,40,70,0.18)]"
+                    className="object-contain object-center drop-shadow-[0_30px_30px_rgba(0,35,60,0.28)]"
                   />
                 </motion.div>
+
               </motion.div>
+
             </AnimatePresence>
+
+            {/* =================================================
+                FLOATING FEATURE BADGE
+            ================================================= */}
+
+            <AnimatePresence mode="wait">
+
+              <motion.div
+                key={`badge-${activeProduct}`}
+                initial={{
+                  opacity: 0,
+                  y: 15,
+                  scale: 0.9,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                }}
+                exit={{
+                  opacity: 0,
+                  y: -10,
+                }}
+                transition={{
+                  duration: 0.5,
+                }}
+                className="absolute right-[5%] top-[13%] z-30 hidden sm:block"
+              >
+
+                <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 backdrop-blur-md">
+
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#FFE15A] text-[#172333]">
+                    <ShieldCheck size={12} />
+                  </span>
+
+                  <div>
+                    <p className="text-[7px] uppercase tracking-[0.15em] text-white/50">
+                      Designed For
+                    </p>
+
+                    <p className="text-[9px] font-bold text-white">
+                      {active.tag}
+                    </p>
+                  </div>
+
+                </div>
+
+              </motion.div>
+
+            </AnimatePresence>
+
+            {/* =================================================
+                FLOATING SPARK
+            ================================================= */}
+
+            <motion.div
+              animate={{
+                y: [0, -10, 0],
+                opacity: [0.4, 1, 0.4],
+              }}
+              transition={{
+                duration: 2.8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute left-[12%] top-[25%] z-30 hidden sm:block"
+            >
+              <Sparkles
+                size={18}
+                className="text-[#FFE15A]"
+              />
+            </motion.div>
+
           </div>
 
           {/* =================================================
               PRODUCT INDICATORS
-          ================================================== */}
+          ================================================= */}
 
-          <div className="absolute bottom-[5%] left-[7%] z-20">
+          <div className="absolute bottom-[5%] left-[7%] z-30">
 
             <div className="flex items-center gap-2">
 
@@ -275,7 +502,7 @@ export default function Main() {
                   <span
                     className={`block h-[4px] rounded-full transition-all duration-500 ${
                       activeProduct === index
-                        ? "w-8 bg-white"
+                        ? "w-9 bg-[#FFE15A]"
                         : "w-2 bg-white/35 group-hover:bg-white/60"
                     }`}
                   />
@@ -287,13 +514,15 @@ export default function Main() {
               </span>
 
             </div>
+
           </div>
 
           {/* =================================================
               CURRENT PRODUCT
-          ================================================== */}
+          ================================================= */}
 
           <AnimatePresence mode="wait">
+
             <motion.div
               key={activeProduct}
               initial={{
@@ -308,8 +537,9 @@ export default function Main() {
                 opacity: 0,
                 y: -10,
               }}
-              className="absolute bottom-[5%] right-[6%] z-20 hidden text-right sm:block"
+              className="absolute bottom-[5%] right-[6%] z-30 hidden text-right sm:block"
             >
+
               <p className="text-[8px] uppercase tracking-[0.18em] text-white/45">
                 Featured Product
               </p>
@@ -317,7 +547,9 @@ export default function Main() {
               <p className="mt-1 text-[12px] font-bold text-white">
                 {active.name}
               </p>
+
             </motion.div>
+
           </AnimatePresence>
 
         </div>
@@ -343,6 +575,7 @@ export default function Main() {
           />
 
         </div>
+
       </div>
 
       {/* =====================================================
@@ -350,6 +583,7 @@ export default function Main() {
       ====================================================== */}
 
       <div className="absolute bottom-4 left-4 right-4 z-40 flex gap-2 overflow-x-auto md:hidden">
+
         {products.map((product, index) => (
           <button
             key={product.id}
@@ -364,7 +598,9 @@ export default function Main() {
             {product.name}
           </button>
         ))}
+
       </div>
+
     </section>
   );
 }
@@ -394,31 +630,35 @@ function SideCard({
         backgroundColor: color,
       }}
     >
+
       {/* Soft gradient */}
 
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.10] via-transparent to-black/[0.08]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.12] via-transparent to-black/[0.10]" />
 
       {/* Decorative circle */}
 
       <motion.div
         animate={{
           scale: [1, 1.08, 1],
+          rotate: [0, 4, 0],
         }}
         transition={{
           duration: 6,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="absolute -right-[25%] -top-[30%] h-[90%] w-[90%] rounded-full bg-white/[0.10]"
+        className="absolute -right-[25%] -top-[30%] h-[90%] w-[90%] rounded-full border border-white/[0.12] bg-white/[0.08]"
       />
+
+      {/* Second circle */}
+
+      <div className="absolute -bottom-[30%] -left-[15%] h-[70%] w-[80%] rounded-full border border-white/[0.08]" />
 
       {/* Decorative diagonal */}
 
       <div className="absolute bottom-[-25%] left-[20%] h-[65%] w-[90%] rotate-[-15deg] bg-white/[0.08]" />
 
-      {/* =================================================
-          PRODUCT IMAGE
-      ================================================== */}
+      {/* Product image */}
 
       <motion.div
         animate={{
@@ -437,13 +677,11 @@ function SideCard({
           alt={product.name}
           fill
           sizes="(max-width: 768px) 50vw, 25vw"
-          className="object-contain transition-transform duration-700 group-hover:scale-[1.07] drop-shadow-[0_18px_18px_rgba(0,0,0,0.12)]"
+          className="object-contain transition-transform duration-700 group-hover:scale-[1.07] drop-shadow-[0_18px_18px_rgba(0,0,0,0.14)]"
         />
       </motion.div>
 
-      {/* =================================================
-          TEXT
-      ================================================== */}
+      {/* Text */}
 
       <div className="relative z-10 flex h-full flex-col justify-between p-4 sm:p-5 lg:p-6">
 
@@ -464,6 +702,7 @@ function SideCard({
           <p className="mt-2 max-w-[165px] text-[10px] leading-[1.4] text-white/75 sm:text-[11px]">
             {product.description}
           </p>
+
         </div>
 
         {/* Bottom */}
@@ -474,8 +713,9 @@ function SideCard({
             <div className="h-[2px] w-7 bg-white/80 transition-all duration-300 group-hover:w-10" />
           </div>
 
-          <span className="flex items-center gap-1 text-[9px] font-semibold text-white/90 transition-all duration-300 group-hover:gap-2 sm:text-[10px]">
+          <span className="flex items-center gap-1 text-[12px] font-semibold text-white/90 transition-all duration-300 group-hover:gap-2 sm:text-[10px]">
             View Details
+
             <ArrowUpRight
               size={13}
               className="transition-transform duration-300 group-hover:translate-x-0.5"
@@ -483,6 +723,7 @@ function SideCard({
           </span>
 
         </div>
+
       </div>
 
       {/* Active Border */}
@@ -495,9 +736,11 @@ function SideCard({
         className="pointer-events-none absolute inset-0 rounded-[17px] border-2 border-white/75"
       />
 
-      {/* Hover overlay */}
+      {/* Hover */}
 
       <div className="pointer-events-none absolute inset-0 bg-white/0 transition-all duration-300 group-hover:bg-white/[0.035]" />
+
     </motion.button>
   );
 }
+

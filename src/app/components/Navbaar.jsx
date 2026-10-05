@@ -20,6 +20,7 @@ import {
   Zap,
   MapPin,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 /* =========================================================
    COLORS
@@ -45,9 +46,9 @@ const navLinks = [
     name: "Home",
     href: "/",
   },
-  {
-    name: "Shop",
-    href: "/shop",
+    {
+    name: "About Us",
+    href: "/about-us",
     dropdown: true,
   },
   {
@@ -55,14 +56,10 @@ const navLinks = [
     href: "/products",
     dropdown: true,
   },
+
   {
-    name: "Pages",
-    href: "/pages",
-    dropdown: true,
-  },
-  {
-    name: "Blog",
-    href: "/blog",
+    name: "Articles",
+    href: "/articles",
     dropdown: true,
   },
   {
@@ -234,6 +231,13 @@ function HeaderIcon({
 ========================================================= */
 
 export default function Navbar() {
+
+
+  const pathname = usePathname();
+    const isAdminRoute = pathname.startsWith("/admin");
+    if (isAdminRoute) {
+        return null; 
+    }
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { wishlistCount } = useAuth();
@@ -289,7 +293,7 @@ export default function Navbar() {
                 text-[#171717]
                 sm:block
               ">
-                Welcome DPACK store!
+                Welcome DPACK Store!
               </p>
 
               <div className="
@@ -387,11 +391,11 @@ export default function Navbar() {
               />
 
               <span>
-                Get 10% off your first order.
+                Get 10% off Your First Order.
               </span>
 
               <Link
-                href="/shop"
+                href="/products"
                 className="
                   font-semibold
                   underline
@@ -432,27 +436,14 @@ export default function Navbar() {
                   sm:flex
                 "
               >
-                🇺🇸
+              
                 <span>English</span>
                 <ChevronDown size={12} />
               </button>
 
               <span className="hidden h-4 w-px bg-[#D9D9D9] sm:block" />
 
-              <button
-                type="button"
-                className="
-                  flex
-                  items-center
-                  gap-1.5
-                  transition-colors
-                  hover:text-[#F5A623]
-                "
-              >
-                <span>$</span>
-                <span>USD</span>
-                <ChevronDown size={12} />
-              </button>
+              
 
             </div>
 
@@ -532,7 +523,8 @@ export default function Navbar() {
                     gap-1.5
                     whitespace-nowrap
                     py-4
-                    text-[14px]
+                    uppercase
+                    text-[15px]
                     font-semibold
                     text-[#171717]
                     transition-colors
@@ -545,7 +537,7 @@ export default function Navbar() {
 
                   {item.dropdown && (
                     <ChevronDown
-                      size={13}
+                      size={0}
                       strokeWidth={1.8}
                       className="
                         transition-transform
@@ -603,7 +595,7 @@ export default function Navbar() {
                 <div className="leading-tight">
 
                   <a
-                    href="tel:+917669988825"
+                    href="tel:7669988825"
                     className="
                       block
                       whitespace-nowrap
@@ -614,7 +606,7 @@ export default function Navbar() {
                       hover:text-[#F5A623]
                     "
                   >
-                    +91-9999999999
+                    +91-7669988825
                   </a>
 
 
@@ -785,7 +777,7 @@ export default function Navbar() {
             {/* BROWSE CATEGORIES */}
 
             <Link
-              href="/shop"
+              href="/products"
               className="
                 flex
                 shrink-0
@@ -961,11 +953,7 @@ export default function Navbar() {
                   hover:text-[#F5A623]
                 "
               >
-                <Truck
-                  size={14}
-                  className="text-[#F5A623]"
-                />
-                Track Order
+               
               </Link>
 
             </div>
@@ -1271,7 +1259,7 @@ export default function Navbar() {
                 "
               >
                 <UserRound size={18} />
-                <span className="text-[10px] font-semibold">
+                <span className="text-[13px] font-semibold">
                   Account
                 </span>
               </Link>

@@ -81,10 +81,6 @@ const categoryDesign = {
   },
 };
 
-/* =========================================================
-   DEFAULT CATEGORY IMAGE
-========================================================= */
-
 const defaultCategoryImage = "/dunnage.webp";
 
 /* =========================================================
@@ -115,7 +111,7 @@ function normalizeCategory(category) {
 }
 
 /* =========================================================
-   CATEGORY DISPLAY NAME
+   CATEGORY NAME
 ========================================================= */
 
 function getCategoryName(category) {
@@ -128,13 +124,19 @@ function getCategoryName(category) {
   if (!category) return "Products";
 
   if (typeof category === "object") {
-    return category.name || category.title || "Products";
+    return (
+      category.name ||
+      category.title ||
+      "Products"
+    );
   }
 
   return category
     .toString()
     .replace(/-/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    .replace(/\b\w/g, (letter) =>
+      letter.toUpperCase()
+    );
 }
 
 /* =========================================================
@@ -165,6 +167,41 @@ function getCategoryDescription(category) {
 }
 
 /* =========================================================
+   PRODUCT IMAGE
+========================================================= */
+
+function getProductImage(product) {
+  if (!product) {
+    return "/dunnage.webp";
+  }
+
+  if (typeof product.image === "string") {
+    return product.image;
+  }
+
+  if (product.image?.url) {
+    return product.image.url;
+  }
+
+  if (
+    Array.isArray(product.extraImages) &&
+    product.extraImages.length > 0
+  ) {
+    const firstImage = product.extraImages[0];
+
+    if (typeof firstImage === "string") {
+      return firstImage;
+    }
+
+    if (firstImage?.url) {
+      return firstImage.url;
+    }
+  }
+
+  return "/dunnage.webp";
+}
+
+/* =========================================================
    CATEGORY IMAGE
 ========================================================= */
 
@@ -189,44 +226,6 @@ function getCategoryImage(category, products = []) {
 }
 
 /* =========================================================
-   PRODUCT IMAGE
-========================================================= */
-
-function getProductImage(product) {
-  if (!product) {
-    return "/dunnage.webp";
-  }
-
-  /* Main image can be string */
-  if (typeof product.image === "string") {
-    return product.image;
-  }
-
-  /* Main image can be object */
-  if (product.image?.url) {
-    return product.image.url;
-  }
-
-  /* Extra images fallback */
-  if (
-    Array.isArray(product.extraImages) &&
-    product.extraImages.length > 0
-  ) {
-    const firstImage = product.extraImages[0];
-
-    if (typeof firstImage === "string") {
-      return firstImage;
-    }
-
-    if (firstImage?.url) {
-      return firstImage.url;
-    }
-  }
-
-  return "/dunnage.webp";
-}
-
-/* =========================================================
    PRODUCT CARD
 ========================================================= */
 
@@ -247,15 +246,15 @@ function ProductCard({ product, index }) {
     <motion.div
       initial={{
         opacity: 0,
-        y: 25,
+        y: 22,
       }}
       animate={{
         opacity: 1,
         y: 0,
       }}
       transition={{
-        duration: 0.5,
-        delay: index * 0.06,
+        duration: 0.55,
+        delay: index * 0.07,
         ease: [0.16, 1, 0.3, 1],
       }}
       className="h-full min-w-0"
@@ -268,44 +267,73 @@ function ProductCard({ product, index }) {
           h-full
           flex-col
           overflow-hidden
-          rounded-[18px]
+          rounded-[16px]
           border
-          border-[#DFE6EA]
+          border-[#DDE5EA]
           bg-white
+          shadow-[0_5px_20px_rgba(18,59,93,0.035)]
           transition-all
           duration-500
-          hover:-translate-y-2
-          hover:border-[#2F7180]/30
-          hover:shadow-[0_24px_55px_rgba(18,59,93,0.14)]
+          hover:-translate-y-1.5
+          hover:border-[#123B5D]/20
+          hover:shadow-[0_20px_45px_rgba(18,59,93,0.11)]
         "
       >
-        {/* IMAGE */}
+
+        {/* =================================================
+            PRODUCT IMAGE
+        ================================================= */}
 
         <div
           className="
             relative
             aspect-square
             overflow-hidden
-            bg-[#F4F7F9]
+            bg-[#F5F7F8]
           "
         >
-          {/* PRODUCT TAG */}
+
+          {/* SOFT IMAGE BACKGROUND */}
+
+          <div
+            className="
+              pointer-events-none
+              absolute
+              left-1/2
+              top-1/2
+              h-[72%]
+              w-[72%]
+              -translate-x-1/2
+              -translate-y-1/2
+              rounded-full
+              bg-white
+              shadow-[0_15px_45px_rgba(18,59,93,0.05)]
+              transition-transform
+              duration-700
+              group-hover:scale-110
+            "
+          />
+
+          {/* TOP TAG */}
 
           <span
             className="
               absolute
-              left-3
-              top-3
+              left-3.5
+              top-3.5
               z-20
-              rounded-[6px]
-              bg-[#F5A623]
+              max-w-[70%]
+              rounded-full
+              border
+              border-[#F5A623]/20
+              bg-[#FFF8E8]
               px-3
               py-1.5
-              text-[10px]
+              text-[9px]
               font-black
               uppercase
-              tracking-[0.05em]
-              text-[#123B5D]
+              tracking-[0.06em]
+              text-[#8A5A00]
             "
           >
             {tag}
@@ -322,23 +350,27 @@ function ProductCard({ product, index }) {
             }}
             className="
               absolute
-              right-3
-              top-3
+              right-3.5
+              top-3.5
               z-20
               flex
-              h-9
-              w-9
+              h-8
+              w-8
               items-center
               justify-center
               rounded-full
-              bg-white
-              text-[18px]
+              border
+              border-black/[0.06]
+              bg-white/95
+              text-[17px]
+              leading-none
               text-[#123B5D]
-              shadow-sm
+              shadow-[0_5px_15px_rgba(0,0,0,0.07)]
               transition-all
               duration-300
               hover:bg-[#123B5D]
               hover:text-white
+              hover:shadow-lg
             "
           >
             ♡
@@ -346,37 +378,72 @@ function ProductCard({ product, index }) {
 
           {/* PRODUCT IMAGE */}
 
-          <div className="absolute inset-5 sm:inset-6">
+          <div
+            className="
+              absolute
+              inset-6
+              z-10
+              sm:inset-7
+            "
+          >
             <Image
               src={image}
-              alt={product.name || "DPack Product"}
+              alt={
+                product.name ||
+                "DPack Product"
+              }
               fill
               unoptimized
-              sizes="(max-width: 768px) 50vw, 260px"
+              sizes="
+                (max-width: 640px) 42vw,
+                (max-width: 1024px) 25vw,
+                260px
+              "
               className="
                 object-contain
+                drop-shadow-[0_16px_15px_rgba(18,59,93,0.12)]
                 transition-all
                 duration-700
-                ease-out
-                group-hover:scale-110
-                group-hover:-rotate-2
+                ease-[cubic-bezier(.22,1,.36,1)]
+                group-hover:scale-[1.08]
               "
             />
           </div>
 
-          {/* HOVER BUTTON */}
+          {/* PRODUCT GROUND SHADOW */}
+
+          <div
+            className="
+              pointer-events-none
+              absolute
+              bottom-5
+              left-1/2
+              z-0
+              h-3
+              w-[48%]
+              -translate-x-1/2
+              rounded-[50%]
+              bg-[#123B5D]/10
+              blur-md
+              transition-all
+              duration-500
+              group-hover:w-[58%]
+            "
+          />
+
+          {/* HOVER VIEW BUTTON */}
 
           <div
             className="
               absolute
-              bottom-3
-              left-3
-              right-3
-              z-20
-              translate-y-4
+              bottom-3.5
+              left-3.5
+              right-3.5
+              z-30
+              translate-y-3
               opacity-0
               transition-all
-              duration-300
+              duration-400
               group-hover:translate-y-0
               group-hover:opacity-100
             "
@@ -387,40 +454,48 @@ function ProductCard({ product, index }) {
                 items-center
                 justify-center
                 gap-2
-                rounded-full
-                bg-[#123B5D]
+                rounded-[9px]
+                bg-[#123B5D]/95
                 px-4
-                py-3
-                text-[11px]
-                font-bold
+                py-2.5
+                text-[10px]
+                font-black
                 uppercase
                 tracking-[0.08em]
                 text-white
+                shadow-xl
+                backdrop-blur-sm
               "
             >
               View Product
-              <ArrowUpRight size={14} />
+
+              <ArrowUpRight size={13} />
             </div>
           </div>
         </div>
 
-        {/* DETAILS */}
+        {/* =================================================
+            PRODUCT DETAILS
+        ================================================= */}
 
         <div
           className="
             flex
             flex-1
             flex-col
+            border-t
+            border-[#EDF0F2]
             p-4
             sm:p-5
           "
         >
+
           <p
             className="
-              text-[10px]
+              text-[9px]
               font-black
               uppercase
-              tracking-[0.1em]
+              tracking-[0.13em]
               text-[#2F7180]
             "
           >
@@ -433,9 +508,12 @@ function ProductCard({ product, index }) {
               min-h-[42px]
               text-[15px]
               font-bold
-              leading-5
+              leading-[1.35]
               tracking-[-0.02em]
               text-[#172321]
+              transition-colors
+              duration-300
+              group-hover:text-[#123B5D]
             "
           >
             {product.name}
@@ -445,24 +523,44 @@ function ProductCard({ product, index }) {
 
           <div
             className="
-              mt-3
+              mt-auto
               flex
-              flex-wrap
               items-center
-              gap-1
+              gap-2
+              pt-4
             "
           >
-            <span className="text-[12px] tracking-[1px] text-[#F5A623]">
+            <span
+              className="
+                text-[11px]
+                tracking-[1px]
+                text-[#F5A623]
+              "
+            >
               ★★★★★
             </span>
 
             {product.reviews ? (
-              <span className="text-[10px] text-gray-400">
+              <span className="text-[10px] text-[#98A2A8]">
                 ({product.reviews})
               </span>
             ) : null}
           </div>
         </div>
+
+        {/* BOTTOM ACCENT */}
+
+        <div
+          className="
+            h-[2px]
+            w-0
+            bg-[#F5A623]
+            transition-all
+            duration-500
+            group-hover:w-full
+          "
+        />
+
       </Link>
     </motion.div>
   );
@@ -477,18 +575,20 @@ function ProductSkeleton() {
     <div
       className="
         overflow-hidden
-        rounded-[18px]
+        rounded-[16px]
         border
-        border-[#DFE6EA]
+        border-[#DDE5EA]
         bg-white
       "
     >
-      <div className="aspect-square animate-pulse bg-[#E9EEF1]" />
+      <div className="aspect-square animate-pulse bg-[#E8EEF1]" />
 
       <div className="space-y-3 p-5">
-        <div className="h-2.5 w-24 animate-pulse rounded bg-[#E9EEF1]" />
-        <div className="h-4 w-4/5 animate-pulse rounded bg-[#E9EEF1]" />
-        <div className="h-3 w-20 animate-pulse rounded bg-[#E9EEF1]" />
+        <div className="h-2.5 w-24 animate-pulse rounded bg-[#E3E9EC]" />
+
+        <div className="h-4 w-4/5 animate-pulse rounded bg-[#E3E9EC]" />
+
+        <div className="h-3 w-20 animate-pulse rounded bg-[#E3E9EC]" />
       </div>
     </div>
   );
@@ -505,7 +605,7 @@ export default function CategoryProducts() {
   const [error, setError] = useState("");
 
   /* =======================================================
-     FETCH PRODUCTS FROM ADMIN DATABASE
+     FETCH PRODUCTS
   ======================================================= */
 
   useEffect(() => {
@@ -528,7 +628,8 @@ export default function CategoryProducts() {
 
         if (!response.ok || !data?.success) {
           throw new Error(
-            data?.error || "Unable to load products"
+            data?.error ||
+              "Unable to load products"
           );
         }
 
@@ -540,10 +641,15 @@ export default function CategoryProducts() {
           );
         }
       } catch (err) {
-        console.error("Products fetch error:", err);
+        console.error(
+          "Products fetch error:",
+          err
+        );
 
         if (mounted) {
-          setError("Unable to load products.");
+          setError(
+            "Unable to load products."
+          );
         }
       } finally {
         if (mounted) {
@@ -560,18 +666,22 @@ export default function CategoryProducts() {
   }, []);
 
   /* =======================================================
-     CREATE CATEGORIES FROM PRODUCTS
+     CREATE CATEGORIES
   ======================================================= */
 
   const categories = useMemo(() => {
     const categoryMap = new Map();
 
     products.forEach((product) => {
-      const rawCategory = product.category;
+      const rawCategory =
+        product.category;
 
       if (!rawCategory) return;
 
-      const key = normalizeCategory(rawCategory);
+      const key =
+        normalizeCategory(
+          rawCategory
+        );
 
       if (!key) return;
 
@@ -582,21 +692,35 @@ export default function CategoryProducts() {
             rawCategory,
             categoryMap.size
           ),
-          name: getCategoryName(rawCategory),
-          shortName: getCategoryName(rawCategory),
-          description: getCategoryDescription(rawCategory),
+          name: getCategoryName(
+            rawCategory
+          ),
+          shortName:
+            getCategoryName(
+              rawCategory
+            ),
+          description:
+            getCategoryDescription(
+              rawCategory
+            ),
         });
       }
     });
 
-    return Array.from(categoryMap.values()).map(
-      (category, index) => ({
-        ...category,
-        number:
-          categoryDesign[category.id]?.number ||
-          String(index + 1).padStart(2, "0"),
-      })
-    );
+    return Array.from(
+      categoryMap.values()
+    ).map((category, index) => ({
+      ...category,
+
+      number:
+        categoryDesign[
+          category.id
+        ]?.number ||
+        String(index + 1).padStart(
+          2,
+          "0"
+        ),
+    }));
   }, [products]);
 
   /* =======================================================
@@ -606,35 +730,42 @@ export default function CategoryProducts() {
   useEffect(() => {
     if (
       categories.length > 0 &&
-      activeCategory >= categories.length
+      activeCategory >=
+        categories.length
     ) {
       setActiveCategory(0);
     }
-  }, [categories, activeCategory]);
+  }, [
+    categories,
+    activeCategory,
+  ]);
 
   /* =======================================================
      ACTIVE CATEGORY
   ======================================================= */
 
-  const active = categories[activeCategory];
+  const active =
+    categories[activeCategory];
 
-/* =======================================================
-   FILTER ACTIVE PRODUCTS — MAXIMUM 4
-======================================================= */
+  /* =======================================================
+     ACTIVE PRODUCTS — MAX 4
+  ======================================================= */
 
-const activeProducts = useMemo(() => {
-  if (!active) return [];
+  const activeProducts = useMemo(() => {
+    if (!active) return [];
 
-  return products
-    .filter((product) => {
-      return (
-        normalizeCategory(product.category) === active.id
-      );
-    })
-    .slice(0, 4);
-}, [products, active]);
-
-
+    return products
+      .filter(
+        (product) =>
+          normalizeCategory(
+            product.category
+          ) === active.id
+      )
+      .slice(0, 4);
+  }, [
+    products,
+    active,
+  ]);
 
   /* =======================================================
      ACTIVE CATEGORY IMAGE
@@ -680,8 +811,12 @@ const activeProducts = useMemo(() => {
               lg:grid-cols-4
             "
           >
-            {Array.from({ length: 4 }).map((_, index) => (
-              <ProductSkeleton key={index} />
+            {Array.from({
+              length: 4,
+            }).map((_, index) => (
+              <ProductSkeleton
+                key={index}
+              />
             ))}
           </div>
         </div>
@@ -697,14 +832,16 @@ const activeProducts = useMemo(() => {
     return (
       <section className="bg-[#F4F7F9] py-16">
         <div className="mx-auto max-w-[700px] px-5 text-center">
-          <div className="rounded-2xl border border-red-100 bg-white p-8">
+          <div className="rounded-[18px] border border-red-100 bg-white p-8">
             <p className="text-sm font-semibold text-red-600">
               {error}
             </p>
 
             <button
               type="button"
-              onClick={() => window.location.reload()}
+              onClick={() =>
+                window.location.reload()
+              }
               className="
                 mt-5
                 rounded-full
@@ -732,7 +869,8 @@ const activeProducts = useMemo(() => {
     return (
       <section className="bg-[#F4F7F9] py-16">
         <div className="mx-auto max-w-[700px] px-5 text-center">
-          <div className="rounded-2xl border border-[#DFE6EA] bg-white p-10">
+          <div className="rounded-[18px] border border-[#DFE6EA] bg-white p-10">
+
             <Package
               className="mx-auto text-[#123B5D]"
               size={35}
@@ -743,9 +881,11 @@ const activeProducts = useMemo(() => {
             </h3>
 
             <p className="mt-2 text-sm text-gray-500">
-              Products added from the admin panel will
-              appear here automatically.
+              Products added from the admin
+              panel will appear here
+              automatically.
             </p>
+
           </div>
         </div>
       </section>
@@ -767,6 +907,7 @@ const activeProducts = useMemo(() => {
         lg:py-16
       "
     >
+
       {/* BACKGROUND */}
 
       <div
@@ -810,12 +951,15 @@ const activeProducts = useMemo(() => {
           xl:px-12
         "
       >
-        {/* HEADER */}
+
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
         <motion.div
           initial={{
             opacity: 0,
-            y: 25,
+            y: 20,
           }}
           whileInView={{
             opacity: 1,
@@ -826,7 +970,7 @@ const activeProducts = useMemo(() => {
             amount: 0.2,
           }}
           transition={{
-            duration: 0.7,
+            duration: 0.65,
           }}
           className="
             mb-7
@@ -838,7 +982,9 @@ const activeProducts = useMemo(() => {
             lg:justify-between
           "
         >
+
           <div>
+
             <div
               className="
                 mb-3
@@ -849,8 +995,8 @@ const activeProducts = useMemo(() => {
             >
               <span
                 className="
-                  h-[3px]
-                  w-10
+                  h-[2px]
+                  w-9
                   rounded-full
                   bg-[#F5A623]
                 "
@@ -858,7 +1004,7 @@ const activeProducts = useMemo(() => {
 
               <span
                 className="
-                  text-[11px]
+                  text-[10px]
                   font-black
                   uppercase
                   tracking-[0.18em]
@@ -874,7 +1020,7 @@ const activeProducts = useMemo(() => {
                 max-w-[700px]
                 text-[34px]
                 font-black
-                leading-[0.95]
+                leading-[0.98]
                 tracking-[-0.05em]
                 text-[#172321]
                 sm:text-[44px]
@@ -882,14 +1028,16 @@ const activeProducts = useMemo(() => {
               "
             >
               Packaging made for
+
               <span className="text-[#123B5D]">
-                {" "}
-                every shipment.
+                {" "}every shipment.
               </span>
             </h2>
+
           </div>
 
           <div className="max-w-[420px]">
+
             <p
               className="
                 text-[13px]
@@ -897,9 +1045,10 @@ const activeProducts = useMemo(() => {
                 text-[#66737D]
               "
             >
-              Explore protective packaging solutions
-              designed for safer transportation,
-              efficient packing and reliable product
+              Explore protective packaging
+              solutions designed for safer
+              transportation, efficient
+              packing and reliable product
               protection.
             </p>
 
@@ -911,7 +1060,7 @@ const activeProducts = useMemo(() => {
                 inline-flex
                 items-center
                 gap-3
-                text-[11px]
+                text-[10px]
                 font-black
                 uppercase
                 tracking-[0.08em]
@@ -929,117 +1078,135 @@ const activeProducts = useMemo(() => {
                   justify-center
                   rounded-full
                   bg-[#F5A623]
-                  transition-transform
+                  transition-all
                   duration-300
                   group-hover:translate-x-1
+                  group-hover:shadow-lg
                 "
               >
                 <ArrowRight size={14} />
               </span>
             </Link>
+
           </div>
+
         </motion.div>
 
-        {/* CATEGORY TABS */}
+        {/* =================================================
+            CATEGORY TABS
+        ================================================= */}
 
         <div
           className="
             mb-5
             flex
-            gap-2
+            gap-1.5
             overflow-x-auto
-            rounded-[15px]
+            rounded-[13px]
             border
             border-[#DDE5EA]
             bg-white
             p-1.5
-            shadow-[0_8px_30px_rgba(18,59,93,0.04)]
+            shadow-[0_6px_25px_rgba(18,59,93,0.035)]
             [scrollbar-width:none]
             [&::-webkit-scrollbar]:hidden
           "
         >
-          {categories.map((category, index) => {
-            const selected = activeCategory === index;
 
-            return (
-              <button
-                key={category.id}
-                type="button"
-                onClick={() =>
-                  setActiveCategory(index)
-                }
-                className={[
-                  "relative",
-                  "flex",
-                  "min-w-max",
-                  "flex-1",
-                  "items-center",
-                  "justify-center",
-                  "gap-2",
-                  "overflow-hidden",
-                  "rounded-[10px]",
-                  "px-4",
-                  "py-3",
-                  "text-[13px]",
-                  "font-bold",
-                  "transition-colors",
-                  "duration-300",
+          {categories.map(
+            (category, index) => {
+              const selected =
+                activeCategory ===
+                index;
 
-                  selected
-                    ? "text-white"
-                    : "text-[#66737D] hover:bg-[#F4F7F9] hover:text-[#123B5D]",
-                ].join(" ")}
-              >
-                {selected && (
-                  <motion.div
-                    layoutId="activeCategory"
-                    transition={{
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 30,
-                    }}
-                    className="
-                      absolute
-                      inset-0
-                      rounded-[10px]
-                      bg-[#123B5D]
-                    "
-                  />
-                )}
-
-                <span
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() =>
+                    setActiveCategory(
+                      index
+                    )
+                  }
                   className={[
                     "relative",
-                    "z-10",
-                    "font-mono",
-                    "text-[10px]",
+                    "flex",
+                    "min-w-max",
+                    "flex-1",
+                    "items-center",
+                    "justify-center",
+                    "gap-2",
+                    "overflow-hidden",
+                    "rounded-[9px]",
+                    "px-4",
+                    "py-3",
+                    "text-[12px]",
                     "font-bold",
+                    "transition-colors",
+                    "duration-300",
 
                     selected
-                      ? "text-[#F5A623]"
-                      : "text-[#9AA6A1]",
+                      ? "text-white"
+                      : "text-[#66737D] hover:bg-[#F4F7F9] hover:text-[#123B5D]",
                   ].join(" ")}
                 >
-                  {category.number}
-                </span>
 
-                <span className="relative z-10">
-                  {category.shortName}
-                </span>
-              </button>
-            );
-          })}
+                  {selected && (
+                    <motion.div
+                      layoutId="activeCategory"
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 30,
+                      }}
+                      className="
+                        absolute
+                        inset-0
+                        rounded-[9px]
+                        bg-[#123B5D]
+                      "
+                    />
+                  )}
+
+                  <span
+                    className={[
+                      "relative",
+                      "z-10",
+                      "font-mono",
+                      "text-[9px]",
+                      "font-bold",
+
+                      selected
+                        ? "text-[#F5A623]"
+                        : "text-[#9AA6A1]",
+                    ].join(" ")}
+                  >
+                    {category.number}
+                  </span>
+
+                  <span className="relative z-10">
+                    {category.shortName}
+                  </span>
+
+                </button>
+              );
+            }
+          )}
+
         </div>
 
-        {/* ACTIVE CATEGORY */}
+        {/* =================================================
+            ACTIVE CATEGORY
+        ================================================= */}
 
         <AnimatePresence mode="wait">
+
           {active && (
             <motion.div
               key={active.id}
               initial={{
                 opacity: 0,
-                y: 15,
+                y: 12,
               }}
               animate={{
                 opacity: 1,
@@ -1047,13 +1214,19 @@ const activeProducts = useMemo(() => {
               }}
               exit={{
                 opacity: 0,
-                y: -10,
+                y: -8,
               }}
               transition={{
                 duration: 0.4,
-                ease: [0.16, 1, 0.3, 1],
+                ease: [
+                  0.16,
+                  1,
+                  0.3,
+                  1,
+                ],
               }}
             >
+
               <div
                 className="
                   grid
@@ -1061,7 +1234,10 @@ const activeProducts = useMemo(() => {
                   lg:grid-cols-[1.05fr_2.95fr]
                 "
               >
-                {/* FEATURED CATEGORY */}
+
+                {/* =================================================
+                    FEATURED CATEGORY
+                ================================================= */}
 
                 <Link
                   href="/products"
@@ -1070,12 +1246,21 @@ const activeProducts = useMemo(() => {
                     relative
                     min-h-[350px]
                     overflow-hidden
-                    rounded-[20px]
-                    bg-[#E5EDF2]
+                    rounded-[18px]
+                    border
+                    border-[#D6E1E7]
+                    bg-[#E8EFF3]
+                    shadow-[0_8px_30px_rgba(18,59,93,0.05)]
+                    transition-all
+                    duration-500
+                    hover:shadow-[0_18px_45px_rgba(18,59,93,0.10)]
                     sm:min-h-[380px]
                     lg:min-h-[390px]
                   "
                 >
+
+                  {/* DECORATIVE GLOW */}
+
                   <div
                     className="
                       absolute
@@ -1084,7 +1269,7 @@ const activeProducts = useMemo(() => {
                       h-64
                       w-64
                       rounded-full
-                      bg-[#F5A623]/15
+                      bg-[#F5A623]/10
                       transition-transform
                       duration-700
                       group-hover:scale-125
@@ -1116,18 +1301,22 @@ const activeProducts = useMemo(() => {
                       sm:p-7
                     "
                   >
+
                     <span
                       className="
                         inline-flex
                         rounded-full
-                        bg-[#123B5D]
-                        px-3.5
-                        py-2
-                        text-[10px]
+                        border
+                        border-[#123B5D]/10
+                        bg-white/70
+                        px-3
+                        py-1.5
+                        text-[9px]
                         font-black
                         uppercase
-                        tracking-[0.08em]
-                        text-white
+                        tracking-[0.09em]
+                        text-[#123B5D]
+                        backdrop-blur-sm
                       "
                     >
                       Featured Category
@@ -1137,7 +1326,7 @@ const activeProducts = useMemo(() => {
                       className="
                         mt-5
                         font-mono
-                        text-[10px]
+                        text-[9px]
                         font-bold
                         uppercase
                         tracking-[0.08em]
@@ -1153,7 +1342,7 @@ const activeProducts = useMemo(() => {
                         max-w-[310px]
                         text-[30px]
                         font-black
-                        leading-[0.95]
+                        leading-[0.98]
                         tracking-[-0.05em]
                         text-[#123B5D]
                         sm:text-[36px]
@@ -1165,7 +1354,7 @@ const activeProducts = useMemo(() => {
                     <p
                       className="
                         mt-3
-                        max-w-[330px]
+                        max-w-[320px]
                         text-[12px]
                         leading-5
                         text-[#66737D]
@@ -1173,6 +1362,7 @@ const activeProducts = useMemo(() => {
                     >
                       {active.description}
                     </p>
+
                   </div>
 
                   {/* GIANT NUMBER */}
@@ -1186,7 +1376,7 @@ const activeProducts = useMemo(() => {
                       text-[130px]
                       font-black
                       leading-none
-                      text-[#123B5D]/[0.045]
+                      text-[#123B5D]/[0.035]
                     "
                   >
                     {active.number}
@@ -1198,14 +1388,14 @@ const activeProducts = useMemo(() => {
                     key={activeCategoryImage}
                     initial={{
                       opacity: 0,
-                      scale: 0.85,
+                      scale: 0.88,
                       x: 25,
                     }}
                     animate={{
                       opacity: 1,
                       scale: 1,
                       x: 0,
-                      y: [0, -6, 0],
+                      y: [0, -5, 0],
                     }}
                     transition={{
                       opacity: {
@@ -1227,23 +1417,27 @@ const activeProducts = useMemo(() => {
                       absolute
                       bottom-1
                       right-0
-                      h-[46%]
-                      w-[62%]
-                      sm:h-[49%]
-                      sm:w-[62%]
+                      h-[48%]
+                      w-[64%]
+                      sm:h-[51%]
+                      sm:w-[64%]
                     "
                   >
+
                     <Image
-                      src={activeCategoryImage}
+                      src={
+                        activeCategoryImage
+                      }
                       alt={active.name}
                       fill
                       unoptimized
                       sizes="500px"
                       className="
                         object-contain
-                        drop-shadow-[0_20px_25px_rgba(18,59,93,0.16)]
+                        drop-shadow-[0_20px_25px_rgba(18,59,93,0.14)]
                       "
                     />
+
                   </motion.div>
 
                   {/* CTA */}
@@ -1255,24 +1449,28 @@ const activeProducts = useMemo(() => {
                       left-6
                       z-30
                       flex
-                      h-11
-                      w-11
+                      h-10
+                      w-10
                       items-center
                       justify-center
                       rounded-full
                       bg-[#F5A623]
                       text-[#123B5D]
+                      shadow-[0_8px_20px_rgba(245,166,35,0.20)]
                       transition-all
                       duration-300
                       group-hover:rotate-45
                       group-hover:scale-110
                     "
                   >
-                    <ArrowUpRight size={17} />
+                    <ArrowUpRight size={16} />
                   </div>
+
                 </Link>
 
-                {/* PRODUCT GRID */}
+                {/* =================================================
+                    PRODUCT GRID
+                ================================================= */}
 
                 <div
                   className="
@@ -1283,6 +1481,7 @@ const activeProducts = useMemo(() => {
                     xl:grid-cols-4
                   "
                 >
+
                   {activeProducts.map(
                     (product, index) => (
                       <ProductCard
@@ -1297,18 +1496,24 @@ const activeProducts = useMemo(() => {
                       />
                     )
                   )}
+
                 </div>
+
               </div>
+
             </motion.div>
           )}
+
         </AnimatePresence>
 
-        {/* BULK ORDER BANNER */}
+        {/* =================================================
+            BULK ORDER BANNER
+        ================================================= */}
 
         <motion.div
           initial={{
             opacity: 0,
-            y: 20,
+            y: 18,
           }}
           whileInView={{
             opacity: 1,
@@ -1324,10 +1529,12 @@ const activeProducts = useMemo(() => {
             relative
             mt-4
             overflow-hidden
-            rounded-[18px]
+            rounded-[17px]
             bg-[#123B5D]
+            shadow-[0_10px_30px_rgba(18,59,93,0.08)]
           "
         >
+
           <div
             className="
               absolute
@@ -1371,12 +1578,14 @@ const activeProducts = useMemo(() => {
               lg:py-7
             "
           >
+
             <div className="flex items-center gap-4">
+
               <div
                 className="
                   flex
-                  h-12
-                  w-12
+                  h-11
+                  w-11
                   shrink-0
                   items-center
                   justify-center
@@ -1385,10 +1594,11 @@ const activeProducts = useMemo(() => {
                   text-[#123B5D]
                 "
               >
-                <Package size={20} />
+                <Package size={19} />
               </div>
 
               <div>
+
                 <div
                   className="
                     flex
@@ -1396,32 +1606,34 @@ const activeProducts = useMemo(() => {
                     gap-2
                   "
                 >
+
                   <Sparkles
-                    size={13}
+                    size={12}
                     className="text-[#F5A623]"
                   />
 
                   <span
                     className="
-                      text-[10px]
+                      text-[9px]
                       font-black
                       uppercase
-                      tracking-[0.12em]
+                      tracking-[0.13em]
                       text-[#F5A623]
                     "
                   >
                     Business Packaging
                   </span>
+
                 </div>
 
                 <h4
                   className="
                     mt-1.5
-                    text-[17px]
+                    text-[16px]
                     font-bold
                     tracking-[-0.025em]
                     text-white
-                    sm:text-[20px]
+                    sm:text-[19px]
                   "
                 >
                   Need custom sizes or bulk
@@ -1430,16 +1642,19 @@ const activeProducts = useMemo(() => {
 
                 <p
                   className="
-                    mt-1.5
+                    mt-1
                     text-[11px]
                     leading-5
-                    text-white/60
+                    text-white/55
                   "
                 >
                   Talk to our team for custom
-                  requirements and business pricing.
+                  requirements and business
+                  pricing.
                 </p>
+
               </div>
+
             </div>
 
             <Link
@@ -1455,7 +1670,7 @@ const activeProducts = useMemo(() => {
                 bg-[#F5A623]
                 px-5
                 py-3
-                text-[11px]
+                text-[10px]
                 font-black
                 uppercase
                 tracking-[0.08em]
@@ -1470,7 +1685,7 @@ const activeProducts = useMemo(() => {
               Request a Quote
 
               <ArrowUpRight
-                size={15}
+                size={14}
                 className="
                   transition-transform
                   duration-300
@@ -1478,10 +1693,12 @@ const activeProducts = useMemo(() => {
                 "
               />
             </Link>
+
           </div>
+
         </motion.div>
+
       </div>
     </section>
   );
 }
-

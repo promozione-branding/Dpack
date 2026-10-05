@@ -2,17 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-
-import {
-  ArrowLeft,
-  ArrowRight,
-  ArrowUpRight,
-  Heart,
-  ShoppingCart,
-  Star,
-} from "lucide-react";
+import { Heart, ArrowUpRight, ArrowRight, Star } from "lucide-react";
 
 /* =========================================================
    PRODUCTS
@@ -31,7 +22,6 @@ const products = [
     discount: "29% OFF",
     link: "https://packingairbag.com/categories/dunnage-bag",
   },
-
   {
     id: 2,
     brand: "D PACK",
@@ -44,7 +34,6 @@ const products = [
     discount: "33% OFF",
     link: "https://packingairbag.com/categories/dunnage-bag",
   },
-
   {
     id: 3,
     brand: "D PACK",
@@ -57,7 +46,6 @@ const products = [
     discount: "31% OFF",
     link: "https://packingairbag.com/categories/dunnage-bag",
   },
-
   {
     id: 4,
     brand: "D PACK",
@@ -70,7 +58,6 @@ const products = [
     discount: "33% OFF",
     link: "https://packingairbag.com/categories/dunnage-bag",
   },
-
   {
     id: 5,
     brand: "D PACK",
@@ -83,7 +70,6 @@ const products = [
     discount: "33% OFF",
     link: "https://packingairbag.com/categories/air-column-bag",
   },
-
   {
     id: 6,
     brand: "D PACK",
@@ -96,7 +82,6 @@ const products = [
     discount: "30% OFF",
     link: "https://packingairbag.com/categories/air-column-bag",
   },
-
   {
     id: 7,
     brand: "D PACK",
@@ -109,7 +94,6 @@ const products = [
     discount: "31% OFF",
     link: "https://packingairbag.com/categories/air-column-bag",
   },
-
   {
     id: 8,
     brand: "D PACK",
@@ -129,63 +113,31 @@ const products = [
 ========================================================= */
 
 function ProductCard({ product, index }) {
-  const addToCart = (e) => {
-    e.preventDefault();
-
-    // Connect your cart functionality here
-    console.log("Added to cart:", product);
-  };
-
-  const addToWishlist = (e) => {
-    e.preventDefault();
-
-    console.log("Added to wishlist:", product);
-  };
-
   return (
     <motion.article
-      initial={{
-        opacity: 0,
-        y: 45,
-        scale: 0.97,
-      }}
-      whileInView={{
-        opacity: 1,
-        y: 0,
-        scale: 1,
-      }}
-      viewport={{
-        once: true,
-        amount: 0.15,
-      }}
+      initial={{ opacity: 0, y: 25 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{
-        duration: 0.65,
-        delay: (index % 4) * 0.08,
+        duration: 0.6,
+        delay: index * 0.08,
         ease: [0.16, 1, 0.3, 1],
       }}
       className="
         group
         relative
-        h-full
         overflow-hidden
-
+        rounded-[8px]
         border
-        border-[#DCE3E7]
-
+        border-[#E3E7E9]
         bg-white
-
         transition-all
         duration-500
-
         hover:-translate-y-1
-        hover:border-[#123B5D]/25
-
-        hover:shadow-[0_20px_50px_rgba(18,59,93,0.10)]
+        hover:shadow-[0_18px_45px_rgba(18,59,93,0.10)]
       "
     >
-      {/* ===================================================
-          IMAGE
-      =================================================== */}
+      {/* IMAGE */}
 
       <Link
         href={product.link}
@@ -194,45 +146,23 @@ function ProductCard({ product, index }) {
         className="
           relative
           block
-          aspect-[1.08/1]
+          h-[255px]
           overflow-hidden
-
-          bg-[#F4F6F7]
+          bg-white
         "
       >
-        {/* NUMBER */}
+        {/* Discount */}
 
         <span
           className="
             absolute
-            bottom-3
-            left-4
+            left-3
+            top-3
             z-20
-
-            font-mono
-            text-[12px]
-            font-bold
-            text-[#123B5D]/25
-          "
-        >
-          {String(product.id).padStart(2, "0")}
-        </span>
-
-        {/* DISCOUNT */}
-
-        <span
-          className="
-            absolute
-            left-4
-            top-4
-            z-30
-
             bg-[#F5A623]
-
-            px-3
-            py-1.5
-
-            text-[12px]
+            px-2.5
+            py-1
+            text-[10px]
             font-black
             uppercase
             tracking-[0.04em]
@@ -242,173 +172,120 @@ function ProductCard({ product, index }) {
           {product.discount}
         </span>
 
-        {/* WISHLIST */}
+        {/* Wishlist */}
 
         <button
           type="button"
-          onClick={addToWishlist}
+          onClick={(e) => {
+            e.preventDefault();
+            console.log("Wishlist:", product);
+          }}
           aria-label={`Add ${product.name} to wishlist`}
           className="
             absolute
-            right-4
-            top-4
-            z-40
-
+            right-3
+            top-3
+            z-30
             flex
-            h-9
-            w-9
+            h-8
+            w-8
             items-center
             justify-center
-
-            border
-            border-[#DCE3E7]
+            rounded-full
             bg-white
-
-            text-[#123B5D]
-
+            text-[#6D777E]
+            shadow-sm
             transition-all
             duration-300
-
-            hover:border-[#123B5D]
             hover:bg-[#123B5D]
             hover:text-white
           "
         >
-          <Heart size={16} />
+          <Heart size={15} />
         </button>
 
-        {/* DECORATIVE CIRCLE */}
+        {/* Product image */}
 
-        <div
-          className="
-            pointer-events-none
-            absolute
-            left-1/2
-            top-1/2
-
-            h-[160px]
-            w-[160px]
-
-            -translate-x-1/2
-            -translate-y-1/2
-
-            rounded-full
-            border
-            border-[#123B5D]/[0.05]
-
-            transition-all
-            duration-700
-
-            group-hover:h-[190px]
-            group-hover:w-[190px]
-            group-hover:border-[#2F7180]/10
-          "
-        />
-
-        {/* PRODUCT IMAGE */}
-
-        <div className="absolute inset-7">
+        <div className="absolute inset-5">
           <Image
             src={product.image}
             alt={product.name}
             fill
             unoptimized
-            sizes="(max-width:768px) 50vw, 25vw"
+            sizes="(max-width:768px) 50vw, 22vw"
             className="
               object-contain
-
               transition-all
-              duration-[850ms]
+              duration-700
               ease-out
-
-              group-hover:-translate-y-2
-              group-hover:scale-[1.10]
+              group-hover:scale-[1.08]
             "
           />
         </div>
 
-        {/* QUICK ARROW */}
-
-        <span
-          className="
-            absolute
-            bottom-4
-            right-4
-            z-30
-
-            flex
-            h-10
-            w-10
-
-            translate-y-4
-            items-center
-            justify-center
-
-            bg-[#123B5D]
-
-            text-white
-
-            opacity-0
-
-            transition-all
-            duration-400
-
-            group-hover:translate-y-0
-            group-hover:opacity-100
-          "
-        >
-          <ArrowUpRight
-            size={16}
-            className="
-              transition-transform
-              duration-300
-
-              group-hover:rotate-45
-            "
-          />
-        </span>
-
-        {/* BOTTOM ORANGE LINE */}
+        {/* Bottom line */}
 
         <span
           className="
             absolute
             bottom-0
             left-0
-
             h-[3px]
             w-0
-
             bg-[#F5A623]
-
             transition-all
-            duration-700
-
+            duration-500
             group-hover:w-full
           "
         />
+
+        {/* Arrow */}
+
+        <span
+          className="
+            absolute
+            bottom-3
+            right-3
+            flex
+            h-8
+            w-8
+            translate-y-3
+            items-center
+            justify-center
+            bg-[#123B5D]
+            text-white
+            opacity-0
+            transition-all
+            duration-300
+            group-hover:translate-y-0
+            group-hover:opacity-100
+          "
+        >
+          <ArrowUpRight
+            size={14}
+            className="transition-transform duration-300 group-hover:rotate-45"
+          />
+        </span>
       </Link>
 
-      {/* ===================================================
-          PRODUCT INFORMATION
-      =================================================== */}
+      {/* CONTENT */}
 
-      <div className="p-4 sm:p-5">
-        {/* BRAND */}
+      <div className="px-4 pb-4 pt-3.5">
+        {/* Brand */}
 
         <p
           className="
-            text-[12px]
+            text-[10px]
             font-black
             uppercase
-            tracking-[0.12em]
+            tracking-[0.14em]
             text-[#2F7180]
           "
         >
           {product.brand}
         </p>
 
-        {/* PRODUCT NAME */}
+        {/* Name */}
 
         <Link
           href={product.link}
@@ -417,18 +294,15 @@ function ProductCard({ product, index }) {
         >
           <h3
             className="
-              mt-1.5
-              min-h-[42px]
-
-              text-[16px]
+              mt-1
+              min-h-[40px]
+              text-[15px]
               font-bold
-              leading-[1.3]
+              leading-[1.25]
               tracking-[-0.02em]
               text-[#202830]
-
               transition-colors
               duration-300
-
               hover:text-[#123B5D]
             "
           >
@@ -436,780 +310,422 @@ function ProductCard({ product, index }) {
           </h3>
         </Link>
 
-        {/* RATING */}
+        {/* Rating */}
 
-        <div
-          className="
-            mt-2
-            flex
-            items-center
-            gap-2
-          "
-        >
+        <div className="mt-2 flex items-center gap-2">
           <span
             className="
               flex
               items-center
               gap-1
-
-              bg-[#E6F1F6]
-
-              px-2
+              rounded-sm
+              bg-[#EEF4F7]
+              px-1.5
               py-1
             "
           >
-            <span
-              className="
-                text-[12px]
-                font-bold
-                text-[#123B5D]
-              "
-            >
+            <span className="text-[10px] font-bold text-[#123B5D]">
               {product.rating}
             </span>
 
             <Star
-              size={11}
+              size={9}
               fill="currentColor"
               strokeWidth={0}
               className="text-[#F5A623]"
             />
           </span>
 
-          <span
-            className="
-              text-[12px]
-              text-[#8A959D]
-            "
-          >
+          <span className="text-[10px] text-[#929BA2]">
             {product.reviews} reviews
           </span>
         </div>
 
-        {/* PRICE */}
+        {/* Price */}
 
-        <div
-          className="
-            mt-3
-            flex
-            items-center
-            gap-2
-          "
-        >
-          <span
-            className="
-              text-[18px]
-              font-black
-              text-[#123B5D]
-            "
-          >
+        <div className="mt-2 flex items-center gap-2">
+          <span className="text-[16px] font-black text-[#123B5D]">
             {product.price}
           </span>
 
-          <span
-            className="
-              text-[12px]
-              text-[#929BA2]
-              line-through
-            "
-          >
+          <span className="text-[11px] text-[#929BA2] line-through">
             {product.oldPrice}
           </span>
         </div>
-
-        {/* =================================================
-            ADD TO CART
-        ================================================= */}
-
-        <button
-          type="button"
-          onClick={addToCart}
-          className="
-            group/cart
-
-            mt-4
-
-            flex
-            w-full
-            items-center
-            justify-between
-
-            border-t
-            border-[#DCE3E7]
-
-            pt-4
-
-            text-[#123B5D]
-          "
-        >
-          <span
-            className="
-              flex
-              items-center
-              gap-2
-
-              text-[12px]
-              font-black
-              uppercase
-              tracking-[0.06em]
-            "
-          >
-            <ShoppingCart size={15} />
-
-            Add to Cart
-          </span>
-
-          <span
-            className="
-              flex
-              h-8
-              w-8
-              items-center
-              justify-center
-
-              bg-[#E6F1F6]
-
-              transition-all
-              duration-300
-
-              group-hover/cart:bg-[#F5A623]
-            "
-          >
-            <ArrowRight
-              size={14}
-              className="
-                transition-transform
-                duration-300
-
-                group-hover/cart:translate-x-1
-              "
-            />
-          </span>
-        </button>
       </div>
     </motion.article>
   );
 }
 
 /* =========================================================
-   MAIN COMPONENT
+   MAIN SECTION
 ========================================================= */
 
 export default function TrendingProducts() {
-  const [current, setCurrent] = useState(0);
-  const [itemsPerView, setItemsPerView] = useState(2);
-
-  /* =========================================================
-     RESPONSIVE SLIDES
-  ========================================================= */
-
-  useEffect(() => {
-    const updateSlides = () => {
-      if (window.innerWidth >= 1024) {
-        setItemsPerView(4);
-      } else if (window.innerWidth >= 768) {
-        setItemsPerView(3);
-      } else {
-        setItemsPerView(2);
-      }
-    };
-
-    updateSlides();
-
-    window.addEventListener("resize", updateSlides);
-
-    return () => {
-      window.removeEventListener("resize", updateSlides);
-    };
-  }, []);
-
-  /* =========================================================
-     MAX SLIDE
-  ========================================================= */
-
-  const maxSlide = Math.max(
-    0,
-    products.length - itemsPerView
-  );
-
-  const safeCurrent = Math.min(current, maxSlide);
-
-  /* =========================================================
-     AUTO SLIDE
-  ========================================================= */
-
-  useEffect(() => {
-    if (maxSlide <= 0) return;
-
-    const timer = setInterval(() => {
-      setCurrent((prev) =>
-        prev >= maxSlide ? 0 : prev + 1
-      );
-    }, 3500);
-
-    return () => clearInterval(timer);
-  }, [maxSlide]);
-
-  /* =========================================================
-     PREVIOUS
-  ========================================================= */
-
-  const previousSlide = () => {
-    setCurrent((prev) =>
-      prev <= 0 ? maxSlide : prev - 1
-    );
-  };
-
-  /* =========================================================
-     NEXT
-  ========================================================= */
-
-  const nextSlide = () => {
-    setCurrent((prev) =>
-      prev >= maxSlide ? 0 : prev + 1
-    );
-  };
-
-  const activeDot = safeCurrent;
-
-  const dots = Array.from(
-    { length: maxSlide + 1 },
-    (_, index) => index
-  );
-
   return (
     <section
       className="
         relative
         w-full
         overflow-hidden
-
-        bg-[#EEF1F3]
-
-        py-12
-        sm:py-14
-        lg:py-16
+        bg-[#F5F4EF]
+        py-8
+        sm:py-10
+        lg:py-12
       "
     >
-      {/* =====================================================
-          BACKGROUND GRAPHICS
-      ===================================================== */}
+      {/* Background dots */}
 
-      <motion.div
-        initial={{
-          opacity: 0,
-          scale: 0.7,
-        }}
-        whileInView={{
-          opacity: 1,
-          scale: 1,
-        }}
-        viewport={{
-          once: true,
-        }}
-        transition={{
-          duration: 1.2,
-        }}
+      <div
         className="
           pointer-events-none
           absolute
-          -right-[180px]
-          -top-[180px]
-
-          h-[450px]
-          w-[450px]
-
-          rounded-full
-          bg-[#DCE7EC]
-
-          blur-[100px]
+          inset-0
+          opacity-[0.35]
         "
+        style={{
+          backgroundImage:
+            "radial-gradient(#123B5D 0.7px, transparent 0.7px)",
+          backgroundSize: "9px 9px",
+        }}
       />
 
-      {/* HUGE BACKGROUND TEXT */}
-
-      <motion.span
-        initial={{
-          opacity: 0,
-          x: 100,
-        }}
-        whileInView={{
-          opacity: 1,
-          x: 0,
-        }}
-        viewport={{
-          once: true,
-        }}
-        transition={{
-          duration: 1,
-        }}
-        className="
-          pointer-events-none
-
-          absolute
-          right-0
-          top-4
-
-          hidden
-
-          text-[150px]
-          font-black
-          leading-none
-          tracking-[-0.08em]
-
-          text-[#123B5D]/[0.025]
-
-          xl:block
-        "
-      >
-        TREND
-      </motion.span>
+      {/* Main */}
 
       <div
         className="
           relative
           z-10
-
           mx-auto
           max-w-[1400px]
-
           px-5
-          sm:px-8
-          lg:px-10
+          sm:px-7
+          lg:px-8
         "
       >
-        {/* =================================================
-            HEADING
-        ================================================= */}
-
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 35,
-          }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{
-            once: true,
-            amount: 0.3,
-          }}
-          transition={{
-            duration: 0.7,
-            ease: [0.16, 1, 0.3, 1],
-          }}
+        <div
           className="
-            mb-8
-
-            flex
-            flex-col
+            grid
+            grid-cols-1
             gap-5
-
-            sm:flex-row
-            sm:items-end
-            sm:justify-between
+            lg:grid-cols-[minmax(0,2fr)_minmax(330px,1fr)]
           "
         >
-          {/* LEFT */}
+          {/* =================================================
+              LEFT SIDE
+          ================================================= */}
 
-          <div>
-            <div
-              className="
-                mb-3
-                flex
-                items-center
-                gap-3
-              "
+          <div className="min-w-0">
+            {/* Heading */}
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mb-6"
             >
-              <motion.span
-                initial={{
-                  width: 0,
-                }}
-                whileInView={{
-                  width: 36,
-                }}
-                viewport={{
-                  once: true,
-                }}
-                transition={{
-                  duration: 0.7,
-                  delay: 0.15,
-                }}
+              <h2
                 className="
-                  h-[3px]
-                  bg-[#F5A623]
-                "
-              />
-
-              <span
-                className="
-                  text-[12px]
+                  text-[28px]
                   font-black
-                  uppercase
-                  tracking-[0.16em]
-                  text-[#2F7180]
+                  leading-[1.05]
+                  tracking-[-0.04em]
+                  text-[#202830]
+                  sm:text-[34px]
+                  lg:text-[38px]
                 "
               >
-                Customer Favorites
-              </span>
-            </div>
+                Protective packaging
+                <span className="text-[#123B5D]">
+                  {" "}collection of the week
+                </span>
+              </h2>
 
-            <h2
-              className="
-                text-[36px]
-                font-black
-                leading-[0.95]
-                tracking-[-0.05em]
-                text-[#202830]
-
-                sm:text-[44px]
-                lg:text-[50px]
-              "
-            >
-              Trending
-              <span className="text-[#123B5D]">
-                {" "}right now.
-              </span>
-            </h2>
-          </div>
-
-          {/* RIGHT */}
-
-          <div
-            className="
-              max-w-[410px]
-
-              sm:text-right
-            "
-          >
-            <p
-              className="
-                text-[14px]
-                leading-6
-                text-[#66737D]
-              "
-            >
-              Explore popular protective packaging products
-              chosen for secure storage and safer shipping.
-            </p>
-
-            <Link
-              href="/products"
-              className="
-                group/all
-
-                mt-3
-                inline-flex
-                items-center
-                gap-3
-
-                text-[12px]
-                font-black
-                uppercase
-                tracking-[0.07em]
-                text-[#123B5D]
-              "
-            >
-              Shop All Products
-
-              <span
+              <p
                 className="
-                  flex
-                  h-8
-                  w-8
-                  items-center
-                  justify-center
-
-                  bg-[#F5A623]
-
-                  transition-transform
-                  duration-300
-
-                  group-hover/all:translate-x-1
+                  mt-3
+                  text-[14px]
+                  leading-6
+                  text-[#66737D]
+                  sm:text-[15px]
                 "
               >
-                <ArrowRight size={14} />
-              </span>
-            </Link>
-          </div>
-        </motion.div>
+                The most popular products from our protective packaging
+                collection.
+              </p>
+            </motion.div>
 
-        {/* =================================================
-            SLIDER
-        ================================================= */}
+            {/* PRODUCT GRID */}
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 30,
-          }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{
-            once: true,
-            amount: 0.1,
-          }}
-          transition={{
-            duration: 0.7,
-            delay: 0.15,
-          }}
-          className="relative"
-        >
-          {/* PREVIOUS */}
-
-          <button
-            type="button"
-            onClick={previousSlide}
-            aria-label="Previous products"
-            className="
-              absolute
-              -left-5
-              top-[42%]
-              z-40
-
-              hidden
-              h-11
-              w-11
-              -translate-y-1/2
-              items-center
-              justify-center
-
-              border
-              border-[#DCE3E7]
-              bg-white
-
-              text-[#123B5D]
-
-              shadow-[0_8px_25px_rgba(18,59,93,0.10)]
-
-              transition-all
-              duration-300
-
-              hover:bg-[#123B5D]
-              hover:text-white
-
-              lg:flex
-            "
-          >
-            <ArrowLeft size={17} />
-          </button>
-
-          {/* NEXT */}
-
-          <button
-            type="button"
-            onClick={nextSlide}
-            aria-label="Next products"
-            className="
-              absolute
-              -right-5
-              top-[42%]
-              z-40
-
-              hidden
-              h-11
-              w-11
-              -translate-y-1/2
-              items-center
-              justify-center
-
-              border
-              border-[#DCE3E7]
-              bg-white
-
-              text-[#123B5D]
-
-              shadow-[0_8px_25px_rgba(18,59,93,0.10)]
-
-              transition-all
-              duration-300
-
-              hover:bg-[#123B5D]
-              hover:text-white
-
-              lg:flex
-            "
-          >
-            <ArrowRight size={17} />
-          </button>
-
-          {/* ===============================================
-              VIEWPORT
-          =============================================== */}
-
-          <div className="overflow-hidden py-3">
             <div
               className="
-                flex
-
-                transition-transform
-                duration-700
-
-                ease-[cubic-bezier(.22,.61,.36,1)]
+                grid
+                grid-cols-1
+                gap-4
+                sm:grid-cols-2
+                xl:grid-cols-3
               "
-              style={{
-                transform: `translateX(-${
-                  safeCurrent * (100 / itemsPerView)
-                }%)`,
-              }}
             >
-              {products.map((product, index) => (
-                <div
+              {products.slice(0, 3).map((product, index) => (
+                <ProductCard
                   key={product.id}
-                  className="
-                    shrink-0
-
-                    px-1.5
-                    sm:px-2
-                  "
-                  style={{
-                    width: `${100 / itemsPerView}%`,
-                  }}
-                >
-                  <ProductCard
-                    product={product}
-                    index={index}
-                  />
-                </div>
+                  product={product}
+                  index={index}
+                />
               ))}
             </div>
+
+            {/* Bottom button */}
+
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mt-5"
+            >
+              <Link
+                href="/products"
+                className="
+                  group
+                  inline-flex
+                  items-center
+                  gap-3
+                  rounded-full
+                  bg-[#123B5D]
+                  px-5
+                  py-3
+                  text-[11px]
+                  font-black
+                  uppercase
+                  tracking-[0.05em]
+                  text-white
+                  transition-all
+                  duration-300
+                  hover:bg-[#F5A623]
+                  hover:text-[#123B5D]
+                "
+              >
+                View All Products
+
+                <span
+                  className="
+                    flex
+                    h-6
+                    w-6
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-white/10
+                    transition-transform
+                    duration-300
+                    group-hover:translate-x-1
+                  "
+                >
+                  <ArrowRight size={13} />
+                </span>
+              </Link>
+            </motion.div>
           </div>
 
           {/* =================================================
-              SLIDER CONTROLS
+              RIGHT FEATURE IMAGE
           ================================================= */}
 
-          <div
-            className="
-              mt-5
-              flex
-              items-center
-              justify-center
-              gap-2
-            "
-          >
-            {dots.map((dot) => (
-              <button
-                key={dot}
-                type="button"
-                onClick={() => setCurrent(dot)}
-                aria-label={`Go to slide ${dot + 1}`}
-                className={[
-                  "h-[5px]",
-                  "transition-all",
-                  "duration-500",
-                  activeDot === dot
-                    ? "w-8 bg-[#123B5D]"
-                    : "w-2 bg-[#C9D1D6] hover:bg-[#F5A623]",
-                ].join(" ")}
-              />
-            ))}
-          </div>
-        </motion.div>
-
-        {/* =================================================
-            BOTTOM STRIP
-        ================================================= */}
-
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 15,
-          }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{
-            once: true,
-          }}
-          transition={{
-            duration: 0.6,
-            delay: 0.25,
-          }}
-          className="
-            mt-7
-
-            flex
-            flex-col
-            gap-3
-
-            border-t
-            border-[#123B5D]/10
-
-            pt-4
-
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-          "
-        >
-          <div className="flex items-center gap-3">
-            <span
-              className="
-                text-[12px]
-                font-black
-                uppercase
-                tracking-[0.08em]
-                text-[#2F7180]
-              "
-            >
-              DPACK Packaging
-            </span>
-
-            <span
-              className="
-                h-1.5
-                w-1.5
-
-                bg-[#F5A623]
-              "
-            />
-
-            <span
-              className="
-                text-[12px]
-                text-[#66737D]
-              "
-            >
-              Protective packaging solutions
-            </span>
-          </div>
-
-          <Link
-            href="/products"
+          <motion.div
+            initial={{
+              opacity: 0,
+              x: 40,
+              scale: 0.97,
+            }}
+            whileInView={{
+              opacity: 1,
+              x: 0,
+              scale: 1,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.15,
+            }}
+            transition={{
+              duration: 0.8,
+              ease: [0.16, 1, 0.3, 1],
+            }}
             className="
               group
-
-              inline-flex
-              w-fit
-              items-center
-              gap-2
-
-              text-[12px]
-              font-black
-              uppercase
-              tracking-[0.07em]
-              text-[#123B5D]
+              relative
+              min-h-[430px]
+              overflow-hidden
+              rounded-[8px]
+              bg-[#123B5D]
             "
           >
-            View Full Collection
+            {/* Image */}
 
-            <ArrowUpRight
-              size={14}
+            <Image
+              src="https://packingairbag.com/cat/1.webp"
+              alt="Dpack protective packaging solutions"
+              fill
+              unoptimized
+              priority
               className="
+                object-contain
+                p-12
                 transition-transform
-                duration-300
-
-                group-hover:translate-x-1
-                group-hover:-translate-y-1
+                duration-1000
+                group-hover:scale-105
               "
             />
-          </Link>
-        </motion.div>
+
+            {/* Gradient */}
+
+            <div
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-t
+                from-[#071C2D]/90
+                via-[#123B5D]/20
+                to-transparent
+              "
+            />
+
+            {/* Decorative circle */}
+
+            <div
+              className="
+                pointer-events-none
+                absolute
+                -right-20
+                -top-20
+                h-64
+                w-64
+                rounded-full
+                border
+                border-white/10
+              "
+            />
+
+            <div
+              className="
+                pointer-events-none
+                absolute
+                -right-10
+                -top-10
+                h-44
+                w-44
+                rounded-full
+                border
+                border-white/10
+              "
+            />
+
+            {/* Content */}
+
+            <div
+              className="
+                absolute
+                bottom-0
+                left-0
+                right-0
+                z-10
+                p-6
+                sm:p-7
+              "
+            >
+              <div className="mb-3 flex items-center gap-2">
+                <span className="h-[2px] w-8 bg-[#F5A623]" />
+
+              </div>
+
+              <h3
+                className="
+                  max-w-[330px]
+                  text-[28px]
+                  font-black
+                  leading-[1]
+                  tracking-[-0.04em]
+                  text-white
+                  sm:text-[32px]
+                "
+              >
+                Smarter protection
+                <br />
+                for every shipment.
+              </h3>
+
+
+              <Link
+                href="/products"
+                className="
+                  mt-5
+                  inline-flex
+                  items-center
+                  gap-2
+                  text-[11px]
+                  font-black
+                  uppercase
+                  tracking-[0.07em]
+                  text-white
+                "
+              >
+                Explore Collection
+
+                <ArrowUpRight
+                  size={15}
+                  className="
+                    transition-transform
+                    duration-300
+                    group-hover:translate-x-1
+                    group-hover:-translate-y-1
+                  "
+                />
+              </Link>
+            </div>
+
+            {/* Corner number */}
+
+            <div
+              className="
+                absolute
+                right-4
+                top-4
+                z-20
+                rounded-sm
+                bg-white
+                px-3
+                py-2
+              "
+            >
+              <span
+                className="
+                  block
+                  text-[20px]
+                  font-black
+                  leading-none
+                  text-[#123B5D]
+                "
+              >
+                01
+              </span>
+
+              <span
+                className="
+                  mt-1
+                  block
+                  text-[8px]
+                  font-bold
+                  uppercase
+                  tracking-[0.08em]
+                  text-[#8A959D]
+                "
+              >
+                Featured
+              </span>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

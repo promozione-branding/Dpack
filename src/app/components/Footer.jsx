@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 /* =========================================================
    PRODUCT LINKS
@@ -123,11 +124,19 @@ const trustItems = [
   },
 ];
 
+
+
 /* =========================================================
    FOOTER
 ========================================================= */
 
 export default function Footer() {
+
+  const pathname = usePathname();
+    const isAdminRoute = pathname.startsWith("/admin");
+    if (isAdminRoute) {
+        return null; 
+    }
   return (
     <footer
       className="
