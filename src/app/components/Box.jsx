@@ -713,7 +713,7 @@ function SideCard({
             <div className="h-[2px] w-7 bg-white/80 transition-all duration-300 group-hover:w-10" />
           </div>
 
-          <span className="flex items-center gap-1 text-[12px] font-semibold text-white/90 transition-all duration-300 group-hover:gap-2 sm:text-[10px]">
+          <span className="flex items-center gap-1 text-[14px] font-semibold text-white/90 transition-all duration-300 group-hover:gap-2 sm:text-[1px]">
             View Details
 
             <ArrowUpRight

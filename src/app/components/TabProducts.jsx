@@ -784,7 +784,26 @@ export default function CategoryProducts() {
 
   if (loading) {
     return (
-      <section className="bg-[#F4F7F9] py-12 sm:py-14 lg:py-16">
+    <section
+  className="
+    relative
+    w-full
+    overflow-hidden
+   z-10
+    bg-[#F8F8F6]
+
+    py-12
+    lg:py-14
+
+    before:pointer-events-none
+    before:absolute
+    before:inset-0
+    before:z-0
+
+    before:bg-[radial-gradient(circle_at_1px_1px,rgba(18,59,93,0.10)_1px,transparent_1px)]
+    before:bg-[length:22px_22px]
+  "
+>
         <div
           className="
             mx-auto

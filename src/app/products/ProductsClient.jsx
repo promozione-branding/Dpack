@@ -58,12 +58,21 @@ function getProductOldPrice(product) {
 }
 
 function getProductImage(product) {
-  return (
+  const image =
     product?.image ||
     product?.images?.[0] ||
     product?.thumbnail ||
-    "/placeholder-product.webp"
-  );
+    "/placeholder-product.webp";
+
+  if (typeof image === "object") {
+    return (
+      image?.url ||
+      image?.src ||
+      "/placeholder-product.webp"
+    );
+  }
+
+  return image;
 }
 
 function getProductSlug(product) {
@@ -104,10 +113,6 @@ function getStockValue(product) {
 }
 
 function isProductInStock(product) {
-  /*
-    If inventory tracking is disabled, consider product available.
-  */
-
   const tracking =
     product?.trackInventory ??
     product?.inventoryTracking ??
@@ -140,7 +145,11 @@ function RatingStars({ rating = 0 }) {
           key={star}
           size={12}
           strokeWidth={1.8}
-          fill={star <= Math.round(value) ? "currentColor" : "none"}
+          fill={
+            star <= Math.round(value)
+              ? "currentColor"
+              : "none"
+          }
           className={
             star <= Math.round(value)
               ? "text-[#F5A623]"
@@ -189,7 +198,8 @@ function ProductCard({
     product?._id ||
     slug;
 
-  const isWishlisted = wishlist.includes(productId);
+  const isWishlisted =
+    wishlist.includes(productId);
 
   return (
     <motion.article
@@ -203,7 +213,7 @@ function ProductCard({
       }}
       viewport={{
         once: true,
-        amount: 0.1,
+        amount: 0.08,
       }}
       transition={{
         duration: 0.5,
@@ -225,23 +235,29 @@ function ProductCard({
         bg-white
         transition-all
         duration-300
-        hover:border-[#BFCBD3]
-        hover:shadow-[0_18px_45px_rgba(18,59,93,0.10)]
+        hover:border-[#B9C6CE]
+        hover:shadow-[0_20px_50px_rgba(8,26,51,0.11)]
       "
     >
       {/* =====================================================
           IMAGE
       ===================================================== */}
 
-      <div className="relative aspect-square overflow-hidden bg-[#F7F8F8]">
-
+      <div
+        className="
+          relative
+          aspect-square
+          overflow-hidden
+          bg-[radial-gradient(circle_at_center,#FFFFFF_0%,#F7F8F8_55%,#EDF1F3_100%)]
+        "
+      >
         <Link
           href={`/products/${slug}`}
           className="block h-full w-full"
         >
           <motion.div
             whileHover={{
-              scale: 1.045,
+              scale: 1.06,
             }}
             transition={{
               duration: 0.55,
@@ -251,17 +267,35 @@ function ProductCard({
           >
             <Image
               src={image}
-              alt={product?.name || "DPACK Product"}
+              alt={
+                product?.name ||
+                "DPACK Product"
+              }
               fill
               sizes="
                 (max-width: 640px) 50vw,
                 (max-width: 1024px) 33vw,
                 25vw
               "
-              className="object-contain p-5"
+              className="object-contain p-4 sm:p-5"
             />
           </motion.div>
         </Link>
+
+        {/* IMAGE SHINE */}
+
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-x-0
+            bottom-0
+            h-20
+            bg-gradient-to-t
+            from-[#081A33]/[0.035]
+            to-transparent
+          "
+        />
 
         {/* BADGE */}
 
@@ -270,8 +304,20 @@ function ProductCard({
           product?.isNew ||
           product?.isBestSeller) && (
           <div className="absolute left-3 top-3 z-10">
-
-            <span className="inline-flex bg-[#081A33] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white">
+            <span
+              className="
+                inline-flex
+                bg-[#081A33]
+                px-2.5
+                py-1.5
+                text-[9px]
+                font-black
+                uppercase
+                tracking-[0.12em]
+                text-white
+                shadow-sm
+              "
+            >
               {product?.badge ||
                 (product?.isBestSeller
                   ? "Best Seller"
@@ -279,7 +325,6 @@ function ProductCard({
                     ? "New"
                     : "Featured")}
             </span>
-
           </div>
         )}
 
@@ -287,14 +332,26 @@ function ProductCard({
 
         {oldPrice > price && price > 0 && (
           <div className="absolute bottom-3 left-3 z-10">
-
-            <span className="bg-[#F5A623] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-[#081A33]">
+            <span
+              className="
+                bg-[#F5A623]
+                px-2.5
+                py-1
+                text-[9px]
+                font-black
+                uppercase
+                tracking-[0.08em]
+                text-[#081A33]
+                shadow-sm
+              "
+            >
               {Math.round(
-                ((oldPrice - price) / oldPrice) * 100
+                ((oldPrice - price) /
+                  oldPrice) *
+                  100
               )}
               % OFF
             </span>
-
           </div>
         )}
 
@@ -317,12 +374,13 @@ function ProductCard({
             items-center
             justify-center
             border
+            shadow-sm
             transition-all
             duration-300
             ${
               isWishlisted
                 ? "border-[#F5A623] bg-[#F5A623] text-[#081A33]"
-                : "border-[#DDE3E7] bg-white/95 text-[#081A33] hover:border-[#081A33]"
+                : "border-[#DDE3E7] bg-white/95 text-[#081A33] hover:border-[#081A33] hover:bg-[#081A33] hover:text-white"
             }
           `}
         >
@@ -339,15 +397,37 @@ function ProductCard({
         {/* OUT OF STOCK */}
 
         {!inStock && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/55 backdrop-blur-[1px]">
-
-            <span className="border border-[#081A33] bg-white px-4 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#081A33]">
+          <div
+            className="
+              absolute
+              inset-0
+              z-10
+              flex
+              items-center
+              justify-center
+              bg-white/60
+              backdrop-blur-[2px]
+            "
+          >
+            <span
+              className="
+                border
+                border-[#081A33]
+                bg-white
+                px-4
+                py-2
+                text-[10px]
+                font-black
+                uppercase
+                tracking-[0.12em]
+                text-[#081A33]
+                shadow-lg
+              "
+            >
               Out of Stock
             </span>
-
           </div>
         )}
-
       </div>
 
       {/* =====================================================
@@ -355,17 +435,24 @@ function ProductCard({
       ===================================================== */}
 
       <div className="flex flex-1 flex-col p-4 sm:p-5">
-
         {/* CATEGORY */}
 
-        <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[#89949C]">
+        <p
+          className="
+            mb-2
+            text-[9px]
+            font-bold
+            uppercase
+            tracking-[0.14em]
+            text-[#89949C]
+          "
+        >
           {getProductCategory(product)}
         </p>
 
         {/* NAME */}
 
         <Link href={`/products/${slug}`}>
-
           <h3
             className="
               min-h-[42px]
@@ -383,23 +470,30 @@ function ProductCard({
             {product?.name ||
               "DPACK Packaging Product"}
           </h3>
-
         </Link>
 
         {/* RATING */}
 
         <div className="mt-2 flex items-center gap-2">
-
           {rating > 0 ? (
             <>
-              <div className="flex items-center gap-1 bg-[#E6F1F6] px-2 py-1">
-
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-1
+                  bg-[#E6F1F6]
+                  px-2
+                  py-1
+                "
+              >
                 <span className="text-[10px] font-bold text-[#123B5D]">
                   {rating.toFixed(1)}
                 </span>
 
-                <RatingStars rating={rating} />
-
+                <RatingStars
+                  rating={rating}
+                />
               </div>
 
               {reviews > 0 && (
@@ -409,18 +503,30 @@ function ProductCard({
               )}
             </>
           ) : (
-            <span className="text-[10px] uppercase tracking-wide text-[#89949C]">
+            <span
+              className="
+                text-[10px]
+                uppercase
+                tracking-wide
+                text-[#89949C]
+              "
+            >
               DPACK Quality
             </span>
           )}
-
         </div>
 
         {/* PRICE */}
 
         <div className="mt-3 flex items-center gap-2">
-
-          <span className="text-[18px] font-black tracking-[-0.02em] text-[#081A33]">
+          <span
+            className="
+              text-[18px]
+              font-black
+              tracking-[-0.02em]
+              text-[#081A33]
+            "
+          >
             {formatPrice(price)}
           </span>
 
@@ -429,16 +535,16 @@ function ProductCard({
               {formatPrice(oldPrice)}
             </span>
           )}
-
         </div>
 
         {/* ACTION */}
 
         <div className="mt-auto pt-4">
-
           <button
             type="button"
-            onClick={() => addToCart(product)}
+            onClick={() =>
+              addToCart(product)
+            }
             disabled={!inStock}
             className="
               group/cart
@@ -456,15 +562,22 @@ function ProductCard({
               disabled:opacity-40
             "
           >
-
-            <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.08em]">
-
+            <span
+              className="
+                flex
+                items-center
+                gap-2
+                text-[10px]
+                font-black
+                uppercase
+                tracking-[0.08em]
+              "
+            >
               <ShoppingCart size={14} />
 
               {inStock
                 ? "Add to Cart"
                 : "Unavailable"}
-
             </span>
 
             <span
@@ -489,11 +602,8 @@ function ProductCard({
                 "
               />
             </span>
-
           </button>
-
         </div>
-
       </div>
     </motion.article>
   );
@@ -513,10 +623,23 @@ function FilterSection({
       className={`
         px-5
         py-6
-        ${border ? "border-b border-[#E3E7EA]" : ""}
+        ${
+          border
+            ? "border-b border-[#E3E7EA]"
+            : ""
+        }
       `}
     >
-      <h3 className="mb-4 text-[15px] font-black uppercase tracking-[0.14em] text-[#081A33]">
+      <h3
+        className="
+          mb-4
+          text-[15px]
+          font-black
+          uppercase
+          tracking-[0.14em]
+          text-[#081A33]
+        "
+      >
         {title}
       </h3>
 
@@ -542,19 +665,21 @@ function CategoryList({
 
     return products.filter(
       (product) =>
-        getProductCategory(product) === category
+        getProductCategory(product) ===
+        category
     ).length;
   };
 
   return (
     <div className="space-y-1">
-
       {/* ALL */}
 
       <button
         type="button"
         onClick={() =>
-          setSelectedCategory("All Products")
+          setSelectedCategory(
+            "All Products"
+          )
         }
         className={`
           group
@@ -574,9 +699,7 @@ function CategoryList({
           }
         `}
       >
-
         <span className="flex items-center gap-3">
-
           <span
             className={`
               h-[6px]
@@ -595,28 +718,28 @@ function CategoryList({
           <span className="text-[14px] font-semibold">
             All Products
           </span>
-
         </span>
 
         <span className="text-[10px] text-[#929BA2]">
           {getCount("All Products")}
         </span>
-
       </button>
 
       {/* CATEGORIES */}
 
       {categories.map((category) => {
-
         const active =
-          selectedCategory === category;
+          selectedCategory ===
+          category;
 
         return (
           <button
             key={category}
             type="button"
             onClick={() =>
-              setSelectedCategory(category)
+              setSelectedCategory(
+                category
+              )
             }
             className={`
               group
@@ -635,9 +758,7 @@ function CategoryList({
               }
             `}
           >
-
             <span className="flex min-w-0 items-center gap-3">
-
               <span
                 className={`
                   h-[6px]
@@ -656,17 +777,14 @@ function CategoryList({
               <span className="truncate text-[14px] font-semibold">
                 {category}
               </span>
-
             </span>
 
             <span className="ml-3 text-[10px] text-[#929BA2]">
               {getCount(category)}
             </span>
-
           </button>
         );
       })}
-
     </div>
   );
 }
@@ -683,11 +801,8 @@ function PriceFilter({
 }) {
   return (
     <div>
-
       <div className="grid grid-cols-2 gap-2">
-
         <div className="relative">
-
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-[#8C979E]">
             ₹
           </span>
@@ -697,7 +812,9 @@ function PriceFilter({
             min="0"
             value={minPrice}
             onChange={(event) =>
-              setMinPrice(event.target.value)
+              setMinPrice(
+                event.target.value
+              )
             }
             placeholder="Min price"
             className="
@@ -713,13 +830,13 @@ function PriceFilter({
               outline-none
               transition
               focus:border-[#081A33]
+              focus:ring-1
+              focus:ring-[#F5A623]/30
             "
           />
-
         </div>
 
         <div className="relative">
-
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-[#8C979E]">
             ₹
           </span>
@@ -729,7 +846,9 @@ function PriceFilter({
             min="0"
             value={maxPrice}
             onChange={(event) =>
-              setMaxPrice(event.target.value)
+              setMaxPrice(
+                event.target.value
+              )
             }
             placeholder="Max price"
             className="
@@ -745,11 +864,11 @@ function PriceFilter({
               outline-none
               transition
               focus:border-[#081A33]
+              focus:ring-1
+              focus:ring-[#F5A623]/30
             "
           />
-
         </div>
-
       </div>
 
       {(minPrice || maxPrice) && (
@@ -759,12 +878,20 @@ function PriceFilter({
             setMinPrice("");
             setMaxPrice("");
           }}
-          className="mt-3 text-[9px] font-black uppercase tracking-[0.1em] text-[#7B878F] transition hover:text-[#F5A623]"
+          className="
+            mt-3
+            text-[9px]
+            font-black
+            uppercase
+            tracking-[0.1em]
+            text-[#7B878F]
+            transition
+            hover:text-[#F5A623]
+          "
         >
           Clear Price
         </button>
       )}
-
     </div>
   );
 }
@@ -794,22 +921,22 @@ function StatusFilter({
 
   return (
     <div className="space-y-3">
-
       {options.map((option) => {
-
         const active =
-          stockFilter === option.value;
+          stockFilter ===
+          option.value;
 
         return (
           <button
             key={option.value}
             type="button"
             onClick={() =>
-              setStockFilter(option.value)
+              setStockFilter(
+                option.value
+              )
             }
             className="flex w-full items-center gap-3 text-left"
           >
-
             <span
               className={`
                 flex
@@ -845,11 +972,9 @@ function StatusFilter({
             >
               {option.label}
             </span>
-
           </button>
         );
       })}
-
     </div>
   );
 }
@@ -874,93 +999,116 @@ function DesktopSidebar({
   const hasFilters =
     minPrice ||
     maxPrice ||
-    selectedCategory !== "All Products" ||
+    selectedCategory !==
+      "All Products" ||
     stockFilter !== "all";
 
   return (
-  <aside className="hidden lg:block sticky top-24 self-start h-fit">
-  <div className="bg-white">
+    <aside className="sticky top-24 hidden h-fit self-start lg:block">
+      <div
+        className="
+          overflow-hidden
+          border
+          border-[#DDE3E7]
+          bg-white
+          shadow-[0_8px_30px_rgba(8,26,51,0.05)]
+        "
+      >
+        {/* HEADER */}
 
-    {/* HEADER */}
-    <div className="border-b border-[#E3E7EA] px-5 py-5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[13px] font-black uppercase tracking-[0.12em] text-[#081A33]">
-          Shop By
-        </h2>
+        <div className="border-b border-[#E3E7EA] px-5 py-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="mb-1 text-[8px] font-black uppercase tracking-[0.16em] text-[#F5A623]">
+                DPACK
+              </p>
+
+              <h2 className="text-[13px] font-black uppercase tracking-[0.12em] text-[#081A33]">
+                Shop By
+              </h2>
+            </div>
+
+            {hasFilters && (
+              <span className="flex h-5 min-w-5 items-center justify-center bg-[#F5A623] px-1.5 text-[9px] font-black text-[#081A33]">
+                !
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* PRICE */}
+
+        <FilterSection title="Price">
+          <PriceFilter
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            setMinPrice={setMinPrice}
+            setMaxPrice={setMaxPrice}
+          />
+        </FilterSection>
+
+        {/* CATEGORY */}
+
+        <FilterSection title="Categories">
+          <CategoryList
+            categories={categories}
+            selectedCategory={
+              selectedCategory
+            }
+            setSelectedCategory={
+              setSelectedCategory
+            }
+            products={products}
+          />
+        </FilterSection>
+
+        {/* STATUS */}
+
+        <FilterSection
+          title="Product Status"
+          border={false}
+        >
+          <StatusFilter
+            stockFilter={stockFilter}
+            setStockFilter={setStockFilter}
+          />
+        </FilterSection>
+
+        {/* CLEAR */}
 
         {hasFilters && (
-          <span className="flex h-5 min-w-5 items-center justify-center bg-[#F5A623] px-1.5 text-[9px] font-black text-[#081A33]">
-            !
-          </span>
+          <div className="border-t border-[#E3E7EA] px-5 py-5">
+            <button
+              type="button"
+              onClick={clearAllFilters}
+              className="
+                flex
+                h-10
+                w-full
+                items-center
+                justify-center
+                gap-2
+                border
+                border-[#081A33]
+                bg-[#081A33]
+                text-[10px]
+                font-black
+                uppercase
+                tracking-[0.1em]
+                text-white
+                transition-all
+                hover:border-[#F5A623]
+                hover:bg-[#F5A623]
+                hover:text-[#081A33]
+              "
+            >
+              <X size={13} />
+              Clear All Filters
+            </button>
+          </div>
         )}
       </div>
-    </div>
-
-    {/* PRICE */}
-    <FilterSection title="Price">
-      <PriceFilter
-        minPrice={minPrice}
-        maxPrice={maxPrice}
-        setMinPrice={setMinPrice}
-        setMaxPrice={setMaxPrice}
-      />
-    </FilterSection>
-
-    {/* CATEGORY */}
-    <FilterSection title="Categories">
-      <CategoryList
-        categories={categories}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        products={products}
-      />
-    </FilterSection>
-
-    {/* STATUS */}
-    <FilterSection
-      title="Product Status"
-      border={false}
-    >
-      <StatusFilter
-        stockFilter={stockFilter}
-        setStockFilter={setStockFilter}
-      />
-    </FilterSection>
-
-    {/* CLEAR */}
-    {hasFilters && (
-      <div className="border-t border-[#E3E7EA] px-5 py-5">
-        <button
-          type="button"
-          onClick={clearAllFilters}
-          className="
-            flex
-            h-10
-            w-full
-            items-center
-            justify-center
-            gap-2
-            border
-            border-[#081A33]
-            bg-[#081A33]
-            text-[10px]
-            font-black
-            uppercase
-            tracking-[0.1em]
-            text-white
-            transition-all
-            hover:bg-white
-            hover:text-[#081A33]
-          "
-        >
-          <X size={13} />
-          Clear All Filters
-        </button>
-      </div>
-    )}
-
-  </div>
-</aside>
+    </aside>
   );
 }
 
@@ -985,7 +1133,6 @@ function MobileFilterDrawer({
 }) {
   return (
     <AnimatePresence>
-
       {open && (
         <>
           {/* OVERLAY */}
@@ -1001,7 +1148,13 @@ function MobileFilterDrawer({
               opacity: 0,
             }}
             onClick={() => setOpen(false)}
-            className="fixed inset-0 z-[80] bg-[#081A33]/50 backdrop-blur-[2px]"
+            className="
+              fixed
+              inset-0
+              z-[80]
+              bg-[#081A33]/50
+              backdrop-blur-[2px]
+            "
           />
 
           {/* DRAWER */}
@@ -1033,13 +1186,24 @@ function MobileFilterDrawer({
               shadow-2xl
             "
           >
-
             {/* HEADER */}
 
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#E3E7EA] bg-white px-5 py-5">
-
+            <div
+              className="
+                sticky
+                top-0
+                z-10
+                flex
+                items-center
+                justify-between
+                border-b
+                border-[#E3E7EA]
+                bg-white
+                px-5
+                py-5
+              "
+            >
               <div className="flex items-center gap-3">
-
                 <SlidersHorizontal
                   size={17}
                   className="text-[#081A33]"
@@ -1048,43 +1212,50 @@ function MobileFilterDrawer({
                 <h2 className="text-[13px] font-black uppercase tracking-[0.12em] text-[#081A33]">
                   Filters
                 </h2>
-
               </div>
 
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="flex h-9 w-9 items-center justify-center border border-[#DDE3E7] text-[#081A33]"
+                className="
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  border
+                  border-[#DDE3E7]
+                  text-[#081A33]
+                "
               >
                 <X size={17} />
               </button>
-
             </div>
 
             {/* PRICE */}
 
             <FilterSection title="Price">
-
               <PriceFilter
                 minPrice={minPrice}
                 maxPrice={maxPrice}
                 setMinPrice={setMinPrice}
                 setMaxPrice={setMaxPrice}
               />
-
             </FilterSection>
 
             {/* CATEGORIES */}
 
             <FilterSection title="Categories">
-
               <CategoryList
                 categories={categories}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
+                selectedCategory={
+                  selectedCategory
+                }
+                setSelectedCategory={
+                  setSelectedCategory
+                }
                 products={products}
               />
-
             </FilterSection>
 
             {/* STATUS */}
@@ -1093,20 +1264,16 @@ function MobileFilterDrawer({
               title="Product Status"
               border={false}
             >
-
               <StatusFilter
                 stockFilter={stockFilter}
                 setStockFilter={setStockFilter}
               />
-
             </FilterSection>
 
             {/* BUTTONS */}
 
             <div className="sticky bottom-0 border-t border-[#E3E7EA] bg-white p-4">
-
               <div className="grid grid-cols-2 gap-2">
-
                 <button
                   type="button"
                   onClick={clearAllFilters}
@@ -1126,7 +1293,9 @@ function MobileFilterDrawer({
 
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={() =>
+                    setOpen(false)
+                  }
                   className="
                     h-11
                     bg-[#081A33]
@@ -1139,15 +1308,11 @@ function MobileFilterDrawer({
                 >
                   Show Products
                 </button>
-
               </div>
-
             </div>
-
           </motion.aside>
         </>
       )}
-
     </AnimatePresence>
   );
 }
@@ -1163,13 +1328,17 @@ export default function ProductsPage({
      STATE
   ======================================================= */
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] =
+    useState([]);
 
   const [categories, setCategories] =
     useState([]);
 
   const [selectedCategory, setSelectedCategory] =
-    useState(initialCategory || "All Products");
+    useState(
+      initialCategory ||
+        "All Products"
+    );
 
   const [search, setSearch] =
     useState("");
@@ -1229,29 +1398,24 @@ export default function ProductsPage({
         const data =
           await response.json();
 
-        /*
-          Supports multiple API response shapes:
-          { products: [] }
-          { data: [] }
-          []
-        */
-
         const fetchedProducts =
           Array.isArray(data)
             ? data
-            : Array.isArray(data?.products)
+            : Array.isArray(
+                  data?.products
+                )
               ? data.products
-              : Array.isArray(data?.data)
+              : Array.isArray(
+                    data?.data
+                  )
                 ? data.data
                 : [];
 
         if (!mounted) return;
 
-        setProducts(fetchedProducts);
-
-        /* =================================================
-           NORMALIZE CATEGORIES
-        ================================================= */
+        setProducts(
+          fetchedProducts
+        );
 
         const categorySet =
           new Set();
@@ -1276,9 +1440,10 @@ export default function ProductsPage({
         );
 
         setCategories(
-          Array.from(categorySet).sort(
-            (a, b) =>
-              a.localeCompare(b)
+          Array.from(
+            categorySet
+          ).sort((a, b) =>
+            a.localeCompare(b)
           )
         );
       } catch (err) {
@@ -1304,7 +1469,7 @@ export default function ProductsPage({
   }, []);
 
   /* =======================================================
-     WISHLIST
+     WISHLIST LOAD
   ======================================================= */
 
   useEffect(() => {
@@ -1318,7 +1483,9 @@ export default function ProductsPage({
         const parsed =
           JSON.parse(saved);
 
-        if (Array.isArray(parsed)) {
+        if (
+          Array.isArray(parsed)
+        ) {
           setWishlist(parsed);
         }
       }
@@ -1329,6 +1496,10 @@ export default function ProductsPage({
       );
     }
   }, []);
+
+  /* =======================================================
+     WISHLIST SAVE
+  ======================================================= */
 
   useEffect(() => {
     try {
@@ -1356,7 +1527,8 @@ export default function ProductsPage({
         current.includes(productId)
       ) {
         return current.filter(
-          (id) => id !== productId
+          (id) =>
+            id !== productId
         );
       }
 
@@ -1379,11 +1551,6 @@ export default function ProductsPage({
         product?._id ||
         product?.slug
     );
-
-    /*
-      Keep the existing DPACK custom
-      cart event system.
-    */
 
     if (
       typeof window !==
@@ -1490,9 +1657,7 @@ export default function ProductsPage({
 
       /* MIN PRICE */
 
-      if (
-        minPrice !== ""
-      ) {
+      if (minPrice !== "") {
         result =
           result.filter(
             (product) =>
@@ -1505,9 +1670,7 @@ export default function ProductsPage({
 
       /* MAX PRICE */
 
-      if (
-        maxPrice !== ""
-      ) {
+      if (maxPrice !== "") {
         result =
           result.filter(
             (product) =>
@@ -1654,24 +1817,22 @@ export default function ProductsPage({
      ACTIVE FILTER COUNT
   ======================================================= */
 
-  const activeFilterCount =
-    [
-      minPrice ||
-        maxPrice
-        ? 1
-        : 0,
-      selectedCategory !==
-      "All Products"
-        ? 1
-        : 0,
-      stockFilter !== "all"
-        ? 1
-        : 0,
-    ].reduce(
-      (total, value) =>
-        total + value,
-      0
-    );
+  const activeFilterCount = [
+    minPrice || maxPrice
+      ? 1
+      : 0,
+    selectedCategory !==
+    "All Products"
+      ? 1
+      : 0,
+    stockFilter !== "all"
+      ? 1
+      : 0,
+  ].reduce(
+    (total, value) =>
+      total + value,
+    0
+  );
 
   /* =======================================================
      LOADING
@@ -1679,12 +1840,16 @@ export default function ProductsPage({
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#F5F4EF]">
-
+      <main
+        className="
+          min-h-screen
+          bg-[#F5F4EF]
+          [background-image:radial-gradient(rgba(8,26,51,0.12)_0.8px,transparent_0.8px)]
+          [background-size:12px_12px]
+        "
+      >
         <div className="flex min-h-[70vh] items-center justify-center">
-
           <div className="text-center">
-
             <div className="mx-auto mb-5 h-10 w-10 animate-spin border-2 border-[#DDE3E7] border-t-[#081A33]" />
 
             <p className="text-[15px] font-black uppercase tracking-[0.15em] text-[#081A33]">
@@ -1692,13 +1857,11 @@ export default function ProductsPage({
             </p>
 
             <p className="mt-2 text-xs text-[#7D8991]">
-              Preparing DPACK packaging solutions...
+              Preparing DPACK packaging
+              solutions...
             </p>
-
           </div>
-
         </div>
-
       </main>
     );
   }
@@ -1709,12 +1872,16 @@ export default function ProductsPage({
 
   if (error) {
     return (
-      <main className="min-h-screen bg-[#F5F4EF]">
-
+      <main
+        className="
+          min-h-screen
+          bg-[#F5F4EF]
+          [background-image:radial-gradient(rgba(8,26,51,0.12)_0.8px,transparent_0.8px)]
+          [background-size:12px_12px]
+        "
+      >
         <div className="mx-auto flex min-h-[70vh] max-w-[600px] items-center justify-center px-5">
-
-          <div className="w-full border border-[#DDE3E7] bg-white p-8 text-center">
-
+          <div className="w-full border border-[#DDE3E7] bg-white p-8 text-center shadow-[0_15px_45px_rgba(8,26,51,0.06)]">
             <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center bg-[#E6F1F6] text-[#081A33]">
               <Package size={21} />
             </div>
@@ -1732,15 +1899,25 @@ export default function ProductsPage({
               onClick={() =>
                 window.location.reload()
               }
-              className="mt-6 bg-[#081A33] px-7 py-3 text-[10px] font-black uppercase tracking-[0.1em] text-white"
+              className="
+                mt-6
+                bg-[#081A33]
+                px-7
+                py-3
+                text-[10px]
+                font-black
+                uppercase
+                tracking-[0.1em]
+                text-white
+                transition
+                hover:bg-[#F5A623]
+                hover:text-[#081A33]
+              "
             >
               Try Again
             </button>
-
           </div>
-
         </div>
-
       </main>
     );
   }
@@ -1750,30 +1927,33 @@ export default function ProductsPage({
   ======================================================= */
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#F5F4EF]">
-
+    <main
+      className="
+        min-h-screen
+        overflow-hidden
+        bg-[#F5F4EF]
+        [background-image:radial-gradient(rgba(8,26,51,0.115)_0.75px,transparent_0.75px)]
+        [background-size:11px_11px]
+      "
+    >
       {/* ===================================================
           PAGE HEADER
       =================================================== */}
 
-      <section className="relative border-b border-[#DDE3E7] bg-[#F5F4EF]">
-
-        {/* subtle grid */}
-
+      <section className="relative border-b border-[#DDE3E7] bg-[#F5F4EF]/95">
         <div
           className="
             pointer-events-none
             absolute
             inset-0
-            opacity-[0.35]
-            [background-image:radial-gradient(rgba(18,59,93,0.12)_0.7px,transparent_0.7px)]
+            opacity-[0.3]
+            [background-image:radial-gradient(rgba(18,59,93,0.13)_0.7px,transparent_0.7px)]
             [background-size:9px_9px]
           "
         />
 
-        <div className="relative mx-auto max-w-[1400px] px-5 py-10 sm:px-8 lg:px-10 lg:py-14">
-
-          {/* breadcrumb */}
+        <div className="relative w-full px-5 py-10 sm:px-8 lg:px-10 xl:px-14 lg:py-14">
+          {/* BREADCRUMB */}
 
           <motion.div
             initial={{
@@ -1788,9 +1968,18 @@ export default function ProductsPage({
               duration: 0.5,
               ease,
             }}
-            className="mb-5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[#89949C]"
+            className="
+              mb-5
+              flex
+              items-center
+              gap-2
+              text-[10px]
+              font-bold
+              uppercase
+              tracking-[0.12em]
+              text-[#89949C]
+            "
           >
-
             <Link
               href="/"
               className="transition hover:text-[#081A33]"
@@ -1803,11 +1992,9 @@ export default function ProductsPage({
             <span className="text-[#081A33]">
               Products
             </span>
-
           </motion.div>
 
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-
             <motion.div
               initial={{
                 opacity: 0,
@@ -1822,15 +2009,13 @@ export default function ProductsPage({
                 ease,
               }}
             >
-
               <div className="mb-3 flex items-center gap-3">
-
                 <span className="h-[2px] w-9 bg-[#F5A623]" />
 
                 <span className="text-[10px] font-black uppercase tracking-[0.17em] text-[#2F7180]">
-                  DPACK Packaging Solutions
+                  DPACK Packaging
+                  Solutions
                 </span>
-
               </div>
 
               <h1 className="text-[42px] font-black leading-[0.95] tracking-[-0.05em] text-[#081A33] sm:text-[54px] lg:text-[64px]">
@@ -1838,9 +2023,15 @@ export default function ProductsPage({
               </h1>
 
               <p className="mt-4 max-w-[570px] text-[14px] leading-6 text-[#69767E]">
-                Explore our complete range of protective packaging solutions designed for safer storage, secure transportation and reliable product protection.
+                Explore our complete
+                range of protective
+                packaging solutions
+                designed for safer
+                storage, secure
+                transportation and
+                reliable product
+                protection.
               </p>
-
             </motion.div>
 
             <motion.div
@@ -1859,9 +2050,7 @@ export default function ProductsPage({
               }}
               className="flex shrink-0 items-center gap-3"
             >
-
-              <div className="border border-[#DDE3E7] bg-white px-4 py-3">
-
+              <div className="border border-[#DDE3E7] bg-white px-4 py-3 shadow-sm">
                 <span className="block text-[9px] font-black uppercase tracking-[0.12em] text-[#89949C]">
                   Products
                 </span>
@@ -1869,11 +2058,9 @@ export default function ProductsPage({
                 <span className="mt-1 block text-lg font-black text-[#081A33]">
                   {filteredProducts.length}
                 </span>
-
               </div>
 
-              <div className="hidden border border-[#DDE3E7] bg-white px-4 py-3 sm:block">
-
+              <div className="hidden border border-[#DDE3E7] bg-white px-4 py-3 shadow-sm sm:block">
                 <span className="block text-[9px] font-black uppercase tracking-[0.12em] text-[#89949C]">
                   Categories
                 </span>
@@ -1881,31 +2068,22 @@ export default function ProductsPage({
                 <span className="mt-1 block text-lg font-black text-[#081A33]">
                   {categories.length}
                 </span>
-
               </div>
-
             </motion.div>
-
           </div>
-
         </div>
-
       </section>
 
       {/* ===================================================
           SEARCH / TOOLBAR
       =================================================== */}
 
-      <section className="border-b border-[#DDE3E7] bg-white">
-
-        <div className="mx-auto max-w-[1400px] px-5 py-4 sm:px-8 lg:px-10">
-
+      <section className="border-b border-[#DDE3E7] bg-white/95 backdrop-blur-sm">
+        <div className="w-full px-5 py-4 sm:px-8 lg:px-10 xl:px-14">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-
             {/* SEARCH */}
 
             <div className="relative w-full lg:max-w-[390px]">
-
               <Search
                 size={16}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-[#89949C]"
@@ -1933,6 +2111,8 @@ export default function ProductsPage({
                   outline-none
                   transition
                   focus:border-[#081A33]
+                  focus:ring-1
+                  focus:ring-[#F5A623]/30
                 "
               />
 
@@ -1947,13 +2127,11 @@ export default function ProductsPage({
                   <X size={14} />
                 </button>
               )}
-
             </div>
 
             {/* RIGHT TOOLBAR */}
 
             <div className="flex flex-wrap items-center gap-2">
-
               {/* MOBILE FILTER */}
 
               <button
@@ -1975,26 +2153,26 @@ export default function ProductsPage({
                   uppercase
                   tracking-[0.08em]
                   text-[#081A33]
+                  transition
+                  hover:border-[#081A33]
                   lg:hidden
                 "
               >
-
                 <Filter size={14} />
 
                 Filters
 
-                {activeFilterCount > 0 && (
+                {activeFilterCount >
+                  0 && (
                   <span className="flex h-5 min-w-5 items-center justify-center bg-[#F5A623] px-1 text-[9px]">
                     {activeFilterCount}
                   </span>
                 )}
-
               </button>
 
               {/* SORT */}
 
               <div className="relative">
-
                 <select
                   value={sortBy}
                   onChange={(event) =>
@@ -2016,6 +2194,8 @@ export default function ProductsPage({
                     tracking-[0.08em]
                     text-[#081A33]
                     outline-none
+                    transition
+                    focus:border-[#081A33]
                   "
                 >
                   <option value="featured">
@@ -2043,80 +2223,73 @@ export default function ProductsPage({
                   size={13}
                   className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#68757D]"
                 />
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </section>
 
       {/* ===================================================
           PRODUCTS AREA
       =================================================== */}
 
-      <section className="mx-auto max-w-[1400px] px-5 py-8 sm:px-8 lg:px-10 lg:py-12">
-
-        <div className="grid gap-8 lg:grid-cols-[250px_1fr] lg:gap-10">
-
+      <section className="w-full px-4 py-8 sm:px-6 lg:px-8 xl:px-10 lg:py-12">
+        <div className="grid w-full items-start gap-7 lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[270px_minmax(0,1fr)] xl:gap-10">
           {/* =================================================
               SIDEBAR
           ================================================= */}
 
-          <DesktopSidebar
-            products={products}
-            categories={categories}
-            selectedCategory={
-              selectedCategory
-            }
-            setSelectedCategory={
-              setSelectedCategory
-            }
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            setMinPrice={setMinPrice}
-            setMaxPrice={setMaxPrice}
-            stockFilter={stockFilter}
-            setStockFilter={setStockFilter}
-            clearAllFilters={
-              clearAllFilters
-            }
-          />
+          <div className="relative hidden lg:block">
+            <DesktopSidebar
+              products={products}
+              categories={categories}
+              selectedCategory={
+                selectedCategory
+              }
+              setSelectedCategory={
+                setSelectedCategory
+              }
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              setMinPrice={setMinPrice}
+              setMaxPrice={setMaxPrice}
+              stockFilter={
+                stockFilter
+              }
+              setStockFilter={
+                setStockFilter
+              }
+              clearAllFilters={
+                clearAllFilters
+              }
+            />
+          </div>
 
           {/* =================================================
               PRODUCTS
           ================================================= */}
 
           <div className="min-w-0">
-
             {/* TOP RESULT BAR */}
 
             <div className="mb-5 flex flex-col gap-3 border-b border-[#DDE3E7] pb-4 sm:flex-row sm:items-center sm:justify-between">
-
               <p className="text-[15px] font-semibold text-[#69767E]">
-
                 Showing{" "}
-
                 <span className="font-black text-[#081A33]">
-                  {filteredProducts.length}
+                  {
+                    filteredProducts.length
+                  }
                 </span>{" "}
-
                 {filteredProducts.length ===
                 1
                   ? "product"
                   : "products"}
-
               </p>
 
-              <div className="flex items-center gap-2">
-
+              <div className="flex flex-wrap items-center gap-2">
                 {selectedCategory !==
                   "All Products" && (
                   <span className="inline-flex items-center gap-1.5 border border-[#DDE3E7] bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wide text-[#081A33]">
-
                     {selectedCategory}
 
                     <button
@@ -2129,14 +2302,12 @@ export default function ProductsPage({
                     >
                       <X size={11} />
                     </button>
-
                   </span>
                 )}
 
                 {(minPrice ||
                   maxPrice) && (
                   <span className="inline-flex items-center gap-1.5 border border-[#DDE3E7] bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wide text-[#081A33]">
-
                     Price
 
                     <button
@@ -2148,14 +2319,12 @@ export default function ProductsPage({
                     >
                       <X size={11} />
                     </button>
-
                   </span>
                 )}
 
                 {stockFilter !==
                   "all" && (
                   <span className="inline-flex items-center gap-1.5 border border-[#DDE3E7] bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wide text-[#081A33]">
-
                     {stockFilter ===
                     "in-stock"
                       ? "In Stock"
@@ -2171,12 +2340,9 @@ export default function ProductsPage({
                     >
                       <X size={11} />
                     </button>
-
                   </span>
                 )}
-
               </div>
-
             </div>
 
             {/* NO RESULTS */}
@@ -2192,9 +2358,16 @@ export default function ProductsPage({
                   opacity: 1,
                   y: 0,
                 }}
-                className="border border-[#DDE3E7] bg-white px-6 py-20 text-center"
+                className="
+                  border
+                  border-[#DDE3E7]
+                  bg-white
+                  px-6
+                  py-20
+                  text-center
+                  shadow-[0_10px_35px_rgba(8,26,51,0.04)]
+                "
               >
-
                 <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center bg-[#E6F1F6] text-[#081A33]">
                   <Search size={21} />
                 </div>
@@ -2204,7 +2377,11 @@ export default function ProductsPage({
                 </h2>
 
                 <p className="mx-auto mt-3 max-w-[430px] text-sm leading-6 text-[#75818A]">
-                  Try changing your search or filter options to find the right DPACK packaging solution.
+                  Try changing your
+                  search or filter
+                  options to find the
+                  right DPACK
+                  packaging solution.
                 </p>
 
                 <button
@@ -2212,17 +2389,28 @@ export default function ProductsPage({
                   onClick={
                     clearAllFilters
                   }
-                  className="mt-6 bg-[#081A33] px-7 py-3 text-[10px] font-black uppercase tracking-[0.1em] text-white"
+                  className="
+                    mt-6
+                    bg-[#081A33]
+                    px-7
+                    py-3
+                    text-[10px]
+                    font-black
+                    uppercase
+                    tracking-[0.1em]
+                    text-white
+                    transition
+                    hover:bg-[#F5A623]
+                    hover:text-[#081A33]
+                  "
                 >
                   Clear All Filters
                 </button>
-
               </motion.div>
             ) : (
               /* PRODUCT GRID */
 
-              <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-3">
-
+              <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:gap-6">
                 {filteredProducts.map(
                   (
                     product,
@@ -2253,28 +2441,21 @@ export default function ProductsPage({
                     />
                   )
                 )}
-
               </div>
             )}
-
           </div>
-
         </div>
-
       </section>
 
       {/* ===================================================
           FEATURES STRIP
       =================================================== */}
 
-      <section className="border-y border-[#DDE3E7] bg-white">
-
-        <div className="mx-auto grid max-w-[1400px] grid-cols-2 md:grid-cols-4">
-
+      <section className="border-y border-[#DDE3E7] bg-white/95">
+        <div className="grid w-full grid-cols-2 md:grid-cols-4">
           {/* ITEM */}
 
           <div className="flex items-center gap-3 border-b border-r border-[#DDE3E7] px-5 py-5 md:border-b-0">
-
             <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#E6F1F6] text-[#081A33]">
               <ShieldCheck size={18} />
             </div>
@@ -2288,13 +2469,11 @@ export default function ProductsPage({
                 Reliable protection
               </p>
             </div>
-
           </div>
 
           {/* ITEM */}
 
           <div className="flex items-center gap-3 border-b border-[#DDE3E7] px-5 py-5 md:border-b-0 md:border-r">
-
             <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#E6F1F6] text-[#081A33]">
               <Truck size={18} />
             </div>
@@ -2308,13 +2487,11 @@ export default function ProductsPage({
                 Secure dispatch
               </p>
             </div>
-
           </div>
 
           {/* ITEM */}
 
           <div className="flex items-center gap-3 border-r border-[#DDE3E7] px-5 py-5">
-
             <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#E6F1F6] text-[#081A33]">
               <Package size={18} />
             </div>
@@ -2328,13 +2505,11 @@ export default function ProductsPage({
                 Practical solutions
               </p>
             </div>
-
           </div>
 
           {/* ITEM */}
 
           <div className="flex items-center gap-3 px-5 py-5">
-
             <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#F5A623] text-[#081A33]">
               <Check size={18} />
             </div>
@@ -2348,11 +2523,8 @@ export default function ProductsPage({
                 Product assistance
               </p>
             </div>
-
           </div>
-
         </div>
-
       </section>
 
       {/* ===================================================
@@ -2360,37 +2532,41 @@ export default function ProductsPage({
       =================================================== */}
 
       <section className="bg-[#081A33]">
-
-        <div className="relative mx-auto max-w-[1400px] overflow-hidden px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
-
-          {/* decorative */}
+        <div className="relative w-full overflow-hidden px-5 py-14 sm:px-8 lg:px-10 xl:px-14 lg:py-20">
+          {/* DECORATIVE */}
 
           <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 border border-white/[0.08]" />
 
           <div className="pointer-events-none absolute -bottom-32 -left-20 h-72 w-72 border border-[#F5A623]/20" />
 
+          <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:radial-gradient(#ffffff_0.7px,transparent_0.7px)] [background-size:10px_10px]" />
+
           <div className="relative z-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-
             <div>
-
               <div className="mb-4 flex items-center gap-3">
-
                 <span className="h-[2px] w-9 bg-[#F5A623]" />
 
                 <span className="text-[10px] font-black uppercase tracking-[0.16em] text-[#F5A623]">
                   DPACK
                 </span>
-
               </div>
 
               <h2 className="max-w-[700px] text-[32px] font-black leading-[1] tracking-[-0.04em] text-white sm:text-[42px]">
-                Need the right packaging solution?
+                Need the right
+                packaging
+                solution?
               </h2>
 
               <p className="mt-4 max-w-[600px] text-sm leading-6 text-white/55">
-                Talk to our team for product selection, packaging requirements and customized protective packaging solutions.
+                Talk to our team for
+                product selection,
+                packaging
+                requirements and
+                customized
+                protective
+                packaging
+                solutions.
               </p>
-
             </div>
 
             <Link
@@ -2413,21 +2589,14 @@ export default function ProductsPage({
                 hover:bg-white
               "
             >
-
               Contact Us
 
               <span className="flex h-7 w-7 items-center justify-center bg-[#081A33] text-white transition-transform group-hover:translate-x-1">
-
                 <ArrowUpRight size={14} />
-
               </span>
-
             </Link>
-
           </div>
-
         </div>
-
       </section>
 
       {/* ===================================================
@@ -2449,8 +2618,12 @@ export default function ProductsPage({
         maxPrice={maxPrice}
         setMinPrice={setMinPrice}
         setMaxPrice={setMaxPrice}
-        stockFilter={stockFilter}
-        setStockFilter={setStockFilter}
+        stockFilter={
+          stockFilter
+        }
+        setStockFilter={
+          setStockFilter
+        }
         clearAllFilters={
           clearAllFilters
         }
@@ -2493,7 +2666,6 @@ export default function ProductsPage({
               shadow-2xl
             "
           >
-
             <div className="flex h-7 w-7 items-center justify-center bg-[#F5A623] text-[#081A33]">
               <Check size={14} />
             </div>
@@ -2501,11 +2673,9 @@ export default function ProductsPage({
             <span className="text-[10px] font-black uppercase tracking-[0.08em]">
               Added to Cart
             </span>
-
           </motion.div>
         )}
       </AnimatePresence>
-
     </main>
   );
 }

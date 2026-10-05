@@ -33,20 +33,27 @@ const videos = [
 
 export default function VideoSection() {
   return (
-    <section
-      className="
-        relative
-        w-full
-        overflow-hidden
-        bg-[#F5F4EF]
-        px-5
-        py-10
-        sm:px-8
-        sm:py-12
-        lg:px-10
-        lg:py-15
-      "
-    >
+  <section
+  className="
+    relative
+    w-full
+    overflow-hidden
+
+    bg-[#F8F8F6]
+
+    py-12
+    lg:py-14
+    px-10
+
+    before:pointer-events-none
+    before:absolute
+    before:inset-0
+    before:z-0
+
+    before:bg-[radial-gradient(circle_at_1px_1px,rgba(18,59,93,0.10)_1px,transparent_1px)]
+    before:bg-[length:22px_22px]
+  "
+>
       {/* =====================================================
           DOT BACKGROUND
       ===================================================== */}
