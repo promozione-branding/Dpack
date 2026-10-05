@@ -4,7 +4,12 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowUpRight, ShieldCheck, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
 /* =========================================================
    PRODUCTS
@@ -84,6 +89,7 @@ export default function Main() {
         ==================================================== */}
 
         <div className="grid h-full grid-rows-2 gap-2 sm:gap-3">
+
           <SideCard
             product={products[0]}
             color="#F7774F"
@@ -97,6 +103,7 @@ export default function Main() {
             active={activeProduct === 1}
             onClick={() => setActiveProduct(1)}
           />
+
         </div>
 
         {/* ===================================================
@@ -105,15 +112,11 @@ export default function Main() {
 
         <div className="relative overflow-hidden rounded-[22px] bg-[#438FB8]">
 
-          {/* -------------------------------------------------
-              BASE GRADIENT
-          ------------------------------------------------- */}
+          {/* BASE GRADIENT */}
 
           <div className="absolute inset-0 bg-[linear-gradient(135deg,#397FA8_0%,#4C9BC4_48%,#276F98_100%)]" />
 
-          {/* -------------------------------------------------
-              BIG SOFT LIGHT
-          ------------------------------------------------- */}
+          {/* BIG SOFT LIGHT */}
 
           <motion.div
             animate={{
@@ -142,9 +145,7 @@ export default function Main() {
             className="absolute -bottom-[25%] -left-[18%] h-[65%] w-[65%] rounded-full bg-[#0D567C]/30 blur-3xl"
           />
 
-          {/* -------------------------------------------------
-              GRID / TECHNICAL PATTERN
-          ------------------------------------------------- */}
+          {/* GRID / TECHNICAL PATTERN */}
 
           <div
             className="absolute inset-0 opacity-[0.13]"
@@ -157,9 +158,7 @@ export default function Main() {
             }}
           />
 
-          {/* -------------------------------------------------
-              DIAGONAL LIGHT STREAKS
-          ------------------------------------------------- */}
+          {/* DIAGONAL LIGHT STREAKS */}
 
           <motion.div
             animate={{
@@ -276,9 +275,9 @@ export default function Main() {
             >
               Reliable Packaging
               <br />
-              for a{" "}
+              for{" "}
               <span className="relative inline-block text-[#FFE15A]">
-                Safer Tomorrow
+                a Safer Tomorrow
 
                 <motion.span
                   initial={{ width: 0 }}
@@ -475,10 +474,7 @@ export default function Main() {
               }}
               className="absolute left-[12%] top-[25%] z-30 hidden sm:block"
             >
-              <Sparkles
-                size={18}
-                className="text-[#FFE15A]"
-              />
+              <Sparkles size={18} className="text-[#FFE15A]" />
             </motion.div>
 
           </div>
@@ -567,9 +563,11 @@ export default function Main() {
             onClick={() => setActiveProduct(3)}
           />
 
+          {/* LIGHT PURPLE - PACKAGING AIR BAGS */}
+
           <SideCard
             product={products[4]}
-            color="#9155E8"
+            color="#A978EA"
             active={activeProduct === 4}
             onClick={() => setActiveProduct(4)}
           />
@@ -685,14 +683,18 @@ function SideCard({
 
       <div className="relative z-10 flex h-full flex-col justify-between p-4 sm:p-5 lg:p-6">
 
+        {/* TOP CONTENT */}
+
         <div className="max-w-[55%]">
 
           <div className="flex items-center gap-2">
+
             <span className="h-[1px] w-4 bg-white/60" />
 
             <p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-white/75 sm:text-[9px]">
               {product.category}
             </p>
+
           </div>
 
           <h2 className="mt-3 text-[17px] font-extrabold leading-[1.05] tracking-[-0.035em] text-white sm:text-[20px] lg:text-[23px]">
@@ -705,7 +707,7 @@ function SideCard({
 
         </div>
 
-        {/* Bottom */}
+        {/* BOTTOM */}
 
         <div className="relative z-20 flex items-end justify-between gap-2">
 
@@ -713,13 +715,15 @@ function SideCard({
             <div className="h-[2px] w-7 bg-white/80 transition-all duration-300 group-hover:w-10" />
           </div>
 
-          <span className="flex items-center gap-1 text-[14px] font-semibold text-white/90 transition-all duration-300 group-hover:gap-2 sm:text-[1px]">
+          <span className="flex items-center gap-1 text-[10px] font-semibold text-white/90 transition-all duration-300 group-hover:gap-2 sm:text-[11px]">
+
             View Details
 
             <ArrowUpRight
               size={13}
               className="transition-transform duration-300 group-hover:translate-x-0.5"
             />
+
           </span>
 
         </div>
@@ -743,4 +747,3 @@ function SideCard({
     </motion.button>
   );
 }
-

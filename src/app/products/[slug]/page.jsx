@@ -596,7 +596,7 @@ export default function ProductPage({ params }) {
 
   if (loading) {
     return (
-      <main className="flex min-h-[60vh] items-center justify-center bg-[#F7F8FA] text-[#081A33]">
+      <main className="flex min-h-[60vh] items-center justify-center bg-[#f7f8faef] text-[#081A33]">
         <p className="text-sm font-medium text-gray-500">Loading product…</p>
       </main>
     );

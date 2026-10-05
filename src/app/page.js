@@ -12,10 +12,10 @@ import Newbanner from "./components/NewBanner";
 
 import Products from "./components/Products";
 import PackagingBanner from "./components/Box";
-import BestSellingProducts from "./components/BulkCta";
 import SaleNow from "./components/SaleNow";
 import CategoryMarquee from "./components/CategoryMarquee";
 import VideoSection from "./components/Video";
+
 
 
 export default function Home() {
@@ -29,7 +29,6 @@ export default function Home() {
  <SaleNow/>
  <Categories/>
  <VideoSection/> 
- {/* <ProductCards/> */}
  <PromoBanners/>
   <CategoryMarquee/>
  <BannerProduct/>
@@ -37,6 +36,7 @@ export default function Home() {
  <CategoryProducts/>
 
 <WhyChooseUs/>
+{/* <ProductEditorial/> */}
 <Marquee/>
  <Testimonials/>
 

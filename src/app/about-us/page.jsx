@@ -1,7 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import {
+  ArrowUpRight,
+  ArrowRight,
+  ShieldCheck,
+  Eye,
+  PackageCheck,
+} from "lucide-react";
 
 /* ============================================================
    ANIMATION
@@ -63,12 +71,80 @@ const stagger = {
   },
 };
 
+/* ============================================================
+   DOT BACKGROUND
+============================================================ */
+
+function DotPattern({ dark = false }) {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 opacity-60"
+      style={{
+        backgroundImage: dark
+          ? "radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)"
+          : "radial-gradient(rgba(8,26,51,0.10) 1px, transparent 1px)",
+        backgroundSize: "16px 16px",
+      }}
+    />
+  );
+}
+
+/* ============================================================
+   CORNER FRAME
+============================================================ */
+
+function CornerFrame({ children, className = "" }) {
+  return (
+    <div className={`relative ${className}`}>
+      {/* top left */}
+      <div className="absolute -left-4 -top-4 z-20 h-24 w-24 border-l-2 border-t-2 border-[#F5A623] sm:-left-5 sm:-top-5" />
+
+      {/* bottom right */}
+      <div className="absolute -bottom-4 -right-4 z-20 h-24 w-24 border-b-2 border-r-2 border-[#F5A623] sm:-bottom-5 sm:-right-5" />
+
+      {children}
+    </div>
+  );
+}
 
 /* ============================================================
    MAIN
 ============================================================ */
 
 export default function AboutUs() {
+  const products = [
+    {
+      number: "01",
+      name: "Air Column Packaging",
+      image: "/Air column bag (2).webp",
+      href: "/products/air-column-bags",
+    },
+    {
+      number: "02",
+      name: "Dunnage Packaging",
+      image: "/Dannage.webp",
+      href: "/products/dunnage-air-bags",
+    },
+    {
+      number: "03",
+      name: "Packaging Air Bags",
+      image: "/packing bag.webp",
+      href: "/products/packaging-air-bags",
+    },
+    {
+      number: "04",
+      name: "Gap Fillers",
+      image: "/Gap filler (3).webp",
+      href: "/products/gap-fillers",
+    },
+    {
+      number: "05",
+      name: "Air Column Rolls",
+      image: "/Air Column Roll (2).webp",
+      href: "/products/air-column-rolls",
+    },
+  ];
+
   return (
     <main className="min-h-screen overflow-hidden bg-[#F7F7F5] text-[#081A33]">
 
@@ -76,9 +152,12 @@ export default function AboutUs() {
           HERO
       ====================================================== */}
 
-      <section className="relative min-h-[100svh] overflow-hidden bg-[#F7F7F5] px-6 py-16 sm:px-8 lg:px-12 lg:py-20">
+      <section className="relative overflow-hidden bg-[#F7F7F5] px-6 py-16 sm:px-8 lg:px-12 lg:py-20">
 
-        {/* Background Typography */}
+        <DotPattern />
+
+        {/* Huge Background Text */}
+
         <motion.div
           initial={{
             opacity: 0,
@@ -92,17 +171,20 @@ export default function AboutUs() {
             duration: 1.2,
             ease,
           }}
-          className="pointer-events-none absolute -left-5 top-[18%] select-none text-[25vw] font-black leading-none tracking-[-0.08em] text-[#081A33]/[0.035] sm:text-[21vw]"
+          className="pointer-events-none absolute -left-4 top-0 select-none text-[25vw] font-black leading-none tracking-[-0.09em] text-[#081A33]/[0.045] sm:text-[21vw]"
         >
           DPACK
         </motion.div>
 
+        {/* Decorative vertical line */}
 
-        <div className="relative z-10 mx-auto flex min-h-[calc(100svh-128px)] max-w-[1450px] items-center">
+        <div className="pointer-events-none absolute right-[7%] top-0 hidden h-full w-px bg-[#081A33]/[0.06] lg:block" />
 
-          <div className="grid w-full items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+        <div className="relative z-10 mx-auto max-w-[1450px]">
 
-            {/* LEFT CONTENT */}
+          <div className="grid min-h-[calc(100svh-160px)] items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+
+            {/* LEFT */}
 
             <motion.div
               initial="hidden"
@@ -115,64 +197,59 @@ export default function AboutUs() {
                 variants={fadeUp}
                 className="mb-6 flex items-center gap-3"
               >
-                <span className="h-[2px] w-12 bg-[#F5A623]" />
+                <span className="h-[3px] w-10 bg-[#F5A623]" />
 
-                <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-[#D98C00]">
+                <span className="text-[10px] font-bold uppercase tracking-[0.34em] text-[#D98C00]">
                   About DPack
                 </span>
               </motion.div>
 
-
               <motion.h1
                 variants={fadeUp}
-                className="max-w-3xl text-[42px] font-black leading-[0.9] tracking-[-0.055em] sm:text-[55px] lg:text-[68px]"
+                className="max-w-2xl text-[46px] font-black leading-[0.89] tracking-[-0.06em] sm:text-[60px] lg:text-[76px]"
               >
                 Packaging
-
                 <span className="block text-[#F5A623]">
                   that protects.
                 </span>
 
-                <span className="mt-2 block">
+                <span className="mt-3 block">
                   Products that
                 </span>
 
-                <span className="block text-gray-400">
+                <span className="block text-[#98A1AA]">
                   move forward.
                 </span>
               </motion.h1>
 
-
               <motion.p
                 variants={fadeUp}
-                className="mt-7 max-w-xl text-sm leading-7 text-gray-500 sm:text-base"
+                className="mt-8 max-w-xl text-sm leading-7 text-[#5E6873] sm:text-base"
               >
                 DPack creates practical packaging solutions designed to
                 protect products, simplify packing and support safer
                 movement through every stage of the supply chain.
               </motion.p>
 
-
               <motion.div
                 variants={fadeUp}
                 className="mt-8 flex items-center gap-4"
               >
-                <span className="h-[1px] w-12 bg-[#081A33]/20" />
+                <span className="h-px w-12 bg-[#081A33]" />
 
-                <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-gray-400">
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#081A33]">
                   Protect • Pack • Move
                 </span>
               </motion.div>
 
             </motion.div>
 
-
             {/* RIGHT IMAGE */}
 
             <motion.div
               initial={{
                 opacity: 0,
-                scale: 0.92,
+                scale: 0.94,
                 x: 70,
               }}
               animate={{
@@ -188,65 +265,64 @@ export default function AboutUs() {
               className="relative"
             >
 
-              {/* Decorative Border */}
+              <CornerFrame>
 
-              <div className="absolute -right-3 -top-3 h-full w-full border border-[#F5A623]/50 sm:-right-5 sm:-top-5" />
+                <div className="relative overflow-hidden bg-[#081A33] p-2">
 
+                  <motion.div
+                    initial={{
+                      scale: 1.12,
+                    }}
+                    animate={{
+                      scale: 1,
+                    }}
+                    transition={{
+                      duration: 1.4,
+                      ease,
+                    }}
+                    className="relative h-[420px] overflow-hidden sm:h-[520px] lg:h-[590px]"
+                  >
 
-              <div className="relative overflow-hidden bg-[#081A33] p-2">
+                    <Image
+                      src="/Dannage.webp"
+                      alt="DPack Dunnage Air Bags"
+                      fill
+                      priority
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                      className="object-cover"
+                    />
 
-                <motion.div
-                  initial={{
-                    scale: 1.15,
-                  }}
-                  animate={{
-                    scale: 1,
-                  }}
-                  transition={{
-                    duration: 1.4,
-                    ease,
-                  }}
-                  className="relative h-[420px] overflow-hidden sm:h-[500px] lg:h-[570px]"
-                >
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#081A33]/90 via-[#081A33]/10 to-transparent" />
 
-                  <Image
-                    src="/Dannage.webp"
-                    alt="DPack Packaging Solutions"
-                    fill
-                    priority
-                    className="object-cover"
-                  />
+                    <div className="absolute bottom-7 left-7 right-7 flex items-end justify-between">
 
+                      <div>
 
-                  {/* Gradient */}
+                        <p className="text-5xl font-black leading-none text-white sm:text-6xl">
+                          DPack
+                        </p>
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#081A33]/80 via-transparent to-transparent" />
+                        <p className="mt-2 text-[9px] font-bold uppercase tracking-[0.35em] text-white/65">
+                          Packaging Solutions
+                        </p>
 
+                      </div>
 
-                  {/* Image Text */}
-
-                  <div className="absolute bottom-7 left-7 right-7 flex items-end justify-between">
-
-                    <div>
-
-                      <p className="text-5xl font-black leading-none text-white sm:text-6xl">
-                        DPack
-                      </p>
-
-                      <p className="mt-2 text-[9px] font-bold uppercase tracking-[0.3em] text-white/60">
-                        Packaging Solutions
-                      </p>
+                      <PackageCheck
+                        size={42}
+                        strokeWidth={1.3}
+                        className="text-[#F5A623]"
+                      />
 
                     </div>
 
-                  </div>
+                  </motion.div>
 
-                </motion.div>
+                </div>
 
-              </div>
+              </CornerFrame>
 
-
-              {/* Floating Badge */}
+              {/* Floating badge */}
 
               <motion.div
                 animate={{
@@ -257,14 +333,14 @@ export default function AboutUs() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute -bottom-5 -left-3 bg-[#F5A623] px-5 py-4 shadow-xl sm:-left-7"
+                className="absolute -bottom-6 -left-3 z-30 bg-[#F5A623] px-6 py-5 shadow-2xl sm:-left-8"
               >
 
-                <p className="text-2xl font-black leading-none text-[#081A33]">
+                <p className="text-3xl font-black leading-none text-[#081A33]">
                   100%
                 </p>
 
-                <p className="mt-1 text-[8px] font-bold uppercase tracking-[0.2em] text-[#081A33]/60">
+                <p className="mt-1 text-[8px] font-black uppercase tracking-[0.2em] text-[#081A33]/65">
                   Protection Focused
                 </p>
 
@@ -279,16 +355,17 @@ export default function AboutUs() {
       </section>
 
 
-
       {/* ======================================================
           ABOUT STORY
       ====================================================== */}
 
-      <section className="relative min-h-[100svh] overflow-hidden bg-white px-6 py-16 sm:px-8 lg:px-12 lg:py-20">
+      <section className="relative overflow-hidden bg-white px-6 py-20 sm:px-8 lg:px-12 lg:py-28">
 
-        <div className="mx-auto flex min-h-[calc(100svh-128px)] max-w-[1400px] items-center">
+        <DotPattern />
 
-          <div className="grid w-full items-center gap-12 lg:grid-cols-[1fr_0.95fr] lg:gap-20">
+        <div className="relative z-10 mx-auto max-w-[1400px]">
+
+          <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.95fr] lg:gap-20">
 
             {/* IMAGE */}
 
@@ -303,51 +380,54 @@ export default function AboutUs() {
               className="relative"
             >
 
-              <div className="absolute -left-4 -top-4 h-32 w-32 border-l border-t border-[#F5A623] sm:-left-7 sm:-top-7 sm:h-40 sm:w-40" />
+              <CornerFrame>
 
-              <div className="relative ml-3 overflow-hidden bg-[#081A33] p-2 sm:ml-7">
+                <div className="overflow-hidden bg-[#081A33] p-2">
 
-                <motion.div
-                  initial={{
-                    scale: 1.08,
-                  }}
-                  whileInView={{
-                    scale: 1,
-                  }}
-                  viewport={{
-                    once: true,
-                  }}
-                  transition={{
-                    duration: 1.2,
-                    ease,
-                  }}
-                  className="relative h-[430px] overflow-hidden sm:h-[520px] lg:h-[570px]"
-                >
+                  <motion.div
+                    initial={{
+                      scale: 1.08,
+                    }}
+                    whileInView={{
+                      scale: 1,
+                    }}
+                    viewport={{
+                      once: true,
+                    }}
+                    transition={{
+                      duration: 1.2,
+                      ease,
+                    }}
+                    className="relative h-[420px] overflow-hidden sm:h-[520px] lg:h-[550px]"
+                  >
 
-                  <Image
-                    src="/Air column bag (2).webp"
-                    alt="DPack Air Column Packaging"
-                    fill
-                    className="object-cover"
-                  />
+                    <Image
+                      src="/Air column bag (2).webp"
+                      alt="DPack Air Column Packaging"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover"
+                    />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#081A33]/70 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#081A33]/85 via-transparent to-transparent" />
 
-                  <div className="absolute bottom-6 left-6">
+                    <div className="absolute bottom-7 left-7">
 
-                    <p className="text-4xl font-black text-white sm:text-5xl">
-                      DPACK
-                    </p>
+                      <p className="text-4xl font-black text-white sm:text-5xl">
+                        DPACK
+                      </p>
 
-                    <p className="mt-1 text-[9px] uppercase tracking-[0.3em] text-white/60">
-                      Protective Packaging
-                    </p>
+                      <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white/60">
+                        Protective Packaging
+                      </p>
 
-                  </div>
+                    </div>
 
-                </motion.div>
+                  </motion.div>
 
-              </div>
+                </div>
+
+              </CornerFrame>
 
             </motion.div>
 
@@ -366,26 +446,25 @@ export default function AboutUs() {
 
               <div className="flex items-center gap-3">
 
-                <span className="h-[2px] w-10 bg-[#F5A623]" />
+                <span className="h-[3px] w-10 bg-[#F5A623]" />
 
-                <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-[#D98C00]">
+                <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#D98C00]">
                   Who We Are
                 </span>
 
               </div>
 
-
-              <h2 className="mt-5 text-4xl font-black leading-[0.94] tracking-tight sm:text-5xl lg:text-6xl">
+              <h2 className="mt-6 text-5xl font-black leading-[0.9] tracking-[-0.05em] sm:text-6xl lg:text-7xl">
 
                 About
-<span className="block text-[#F5A623]">
+
+                <span className="block text-[#F5A623]">
                   DPack.
                 </span>
 
               </h2>
 
-
-              <div className="mt-7 max-w-xl space-y-4 text-sm leading-7 text-gray-500 sm:text-base">
+              <div className="mt-8 max-w-xl space-y-5 text-sm leading-7 text-[#65707B] sm:text-base">
 
                 <p>
                   DPack is focused on providing dependable packaging
@@ -407,44 +486,41 @@ export default function AboutUs() {
 
               </div>
 
-
               {/* STATS */}
 
-              <div className="mt-9 grid grid-cols-3 border-y border-[#081A33]/10">
+              <div className="mt-10 grid grid-cols-3 border-y border-[#081A33]/15">
 
-                <div className="px-2 py-5 text-center sm:px-5 sm:text-left">
+                <div className="py-6">
 
-                  <p className="text-2xl font-black leading-none text-[#081A33] sm:text-3xl">
+                  <p className="text-3xl font-black text-[#081A33] sm:text-4xl">
                     01
                   </p>
 
-                  <p className="mt-2 text-[8px] font-bold uppercase tracking-[0.15em] text-gray-400 sm:text-[9px]">
+                  <p className="mt-2 text-[8px] font-black uppercase tracking-[0.18em] text-[#8A939B] sm:text-[9px]">
                     Protection
                   </p>
 
                 </div>
 
+                <div className="border-x border-[#081A33]/15 px-4 py-6">
 
-                <div className="border-x border-[#081A33]/10 px-2 py-5 text-center sm:px-5 sm:text-left">
-
-                  <p className="text-2xl font-black leading-none text-[#081A33] sm:text-3xl">
+                  <p className="text-3xl font-black text-[#081A33] sm:text-4xl">
                     05+
                   </p>
 
-                  <p className="mt-2 text-[8px] font-bold uppercase tracking-[0.15em] text-gray-400 sm:text-[9px]">
+                  <p className="mt-2 text-[8px] font-black uppercase tracking-[0.18em] text-[#8A939B] sm:text-[9px]">
                     Solutions
                   </p>
 
                 </div>
 
+                <div className="px-4 py-6">
 
-                <div className="px-2 py-5 text-center sm:px-5 sm:text-left">
-
-                  <p className="text-2xl font-black leading-none text-[#081A33] sm:text-3xl">
+                  <p className="text-3xl font-black text-[#081A33] sm:text-4xl">
                     PAN
                   </p>
 
-                  <p className="mt-2 text-[8px] font-bold uppercase tracking-[0.15em] text-gray-400 sm:text-[9px]">
+                  <p className="mt-2 text-[8px] font-black uppercase tracking-[0.18em] text-[#8A939B] sm:text-[9px]">
                     Reach
                   </p>
 
@@ -452,12 +528,11 @@ export default function AboutUs() {
 
               </div>
 
-
               <div className="mt-7 flex items-center gap-4">
 
-                <span className="h-[1px] w-12 bg-[#081A33]/20" />
+                <span className="h-px w-12 bg-[#081A33]/30" />
 
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                <p className="text-[9px] font-black uppercase tracking-[0.25em] text-[#8A939B]">
                   Packaging • Protection • Performance
                 </p>
 
@@ -472,16 +547,21 @@ export default function AboutUs() {
       </section>
 
 
-
       {/* ======================================================
           MISSION + VISION
       ====================================================== */}
 
-      <section className="relative min-h-[100svh] overflow-hidden bg-[#081A33] px-6 py-16 text-white sm:px-8 lg:px-12 lg:py-20">
+      <section className="relative overflow-hidden bg-[#081A33] px-6 py-20 text-white sm:px-8 lg:px-12 lg:py-28">
 
-        <div className="mx-auto flex min-h-[calc(100svh-128px)] max-w-[1400px] flex-col justify-center">
+        <DotPattern dark />
 
-          {/* TOP */}
+        {/* Decorative circles */}
+
+        <div className="pointer-events-none absolute -right-40 bottom-[-250px] h-[600px] w-[600px] rounded-full border border-[#F5A623]/25" />
+
+        <div className="pointer-events-none absolute -right-20 bottom-[-190px] h-[480px] w-[480px] rounded-full border border-[#F5A623]/15" />
+
+        <div className="relative z-10 mx-auto max-w-[1400px]">
 
           <motion.div
             initial={{
@@ -497,23 +577,25 @@ export default function AboutUs() {
             }}
             transition={{
               duration: 0.7,
+              ease,
             }}
           >
 
             <div className="flex items-center gap-3">
 
-              <span className="h-[2px] w-10 bg-[#F5A623]" />
+              <span className="h-[3px] w-10 bg-[#F5A623]" />
 
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#F5A623]">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#F5A623]">
                 What Drives Us
               </p>
 
             </div>
 
-            <h2 className="mt-6 max-w-4xl text-4xl font-black leading-[0.95] tracking-[-0.04em] sm:text-5xl lg:text-7xl">
+            <h2 className="mt-6 max-w-4xl text-5xl font-black leading-[0.9] tracking-[-0.05em] sm:text-6xl lg:text-7xl">
 
               Built around better
-              <span className="block text-white/35">
+
+              <span className="block text-[#F5A623]">
                 packaging.
               </span>
 
@@ -522,16 +604,14 @@ export default function AboutUs() {
           </motion.div>
 
 
-          {/* MISSION / VISION */}
-
-          <div className="mt-14 grid gap-px bg-white/10 lg:grid-cols-2">
+          <div className="mt-14 grid gap-5 lg:grid-cols-2">
 
             {/* MISSION */}
 
             <motion.div
               initial={{
                 opacity: 0,
-                x: -40,
+                x: -50,
               }}
               whileInView={{
                 opacity: 1,
@@ -541,18 +621,24 @@ export default function AboutUs() {
                 once: true,
               }}
               transition={{
-                duration: 0.7,
+                duration: 0.8,
+                ease,
               }}
-              className="bg-[#F5A623] p-8 text-[#081A33] sm:p-10 lg:p-14"
+              className="relative overflow-hidden bg-[#F5A623] p-8 text-[#081A33] sm:p-10 lg:p-14"
             >
 
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em]">
+              <div className="absolute right-8 top-8 opacity-20">
+                <ShieldCheck size={58} strokeWidth={1.2} />
+              </div>
+
+              <p className="text-[10px] font-black uppercase tracking-[0.3em]">
                 01 / Mission
               </p>
 
-              <h3 className="mt-8 text-4xl font-black leading-[0.95] sm:text-5xl">
+              <h3 className="mt-8 max-w-md text-4xl font-black leading-[0.92] sm:text-5xl">
                 Make protection
-                <span className="block opacity-50">
+
+                <span className="block opacity-45">
                   simple.
                 </span>
               </h3>
@@ -571,7 +657,7 @@ export default function AboutUs() {
             <motion.div
               initial={{
                 opacity: 0,
-                x: 40,
+                x: 50,
               }}
               whileInView={{
                 opacity: 1,
@@ -581,24 +667,32 @@ export default function AboutUs() {
                 once: true,
               }}
               transition={{
-                duration: 0.7,
+                duration: 0.8,
                 delay: 0.1,
+                ease,
               }}
-              className="bg-white p-8 text-[#081A33] sm:p-10 lg:p-14"
+              className="relative overflow-hidden bg-white p-8 text-[#081A33] sm:p-10 lg:p-14"
             >
 
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400">
+              <div className="absolute right-8 top-8 text-[#081A33]/10">
+                <Eye size={58} strokeWidth={1.2} />
+              </div>
+
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#89929A]">
                 02 / Vision
               </p>
 
-              <h3 className="mt-8 text-4xl font-black leading-[0.95] sm:text-5xl">
+              <h3 className="mt-8 max-w-md text-4xl font-black leading-[0.92] sm:text-5xl">
+
                 A smarter way
-                <span className="block text-gray-400">
+
+                <span className="block text-[#8D969E]">
                   to move products.
                 </span>
+
               </h3>
 
-              <p className="mt-7 max-w-lg text-sm leading-7 text-gray-500 sm:text-base">
+              <p className="mt-7 max-w-lg text-sm leading-7 text-[#68737E] sm:text-base">
                 We aim to build a trusted packaging brand known for
                 dependable products, practical innovation and solutions
                 designed around the evolving needs of modern businesses.
@@ -613,19 +707,19 @@ export default function AboutUs() {
       </section>
 
 
-
-
       {/* ======================================================
           PRODUCT FOCUS
       ====================================================== */}
 
-      <section className="relative min-h-[100svh] overflow-hidden bg-white px-6 py-16 sm:px-8 lg:px-12 lg:py-20">
+      <section className="relative overflow-hidden bg-[#F7F7F5] px-6 py-20 sm:px-8 lg:px-12 lg:py-28">
 
-        <div className="mx-auto flex min-h-[calc(100svh-128px)] max-w-[1400px] items-center">
+        <DotPattern />
 
-          <div className="grid w-full items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+        <div className="relative z-10 mx-auto max-w-[1400px]">
 
-            {/* IMAGE */}
+          <div className="grid items-center gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
+
+            {/* PRODUCT IMAGE */}
 
             <motion.div
               initial={{
@@ -638,55 +732,63 @@ export default function AboutUs() {
               }}
               viewport={{
                 once: true,
+                amount: 0.2,
               }}
               transition={{
                 duration: 0.8,
+                ease,
               }}
               className="relative"
             >
 
-              <div className="relative overflow-hidden bg-[#081A33] p-2">
+              <CornerFrame>
 
-                <motion.div
-                  initial={{
-                    scale: 1.08,
-                  }}
-                  whileInView={{
-                    scale: 1,
-                  }}
-                  viewport={{
-                    once: true,
-                  }}
-                  transition={{
-                    duration: 1.2,
-                  }}
-                  className="relative h-[450px] overflow-hidden sm:h-[530px] lg:h-[600px]"
-                >
+                <div className="overflow-hidden bg-[#081A33] p-2">
 
-                  <Image
-                    src="/Air Column Roll (2).webp"
-                    alt="DPack Air Column Roll"
-                    fill
-                    className="object-cover"
-                  />
+                  <motion.div
+                    initial={{
+                      scale: 1.08,
+                    }}
+                    whileInView={{
+                      scale: 1,
+                    }}
+                    viewport={{
+                      once: true,
+                    }}
+                    transition={{
+                      duration: 1.2,
+                      ease,
+                    }}
+                    className="relative h-[430px] overflow-hidden sm:h-[520px]"
+                  >
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#081A33]/80 via-transparent to-transparent" />
+                    <Image
+                      src="/Air Column Roll (2).webp"
+                      alt="DPack Air Column Roll"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover"
+                    />
 
-                  <div className="absolute bottom-7 left-7">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#081A33]/90 via-transparent to-transparent" />
 
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/60">
-                      Product Focus
-                    </p>
+                    <div className="absolute bottom-7 left-7">
 
-                    <h3 className="mt-2 text-3xl font-black text-white sm:text-4xl">
-                      Protective Packaging
-                    </h3>
+                      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#F5A623]">
+                        Product Focus
+                      </p>
 
-                  </div>
+                      <h3 className="mt-2 text-3xl font-black text-white sm:text-4xl">
+                        Protective Packaging
+                      </h3>
 
-                </motion.div>
+                    </div>
 
-              </div>
+                  </motion.div>
+
+                </div>
+
+              </CornerFrame>
 
             </motion.div>
 
@@ -699,25 +801,25 @@ export default function AboutUs() {
               whileInView="show"
               viewport={{
                 once: true,
+                amount: 0.2,
               }}
             >
 
               <div className="flex items-center gap-3">
 
-                <span className="h-[2px] w-10 bg-[#F5A623]" />
+                <span className="h-[3px] w-10 bg-[#F5A623]" />
 
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#D98C00]">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D98C00]">
                   What We Offer
                 </span>
 
               </div>
 
-
-              <h2 className="mt-6 text-4xl font-black leading-[0.94] tracking-tight sm:text-5xl lg:text-6xl">
+              <h2 className="mt-6 text-5xl font-black leading-[0.9] tracking-[-0.05em] sm:text-6xl">
 
                 Solutions for
 
-                <span className="block text-gray-400">
+                <span className="block text-[#8E979F]">
                   every stage
                 </span>
 
@@ -727,8 +829,7 @@ export default function AboutUs() {
 
               </h2>
 
-
-              <p className="mt-7 max-w-xl text-sm leading-7 text-gray-500 sm:text-base">
+              <p className="mt-7 max-w-xl text-sm leading-7 text-[#66717C] sm:text-base">
                 From cushioning fragile products to filling empty spaces
                 and securing loads during transportation, DPack offers
                 packaging solutions designed around real-world shipping
@@ -736,42 +837,92 @@ export default function AboutUs() {
               </p>
 
 
-              {/* Product List */}
+              {/* PRODUCT LIST */}
 
-              <div className="mt-9 border-t border-[#081A33]/10">
+              <div className="mt-9 border-t border-[#081A33]/15">
 
-                {[
-                  "Air Column Packaging",
-                  "Dunnage Packaging",
-                  "Packaging Air Bags",
-                  "Gap Fillers",
-                  "Protective Packaging",
-                ].map((item, index) => (
+                {products.map((product, index) => (
 
-                  <div
-                    key={item}
-                    className="flex items-center justify-between border-b border-[#081A33]/10 py-4"
+                  <Link
+                    href={product.href}
+                    key={product.name}
+                    className="group block"
                   >
 
-                    <div className="flex items-center gap-4">
+                    <motion.div
+                      initial={{
+                        opacity: 0,
+                        x: 20,
+                      }}
+                      whileInView={{
+                        opacity: 1,
+                        x: 0,
+                      }}
+                      viewport={{
+                        once: true,
+                      }}
+                      transition={{
+                        duration: 0.5,
+                        delay: index * 0.07,
+                      }}
+                      className="flex items-center justify-between border-b border-[#081A33]/15 py-4 transition-all duration-300 hover:px-3"
+                    >
 
-                      <span className="text-[10px] font-bold text-[#F5A623]">
-                        0{index + 1}
-                      </span>
+                      <div className="flex items-center gap-4">
 
-                      <span className="text-sm font-bold text-[#081A33] sm:text-base">
-                        {item}
-                      </span>
+                        <span className="text-[10px] font-black text-[#F5A623]">
+                          {product.number}
+                        </span>
 
-                    </div>
+                        <span className="text-sm font-bold text-[#081A33] sm:text-base">
+                          {product.name}
+                        </span>
 
-                    <span className="h-[1px] w-8 bg-[#081A33]/20" />
+                      </div>
 
-                  </div>
+                      <div className="flex items-center gap-4">
+
+                        <div className="hidden h-9 w-9 overflow-hidden opacity-0 transition-all duration-300 group-hover:opacity-100 sm:block">
+
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            width={36}
+                            height={36}
+                            className="h-full w-full object-cover"
+                          />
+
+                        </div>
+
+                        <ArrowRight
+                          size={17}
+                          className="text-[#081A33]/50 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#F5A623]"
+                        />
+
+                      </div>
+
+                    </motion.div>
+
+                  </Link>
 
                 ))}
 
               </div>
+
+
+              <Link
+                href="/products"
+                className="group mt-8 inline-flex items-center gap-3 bg-[#081A33] px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all duration-300 hover:bg-[#F5A623] hover:text-[#081A33]"
+              >
+
+                Explore All Products
+
+                <ArrowUpRight
+                  size={15}
+                  className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                />
+
+              </Link>
 
             </motion.div>
 
@@ -780,6 +931,56 @@ export default function AboutUs() {
         </div>
 
       </section>
+
+
+      {/* ======================================================
+          FINAL BRAND STRIP
+      ====================================================== */}
+
+      <section className="relative overflow-hidden bg-[#081A33] px-6 py-14 sm:px-8 lg:px-12">
+
+        <div className="absolute inset-0 opacity-40">
+          <div
+            className="h-full w-full"
+            style={{
+              backgroundImage:
+                "radial-gradient(rgba(245,166,35,0.25) 1px, transparent 1px)",
+              backgroundSize: "18px 18px",
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+
+          <div>
+
+            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#F5A623]">
+              DPack
+            </p>
+
+            <h3 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
+              Protect. Pack. Move.
+            </h3>
+
+          </div>
+
+          <Link
+            href="/contact"
+            className="group flex items-center gap-3 border border-white/20 px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all duration-300 hover:border-[#F5A623] hover:bg-[#F5A623] hover:text-[#081A33]"
+          >
+            Talk To Us
+
+            <ArrowUpRight
+              size={16}
+              className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+            />
+
+          </Link>
+
+        </div>
+
+      </section>
+
     </main>
   );
 }

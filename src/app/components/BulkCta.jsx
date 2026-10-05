@@ -1,73 +1,81 @@
 "use client";
 
+import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
   ArrowUpRight,
-  ShoppingBag,
-  Star,
   ShieldCheck,
+  Truck,
+  Package,
+  Leaf,
+  Sparkles,
+  Play,
 } from "lucide-react";
 
 /* =========================================================
-   PRODUCT DATA
-   Price / links apne actual products ke according change karein
+   PRODUCTS
 ========================================================= */
 
 const products = [
   {
-    id: "01",
-    name: "Air Column Bag",
-    category: "Fragile Protection",
-    price: "₹299",
-    oldPrice: "₹399",
-    rating: "4.9",
-    reviews: "124",
-    image: "https://packingairbag.com/cat/1.webp",
-    link: "/products/air-column-bag",
-    tag: "BEST SELLER",
-  },
-  {
-    id: "02",
-    name: "Air Column Roll",
+    id: 1,
+    name: "Air Column Bags",
     category: "Protective Packaging",
-    price: "₹549",
-    oldPrice: "₹699",
-    rating: "4.8",
-    reviews: "89",
-    image: "https://packingairbag.com/cat/5.webp",
-    link: "/products/air-column-roll",
-    tag: "POPULAR",
+    description:
+      "Shockproof, safe and reliable protection for your valuable products.",
+    image: "/Air column bag (2).webp",
+    href: "/products/air-column-bags",
+    accent: "#F5A623",
+    icon: Sparkles,
   },
   {
-    id: "03",
-    name: "Air Cushion Film",
-    category: "Void Fill",
-    price: "₹449",
-    oldPrice: "₹599",
-    rating: "4.8",
-    reviews: "76",
-    image: "https://packingairbag.com/cat/3.webp",
-    link: "/products/air-cushion-film",
-    tag: "TRENDING",
+    id: 2,
+    name: "Dunnage Air Bags",
+    category: "Cargo Safety",
+    description:
+      "Strong support for heavy loads and safer transportation during transit.",
+    image: "/Dannage.webp",
+    href: "/products/dunnage-air-bags",
+    accent: "#F5A623",
+    icon: ShieldCheck,
   },
   {
-    id: "04",
-    name: "Dunnage Air Bag",
-    category: "Cargo Protection",
-    price: "₹799",
-    oldPrice: "₹999",
-    rating: "4.7",
-    reviews: "58",
-    image: "https://packingairbag.com/cat/4.webp",
-    link: "/products/dunnage-air-bag",
-    tag: "TOP RATED",
+    id: 3,
+    name: "Air Column Rolls",
+    category: "Flexible Protection",
+    description:
+      "Flexible protection for every shipment, product and packaging requirement.",
+    image: "/Air Column Roll (2).webp",
+    href: "/products/air-column-rolls",
+    accent: "#2F7180",
+    icon: Sparkles,
+  },
+  {
+    id: 4,
+    name: "Gap Fillers",
+    category: "Smart Protection",
+    description:
+      "Keep your products stable, secure and protected during transportation.",
+    image: "/Gap filler (3).webp",
+    href: "/products/gap-fillers",
+    accent: "#F5A623",
+    icon: Package,
+  },
+  {
+    id: 5,
+    name: "Packaging Air Bags",
+    category: "Product Protection",
+    description:
+      "Durable, versatile and secure packaging solutions for all your needs.",
+    image: "/packing bag.webp",
+    href: "/products/packaging-air-bags",
+    accent: "#F5A623",
+    icon: ShieldCheck,
   },
 ];
-
-const featured = products[0];
-const sideProducts = products.slice(1);
 
 /* =========================================================
    ANIMATION
@@ -76,1206 +84,525 @@ const sideProducts = products.slice(1);
 const fadeUp = {
   hidden: {
     opacity: 0,
-    y: 50,
+    y: 30,
   },
-
   show: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.7,
-      ease: [0.16, 1, 0.3, 1],
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const fadeLeft = {
+  hidden: {
+    opacity: 0,
+    x: -35,
+  },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.8,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const fadeRight = {
+  hidden: {
+    opacity: 0,
+    x: 35,
+  },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.8,
+      ease: [0.22, 1, 0.36, 1],
     },
   },
 };
 
 /* =========================================================
-   COMPONENT
+   MAIN
 ========================================================= */
 
-export default function BestSellingProducts() {
+export default function ProductEditorial() {
   return (
-    <section
-      className="
-        relative
-        w-full
-        overflow-hidden
-        bg-[#E9EDF0]
-        py-16
-        lg:py-20
-      "
-    >
-      {/* ===================================================
+    <section className="relative w-full overflow-hidden bg-[#F5F6F7]">
+
+      {/* =====================================================
           BACKGROUND GRID
-      =================================================== */}
+      ===================================================== */}
 
       <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          opacity-[0.035]
-
-          [background-image:linear-gradient(#123B5D_1px,transparent_1px),linear-gradient(90deg,#123B5D_1px,transparent_1px)]
-          [background-size:70px_70px]
-        "
+        className="pointer-events-none absolute inset-0 opacity-[0.38]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(8,26,51,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(8,26,51,.055) 1px, transparent 1px)",
+          backgroundSize: "46px 46px",
+        }}
       />
 
-      {/* BACKGROUND GLOW */}
+      <div className="relative mx-auto w-full max-w-[1450px] px-4 py-6 sm:px-6 md:px-8 lg:px-10">
 
-      <div
-        className="
-          pointer-events-none
-          absolute
-          -left-[200px]
-          top-[20%]
-
-          h-[450px]
-          w-[450px]
-
-          rounded-full
-          bg-[#2F7180]/10
-          blur-[130px]
-        "
-      />
-
-      {/* ===================================================
-          CONTAINER
-      =================================================== */}
-
-      <div
-        className="
-          relative
-          z-10
-          mx-auto
-          max-w-[1450px]
-          px-4
-          sm:px-6
-          lg:px-8
-      "
-      >
-        {/* =================================================
-            SECTION HEADER
-        ================================================= */}
+        {/* ===================================================
+            TOP HEADER
+        =================================================== */}
 
         <motion.div
           initial="hidden"
           whileInView="show"
-          viewport={{
-            once: true,
-            amount: 0.3,
-          }}
+          viewport={{ once: true, amount: 0.2 }}
           variants={fadeUp}
-          className="
-            mb-10
-            flex
-            flex-col
-            justify-between
-            gap-7
-
-            lg:mb-12
-            lg:flex-row
-            lg:items-end
-          "
+          className="relative mb-8 flex items-center gap-5 overflow-hidden md:mb-12"
         >
-          {/* LEFT */}
 
-          <div>
-            <div
-              className="
-                mb-4
-                flex
-                items-center
-                gap-3
-              "
-            >
-              <motion.span
-                initial={{ width: 0 }}
-                whileInView={{ width: 42 }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.8,
-                }}
-                className="
-                  h-[3px]
-                  bg-[#F5A623]
-                "
-              />
+          {/* Logo */}
 
-              <span
-                className="
-                  text-[12px]
-                  font-black
-                  uppercase
-                  tracking-[0.2em]
-                  text-[#2F7180]
-                "
-              >
-                Customer Favorites
-              </span>
-            </div>
-
-            <h2
-              className="
-                text-[42px]
-                font-black
-                uppercase
-                leading-[0.9]
-                tracking-[-0.06em]
-                text-[#202830]
-
-                sm:text-[55px]
-                lg:text-[68px]
-              "
-            >
-              BEST
-              <span
-                className="
-                  relative
-                  ml-3
-                  inline-block
-                  text-[#123B5D]
-                "
-              >
-                SELLERS
-
-                <span
-                  className="
-                    absolute
-                    -bottom-2
-                    left-0
-
-                    h-[5px]
-                    w-[42%]
-
-                    bg-[#F5A623]
-                  "
-                />
-              </span>
-            </h2>
-          </div>
-
-          {/* RIGHT */}
-
-          <div
-            className="
-              flex
-              max-w-[430px]
-              flex-col
-              gap-5
-            "
+          <Link
+            href="/"
+            className="group flex shrink-0 items-center"
           >
-            <p
-              className="
-                text-[13px]
-                font-medium
-                leading-6
-                text-[#66737D]
-              "
-            >
-              Explore packaging solutions trusted for
-              reliable protection, efficient packing and
-              safer deliveries.
-            </p>
+            <div className="relative h-[55px] w-[150px] sm:h-[65px] sm:w-[180px]">
+              <Image
+                src="/logo (21).webp"
+                alt="D Pack"
+                fill
+                priority
+                className="object-contain object-left"
+              />
+            </div>
+          </Link>
 
-            <Link
-              href="/products"
-              className="
-                group
-                flex
-                w-fit
-                items-center
-                gap-3
+          {/* Horizontal line */}
 
-                text-[12px]
-                font-black
-                uppercase
-                tracking-[0.08em]
-                text-[#123B5D]
-              "
-            >
-              View All Products
+          <div className="hidden h-px flex-1 bg-[#123B5D]/30 sm:block" />
 
-              <span
-                className="
-                  flex
-                  h-8
-                  w-8
-                  items-center
-                  justify-center
+          {/* Orange / Navy block */}
 
-                  bg-[#F5A623]
-
-                  transition-all
-                  duration-300
-
-                  group-hover:translate-x-1
-                  group-hover:bg-[#123B5D]
-                  group-hover:text-white
-                "
-              >
-                <ArrowUpRight size={14} />
-              </span>
-            </Link>
+          <div className="hidden h-[48px] w-[230px] overflow-hidden sm:flex">
+            <div className="h-full w-[45%] bg-[#123B5D]" />
+            <div className="relative h-full flex-1 bg-[#F5A623]">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20" />
+            </div>
           </div>
+
+          {/* Heading */}
+
+          <h1 className="ml-auto text-right text-[38px] font-medium leading-[0.9] tracking-[-0.06em] text-[#123B5D] sm:text-[52px] md:text-[65px] lg:text-[76px]">
+            Our
+            <br className="sm:hidden" /> Products
+          </h1>
+
         </motion.div>
 
+        {/* ===================================================
+            PRODUCT 1 + PRODUCT 2
+        =================================================== */}
+
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+
+          <ProductBlock
+            product={products[0]}
+            imageLeft
+            variants={fadeLeft}
+          />
+
+          <ProductBlock
+            product={products[1]}
+            imageLeft
+            variants={fadeRight}
+            playButton
+          />
+
+        </div>
+
+        {/* ===================================================
+            PRODUCT 3 + PRODUCT 4
+        =================================================== */}
+
+        <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
+
+          <ProductBlock
+            product={products[2]}
+            imageLeft
+            variants={fadeLeft}
+          />
+
+          <ProductBlock
+            product={products[3]}
+            imageLeft
+            variants={fadeRight}
+          />
+
+        </div>
+
+        {/* ===================================================
+            PRODUCT 5 + SMART PACKAGING
+        =================================================== */}
+
+        <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
+
+          <ProductBlock
+            product={products[4]}
+            imageLeft
+            variants={fadeLeft}
+          />
+
+          <SmartPackaging
+            variants={fadeRight}
+          />
+
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+/* =========================================================
+   PRODUCT BLOCK
+========================================================= */
+
+function ProductBlock({
+  product,
+  variants,
+  playButton = false,
+}) {
+  const Icon = product.icon;
+
+  return (
+    <motion.div
+      variants={variants}
+      initial="hidden"
+      whileInView="show"
+      viewport={{
+        once: true,
+        amount: 0.15,
+      }}
+      className="group relative overflow-hidden border border-[#123B5D]/20 bg-white"
+    >
+
+      {/* ===================================================
+          PRODUCT GRID
+      =================================================== */}
+
+      <div className="grid min-h-[310px] grid-cols-1 sm:min-h-[340px] sm:grid-cols-[1.05fr_1fr]">
+
         {/* =================================================
-            PRODUCT SHOWCASE GRID
+            IMAGE
         ================================================= */}
 
-        <div
-          className="
-            grid
-            overflow-hidden
-
-            border
-            border-[#123B5D]/10
-
-            bg-white
-
-            shadow-[0_30px_80px_rgba(18,59,93,0.08)]
-
-            lg:grid-cols-[1.08fr_0.92fr]
-          "
+        <Link
+          href={product.href}
+          className="relative min-h-[240px] overflow-hidden bg-[#F1F3F4] sm:min-h-full"
         >
-          {/* =================================================
-              FEATURED PRODUCT
-          ================================================= */}
 
-          <motion.article
+          {/* Image background */}
+
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,.95),rgba(235,238,240,.8))]" />
+
+          {/* Grid */}
+
+          <div
+            className="absolute inset-0 opacity-[0.35]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(8,26,51,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(8,26,51,.08) 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+          />
+
+          {/* Product image */}
+
+          <motion.div
             initial={{
-              opacity: 0,
-              x: -60,
+              scale: 0.92,
+              opacity: 0.85,
             }}
             whileInView={{
+              scale: 1,
               opacity: 1,
-              x: 0,
             }}
             viewport={{
               once: true,
-              amount: 0.2,
             }}
             transition={{
               duration: 0.9,
-              ease: [0.16, 1, 0.3, 1],
+              ease: [0.22, 1, 0.36, 1],
             }}
-            className="
-              group
-              relative
-
-              min-h-[600px]
-              overflow-hidden
-
-              bg-[#123B5D]
-
-              lg:min-h-[650px]
-            "
+            className="absolute inset-4 sm:inset-5"
           >
-            {/* ===============================================
-                GIANT NUMBER
-            =============================================== */}
-
-            <motion.span
-              initial={{
-                opacity: 0,
-                x: -70,
-              }}
-              whileInView={{
-                opacity: 1,
-                x: 0,
-              }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                delay: 0.2,
-              }}
-              className="
-                pointer-events-none
-                absolute
-                -left-3
-                -top-8
-
-                text-[230px]
-                font-black
-                leading-none
-                tracking-[-0.1em]
-
-                text-white/[0.035]
-
-                sm:text-[290px]
-              "
-            >
-              {featured.id}
-            </motion.span>
-
-            {/* ===============================================
-                TOP BADGE
-            =============================================== */}
-
-            <div
-              className="
-                absolute
-                left-6
-                top-6
-                z-30
-
-                flex
-                items-center
-                gap-3
-              "
-            >
-              <span
-                className="
-                  bg-[#F5A623]
-
-                  px-3
-                  py-2
-
-                  text-[10px]
-                  font-black
-                  uppercase
-                  tracking-[0.12em]
-                  text-[#123B5D]
-                "
-              >
-                {featured.tag}
-              </span>
-
-              <span
-                className="
-                  text-[10px]
-                  font-bold
-                  uppercase
-                  tracking-[0.15em]
-                  text-white/45
-                "
-              >
-                DPACK / {featured.id}
-              </span>
-            </div>
-
-            {/* ===============================================
-                SIDE TEXT
-            =============================================== */}
-
-            <span
-              className="
-                absolute
-                right-5
-                top-7
-                z-20
-
-                hidden
-
-                [writing-mode:vertical-rl]
-
-                text-[9px]
-                font-black
-                uppercase
-                tracking-[0.25em]
-                text-white/30
-
-                sm:block
-              "
-            >
-              Engineered Protection
-            </span>
-
-            {/* ===============================================
-                ORANGE CIRCLE
-            =============================================== */}
-
-            <motion.div
-              animate={{
-                scale: [1, 1.08, 1],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="
-                absolute
-                left-1/2
-                top-[42%]
-
-                h-[310px]
-                w-[310px]
-
-                -translate-x-1/2
-                -translate-y-1/2
-
-                rounded-full
-                bg-[#F5A623]
-
-                sm:h-[370px]
-                sm:w-[370px]
-              "
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-contain transition-transform duration-700 ease-out group-hover:scale-[1.06]"
             />
+          </motion.div>
 
-            {/* CIRCLE RINGS */}
+          {/* Hover overlay */}
 
-            <motion.div
-              animate={{
-                rotate: 360,
-              }}
-              transition={{
-                duration: 25,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              className="
-                absolute
-                left-1/2
-                top-[42%]
+          <div className="absolute inset-0 bg-[#123B5D]/0 transition-all duration-500 group-hover:bg-[#123B5D]/[0.025]" />
 
-                h-[430px]
-                w-[430px]
-
-                -translate-x-1/2
-                -translate-y-1/2
-
-                rounded-full
-
-                border
-                border-dashed
-                border-white/15
-              "
-            >
-              <span
-                className="
-                  absolute
-                  left-1/2
-                  top-[-5px]
-
-                  h-[10px]
-                  w-[10px]
-
-                  -translate-x-1/2
-
-                  rounded-full
-                  bg-white
-                "
-              />
-            </motion.div>
-
-            {/* ===============================================
-                PRODUCT IMAGE
-            =============================================== */}
-
-            <div
-              className="
-                absolute
-                left-1/2
-                top-[42%]
-                z-20
-
-                h-[330px]
-                w-[75%]
-
-                -translate-x-1/2
-                -translate-y-1/2
-
-                sm:h-[400px]
-              "
-            >
-              <motion.img
-                src={featured.image}
-                alt={featured.name}
-                animate={{
-                  y: [0, -10, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                className="
-                  h-full
-                  w-full
-
-                  object-contain
-
-                  drop-shadow-[0_35px_30px_rgba(0,0,0,0.22)]
-
-                  transition-transform
-                  duration-700
-
-                  group-hover:scale-[1.08]
-                  group-hover:-rotate-2
-                "
-              />
-            </div>
-
-            {/* ===============================================
-                PRODUCT INFORMATION
-            =============================================== */}
-
-            <div
-              className="
-                absolute
-                bottom-0
-                left-0
-                right-0
-                z-30
-
-                bg-gradient-to-t
-                from-[#081E2F]
-                via-[#123B5D]/95
-                to-transparent
-
-                px-6
-                pb-7
-                pt-24
-
-                sm:px-8
-              "
-            >
-              {/* CATEGORY */}
-
-              <div
-                className="
-                  mb-3
-                  flex
-                  items-center
-                  justify-between
-                  gap-4
-                "
-              >
-                <span
-                  className="
-                    text-[11px]
-                    font-black
-                    uppercase
-                    tracking-[0.15em]
-                    text-[#F5A623]
-                  "
-                >
-                  {featured.category}
-                </span>
-
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-1
-                  "
-                >
-                  <Star
-                    size={13}
-                    fill="currentColor"
-                    className="text-[#F5A623]"
-                  />
-
-                  <span
-                    className="
-                      text-[11px]
-                      font-bold
-                      text-white
-                    "
-                  >
-                    {featured.rating}
-                  </span>
-
-                  <span
-                    className="
-                      text-[10px]
-                      text-white/40
-                    "
-                  >
-                    ({featured.reviews})
-                  </span>
-                </div>
-              </div>
-
-              {/* NAME */}
-
-              <h3
-                className="
-                  text-[30px]
-                  font-black
-                  uppercase
-                  leading-none
-                  tracking-[-0.045em]
-                  text-white
-
-                  sm:text-[38px]
-                "
-              >
-                {featured.name}
-              </h3>
-
-              {/* PRICE + BUTTON */}
-
-              <div
-                className="
-                  mt-6
-                  flex
-                  items-end
-                  justify-between
-                  gap-4
-                "
-              >
-                <div>
-                  <span
-                    className="
-                      block
-
-                      text-[10px]
-                      font-bold
-                      uppercase
-                      tracking-[0.1em]
-                      text-white/40
-                    "
-                  >
-                    Starting From
-                  </span>
-
-                  <div
-                    className="
-                      mt-1
-                      flex
-                      items-center
-                      gap-2
-                    "
-                  >
-                    <span
-                      className="
-                        text-[24px]
-                        font-black
-                        text-white
-                      "
-                    >
-                      {featured.price}
-                    </span>
-
-                    <span
-                      className="
-                        text-[12px]
-                        font-semibold
-                        text-white/35
-                        line-through
-                      "
-                    >
-                      {featured.oldPrice}
-                    </span>
-                  </div>
-                </div>
-
-                <Link
-                  href={featured.link}
-                  className="
-                    group/button
-
-                    flex
-                    h-[48px]
-                    items-center
-                    gap-3
-
-                    bg-[#F5A623]
-
-                    px-5
-
-                    text-[11px]
-                    font-black
-                    uppercase
-                    tracking-[0.06em]
-                    text-[#123B5D]
-
-                    transition-all
-                    duration-300
-
-                    hover:-translate-y-1
-                    hover:bg-white
-                  "
-                >
-                  Shop Now
-
-                  <ArrowRight
-                    size={14}
-                    className="
-                      transition-transform
-                      duration-300
-
-                      group-hover/button:translate-x-1
-                    "
-                  />
-                </Link>
-              </div>
-            </div>
-          </motion.article>
-
-          {/* =================================================
-              RIGHT PRODUCTS
-          ================================================= */}
+          {/* Decorative icon */}
 
           <div
-            className="
-              flex
-              flex-col
-              bg-[#F7F8F9]
-            "
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center sm:right-5 sm:top-5"
+            style={{
+              color: product.accent,
+            }}
           >
-            {sideProducts.map((product, index) => (
-              <motion.article
-                key={product.id}
-                initial={{
-                  opacity: 0,
-                  x: 60,
-                }}
-                whileInView={{
-                  opacity: 1,
-                  x: 0,
-                }}
-                viewport={{
-                  once: true,
-                  amount: 0.2,
-                }}
-                transition={{
-                  duration: 0.7,
-                  delay: index * 0.12,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="
-                  group/item
-                  relative
-
-                  flex
-                  min-h-[215px]
-                  flex-1
-
-                  overflow-hidden
-
-                  border-b
-                  border-[#123B5D]/10
-
-                  bg-[#F7F8F9]
-
-                  transition-colors
-                  duration-500
-
-                  last:border-b-0
-
-                  hover:bg-[#E7EDF0]
-                "
-              >
-                {/* ===========================================
-                    GIANT HOVER NUMBER
-                =========================================== */}
-
-                <span
-                  className="
-                    pointer-events-none
-                    absolute
-                    -bottom-8
-                    right-4
-
-                    translate-y-8
-
-                    text-[140px]
-                    font-black
-                    leading-none
-                    tracking-[-0.1em]
-
-                    text-[#123B5D]/[0.035]
-
-                    opacity-0
-
-                    transition-all
-                    duration-500
-
-                    group-hover/item:translate-y-0
-                    group-hover/item:opacity-100
-                  "
-                >
-                  {product.id}
-                </span>
-
-                {/* ===========================================
-                    IMAGE
-                =========================================== */}
-
-                <div
-                  className="
-                    relative
-
-                    flex
-                    w-[38%]
-                    shrink-0
-                    items-center
-                    justify-center
-
-                    overflow-hidden
-
-                    border-r
-                    border-[#123B5D]/10
-                  "
-                >
-                  {/* CIRCLE */}
-
-                  <div
-                    className="
-                      absolute
-
-                      h-[130px]
-                      w-[130px]
-
-                      scale-75
-
-                      rounded-full
-                      bg-[#DCE7EB]
-
-                      transition-all
-                      duration-500
-
-                      group-hover/item:scale-100
-                      group-hover/item:bg-[#F5A623]
-                    "
-                  />
-
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="
-                      relative
-                      z-10
-
-                      h-[150px]
-                      w-[85%]
-
-                      object-contain
-
-                      drop-shadow-[0_18px_18px_rgba(18,59,93,0.13)]
-
-                      transition-all
-                      duration-700
-
-                      group-hover/item:-translate-y-2
-                      group-hover/item:rotate-[-4deg]
-                      group-hover/item:scale-[1.08]
-                    "
-                  />
-
-                  {/* NUMBER */}
-
-                  <span
-                    className="
-                      absolute
-                      left-4
-                      top-4
-                      z-20
-
-                      font-mono
-                      text-[10px]
-                      font-black
-                      text-[#2F7180]
-                    "
-                  >
-                    {product.id}
-                  </span>
-                </div>
-
-                {/* ===========================================
-                    CONTENT
-                =========================================== */}
-
-                <div
-                  className="
-                    relative
-                    z-20
-
-                    flex
-                    flex-1
-                    flex-col
-                    justify-center
-
-                    px-5
-                    py-5
-
-                    sm:px-7
-                  "
-                >
-                  {/* TAG */}
-
-                  <div
-                    className="
-                      mb-2
-                      flex
-                      items-center
-                      justify-between
-                      gap-3
-                    "
-                  >
-                    <span
-                      className="
-                        text-[10px]
-                        font-black
-                        uppercase
-                        tracking-[0.13em]
-                        text-[#2F7180]
-                      "
-                    >
-                      {product.category}
-                    </span>
-
-                    <span
-                      className="
-                        bg-[#123B5D]
-
-                        px-2
-                        py-1
-
-                        text-[8px]
-                        font-black
-                        uppercase
-                        tracking-[0.08em]
-                        text-white
-                      "
-                    >
-                      {product.tag}
-                    </span>
-                  </div>
-
-                  {/* PRODUCT */}
-
-                  <Link href={product.link}>
-                    <h3
-                      className="
-                        text-[20px]
-                        font-black
-                        uppercase
-                        leading-tight
-                        tracking-[-0.035em]
-                        text-[#202830]
-
-                        transition-colors
-                        duration-300
-
-                        group-hover/item:text-[#123B5D]
-
-                        sm:text-[23px]
-                      "
-                    >
-                      {product.name}
-                    </h3>
-                  </Link>
-
-                  {/* RATING */}
-
-                  <div
-                    className="
-                      mt-2
-                      flex
-                      items-center
-                      gap-2
-                    "
-                  >
-                    <div className="flex items-center gap-[2px]">
-                      {[1, 2, 3, 4, 5].map(
-                        (star) => (
-                          <Star
-                            key={star}
-                            size={10}
-                            fill="currentColor"
-                            className="text-[#F5A623]"
-                          />
-                        )
-                      )}
-                    </div>
-
-                    <span
-                      className="
-                        text-[10px]
-                        font-bold
-                        text-[#7A858B]
-                      "
-                    >
-                      {product.rating} ({product.reviews})
-                    </span>
-                  </div>
-
-                  {/* BOTTOM */}
-
-                  <div
-                    className="
-                      mt-4
-                      flex
-                      items-center
-                      justify-between
-                      gap-4
-                    "
-                  >
-                    {/* PRICE */}
-
-                    <div
-                      className="
-                        flex
-                        items-center
-                        gap-2
-                      "
-                    >
-                      <span
-                        className="
-                          text-[18px]
-                          font-black
-                          text-[#123B5D]
-                        "
-                      >
-                        {product.price}
-                      </span>
-
-                      <span
-                        className="
-                          text-[11px]
-                          font-semibold
-                          text-[#9AA3A8]
-                          line-through
-                        "
-                      >
-                        {product.oldPrice}
-                      </span>
-                    </div>
-
-                    {/* CART */}
-
-                    <Link
-                      href={product.link}
-                      aria-label={`Add ${product.name} to cart`}
-                      className="
-                        group/cart
-
-                        flex
-                        h-10
-                        w-10
-                        items-center
-                        justify-center
-
-                        bg-[#123B5D]
-
-                        text-white
-
-                        transition-all
-                        duration-300
-
-                        hover:bg-[#F5A623]
-                        hover:text-[#123B5D]
-                      "
-                    >
-                      <ShoppingBag
-                        size={15}
-                        className="
-                          transition-transform
-                          duration-300
-
-                          group-hover/cart:scale-110
-                        "
-                      />
-                    </Link>
-                  </div>
-                </div>
-
-                {/* ===========================================
-                    BOTTOM HOVER LINE
-                =========================================== */}
-
-                <span
-                  className="
-                    absolute
-                    bottom-0
-                    left-0
-                    z-30
-
-                    h-[3px]
-                    w-full
-
-                    origin-left
-                    scale-x-0
-
-                    bg-[#F5A623]
-
-                    transition-transform
-                    duration-500
-
-                    group-hover/item:scale-x-100
-                  "
-                />
-              </motion.article>
-            ))}
+            <Icon
+              size={30}
+              strokeWidth={1.5}
+              className="transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"
+            />
           </div>
-        </div>
+
+        </Link>
 
         {/* =================================================
-            TRUST STRIP
+            CONTENT
         ================================================= */}
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
+        <div
+          className="relative flex flex-col justify-between border-t border-[#123B5D]/10 p-6 sm:border-l sm:border-t-0 sm:p-7 lg:p-8"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(8,26,51,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(8,26,51,.045) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
           }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{ once: true }}
-          transition={{
-            duration: 0.7,
-            delay: 0.2,
-          }}
-          className="
-            mt-5
-
-            flex
-            flex-wrap
-            items-center
-            justify-between
-            gap-5
-
-            border-t
-            border-[#123B5D]/10
-
-            pt-5
-          "
         >
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-            <ShieldCheck
-              size={17}
-              className="text-[#F5A623]"
-            />
 
-            <span
-              className="
-                text-[11px]
-                font-bold
-                uppercase
-                tracking-[0.08em]
-                text-[#66737D]
-              "
-            >
-              Protective Packaging
-            </span>
+          {/* Decorative top */}
+
+          <div>
+
+            <div className="mb-5 flex items-center gap-3">
+
+              <span
+                className="h-[3px] w-9"
+                style={{
+                  backgroundColor: product.accent,
+                }}
+              />
+
+              <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#123B5D]/65">
+                {product.category}
+              </span>
+
+            </div>
+
+            {/* Title */}
+
+            <Link href={product.href}>
+
+              <h2 className="max-w-[340px] text-[28px] font-medium leading-[0.95] tracking-[-0.045em] text-[#123B5D] transition-colors duration-300 group-hover:text-[#0B2942] sm:text-[31px] lg:text-[34px]">
+                {product.name}
+              </h2>
+
+            </Link>
+
+            {/* Description */}
+
+            <p className="mt-5 max-w-[285px] text-[12px] leading-[1.7] text-[#123B5D]/65 sm:text-[13px]">
+              {product.description}
+            </p>
+
           </div>
 
-          <p
-            className="
-              text-[10px]
-              font-bold
-              uppercase
-              tracking-[0.14em]
-              text-[#123B5D]/40
-            "
+          {/* =================================================
+              BOTTOM ACTION
+          ================================================= */}
+
+          <div className="mt-8 flex items-center gap-4">
+
+            <Link
+              href={product.href}
+              className="group/arrow flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#E9EDF0] text-[#123B5D] transition-all duration-300 hover:bg-[#F5A623] hover:text-[#123B5D]"
+            >
+              <ArrowRight
+                size={19}
+                className="transition-transform duration-300 group-hover/arrow:translate-x-1"
+              />
+            </Link>
+
+            <Link
+              href={product.href}
+              className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#123B5D] transition-all duration-300 hover:tracking-[0.3em]"
+            >
+              View Details
+            </Link>
+
+          </div>
+
+          {/* Play button */}
+
+          {playButton && (
+            <div className="absolute right-7 top-7 flex items-center">
+
+              <div className="h-14 w-14 rounded-full border border-[#123B5D]/50" />
+
+              <div className="-ml-7 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B5D] text-white shadow-lg">
+                <Play
+                  size={17}
+                  fill="currentColor"
+                  className="ml-0.5"
+                />
+              </div>
+
+            </div>
+          )}
+
+          {/* Corner star */}
+
+          <span
+            className="absolute bottom-5 right-6 text-[27px] font-light leading-none"
+            style={{
+              color: product.accent,
+            }}
           >
-            DPACK SOLUTIONS / PACK • PROTECT • DELIVER
-          </p>
-        </motion.div>
+            *
+          </span>
+
+        </div>
+
       </div>
-    </section>
+
+      {/* Hover border */}
+
+      <div className="pointer-events-none absolute inset-0 border border-transparent transition-all duration-500 group-hover:border-[#123B5D]/35" />
+
+    </motion.div>
+  );
+}
+
+/* =========================================================
+   SMART PACKAGING
+========================================================= */
+
+function SmartPackaging({ variants }) {
+  return (
+    <motion.div
+      variants={variants}
+      initial="hidden"
+      whileInView="show"
+      viewport={{
+        once: true,
+        amount: 0.15,
+      }}
+      className="relative min-h-[310px] overflow-hidden border border-[#123B5D]/20 bg-[#EEF3F4] sm:min-h-[340px]"
+    >
+
+      {/* Background */}
+
+      <div className="absolute inset-0 bg-gradient-to-br from-[#F7FAFA] via-[#EEF4F5] to-[#E5EEF0]" />
+
+      {/* Decorative circle */}
+
+      <motion.div
+        animate={{
+          scale: [1, 1.06, 1],
+          rotate: [0, 4, 0],
+        }}
+        transition={{
+          duration: 9,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute -right-[16%] -top-[40%] h-[85%] w-[65%] rounded-full border border-[#123B5D]/15 bg-white/30"
+      />
+
+      <div className="absolute -right-[8%] -top-[25%] h-[60%] w-[48%] rounded-full border border-[#123B5D]/15" />
+
+      {/* Small orange line */}
+
+      <div className="absolute left-7 top-7 h-[3px] w-10 bg-[#F5A623]" />
+
+      {/* Content */}
+
+      <div className="relative z-10 flex h-full flex-col justify-between p-7 sm:p-8 lg:p-10">
+
+        <div>
+
+          <h2 className="max-w-[500px] text-[30px] font-medium leading-[0.98] tracking-[-0.045em] text-[#123B5D] sm:text-[36px] lg:text-[40px]">
+            Smart Packaging
+            <br />
+            for a Safer Tomorrow
+          </h2>
+
+        </div>
+
+        {/* Features */}
+
+        <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-7 sm:grid-cols-4">
+
+          <Feature
+            icon={<ShieldCheck size={21} strokeWidth={1.7} />}
+            title="Safe"
+            subtitle="Products"
+          />
+
+          <Feature
+            icon={<Truck size={21} strokeWidth={1.7} />}
+            title="Reliable"
+            subtitle="Delivery"
+          />
+
+          <Feature
+            icon={<Package size={21} strokeWidth={1.7} />}
+            title="Strong"
+            subtitle="Packaging"
+          />
+
+          <Feature
+            icon={<Leaf size={21} strokeWidth={1.7} />}
+            title="Sustainable"
+            subtitle="Solutions"
+          />
+
+        </div>
+
+      </div>
+
+      {/* Large decorative arc */}
+
+      <div className="pointer-events-none absolute bottom-[-45%] right-[-10%] h-[300px] w-[300px] rounded-full border border-[#123B5D]/15" />
+
+      <div className="pointer-events-none absolute bottom-[-32%] right-[2%] h-[220px] w-[220px] rounded-full border border-[#123B5D]/10" />
+
+    </motion.div>
+  );
+}
+
+/* =========================================================
+   FEATURE
+========================================================= */
+
+function Feature({ icon, title, subtitle }) {
+  return (
+    <div className="flex items-center gap-3 border-r border-[#123B5D]/20 last:border-r-0">
+
+      <div className="text-[#123B5D]">
+        {icon}
+      </div>
+
+      <div>
+        <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-[#123B5D]">
+          {title}
+        </p>
+
+        <p className="mt-1 text-[8px] uppercase tracking-[0.12em] text-[#123B5D]/55">
+          {subtitle}
+        </p>
+      </div>
+
+    </div>
   );
 }
