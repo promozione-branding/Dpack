@@ -139,6 +139,7 @@ export default function WhyChooseUs() {
     <section
       ref={sectionRef}
       className="
+      hidden md:block
         relative
         h-[250vh]
         w-full

@@ -26,7 +26,6 @@ const products = [
     discount: "19% OFF",
     link: "/products/dunnage-air-bags",
   },
-
   {
     id: 2,
     name: "Air Column Bags",
@@ -37,7 +36,6 @@ const products = [
     discount: "18% OFF",
     link: "/products/air-column-bags",
   },
-
   {
     id: 3,
     name: "Air Column Rolls",
@@ -58,14 +56,12 @@ function ProductCard({ product, index }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
 
-    // Yahan baad mein apna cart logic add karna.
     console.log("Added to cart:", product);
   };
 
   const handleWishlist = (e) => {
     e.preventDefault();
 
-    // Yahan wishlist logic add karna.
     console.log("Wishlist:", product);
   };
 
@@ -104,6 +100,13 @@ function ProductCard({ product, index }) {
         hover:-translate-y-1
         hover:border-[#123B5D]/30
         hover:shadow-[0_18px_45px_rgba(18,59,93,0.10)]
+
+        max-md:!transform-none
+        max-md:!transition-none
+        max-md:!duration-0
+        max-md:hover:!translate-y-0
+        max-md:hover:!shadow-none
+        max-md:hover:!border-[#DCE3E7]
       "
     >
       {/* ===================================================
@@ -120,6 +123,8 @@ function ProductCard({ product, index }) {
           bg-[#F7F8F9]
 
           xl:h-[235px]
+
+          max-md:!transition-none
         "
       >
         {/* DISCOUNT */}
@@ -174,6 +179,11 @@ function ProductCard({ product, index }) {
             hover:border-[#123B5D]
             hover:bg-[#123B5D]
             hover:text-white
+
+            max-md:!transition-none
+            max-md:hover:!border-[#DCE3E7]
+            max-md:hover:!bg-white
+            max-md:hover:!text-[#123B5D]
           "
         >
           <Heart size={17} />
@@ -196,6 +206,9 @@ function ProductCard({ product, index }) {
               ease-out
 
               group-hover:scale-110
+
+              max-md:!transition-none
+              max-md:group-hover:!scale-100
             "
           />
         </div>
@@ -225,6 +238,8 @@ function ProductCard({ product, index }) {
 
             group-hover:translate-y-0
             group-hover:opacity-100
+
+            max-md:!hidden
           "
         >
           <ArrowUpRight size={16} />
@@ -273,6 +288,8 @@ function ProductCard({ product, index }) {
               duration-300
 
               hover:text-[#123B5D]
+
+              max-md:!transition-none
             "
           >
             {product.name}
@@ -371,6 +388,10 @@ function ProductCard({ product, index }) {
 
             hover:bg-[#F5A623]
             hover:text-[#123B5D]
+
+            max-md:!transition-none
+            max-md:hover:!bg-[#123B5D]
+            max-md:hover:!text-white
           "
         >
           <ShoppingCart size={16} />
@@ -384,6 +405,9 @@ function ProductCard({ product, index }) {
               duration-300
 
               group-hover/cart:translate-x-1
+
+              max-md:!transition-none
+              max-md:group-hover/cart:!translate-x-0
             "
           />
         </button>
@@ -398,26 +422,26 @@ function ProductCard({ product, index }) {
 
 export default function BannerProduct() {
   return (
-   <section
-  className="
-    relative
-    w-full
-    overflow-hidden
+    <section
+      className="
+        relative
+        w-full
+        overflow-hidden
 
-    bg-[#F8F8F6]
+        bg-[#F8F8F6]
 
-    py-12
-    lg:py-14
+        py-12
+        lg:py-14
 
-    before:pointer-events-none
-    before:absolute
-    before:inset-0
-    before:z-0
+        before:pointer-events-none
+        before:absolute
+        before:inset-0
+        before:z-0
 
-    before:bg-[radial-gradient(circle_at_1px_1px,rgba(18,59,93,0.10)_1px,transparent_1px)]
-    before:bg-[length:22px_22px]
-  "
->
+        before:bg-[radial-gradient(circle_at_1px_1px,rgba(18,59,93,0.10)_1px,transparent_1px)]
+        before:bg-[length:22px_22px]
+      "
+    >
       {/* =====================================================
           BACKGROUND
       ===================================================== */}
@@ -484,6 +508,9 @@ export default function BannerProduct() {
             lg:flex-row
             lg:items-end
             lg:justify-between
+
+            max-md:!transform-none
+            max-md:!transition-none
           "
         >
           {/* LEFT */}
@@ -534,7 +561,8 @@ export default function BannerProduct() {
             >
               Shop packaging
               <span className="text-[#123B5D]">
-                {" "}built to protect.
+                {" "}
+                built to protect.
               </span>
             </h2>
           </div>
@@ -597,6 +625,9 @@ export default function BannerProduct() {
                   duration-300
 
                   group-hover:translate-x-1
+
+                  max-md:!transition-none
+                  max-md:group-hover:!translate-x-0
                 "
               >
                 <ArrowRight size={14} />
@@ -646,6 +677,9 @@ export default function BannerProduct() {
               bg-[#123B5D]
 
               lg:min-h-0
+
+              max-md:!transform-none
+              max-md:!transition-none
             "
           >
             {/* IMAGE */}
@@ -663,6 +697,9 @@ export default function BannerProduct() {
                 duration-[1200ms]
 
                 group-hover:scale-105
+
+                max-md:!transition-none
+                max-md:group-hover:!scale-100
               "
             />
 
@@ -734,9 +771,6 @@ export default function BannerProduct() {
                 lg:p-7
               "
             >
-
-            
-
               {/* SHOP NOW */}
 
               <Link
@@ -764,6 +798,9 @@ export default function BannerProduct() {
                   duration-300
 
                   hover:bg-white
+
+                  max-md:!transition-none
+                  max-md:hover:!bg-[#F5A623]
                 "
               >
                 Shop Now
@@ -775,6 +812,9 @@ export default function BannerProduct() {
                     duration-300
 
                     group-hover/shop:translate-x-1
+
+                    max-md:!transition-none
+                    max-md:group-hover/shop:!translate-x-0
                   "
                 />
               </Link>
