@@ -69,7 +69,7 @@ const categoryDesign = {
     name: "Gap Fillers",
     description:
       "Practical void-filling solutions that keep products stable throughout transportation.",
-    image: "/Gap filler (3).webp",
+    // image: "/Gap filler (3).webp",
   },
 
   "gap-filler": {
@@ -77,7 +77,7 @@ const categoryDesign = {
     name: "Gap Fillers",
     description:
       "Practical void-filling solutions that keep products stable throughout transportation.",
-    image: "/Gap filler (3).webp",
+    // image: "/Gap filler (3).webp",
   },
 };
 
@@ -1401,63 +1401,7 @@ export default function CategoryProducts() {
                     {active.number}
                   </span>
 
-                  {/* CATEGORY IMAGE */}
-
-                  <motion.div
-                    key={activeCategoryImage}
-                    initial={{
-                      opacity: 0,
-                      scale: 0.88,
-                      x: 25,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      scale: 1,
-                      x: 0,
-                      y: [0, -5, 0],
-                    }}
-                    transition={{
-                      opacity: {
-                        duration: 0.4,
-                      },
-                      scale: {
-                        duration: 0.6,
-                      },
-                      x: {
-                        duration: 0.6,
-                      },
-                      y: {
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      },
-                    }}
-                    className="
-                      absolute
-                      bottom-1
-                      right-0
-                      h-[48%]
-                      w-[64%]
-                      sm:h-[51%]
-                      sm:w-[64%]
-                    "
-                  >
-
-                    <Image
-                      src={
-                        activeCategoryImage
-                      }
-                      alt={active.name}
-                      fill
-                      unoptimized
-                      sizes="500px"
-                      className="
-                        object-contain
-                        drop-shadow-[0_20px_25px_rgba(18,59,93,0.14)]
-                      "
-                    />
-
-                  </motion.div>
+              
 
                   {/* CTA */}
 

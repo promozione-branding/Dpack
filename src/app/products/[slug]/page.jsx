@@ -896,7 +896,7 @@ export default function ProductPage({ params }) {
                 <img
                   src={images[selectedImage]}
                   alt={currentProduct.name}
-                  className="h-[500px] w-full object-contain p-8 transition duration-300 hover:scale-105"
+                  className="h-[500px] w-full object-contain p-0 transition duration-300 hover:scale-105"
                 />
 
                 <button
@@ -1646,7 +1646,7 @@ export default function ProductPage({ params }) {
                   className="group border border-gray-200 bg-white transition hover:-translate-y-1 hover:border-[#081A33] hover:shadow-xl"
                 >
 
-                  <div className="relative flex h-[270px] items-center justify-center overflow-hidden bg-white p-6">
+                  <div className="relative flex h-[270px] items-center justify-center overflow-hidden bg-white">
 
                     <span className="absolute left-4 top-4 z-10 bg-[#081A33] px-3 py-1 text-[10px] font-bold uppercase text-white">
                       Packaging

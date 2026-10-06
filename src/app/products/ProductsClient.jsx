@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -21,6 +21,8 @@ import {
   ShieldCheck,
   Package,
 } from "lucide-react";
+
+import { addToCart as addProductToCart } from "@/lib/cartBus";
 
 /* =========================================================
    HELPERS
@@ -516,94 +518,113 @@ function ProductCard({
           )}
         </div>
 
-        {/* PRICE */}
+       {/* =====================================================
+    PRICE + ADD TO CART
+===================================================== */}
 
-        <div className="mt-3 flex items-center gap-2">
-          <span
-            className="
-              text-[18px]
-              font-black
-              tracking-[-0.02em]
-              text-[#081A33]
-            "
-          >
-            {formatPrice(price)}
-          </span>
+<div
+  className="
+    mt-auto
+    flex
+    items-end
+    justify-between
+    gap-2
+    pt-4
+  "
+>
+  {/* PRICE */}
 
-          {oldPrice > price && (
-            <span className="text-[14px] text-[#929BA2] line-through">
-              {formatPrice(oldPrice)}
-            </span>
-          )}
-        </div>
+  <div className="min-w-0">
+    <div className="flex flex-wrap items-center gap-1.5">
+      <span
+        className="
+          text-[17px]
+          font-black
+          tracking-[-0.03em]
+          text-[#081A33]
+          sm:text-[18px]
+        "
+      >
+        {formatPrice(price)}
+      </span>
 
-        {/* ACTION */}
+      {oldPrice > price && (
+        <span
+          className="
+            text-[11px]
+            text-[#929BA2]
+            line-through
+            sm:text-[12px]
+          "
+        >
+          {formatPrice(oldPrice)}
+        </span>
+      )}
+    </div>
+  </div>
 
-        <div className="mt-auto pt-4">
-          <button
-            type="button"
-            onClick={() =>
-              addToCart(product)
-            }
-            disabled={!inStock}
-            className="
-              group/cart
-              flex
-              w-full
-              items-center
-              justify-between
-              border-t
-              border-[#DCE3E7]
-              pt-3
-              text-[#081A33]
-              transition-colors
-              duration-300
-              disabled:cursor-not-allowed
-              disabled:opacity-40
-            "
-          >
-            <span
-              className="
-                flex
-                items-center
-                gap-2
-                text-[10px]
-                font-black
-                uppercase
-                tracking-[0.08em]
-              "
-            >
-              <ShoppingCart size={14} />
+  {/* HIGHLIGHTED ADD TO CART */}
 
-              {inStock
-                ? "Add to Cart"
-                : "Unavailable"}
-            </span>
+  <button
+    type="button"
+    onClick={() => addToCart(product)}
+    disabled={!inStock}
+    className="
+      group/cart
+      flex
+      h-10
+      shrink-0
+      items-center
+      gap-1.5
+      bg-[#F5A623]
+      px-3
+      text-[#081A33]
 
-            <span
-              className="
-                flex
-                h-8
-                w-8
-                items-center
-                justify-center
-                bg-[#E6F1F6]
-                transition-all
-                duration-300
-                group-hover/cart:bg-[#F5A623]
-              "
-            >
-              <ArrowRight
-                size={14}
-                className="
-                  transition-transform
-                  duration-300
-                  group-hover/cart:translate-x-1
-                "
-              />
-            </span>
-          </button>
-        </div>
+      shadow-[0_6px_18px_rgba(245,166,35,0.22)]
+
+      transition-all
+      duration-300
+
+      hover:bg-[#081A33]
+      hover:text-white
+      hover:shadow-[0_8px_22px_rgba(8,26,51,0.18)]
+
+      disabled:cursor-not-allowed
+      disabled:bg-[#E6E8EA]
+      disabled:text-[#89949C]
+      disabled:shadow-none
+
+      sm:h-10
+      sm:px-3.5
+    "
+  >
+    <ShoppingCart
+      size={14}
+      strokeWidth={2.3}
+    />
+
+    <span
+      className="
+        text-[9px]
+        font-black
+        uppercase
+        tracking-[0.04em]
+        sm:text-[10px]
+      "
+    >
+      {inStock ? "Add to Cart" : "Unavailable"}
+    </span>
+
+    <ArrowRight
+      size={13}
+      className="
+        transition-transform
+        duration-300
+        group-hover/cart:translate-x-1
+      "
+    />
+  </button>
+</div>
       </div>
     </motion.article>
   );
@@ -1339,6 +1360,7 @@ export default function ProductsPage({
       initialCategory ||
         "All Products"
     );
+    const [cartOpen, setCartOpen] = useState(false);
 
   const [search, setSearch] =
     useState("");
@@ -1367,8 +1389,17 @@ export default function ProductsPage({
   const [error, setError] =
     useState("");
 
-  const [addingProduct, setAddingProduct] =
-    useState(null);
+  const [cartPopup, setCartPopup] = useState(null);
+
+  const popupTimerRef = useRef(null);
+
+  useEffect(() => {
+  return () => {
+    if (popupTimerRef.current) {
+      clearTimeout(popupTimerRef.current);
+    }
+  };
+}, []);
 
   /* =======================================================
      FETCH PRODUCTS
@@ -1542,37 +1573,21 @@ export default function ProductsPage({
   /* =======================================================
      ADD TO CART
   ======================================================= */
+const addToCart = (product) => {
+  if (!product) return;
 
-  const addToCart = (product) => {
-    if (!product) return;
+  addProductToCart(product, 1);
 
-    setAddingProduct(
-      product?.id ||
-        product?._id ||
-        product?.slug
-    );
+  setCartPopup(product);
 
-    if (
-      typeof window !==
-      "undefined"
-    ) {
-      window.dispatchEvent(
-        new CustomEvent(
-          "dpack-cart-add",
-          {
-            detail: {
-              product,
-              quantity: 1,
-            },
-          }
-        )
-      );
-    }
+  if (popupTimerRef.current) {
+    clearTimeout(popupTimerRef.current);
+  }
 
-    setTimeout(() => {
-      setAddingProduct(null);
-    }, 500);
-  };
+  popupTimerRef.current = setTimeout(() => {
+    setCartPopup(null);
+  }, 3500);
+};
 
   /* =======================================================
      FILTERED PRODUCTS
@@ -2628,54 +2643,429 @@ export default function ProductsPage({
           clearAllFilters
         }
       />
+{/* =========================================================
+    CART DRAWER
+========================================================= */}
 
-      {/* ===================================================
-          FLOATING CART
-      =================================================== */}
+<AnimatePresence>
+  {cartOpen && (
+    <>
+      {/* =====================================================
+          OVERLAY
+      ===================================================== */}
+      <motion.button
+        type="button"
+        aria-label="Close cart"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        onClick={() => setCartOpen(false)}
+        className="fixed inset-0 z-[9998] cursor-default bg-black/30 backdrop-blur-[1px]"
+      />
 
-      <AnimatePresence>
-        {addingProduct && (
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 20,
-              x: "-50%",
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              x: "-50%",
-            }}
-            exit={{
-              opacity: 0,
-              y: 20,
-              x: "-50%",
-            }}
-            className="
-              fixed
-              bottom-6
-              left-1/2
-              z-[100]
-              flex
-              items-center
-              gap-3
-              bg-[#081A33]
-              px-5
-              py-3
-              text-white
-              shadow-2xl
-            "
-          >
-            <div className="flex h-7 w-7 items-center justify-center bg-[#F5A623] text-[#081A33]">
-              <Check size={14} />
+      {/* =====================================================
+          RIGHT CART DRAWER
+      ===================================================== */}
+      <motion.aside
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{
+          duration: 0.32,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className="
+          fixed
+          right-0
+          top-0
+          z-[9999]
+          flex
+          h-[100dvh]
+          w-full
+          max-w-[400px]
+          flex-col
+          bg-white
+          shadow-[-15px_0_50px_rgba(0,0,0,0.16)]
+        "
+      >
+        {/* =================================================
+            HEADER
+        ================================================= */}
+        <div className="flex h-[74px] shrink-0 items-center justify-between border-b border-[#E3E7EB] px-6">
+          <div className="flex items-center gap-3">
+
+            <div className="flex h-9 w-9 items-center justify-center bg-[#F7F8FA] text-[#081A33]">
+              <ShoppingBag
+                size={17}
+                strokeWidth={2}
+              />
             </div>
 
-            <span className="text-[10px] font-black uppercase tracking-[0.08em]">
-              Added to Cart
-            </span>
-          </motion.div>
+            <div>
+              <h2 className="text-[15px] font-black tracking-[-0.02em] text-[#081A33]">
+                Your cart
+              </h2>
+
+              <p className="mt-0.5 text-[10px] font-medium text-gray-400">
+                {totalCartItems}{" "}
+                {totalCartItems === 1 ? "item" : "items"}
+              </p>
+            </div>
+
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setCartOpen(false)}
+            aria-label="Close cart"
+            className="
+              flex
+              h-9
+              w-9
+              items-center
+              justify-center
+              text-gray-400
+              transition
+              hover:bg-[#F7F8FA]
+              hover:text-[#081A33]
+            "
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* =================================================
+            CART ITEMS
+        ================================================= */}
+        <div className="min-h-0 flex-1 overflow-y-auto">
+
+          {cartItems.length === 0 ? (
+
+            /* EMPTY CART */
+            <div className="flex h-full flex-col items-center justify-center px-6 text-center">
+
+              <div className="flex h-16 w-16 items-center justify-center bg-[#F7F8FA] text-[#081A33]">
+                <ShoppingBag
+                  size={25}
+                  strokeWidth={1.7}
+                />
+              </div>
+
+              <h3 className="mt-5 text-[16px] font-black text-[#081A33]">
+                Your cart is empty
+              </h3>
+
+              <p className="mt-2 max-w-[260px] text-[12px] leading-5 text-gray-400">
+                Add products to your cart and they will appear here.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => setCartOpen(false)}
+                className="
+                  mt-6
+                  bg-[#081A33]
+                  px-6
+                  py-3
+                  text-[10px]
+                  font-black
+                  uppercase
+                  tracking-[0.08em]
+                  text-white
+                  transition
+                  hover:bg-[#F5A623]
+                  hover:text-[#081A33]
+                "
+              >
+                Continue Shopping
+              </button>
+
+            </div>
+
+          ) : (
+
+            /* PRODUCTS */
+            <div className="space-y-3 p-5">
+
+              {cartItems.map((item) => {
+
+                const itemTotal =
+                  Number(item.price || 0) * item.qty;
+
+                return (
+                  <div
+                    key={item.key}
+                    className="
+                      border
+                      border-[#E3E7EB]
+                      bg-white
+                      p-3
+                    "
+                  >
+
+                    <div className="flex gap-3">
+
+                      {/* PRODUCT IMAGE */}
+                      <div className="relative h-[78px] w-[78px] shrink-0 overflow-hidden bg-[#F7F8FA]">
+
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.name || "Product"}
+                            className="
+                              h-full
+                              w-full
+                              object-contain
+                              p-2
+                            "
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-gray-300">
+                            <ShoppingBag size={22} />
+                          </div>
+                        )}
+
+                      </div>
+
+                      {/* PRODUCT DETAILS */}
+                      <div className="min-w-0 flex-1">
+
+                        <div className="flex items-start justify-between gap-2">
+
+                          <p className="
+                            line-clamp-2
+                            text-[13px]
+                            font-black
+                            leading-[1.35]
+                            text-[#081A33]
+                          ">
+                            {item.name || "Product"}
+                          </p>
+
+                          {/* DELETE */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeFromCart(item.key)
+                            }
+                            aria-label="Remove product"
+                            className="
+                              flex
+                              h-7
+                              w-7
+                              shrink-0
+                              items-center
+                              justify-center
+                              text-gray-300
+                              transition
+                              hover:bg-red-50
+                              hover:text-red-500
+                            "
+                          >
+                            <Trash2 size={14} />
+                          </button>
+
+                        </div>
+
+                        {/* PRICE */}
+                        <p className="
+                          mt-2
+                          text-[15px]
+                          font-black
+                          text-[#081A33]
+                        ">
+                          {formatINR(itemTotal)}
+                        </p>
+
+                        {/* QUANTITY */}
+                        <div className="mt-2 flex items-center">
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateQty(
+                                item.key,
+                                item.qty - 1
+                              )
+                            }
+                            className="
+                              flex
+                              h-8
+                              w-8
+                              items-center
+                              justify-center
+                              border
+                              border-[#E1E5E8]
+                              text-[#081A33]
+                              transition
+                              hover:bg-[#081A33]
+                              hover:text-white
+                            "
+                          >
+                            <Minus size={12} />
+                          </button>
+
+                          <div className="
+                            flex
+                            h-8
+                            min-w-[42px]
+                            items-center
+                            justify-center
+                            border-y
+                            border-[#E1E5E8]
+                            px-2
+                            text-[11px]
+                            font-black
+                            text-[#081A33]
+                          ">
+                            {item.qty}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateQty(
+                                item.key,
+                                item.qty + 1
+                              )
+                            }
+                            className="
+                              flex
+                              h-8
+                              w-8
+                              items-center
+                              justify-center
+                              border
+                              border-[#E1E5E8]
+                              text-[#081A33]
+                              transition
+                              hover:bg-[#081A33]
+                              hover:text-white
+                            "
+                          >
+                            <Plus size={12} />
+                          </button>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+                );
+              })}
+
+            </div>
+          )}
+
+        </div>
+
+        {/* =================================================
+            FOOTER
+        ================================================= */}
+        {cartItems.length > 0 && (
+          <div className="
+            shrink-0
+            border-t
+            border-[#E3E7EB]
+            bg-white
+            px-6
+            pb-7
+            pt-5
+          ">
+
+            {/* SUBTOTAL */}
+            <div className="flex items-center justify-between">
+
+              <span className="
+                text-[12px]
+                font-medium
+                text-gray-500
+              ">
+                Subtotal
+              </span>
+
+              <span className="
+                text-[22px]
+                font-black
+                tracking-[-0.03em]
+                text-[#081A33]
+              ">
+                {formatINR(cartTotal)}
+              </span>
+
+            </div>
+
+            <p className="
+              mt-1
+              text-[10px]
+              text-gray-400
+            ">
+              Shipping and taxes calculated at checkout.
+            </p>
+
+            {/* CHECKOUT */}
+            <Link
+              href="/checkout"
+              onClick={() => setCartOpen(false)}
+              className="
+                mt-5
+                flex
+                h-12
+                w-full
+                items-center
+                justify-center
+                gap-2
+                bg-[#081A33]
+                text-[11px]
+                font-black
+                uppercase
+                tracking-[0.04em]
+                text-white
+                transition-all
+                duration-300
+                hover:bg-[#F5A623]
+                hover:text-[#081A33]
+              "
+            >
+              Proceed to checkout
+              <ArrowRight
+                size={15}
+                strokeWidth={2.5}
+              />
+            </Link>
+
+            {/* CONTINUE SHOPPING */}
+            <button
+              type="button"
+              onClick={() => setCartOpen(false)}
+              className="
+                mt-4
+                block
+                w-full
+                text-center
+                text-[11px]
+                font-bold
+                text-gray-400
+                transition
+                hover:text-[#081A33]
+              "
+            >
+              Continue shopping
+            </button>
+
+          </div>
         )}
-      </AnimatePresence>
+
+      </motion.aside>
+    </>
+  )}
+</AnimatePresence>
+
     </main>
+
+    
   );
 }

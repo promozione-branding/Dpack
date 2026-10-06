@@ -723,6 +723,89 @@ export default function CartPage() {
         </section>
       )}
 
+      <AnimatePresence>
+  {cartPopup && (
+    <motion.div
+      initial={{
+        opacity: 0,
+        x: 40,
+      }}
+      animate={{
+        opacity: 1,
+        x: 0,
+      }}
+      exit={{
+        opacity: 0,
+        x: 40,
+      }}
+      transition={{
+        duration: 0.25,
+        ease: "easeOut",
+      }}
+      className="fixed right-4 top-24 z-[9999] w-[350px] max-w-[calc(100vw-2rem)] border border-[#E3E7EB] bg-white p-4 shadow-[0_20px_60px_rgba(8,26,51,0.18)] sm:right-6"
+    >
+      {/* TOP */}
+      <div className="flex gap-3">
+        {/* PRODUCT IMAGE */}
+        <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-[#F7F8F8]">
+          <Image
+            src={getProductImage(cartPopup)}
+            alt={cartPopup?.name || "Product"}
+            fill
+            sizes="64px"
+            className="object-contain p-2"
+          />
+        </div>
+
+        {/* PRODUCT INFO */}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-green-600">
+                  <Check size={12} strokeWidth={3} />
+                </div>
+
+                <span className="text-[9px] font-black uppercase tracking-[0.08em] text-green-600">
+                  Added to Cart
+                </span>
+              </div>
+
+              <p className="mt-1.5 line-clamp-2 text-[13px] font-black leading-5 text-[#081A33]">
+                {cartPopup?.name || "Product"}
+              </p>
+            </div>
+
+            {/* CLOSE */}
+            <button
+              type="button"
+              onClick={() => setCartPopup(null)}
+              className="flex h-7 w-7 shrink-0 items-center justify-center text-[#7A8490] transition hover:bg-[#F3F5F6] hover:text-[#081A33]"
+              aria-label="Close"
+            >
+              <X size={15} />
+            </button>
+          </div>
+
+          <p className="mt-1 text-[13px] font-black text-[#F5A623]">
+            {formatPrice(getProductPrice(cartPopup))}
+          </p>
+        </div>
+      </div>
+
+      {/* VIEW CART */}
+      <Link
+        href="/cart"
+        onClick={() => setCartPopup(null)}
+        className="mt-4 flex h-10 w-full items-center justify-center gap-2 bg-[#081A33] text-[10px] font-black uppercase tracking-[0.08em] text-white transition-all duration-300 hover:bg-[#F5A623] hover:text-[#081A33]"
+      >
+        View Cart
+        <ArrowRight size={14} strokeWidth={2.5} />
+      </Link>
+    </motion.div>
+  )}
+</AnimatePresence>
+
     </main>
   );
 }
