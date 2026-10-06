@@ -207,6 +207,7 @@ export default function VideoSection() {
                   <iframe
                     src={`https://www.youtube.com/embed/${video.id}?autoplay=1&mute=1&loop=1&playlist=${video.id}&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&disablekb=1`}
                     title={video.title}
+                    loading="lazy"
                     className="
                       absolute
                       inset-0

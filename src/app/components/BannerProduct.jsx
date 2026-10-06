@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   PackageCheck,
 } from "lucide-react";
+import { addToCart } from "@/lib/cartBus";
 
 /* =========================================================
    PRODUCTS
@@ -21,8 +22,8 @@ const products = [
     name: "Dunnage Air Bags",
     image: "https://packingairbag.com/cat/1.webp",
     category: "Dunnage Bags",
-    price: "₹1,299",
-    oldPrice: "₹1,599",
+    price: 1299,
+    oldPrice: 1599,
     discount: "19% OFF",
     link: "/products/dunnage-air-bags",
   },
@@ -31,8 +32,8 @@ const products = [
     name: "Air Column Bags",
     image: "https://packingairbag.com/cat/5.webp",
     category: "Protective Packaging",
-    price: "₹899",
-    oldPrice: "₹1,099",
+    price: 899,
+    oldPrice: 1099,
     discount: "18% OFF",
     link: "/products/air-column-bags",
   },
@@ -41,8 +42,8 @@ const products = [
     name: "Air Column Rolls",
     image: "https://packingairbag.com/cat/2.webp",
     category: "Air Packaging",
-    price: "₹1,499",
-    oldPrice: "₹1,799",
+    price: 1499,
+    oldPrice: 1799,
     discount: "17% OFF",
     link: "/products/air-column-rolls",
   },
@@ -55,8 +56,11 @@ const products = [
 function ProductCard({ product, index }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
-
-    console.log("Added to cart:", product);
+    addToCart({
+      ...product,
+      slug: product.link.split("/").filter(Boolean).at(-1),
+      compareAtPrice: product.oldPrice,
+    });
   };
 
   const handleWishlist = (e) => {
@@ -343,7 +347,7 @@ function ProductCard({ product, index }) {
               text-[#123B5D]
             "
           >
-            {product.price}
+            ₹{product.price.toLocaleString("en-IN")}
           </span>
 
           <span
@@ -353,7 +357,7 @@ function ProductCard({ product, index }) {
               line-through
             "
           >
-            {product.oldPrice}
+            ₹{product.oldPrice.toLocaleString("en-IN")}
           </span>
         </div>
 
@@ -688,7 +692,7 @@ export default function BannerProduct() {
               src="/left image.webp"
               alt="Protective Packaging"
               fill
-              priority
+              loading="lazy"
               sizes="(max-width: 1024px) 100vw, 400px"
               className="
                 object-cover

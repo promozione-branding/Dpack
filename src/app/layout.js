@@ -1,4 +1,5 @@
 import Footer from "./components/Footer";
+import CartDrawer from "./components/CartDrawer";
 import Navbar from "./components/Navbaar";
 import LenisScroll from "./components/Smooth";
 import { AuthProvider } from "./context/AuthContext";
@@ -53,6 +54,7 @@ export default function RootLayout({ children }) {
           <LenisScroll />
 
           <Footer />
+          <CartDrawer />
         </AuthProvider>
       </body>
     </html>

@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Star,
 } from "lucide-react";
+import { getHomeProducts } from "@/lib/homeProducts";
 
 /* =========================================================
    PRODUCT IMAGE FALLBACK
@@ -410,24 +411,7 @@ export default function TrendingProducts() {
       try {
         setLoading(true);
 
-        const response = await fetch("/api/products", {
-          method: "GET",
-          cache: "no-store",
-        });
-
-        if (!response.ok) {
-          throw new Error("Unable to fetch products");
-        }
-
-        const data = await response.json();
-
-        const adminProducts = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.products)
-            ? data.products
-            : Array.isArray(data?.data)
-              ? data.data
-              : [];
+        const adminProducts = await getHomeProducts();
 
         if (!cancelled) {
           setProducts(
@@ -878,4 +862,3 @@ export default function TrendingProducts() {
     </section>
   );
 }
-

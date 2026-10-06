@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -60,7 +60,7 @@ function getProductOldPrice(product) {
 }
 
 function getProductImage(product) {
-  const image =
+  let image =
     product?.image ||
     product?.images?.[0] ||
     product?.thumbnail ||
@@ -72,6 +72,21 @@ function getProductImage(product) {
       image?.src ||
       "/placeholder-product.webp"
     );
+  }
+
+  if (typeof image === "string") {
+    try {
+      const imageUrl = new URL(image);
+      if (
+        (imageUrl.hostname === "localhost" ||
+          imageUrl.hostname === "127.0.0.1") &&
+        imageUrl.pathname.startsWith("/products/")
+      ) {
+        image = `${imageUrl.pathname}${imageUrl.search}${imageUrl.hash}`;
+      }
+    } catch {
+      // Keep relative and non-URL image paths unchanged.
+    }
   }
 
   return image;
@@ -1360,8 +1375,6 @@ export default function ProductsPage({
       initialCategory ||
         "All Products"
     );
-    const [cartOpen, setCartOpen] = useState(false);
-
   const [search, setSearch] =
     useState("");
 
@@ -1389,18 +1402,6 @@ export default function ProductsPage({
   const [error, setError] =
     useState("");
 
-  const [cartPopup, setCartPopup] = useState(null);
-
-  const popupTimerRef = useRef(null);
-
-  useEffect(() => {
-  return () => {
-    if (popupTimerRef.current) {
-      clearTimeout(popupTimerRef.current);
-    }
-  };
-}, []);
-
   /* =======================================================
      FETCH PRODUCTS
   ======================================================= */
@@ -1420,14 +1421,18 @@ export default function ProductsPage({
           }
         );
 
-        if (!response.ok) {
-          throw new Error(
-            "Unable to load products."
-          );
-        }
-
         const data =
           await response.json();
+
+        if (
+          !response.ok ||
+          data?.success === false
+        ) {
+          throw new Error(
+            data?.error ||
+              "Unable to load products."
+          );
+        }
 
         const fetchedProducts =
           Array.isArray(data)
@@ -1482,7 +1487,8 @@ export default function ProductsPage({
 
         if (mounted) {
           setError(
-            "Products could not be loaded. Please try again."
+            err.message ||
+              "Products could not be loaded. Please try again."
           );
         }
       } finally {
@@ -1577,16 +1583,6 @@ const addToCart = (product) => {
   if (!product) return;
 
   addProductToCart(product, 1);
-
-  setCartPopup(product);
-
-  if (popupTimerRef.current) {
-    clearTimeout(popupTimerRef.current);
-  }
-
-  popupTimerRef.current = setTimeout(() => {
-    setCartPopup(null);
-  }, 3500);
 };
 
   /* =======================================================
@@ -2643,426 +2639,7 @@ const addToCart = (product) => {
           clearAllFilters
         }
       />
-{/* =========================================================
-    CART DRAWER
-========================================================= */}
 
-<AnimatePresence>
-  {cartOpen && (
-    <>
-      {/* =====================================================
-          OVERLAY
-      ===================================================== */}
-      <motion.button
-        type="button"
-        aria-label="Close cart"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        onClick={() => setCartOpen(false)}
-        className="fixed inset-0 z-[9998] cursor-default bg-black/30 backdrop-blur-[1px]"
-      />
-
-      {/* =====================================================
-          RIGHT CART DRAWER
-      ===================================================== */}
-      <motion.aside
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{
-          duration: 0.32,
-          ease: [0.22, 1, 0.36, 1],
-        }}
-        className="
-          fixed
-          right-0
-          top-0
-          z-[9999]
-          flex
-          h-[100dvh]
-          w-full
-          max-w-[400px]
-          flex-col
-          bg-white
-          shadow-[-15px_0_50px_rgba(0,0,0,0.16)]
-        "
-      >
-        {/* =================================================
-            HEADER
-        ================================================= */}
-        <div className="flex h-[74px] shrink-0 items-center justify-between border-b border-[#E3E7EB] px-6">
-          <div className="flex items-center gap-3">
-
-            <div className="flex h-9 w-9 items-center justify-center bg-[#F7F8FA] text-[#081A33]">
-              <ShoppingBag
-                size={17}
-                strokeWidth={2}
-              />
-            </div>
-
-            <div>
-              <h2 className="text-[15px] font-black tracking-[-0.02em] text-[#081A33]">
-                Your cart
-              </h2>
-
-              <p className="mt-0.5 text-[10px] font-medium text-gray-400">
-                {totalCartItems}{" "}
-                {totalCartItems === 1 ? "item" : "items"}
-              </p>
-            </div>
-
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setCartOpen(false)}
-            aria-label="Close cart"
-            className="
-              flex
-              h-9
-              w-9
-              items-center
-              justify-center
-              text-gray-400
-              transition
-              hover:bg-[#F7F8FA]
-              hover:text-[#081A33]
-            "
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* =================================================
-            CART ITEMS
-        ================================================= */}
-        <div className="min-h-0 flex-1 overflow-y-auto">
-
-          {cartItems.length === 0 ? (
-
-            /* EMPTY CART */
-            <div className="flex h-full flex-col items-center justify-center px-6 text-center">
-
-              <div className="flex h-16 w-16 items-center justify-center bg-[#F7F8FA] text-[#081A33]">
-                <ShoppingBag
-                  size={25}
-                  strokeWidth={1.7}
-                />
-              </div>
-
-              <h3 className="mt-5 text-[16px] font-black text-[#081A33]">
-                Your cart is empty
-              </h3>
-
-              <p className="mt-2 max-w-[260px] text-[12px] leading-5 text-gray-400">
-                Add products to your cart and they will appear here.
-              </p>
-
-              <button
-                type="button"
-                onClick={() => setCartOpen(false)}
-                className="
-                  mt-6
-                  bg-[#081A33]
-                  px-6
-                  py-3
-                  text-[10px]
-                  font-black
-                  uppercase
-                  tracking-[0.08em]
-                  text-white
-                  transition
-                  hover:bg-[#F5A623]
-                  hover:text-[#081A33]
-                "
-              >
-                Continue Shopping
-              </button>
-
-            </div>
-
-          ) : (
-
-            /* PRODUCTS */
-            <div className="space-y-3 p-5">
-
-              {cartItems.map((item) => {
-
-                const itemTotal =
-                  Number(item.price || 0) * item.qty;
-
-                return (
-                  <div
-                    key={item.key}
-                    className="
-                      border
-                      border-[#E3E7EB]
-                      bg-white
-                      p-3
-                    "
-                  >
-
-                    <div className="flex gap-3">
-
-                      {/* PRODUCT IMAGE */}
-                      <div className="relative h-[78px] w-[78px] shrink-0 overflow-hidden bg-[#F7F8FA]">
-
-                        {item.image ? (
-                          <img
-                            src={item.image}
-                            alt={item.name || "Product"}
-                            className="
-                              h-full
-                              w-full
-                              object-contain
-                              p-2
-                            "
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center text-gray-300">
-                            <ShoppingBag size={22} />
-                          </div>
-                        )}
-
-                      </div>
-
-                      {/* PRODUCT DETAILS */}
-                      <div className="min-w-0 flex-1">
-
-                        <div className="flex items-start justify-between gap-2">
-
-                          <p className="
-                            line-clamp-2
-                            text-[13px]
-                            font-black
-                            leading-[1.35]
-                            text-[#081A33]
-                          ">
-                            {item.name || "Product"}
-                          </p>
-
-                          {/* DELETE */}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              removeFromCart(item.key)
-                            }
-                            aria-label="Remove product"
-                            className="
-                              flex
-                              h-7
-                              w-7
-                              shrink-0
-                              items-center
-                              justify-center
-                              text-gray-300
-                              transition
-                              hover:bg-red-50
-                              hover:text-red-500
-                            "
-                          >
-                            <Trash2 size={14} />
-                          </button>
-
-                        </div>
-
-                        {/* PRICE */}
-                        <p className="
-                          mt-2
-                          text-[15px]
-                          font-black
-                          text-[#081A33]
-                        ">
-                          {formatINR(itemTotal)}
-                        </p>
-
-                        {/* QUANTITY */}
-                        <div className="mt-2 flex items-center">
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              updateQty(
-                                item.key,
-                                item.qty - 1
-                              )
-                            }
-                            className="
-                              flex
-                              h-8
-                              w-8
-                              items-center
-                              justify-center
-                              border
-                              border-[#E1E5E8]
-                              text-[#081A33]
-                              transition
-                              hover:bg-[#081A33]
-                              hover:text-white
-                            "
-                          >
-                            <Minus size={12} />
-                          </button>
-
-                          <div className="
-                            flex
-                            h-8
-                            min-w-[42px]
-                            items-center
-                            justify-center
-                            border-y
-                            border-[#E1E5E8]
-                            px-2
-                            text-[11px]
-                            font-black
-                            text-[#081A33]
-                          ">
-                            {item.qty}
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              updateQty(
-                                item.key,
-                                item.qty + 1
-                              )
-                            }
-                            className="
-                              flex
-                              h-8
-                              w-8
-                              items-center
-                              justify-center
-                              border
-                              border-[#E1E5E8]
-                              text-[#081A33]
-                              transition
-                              hover:bg-[#081A33]
-                              hover:text-white
-                            "
-                          >
-                            <Plus size={12} />
-                          </button>
-
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-                );
-              })}
-
-            </div>
-          )}
-
-        </div>
-
-        {/* =================================================
-            FOOTER
-        ================================================= */}
-        {cartItems.length > 0 && (
-          <div className="
-            shrink-0
-            border-t
-            border-[#E3E7EB]
-            bg-white
-            px-6
-            pb-7
-            pt-5
-          ">
-
-            {/* SUBTOTAL */}
-            <div className="flex items-center justify-between">
-
-              <span className="
-                text-[12px]
-                font-medium
-                text-gray-500
-              ">
-                Subtotal
-              </span>
-
-              <span className="
-                text-[22px]
-                font-black
-                tracking-[-0.03em]
-                text-[#081A33]
-              ">
-                {formatINR(cartTotal)}
-              </span>
-
-            </div>
-
-            <p className="
-              mt-1
-              text-[10px]
-              text-gray-400
-            ">
-              Shipping and taxes calculated at checkout.
-            </p>
-
-            {/* CHECKOUT */}
-            <Link
-              href="/checkout"
-              onClick={() => setCartOpen(false)}
-              className="
-                mt-5
-                flex
-                h-12
-                w-full
-                items-center
-                justify-center
-                gap-2
-                bg-[#081A33]
-                text-[11px]
-                font-black
-                uppercase
-                tracking-[0.04em]
-                text-white
-                transition-all
-                duration-300
-                hover:bg-[#F5A623]
-                hover:text-[#081A33]
-              "
-            >
-              Proceed to checkout
-              <ArrowRight
-                size={15}
-                strokeWidth={2.5}
-              />
-            </Link>
-
-            {/* CONTINUE SHOPPING */}
-            <button
-              type="button"
-              onClick={() => setCartOpen(false)}
-              className="
-                mt-4
-                block
-                w-full
-                text-center
-                text-[11px]
-                font-bold
-                text-gray-400
-                transition
-                hover:text-[#081A33]
-              "
-            >
-              Continue shopping
-            </button>
-
-          </div>
-        )}
-
-      </motion.aside>
-    </>
-  )}
-</AnimatePresence>
 
     </main>
 

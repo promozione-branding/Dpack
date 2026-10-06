@@ -92,6 +92,9 @@ export function addToCart(product, qty = 1) {
   }
   persist();
   emit();
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("cart:open"));
+  }
 
   if (OBJECT_ID_RE.test(key)) {
     backgroundSync(() => cartAPI.add(key, qty));

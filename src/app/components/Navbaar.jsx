@@ -234,11 +234,11 @@ export default function Navbar() {
 
 
   const pathname = usePathname();
-    const isAdminRoute = pathname.startsWith("/admin");
-    if (isAdminRoute) {
-        return null; 
-    }
+  const isAdminRoute = pathname.startsWith("/admin");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [categoriesError, setCategoriesError] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const { wishlistCount } = useAuth();
   const cart = useCart();
@@ -256,6 +256,54 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    if (isAdminRoute) return undefined;
+    let cancelled = false;
+
+    async function loadCategories() {
+      try {
+        const response = await fetch("/api/categories", {
+          cache: "no-store",
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data?.success) {
+          throw new Error(data?.error || "Unable to load categories.");
+        }
+
+        if (!cancelled) {
+          setCategories(
+            Array.isArray(data.categories)
+              ? data.categories.filter((category) => category && category !== "All")
+              : []
+          );
+        }
+      } catch (error) {
+        console.error("Navbar categories fetch failed:", error);
+        if (!cancelled) {
+          setCategoriesError("Categories are temporarily unavailable.");
+        }
+      }
+    }
+
+    loadCategories();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdminRoute]);
+
+  useEffect(() => {
+    if (!categoriesOpen) return undefined;
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setCategoriesOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [categoriesOpen]);
+
+  if (isAdminRoute) return null;
 
   return (
     <>
@@ -776,33 +824,74 @@ export default function Navbar() {
 
             {/* BROWSE CATEGORIES */}
 
-            <Link
-              href="/products"
-              className="
-                flex
-                shrink-0
-                items-center
-                gap-2
-                text-[13px]
-                font-semibold
-                text-white
-                transition-colors
-                hover:text-[#F5A623]
-              "
-            >
+            <div className="relative shrink-0">
+              <button
+                type="button"
+                aria-expanded={categoriesOpen}
+                aria-haspopup="menu"
+                onClick={() => setCategoriesOpen((open) => !open)}
+                className="
+                  flex
+                  items-center
+                  gap-2
+                  text-[13px]
+                  font-semibold
+                  text-white
+                  transition-colors
+                  hover:text-[#F5A623]
+                "
+              >
+                <Menu size={20} strokeWidth={1.8} />
+                <span>Browse Categories</span>
+                <ChevronDown
+                  size={14}
+                  className={`text-white/70 transition-transform ${categoriesOpen ? "rotate-180" : ""}`}
+                />
+              </button>
 
-              <Menu size={20} strokeWidth={1.8} />
+              {categoriesOpen && (
+                <div
+                  role="menu"
+                  aria-label="Product categories"
+                  className="absolute left-0 top-full z-[120] mt-4 max-h-[min(70vh,520px)] w-[280px] overflow-y-auto border border-[#E5E7EB] bg-white py-2 text-[#171717] shadow-[0_18px_45px_rgba(0,0,0,0.18)]"
+                >
+                  <Link
+                    href="/products"
+                    role="menuitem"
+                    onClick={() => setCategoriesOpen(false)}
+                    className="flex items-center justify-between border-b border-[#E5E7EB] px-5 py-3 text-[13px] font-bold text-[#0C203A] transition-colors hover:bg-[#F7F7F5] hover:text-[#F5A623]"
+                  >
+                    All Products
+                    <ArrowRight size={14} />
+                  </Link>
 
-              <span>
-                Browse Categories
-              </span>
+                  {categories.map((category) => (
+                    <Link
+                      key={category}
+                      href={`/products?category=${encodeURIComponent(category)}`}
+                      role="menuitem"
+                      onClick={() => setCategoriesOpen(false)}
+                      className="flex items-center justify-between px-5 py-3 text-[13px] font-medium transition-colors hover:bg-[#F7F7F5] hover:text-[#F5A623]"
+                    >
+                      {category}
+                      <ArrowRight size={14} className="text-gray-300" />
+                    </Link>
+                  ))}
 
-              <ChevronDown
-                size={14}
-                className="text-white/70"
-              />
+                  {categoriesError && (
+                    <p role="status" className="px-5 py-3 text-xs text-gray-500">
+                      {categoriesError}
+                    </p>
+                  )}
 
-            </Link>
+                  {!categoriesError && categories.length === 0 && (
+                    <p className="px-5 py-3 text-xs text-gray-500">
+                      Loading categories...
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* SEARCH */}
 

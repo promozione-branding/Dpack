@@ -10,6 +10,7 @@ import {
   Package,
   Sparkles,
 } from "lucide-react";
+import { getHomeProducts } from "@/lib/homeProducts";
 
 /* =========================================================
    CATEGORY DESIGN DATA
@@ -616,29 +617,10 @@ export default function CategoryProducts() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(
-          "/api/products?limit=100",
-          {
-            method: "GET",
-            cache: "no-store",
-          }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok || !data?.success) {
-          throw new Error(
-            data?.error ||
-              "Unable to load products"
-          );
-        }
+        const products = await getHomeProducts();
 
         if (mounted) {
-          setProducts(
-            Array.isArray(data.products)
-              ? data.products
-              : []
-          );
+          setProducts(products);
         }
       } catch (err) {
         console.error(

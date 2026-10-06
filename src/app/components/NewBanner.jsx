@@ -9,7 +9,7 @@ export default function Newbanner() {
           alt="Upgrade Your Packaging Now"
           width={1920}
           height={500}
-          priority
+          loading="lazy"
           className="
             w-full
             h-auto

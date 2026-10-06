@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { getHomeProducts } from "@/lib/homeProducts";
 
 /* =========================================================
    CATEGORY DESIGN
@@ -217,29 +218,10 @@ export default function Categories() {
 
     async function fetchProducts() {
       try {
-        const response = await fetch(
-          "/api/products?limit=100",
-          {
-            method: "GET",
-            cache: "no-store",
-          }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok || !data?.success) {
-          throw new Error(
-            data?.error ||
-              "Unable to load products"
-          );
-        }
+        const products = await getHomeProducts();
 
         if (mounted) {
-          setProducts(
-            Array.isArray(data.products)
-              ? data.products
-              : []
-          );
+          setProducts(products);
         }
       } catch (error) {
         console.error(

@@ -1,22 +1,20 @@
-import Image from "next/image";
+import dynamic from "next/dynamic";
 
-import Categories from "./components/Categories";
-import WhyChooseUs from "./components/WhyChoose";
-import PromoBanners from "./components/Banner";
-import Testimonials from "./components/Testimonials";
-import CategoryProducts from "./components/TabProducts";
-
-import Marquee from "./components/Marquee";
-import BannerProduct from "./components/BannerProduct";
-import Newbanner from "./components/NewBanner";
-
-import Products from "./components/Products";
 import PackagingBanner from "./components/Box";
-import SaleNow from "./components/SaleNow";
-import CategoryMarquee from "./components/CategoryMarquee";
-import VideoSection from "./components/Video";
-import Product360 from "./components/Products360";
 
+const Products = dynamic(() => import("./components/Products"));
+const SaleNow = dynamic(() => import("./components/SaleNow"));
+const Product360 = dynamic(() => import("./components/Products360"));
+const Categories = dynamic(() => import("./components/Categories"));
+const VideoSection = dynamic(() => import("./components/Video"));
+const PromoBanners = dynamic(() => import("./components/Banner"));
+const CategoryMarquee = dynamic(() => import("./components/CategoryMarquee"));
+const BannerProduct = dynamic(() => import("./components/BannerProduct"));
+const Newbanner = dynamic(() => import("./components/NewBanner"));
+const CategoryProducts = dynamic(() => import("./components/TabProducts"));
+const WhyChooseUs = dynamic(() => import("./components/WhyChoose"));
+const Marquee = dynamic(() => import("./components/Marquee"));
+const Testimonials = dynamic(() => import("./components/Testimonials"));
 
 
 export default function Home() {

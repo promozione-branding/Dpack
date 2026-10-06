@@ -31,6 +31,12 @@ Phone sign-in requires a Firebase project with the Phone authentication provider
 
 Restart the Next.js development server after changing environment variables. If these values are missing, the app remains usable and phone sign-in displays a configuration error instead of crashing during page load.
 
+## Product catalog
+
+The product catalog requires a MongoDB database. Set `MONGODB_URI` in `.env.local` to your MongoDB connection string and restart the Next.js server. Products must exist in that database and have `isActive: true` to appear in the storefront.
+
+If the MongoDB SRV lookup fails with a DNS error, set `MONGODB_DNS_SERVERS` in `.env.local` to the comma-separated DNS server addresses configured for your machine, then restart the server.
+
 ## Admin sign-in
 
 Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in `.env.local` to credentials of your choice. Admin sign-in also requires `MONGODB_URI` and `JWT_SECRET`. Restart the Next.js server after changing these values. Do not use default or example passwords in a deployed environment.

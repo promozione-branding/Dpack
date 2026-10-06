@@ -38,6 +38,9 @@ export async function GET(request) {
     return ok({ products, categories: categoryNames.sort(), total, page, limit });
   } catch (e) {
     console.error(e);
+    if (!process.env.MONGODB_URI) {
+      return err("Product database is not configured. Set MONGODB_URI in .env.local and restart the server.", 503);
+    }
     return err("Failed to fetch products", 500);
   }
 }
