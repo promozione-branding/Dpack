@@ -6,8 +6,10 @@ import { uploadToCloudinary, deleteFromCloudinary } from "@/lib/cloudinary";
 export async function GET(request, { params }) {
   const { error } = await requireAdmin(request);
   if (error) return error;
+
+  const { id } = await params;
   await connectDB();
-  const product = await Product.findById(params.id).lean();
+  const product = await Product.findById(id).lean();
   if (!product) return err("Product not found", 404);
   return ok({ product });
 }
@@ -17,8 +19,9 @@ export async function PUT(request, { params }) {
   if (error) return error;
 
   try {
+    const { id } = await params;
     await connectDB();
-    const product = await Product.findById(params.id);
+    const product = await Product.findById(id);
     if (!product) return err("Product not found", 404);
 
     const contentType = request.headers.get("content-type") || "";
@@ -26,16 +29,18 @@ export async function PUT(request, { params }) {
     if (contentType.includes("multipart/form-data")) {
       const { fields, files } = await parseFormData(request);
 
-      if (files.image) {
+      if (files.imageFile) {
+        const { url, public_id } = await uploadToCloudinary(
+          files.imageFile.buffer,
+          "dpack/products"
+        );
         if (product.imagePublicId) {
           await deleteFromCloudinary(product.imagePublicId);
         }
-        const { url, public_id } = await uploadToCloudinary(
-          files.image.buffer,
-          "dpack/products"
-        );
         product.image = url;
         product.imagePublicId = public_id;
+      } else if (fields.image !== undefined && fields.image.trim()) {
+        product.image = fields.image.trim();
       }
 
       for (let i = 0; i < 10; i++) {
@@ -49,6 +54,17 @@ export async function PUT(request, { params }) {
         }
       }
 
+      const parseArrayField = (value) => {
+        if (value === undefined) return undefined;
+        try {
+          const parsed = JSON.parse(value);
+          if (Array.isArray(parsed)) return parsed.map(String);
+        } catch {
+          // Support newline-separated values from older form submissions.
+        }
+        return value.split("\n").map((item) => item.trim()).filter(Boolean);
+      };
+
       if (fields.youtubeUrl !== undefined) {
         product.youtubeUrl = fields.youtubeUrl.trim() || null;
       }
@@ -56,39 +72,62 @@ export async function PUT(request, { params }) {
         product.instagramUrl = fields.instagramUrl.trim() || null;
       }
 
-      const specs = [].concat(fields.specs || []).filter(Boolean);
-      const sizes = [].concat(fields.sizes || []).filter(Boolean);
-      const overview = [].concat(fields.overview || []).filter(Boolean);
-      const keyFeatures = [].concat(fields.keyFeatures || []).filter(Boolean);
-      const applications = [].concat(fields.applications || []).filter(Boolean);
+      for (const field of [
+        "overview",
+        "keyFeatures",
+        "applications",
+        "specs",
+        "sizes",
+      ]) {
+        const value = parseArrayField(fields[field]);
+        if (value !== undefined) product[field] = value;
+      }
 
-      if (fields.name) product.name = fields.name;
-      if (fields.slug) product.slug = fields.slug;
-      if (fields.category) product.category = fields.category;
-      if (fields.description) product.description = fields.description;
-      if (specs.length) product.specs = specs;
-      if (sizes.length) product.sizes = sizes;
-      if (overview.length) product.overview = overview;
-      if (keyFeatures.length) product.keyFeatures = keyFeatures;
-      if (applications.length) product.applications = applications;
-      if (fields.price) product.price = parseFloat(fields.price);
-      if (fields.compareAtPrice !== undefined)
-        product.compareAtPrice = fields.compareAtPrice
-          ? parseFloat(fields.compareAtPrice)
-          : null;
-      if (fields.featured !== undefined)
-        product.featured = fields.featured === "true";
-      if (fields.stock !== undefined)
-        product.stock = parseInt(fields.stock);
-      if (fields.lowStockThreshold !== undefined)
-        product.lowStockThreshold = parseInt(fields.lowStockThreshold);
-      if (fields.trackInventory !== undefined)
-        product.trackInventory = fields.trackInventory !== "false";
-      if (fields.isActive !== undefined)
-        product.isActive = fields.isActive !== "false";
-      if (fields.metaTitle !== undefined) product.metaTitle = fields.metaTitle;
-      if (fields.metaDescription !== undefined)
-        product.metaDescription = fields.metaDescription;
+      if (fields.extraImages !== undefined) {
+        const extraImages = parseArrayField(fields.extraImages);
+        const existingIdsByUrl = new Map(
+          (product.extraImages || []).map((url, index) => [
+            url,
+            product.extraImagePublicIds?.[index],
+          ])
+        );
+        product.extraImages = extraImages;
+        product.extraImagePublicIds = extraImages.map(
+          (url) => existingIdsByUrl.get(url) || ""
+        );
+      }
+
+      for (const field of [
+        "name",
+        "slug",
+        "category",
+        "description",
+        "metaTitle",
+        "metaDescription",
+      ]) {
+        if (fields[field] !== undefined) {
+          product[field] = fields[field];
+        }
+      }
+
+      for (const field of ["price", "stock", "lowStockThreshold"]) {
+        if (fields[field] !== undefined && fields[field] !== "") {
+          product[field] = Number(fields[field]);
+        }
+      }
+
+      if (fields.compareAtPrice !== undefined) {
+        product.compareAtPrice =
+          fields.compareAtPrice === ""
+            ? null
+            : Number(fields.compareAtPrice);
+      }
+
+      for (const field of ["featured", "trackInventory", "isActive"]) {
+        if (fields[field] !== undefined) {
+          product[field] = fields[field] === "true";
+        }
+      }
     } else {
       const body = await request.json();
       Object.assign(product, body);
@@ -107,8 +146,9 @@ export async function DELETE(request, { params }) {
   if (error) return error;
 
   try {
+    const { id } = await params;
     await connectDB();
-    const product = await Product.findById(params.id);
+    const product = await Product.findById(id);
     if (!product) return err("Product not found", 404);
 
     if (product.imagePublicId) {

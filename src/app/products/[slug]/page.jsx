@@ -494,6 +494,168 @@ function toSpecificationPairs(specifications) {
 }
 
 /* =========================================================
+   DESCRIPTION FORMATTER
+   Supports:
+   - Plain text descriptions from CSV
+   - Old ◆ / 🔹 / ♦ point format
+   - Rich HTML saved by the product editor
+========================================================= */
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatProductDescription(description) {
+  if (!description) return "";
+
+  let text = String(description).trim();
+
+  /* Remove standalone diamond lines */
+  text = text.replace(
+    /(?:^|\n)\s*[◆🔹♦]\s*(?=\n|$)/g,
+    "\n"
+  );
+
+  /* Convert inline diamonds into separate lines */
+  text = text.replace(
+    /\s*[◆🔹♦]\s*(?=[A-Za-z][^:]*:)/g,
+    "\n◆ "
+  );
+
+  text = text
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  const hasHtml = /<\/?[a-z][\s\S]*>/i.test(text);
+
+  /* =====================================================
+     PLAIN TEXT / CSV CONTENT
+  ===================================================== */
+
+  if (!hasHtml) {
+    const lines = text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    let html = "";
+    let paragraph = [];
+    let points = [];
+
+    const flushParagraph = () => {
+      if (!paragraph.length) return;
+
+      html += `
+        <p class="description-paragraph">
+          ${paragraph.join(" ")}
+        </p>
+      `;
+
+      paragraph = [];
+    };
+
+    const flushPoints = () => {
+      if (!points.length) return;
+
+      html += `
+        <div class="description-points">
+          ${points
+            .map((point) => {
+              const clean = point
+                .replace(/^[◆🔹♦]\s*/, "")
+                .trim();
+
+              if (!clean) return "";
+
+              const match = clean.match(
+                /^([^:]+):\s*(.*)$/
+              );
+
+              if (match) {
+                return `
+                  <div class="description-point">
+                    <span class="description-diamond"></span>
+                    <p>
+                      <strong>${match[1]}:</strong>
+                      ${match[2]}
+                    </p>
+                  </div>
+                `;
+              }
+
+              return `
+                <div class="description-point">
+                  <span class="description-diamond"></span>
+                  <p>${clean}</p>
+                </div>
+              `;
+            })
+            .filter(Boolean)
+            .join("")}
+        </div>
+      `;
+
+      points = [];
+    };
+
+    lines.forEach((line) => {
+      /* Ignore standalone ◆ */
+      if (/^[◆🔹♦]\s*$/.test(line)) {
+        return;
+      }
+
+      /* Actual point */
+      if (/^[◆🔹♦]\s*[^:]+:/i.test(line)) {
+        flushParagraph();
+        points.push(line);
+      } else {
+        flushPoints();
+        paragraph.push(line);
+      }
+    });
+
+    flushParagraph();
+    flushPoints();
+
+    return html;
+  }
+
+  /* =====================================================
+     RICH TEXT / HTML CONTENT
+  ===================================================== */
+
+  return text
+    /* Remove standalone diamond HTML paragraphs */
+    .replace(
+      /<p[^>]*>\s*[◆🔹♦]\s*<\/p>/gi,
+      ""
+    )
+
+    /* Convert actual diamond points */
+    .replace(
+      /[◆🔹♦]\s*([^:<]+):\s*([^◆🔹♦<]+)/g,
+      `
+        <div class="description-point">
+          <span class="description-diamond"></span>
+          <p>
+            <strong>$1:</strong> $2
+          </p>
+        </div>
+      `
+    )
+
+    .replace(
+      /<p>\s*<\/p>/gi,
+      ""
+    );
+}
+
+/* =========================================================
    PAGE
 ========================================================= */
 
@@ -884,9 +1046,49 @@ export default function ProductPage({ params }) {
 
             </div>
 
-            <p className="mt-6 text-[16px] leading-8 text-gray-600">
-              {content.description}
-            </p>
+            <div
+              className="
+                mt-6
+                text-[16px]
+                leading-8
+                text-gray-600
+                [&_.description-paragraph]:mb-5
+                [&_.description-paragraph:last-child]:mb-0
+                [&_.description-points]:my-5
+                [&_.description-points]:space-y-2
+                [&_.description-point]:flex
+                [&_.description-point]:items-start
+                [&_.description-point]:gap-3
+                [&_.description-point_p]:m-0
+                [&_.description-point_p]:leading-8
+                [&_.description-point_strong]:font-semibold
+                [&_.description-point_strong]:text-[#081A33]
+                [&_.description-diamond]:mt-[13px]
+                [&_.description-diamond]:h-2.5
+                [&_.description-diamond]:w-2.5
+                [&_.description-diamond]:shrink-0
+                [&_.description-diamond]:rotate-45
+                [&_.description-diamond]:bg-[#3B82F6]
+                [&_p]:mb-4
+                [&_p:last-child]:mb-0
+                [&_ul]:my-4
+                [&_ul]:list-disc
+                [&_ul]:pl-6
+                [&_ol]:my-4
+                [&_ol]:list-decimal
+                [&_ol]:pl-6
+                [&_li]:mb-2
+                [&_strong]:font-semibold
+                [&_em]:italic
+                [&_u]:underline
+                [&_a]:text-[#081A33]
+                [&_a]:underline
+                [&_a]:underline-offset-2
+              "
+              dangerouslySetInnerHTML={{
+                __html: formatProductDescription(content.description),
+              }}
+            />
 
             {/* PRICE */}
 
@@ -1244,50 +1446,6 @@ export default function ProductPage({ params }) {
 
                   </button>
 
-                  {/* SPECIFICATION TAB */}
-
-                  <button
-                    onClick={() =>
-                      setActiveTab(
-                        "specification"
-                      )
-                    }
-                    className={`group relative flex flex-1 items-center gap-3 border-t border-gray-200 px-5 py-5 text-left transition lg:flex-none ${
-                      activeTab ===
-                      "specification"
-                        ? "bg-[#F7F8FA]"
-                        : "bg-white hover:bg-[#F7F8FA]"
-                    }`}
-                  >
-
-                    <span
-                      className={`text-xs font-black ${
-                        activeTab ===
-                        "specification"
-                          ? "text-[#F5A623]"
-                          : "text-gray-300"
-                      }`}
-                    >
-                      02
-                    </span>
-
-                    <span
-                      className={`text-xs font-extrabold uppercase tracking-[1.2px] ${
-                        activeTab ===
-                        "specification"
-                          ? "text-[#081A33]"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      Specifications
-                    </span>
-
-                    {activeTab ===
-                      "specification" && (
-                      <span className="absolute left-0 top-0 h-full w-[3px] bg-[#F5A623]" />
-                    )}
-
-                  </button>
 
                 </div>
 
@@ -1433,79 +1591,7 @@ export default function ProductPage({ params }) {
                 </div>
               )}
 
-              {/* SPECIFICATIONS */}
 
-              {activeTab ===
-                "specification" && (
-                <div>
-
-                  <div className="mb-10 border-b border-gray-200 pb-8">
-
-                    <span className="text-xs font-extrabold uppercase tracking-[3px] text-[#F5A623]">
-                      Technical Details
-                    </span>
-
-                    <h2 className="mt-3 text-3xl font-black text-[#081A33] md:text-5xl">
-                      Product Specifications
-                    </h2>
-
-                    <p className="mt-4 max-w-2xl text-sm leading-7 text-gray-500">
-                      Detailed technical information
-                      and product characteristics for{" "}
-                      {currentProduct.name}.
-                    </p>
-
-                  </div>
-
-                  {/* SPECIFICATION GRID */}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2">
-
-                    {(
-                      content.specs ||
-                      defaultSpecs
-                    ).map(
-                      ([label, value], index) => (
-                        <div
-                          key={label}
-                          className="group relative border-b border-gray-200 py-7 md:odd:border-r md:odd:pr-10 md:even:pl-10"
-                        >
-
-                          <span className="absolute left-0 top-0 h-full w-[3px] origin-top scale-y-0 bg-[#F5A623] transition-transform duration-300 group-hover:scale-y-100" />
-
-                          <div className="flex gap-5">
-
-                            <span className="w-8 shrink-0 text-xs font-black text-gray-300 group-hover:text-[#F5A623]">
-                              {String(
-                                index + 1
-                              ).padStart(
-                                2,
-                                "0"
-                              )}
-                            </span>
-
-                            <div>
-
-                              <p className="text-[11px] font-extrabold uppercase tracking-[2px] text-gray-400">
-                                {label}
-                              </p>
-
-                              <p className="mt-2 text-base font-bold text-[#081A33] transition group-hover:translate-x-1">
-                                {value}
-                              </p>
-
-                            </div>
-
-                          </div>
-
-                        </div>
-                      )
-                    )}
-
-                  </div>
-
-                </div>
-              )}
 
             </div>
 

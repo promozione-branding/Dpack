@@ -2,55 +2,185 @@ import mongoose from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
   {
-    slug: { type: String, required: true, unique: true, trim: true },
-    name: { type: String, required: true, trim: true },
-    category: { type: String, required: true },
-    description: { type: String, required: true },
-    overview: [{ type: String }],      // "Product Overview" bullets
-    keyFeatures: [{ type: String }],   // "Key Features" bullets
-    applications: [{ type: String }],  // "Applications" bullets
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    category: {
+      type: String,
+      required: true,
+    },
+
+    description: {
+      type: String,
+      required: true,
+    },
+
+    overview: [{ type: String }],
+
+    keyFeatures: [{ type: String }],
+
+    applications: [{ type: String }],
+
     specs: [{ type: String }],
+
     sizes: [{ type: String }],
-    image: { type: String, required: true },
-    imagePublicId: { type: String }, 
+
+    image: {
+      type: String,
+      required: true,
+    },
+
+    imagePublicId: {
+      type: String,
+      default: null,
+    },
+
     extraImages: [{ type: String }],
+
     extraImagePublicIds: [{ type: String }],
-    youtubeUrl: { type: String, default: null, trim: true },
-    instagramUrl: { type: String, default: null, trim: true },
-    price: { type: Number, required: true },
-    compareAtPrice: { type: Number, default: null },
-    featured: { type: Boolean, default: false },
-    stock: { type: Number, default: 0 },
-    lowStockThreshold: { type: Number, default: 10 },
-    trackInventory: { type: Boolean, default: true },
-    metaTitle: { type: String },
-    metaDescription: { type: String },
-    isActive: { type: Boolean, default: true },
+
+    youtubeUrl: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    instagramUrl: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    price: {
+      type: Number,
+      required: true,
+    },
+
+    compareAtPrice: {
+      type: Number,
+      default: null,
+    },
+
+    featured: {
+      type: Boolean,
+      default: false,
+    },
+
+    stock: {
+      type: Number,
+      default: 0,
+    },
+
+    lowStockThreshold: {
+      type: Number,
+      default: 10,
+    },
+
+    trackInventory: {
+      type: Boolean,
+      default: true,
+    },
+
+    /* =========================
+       PRODUCT DIMENSIONS
+    ========================= */
+
+    weight: {
+      type: Number,
+      default: null,
+    },
+
+    length: {
+      type: Number,
+      default: null,
+    },
+
+    breadth: {
+      type: Number,
+      default: null,
+    },
+
+    height: {
+      type: Number,
+      default: null,
+    },
+
+    /* =========================
+       SEO
+    ========================= */
+
+    metaTitle: {
+      type: String,
+      default: "",
+    },
+
+    metaDescription: {
+      type: String,
+      default: "",
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-ProductSchema.pre("validate", function (next) {
+/* =========================================================
+   AUTO SLUG
+   Compatible with current Mongoose
+========================================================= */
+
+ProductSchema.pre("validate", function () {
   if (!this.slug && this.name) {
     this.slug = this.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
   }
-  next();
 });
+
+/* =========================================================
+   STOCK STATUS
+========================================================= */
 
 ProductSchema.virtual("stockStatus").get(function () {
   if (!this.trackInventory) return "in_stock";
-  if (this.stock <= 0) return "out_of_stock";
-  if (this.stock <= this.lowStockThreshold) return "low_stock";
+
+  if (this.stock <= 0) {
+    return "out_of_stock";
+  }
+
+  if (this.stock <= this.lowStockThreshold) {
+    return "low_stock";
+  }
+
   return "in_stock";
 });
 
-ProductSchema.set("toJSON", { virtuals: true });
+ProductSchema.set("toJSON", {
+  virtuals: true,
+});
+
+/* =========================================================
+   MODEL
+========================================================= */
 
 const ProductModel =
-  (mongoose.models && mongoose.models.Product) ||
+  mongoose.models.Product ||
   mongoose.model("Product", ProductSchema);
 
 export default ProductModel;

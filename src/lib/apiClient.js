@@ -30,9 +30,24 @@ async function request(path, options = {}) {
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.error || "Request failed");
+    throw new Error(data.error || data.message || "Request failed");
   }
   return data;
+}
+
+async function download(path) {
+  const headers = {};
+  const token = getToken();
+
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const res = await fetch(path, { headers });
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || data.message || "Download failed");
+  }
+
+  return res.blob();
 }
 
 export const authAPI = {
@@ -167,6 +182,17 @@ export const adminAPI = {
 
   deleteProduct: (id) =>
     request(`/api/admin/products/${id}`, { method: "DELETE" }),
+
+  importProducts: (formData) =>
+    request("/api/admin/products/import", {
+      method: "POST",
+      body: formData,
+    }),
+
+  exportProducts: () => download("/api/admin/products/export"),
+
+  downloadProductTemplate: () =>
+    download("/api/admin/products/template"),
 
   // Categories
   listCategoryImages: () => request("/api/admin/categories"),

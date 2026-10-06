@@ -15,6 +15,7 @@ import PackagingBanner from "./components/Box";
 import SaleNow from "./components/SaleNow";
 import CategoryMarquee from "./components/CategoryMarquee";
 import VideoSection from "./components/Video";
+import Product360 from "./components/Products360";
 
 
 
@@ -27,6 +28,7 @@ export default function Home() {
 {/* <BestSellingProducts/> */}
  <Products/>
  <SaleNow/>
+ <Product360/>
  <Categories/>
  <VideoSection/> 
  <PromoBanners/>
