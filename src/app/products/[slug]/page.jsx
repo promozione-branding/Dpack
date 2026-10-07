@@ -553,10 +553,25 @@ function formatProductDescription(description) {
     const flushParagraph = () => {
       if (!paragraph.length) return;
 
+      const items = paragraph
+        .join(" ")
+        .split(/(?<=[.!?])\s+(?=[A-Z0-9])/);
+
       html += `
-        <p class="description-paragraph">
-          ${paragraph.join(" ")}
-        </p>
+        <div class="description-points">
+          ${items
+            .map((item) => item.trim())
+            .filter(Boolean)
+            .map(
+              (item) => `
+                <div class="description-point">
+                  <span class="description-diamond"></span>
+                  <p>${escapeHtml(item)}</p>
+                </div>
+              `
+            )
+            .join("")}
+        </div>
       `;
 
       paragraph = [];
@@ -584,8 +599,8 @@ function formatProductDescription(description) {
                   <div class="description-point">
                     <span class="description-diamond"></span>
                     <p>
-                      <strong>${match[1]}:</strong>
-                      ${match[2]}
+                      <strong>${escapeHtml(match[1])}:</strong>
+                      ${escapeHtml(match[2])}
                     </p>
                   </div>
                 `;
@@ -594,7 +609,7 @@ function formatProductDescription(description) {
               return `
                 <div class="description-point">
                   <span class="description-diamond"></span>
-                  <p>${clean}</p>
+                  <p>${escapeHtml(clean)}</p>
                 </div>
               `;
             })
@@ -619,6 +634,7 @@ function formatProductDescription(description) {
       } else {
         flushPoints();
         paragraph.push(line);
+        flushParagraph();
       }
     });
 
@@ -632,30 +648,25 @@ function formatProductDescription(description) {
      RICH TEXT / HTML CONTENT
   ===================================================== */
 
-  return text
-    /* Remove standalone diamond HTML paragraphs */
-    .replace(
-      /<p[^>]*>\s*[◆🔹♦]\s*<\/p>/gi,
-      ""
-    )
+  return text.replace(
+    /<p\b[^>]*>([\s\S]*?)<\/p>/gi,
+    (paragraph, contents) => {
+      const clean = contents
+        .replace(/^\s*[◆🔹♦]\s*/, "")
+        .trim();
 
-    /* Convert actual diamond points */
-    .replace(
-      /[◆🔹♦]\s*([^:<]+):\s*([^◆🔹♦<]+)/g,
-      `
+      if (!clean || /^[◆🔹♦]\s*$/.test(clean)) {
+        return "";
+      }
+
+      return `
         <div class="description-point">
           <span class="description-diamond"></span>
-          <p>
-            <strong>$1:</strong> $2
-          </p>
+          <p>${clean}</p>
         </div>
-      `
-    )
-
-    .replace(
-      /<p>\s*<\/p>/gi,
-      ""
-    );
+      `;
+    }
+  );
 }
 
 function getYouTubeEmbedUrl(url) {

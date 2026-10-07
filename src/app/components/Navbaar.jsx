@@ -822,76 +822,135 @@ export default function Navbar() {
             xl:px-10
           ">
 
-            {/* BROWSE CATEGORIES */}
+ {/* BROWSE CATEGORIES */}
 
-            <div className="relative shrink-0">
-              <button
-                type="button"
-                aria-expanded={categoriesOpen}
-                aria-haspopup="menu"
-                onClick={() => setCategoriesOpen((open) => !open)}
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  text-[13px]
-                  font-semibold
-                  text-white
-                  transition-colors
-                  hover:text-[#F5A623]
-                "
-              >
-                <Menu size={20} strokeWidth={1.8} />
-                <span>Browse Categories</span>
-                <ChevronDown
-                  size={14}
-                  className={`text-white/70 transition-transform ${categoriesOpen ? "rotate-180" : ""}`}
-                />
-              </button>
+<div
+  className="relative shrink-0"
+  onMouseEnter={() => setCategoriesOpen(true)}
+  onMouseLeave={() => setCategoriesOpen(false)}
+>
+  <button
+    type="button"
+    aria-expanded={categoriesOpen}
+    aria-haspopup="menu"
+    className="
+      flex
+      items-center
+      gap-2
+      text-[13px]
+      font-semibold
+      text-white
+      transition-colors
+      hover:text-[#F5A623]
+    "
+  >
+    <Menu size={20} strokeWidth={1.8} />
 
-              {categoriesOpen && (
-                <div
-                  role="menu"
-                  aria-label="Product categories"
-                  className="absolute left-0 top-full z-[120] mt-4 max-h-[min(70vh,520px)] w-[280px] overflow-y-auto border border-[#E5E7EB] bg-white py-2 text-[#171717] shadow-[0_18px_45px_rgba(0,0,0,0.18)]"
-                >
-                  <Link
-                    href="/products"
-                    role="menuitem"
-                    onClick={() => setCategoriesOpen(false)}
-                    className="flex items-center justify-between border-b border-[#E5E7EB] px-5 py-3 text-[13px] font-bold text-[#0C203A] transition-colors hover:bg-[#F7F7F5] hover:text-[#F5A623]"
-                  >
-                    All Products
-                    <ArrowRight size={14} />
-                  </Link>
+    <span>Browse Categories</span>
 
-                  {categories.map((category) => (
-                    <Link
-                      key={category}
-                      href={`/products?category=${encodeURIComponent(category)}`}
-                      role="menuitem"
-                      onClick={() => setCategoriesOpen(false)}
-                      className="flex items-center justify-between px-5 py-3 text-[13px] font-medium transition-colors hover:bg-[#F7F7F5] hover:text-[#F5A623]"
-                    >
-                      {category}
-                      <ArrowRight size={14} className="text-gray-300" />
-                    </Link>
-                  ))}
+    <ChevronDown
+      size={14}
+      className={`text-white/70 transition-transform ${
+        categoriesOpen ? "rotate-180" : ""
+      }`}
+    />
+  </button>
 
-                  {categoriesError && (
-                    <p role="status" className="px-5 py-3 text-xs text-gray-500">
-                      {categoriesError}
-                    </p>
-                  )}
+  {categoriesOpen && (
+    <div
+      role="menu"
+      aria-label="Product categories"
+      className="
+        absolute
+        left-0
+        top-full
+        z-[120]
+        w-[280px]
+        pt-3
+      "
+    >
+      <div
+        className="
+          max-h-[min(70vh,520px)]
+          overflow-y-auto
+          border
+          border-[#E5E7EB]
+          bg-white
+          py-2
+          text-[#171717]
+          shadow-[0_18px_45px_rgba(0,0,0,0.18)]
+        "
+      >
+        <Link
+          href="/products"
+          role="menuitem"
+          onClick={() => setCategoriesOpen(false)}
+          className="
+            flex
+            items-center
+            justify-between
+            border-b
+            border-[#E5E7EB]
+            px-5
+            py-3
+            text-[13px]
+            font-bold
+            text-[#0C203A]
+            transition-colors
+            hover:bg-[#F7F7F5]
+            hover:text-[#F5A623]
+          "
+        >
+          All Products
+          <ArrowRight size={14} />
+        </Link>
 
-                  {!categoriesError && categories.length === 0 && (
-                    <p className="px-5 py-3 text-xs text-gray-500">
-                      Loading categories...
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
+        {categories.map((category) => (
+          <Link
+            key={category}
+            href={`/products?category=${encodeURIComponent(category)}`}
+            role="menuitem"
+            onClick={() => setCategoriesOpen(false)}
+            className="
+              flex
+              items-center
+              justify-between
+              px-5
+              py-3
+              text-[13px]
+              font-medium
+              transition-colors
+              hover:bg-[#F7F7F5]
+              hover:text-[#F5A623]
+            "
+          >
+            {category}
+
+            <ArrowRight
+              size={14}
+              className="text-gray-300"
+            />
+          </Link>
+        ))}
+
+        {categoriesError && (
+          <p
+            role="status"
+            className="px-5 py-3 text-xs text-gray-500"
+          >
+            {categoriesError}
+          </p>
+        )}
+
+        {!categoriesError && categories.length === 0 && (
+          <p className="px-5 py-3 text-xs text-gray-500">
+            Loading categories...
+          </p>
+        )}
+      </div>
+    </div>
+  )}
+</div>
 
             {/* SEARCH */}
 

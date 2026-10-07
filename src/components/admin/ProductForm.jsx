@@ -1,6 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { useEffect, useMemo, useRef, useState } from "react";
+import "jodit/es2021/jodit.min.css";
+
+const JoditEditor = dynamic(
+  () => import("jodit-react"),
+  {
+    ssr: false,
+  }
+);
+
+/* =========================================================
+   FIELDS
+========================================================= */
 
 const FIELDS = [
   { name: "overview", label: "Product overview" },
@@ -11,8 +24,14 @@ const FIELDS = [
   { name: "extraImages", label: "Additional image URLs" },
 ];
 
+/* =========================================================
+   HELPERS
+========================================================= */
+
 function lines(value) {
-  return Array.isArray(value) ? value.join("\n") : value || "";
+  return Array.isArray(value)
+    ? value.join("\n")
+    : value || "";
 }
 
 function initialValues(product) {
@@ -21,24 +40,41 @@ function initialValues(product) {
     slug: product?.slug || "",
     category: product?.category || "",
 
-    shortDescription: product?.shortDescription || "",
+    shortDescription:
+      product?.shortDescription || "",
 
-    description: product?.description || "",
+    description:
+      product?.description || "",
 
     price: product?.price ?? "",
-    compareAtPrice: product?.compareAtPrice ?? "",
+    compareAtPrice:
+      product?.compareAtPrice ?? "",
+
     stock: product?.stock ?? 0,
-    lowStockThreshold: product?.lowStockThreshold ?? 10,
 
-    trackInventory: product?.trackInventory ?? true,
-    featured: product?.featured ?? false,
-    isActive: product?.isActive ?? true,
+    lowStockThreshold:
+      product?.lowStockThreshold ?? 10,
 
-    youtubeUrl: product?.youtubeUrl || "",
-    instagramUrl: product?.instagramUrl || "",
+    trackInventory:
+      product?.trackInventory ?? true,
 
-    metaTitle: product?.metaTitle || "",
-    metaDescription: product?.metaDescription || "",
+    featured:
+      product?.featured ?? false,
+
+    isActive:
+      product?.isActive ?? true,
+
+    youtubeUrl:
+      product?.youtubeUrl || "",
+
+    instagramUrl:
+      product?.instagramUrl || "",
+
+    metaTitle:
+      product?.metaTitle || "",
+
+    metaDescription:
+      product?.metaDescription || "",
 
     ...Object.fromEntries(
       FIELDS.map(({ name }) => [
@@ -50,7 +86,7 @@ function initialValues(product) {
 }
 
 /* =========================================================
-   RICH TEXT EDITOR
+   JODIT EDITOR
 ========================================================= */
 
 function RichTextEditor({
@@ -59,270 +95,116 @@ function RichTextEditor({
   placeholder,
   minHeight = "150px",
 }) {
-  const editorRef = useRef(null);
+  const config = useMemo(
+    () => ({
+      readonly: false,
 
-  const [showLinkInput, setShowLinkInput] = useState(false);
-  const [linkUrl, setLinkUrl] = useState("");
+      height: minHeight,
 
-  /* -------------------------------------------------------
-     Load existing HTML/content
-  ------------------------------------------------------- */
+      minHeight:
+        parseInt(minHeight, 10) || 150,
 
-  useEffect(() => {
-    if (!editorRef.current) return;
+      placeholder:
+        placeholder ||
+        "Write your content...",
 
-    if (editorRef.current.innerHTML !== value) {
-      editorRef.current.innerHTML = value || "";
-    }
-  }, [value]);
+      toolbarAdaptive: false,
 
-  /* -------------------------------------------------------
-     Execute editor command
-  ------------------------------------------------------- */
+      toolbarSticky: false,
 
-  const command = (cmd, commandValue = null) => {
-    editorRef.current?.focus();
+      showCharsCounter: false,
+      showWordsCounter: false,
+      showXPathInStatusbar: false,
 
-    document.execCommand(
-      cmd,
-      false,
-      commandValue
-    );
+      buttons: [
+        "bold",
+        "italic",
+        "underline",
+        "|",
+        "ul",
+        "ol",
+        "|",
+        "paragraph",
+        "fontsize",
+        "|",
+        "left",
+        "center",
+        "right",
+        "justify",
+        "|",
+        "link",
+        "|",
+        "undo",
+        "redo",
+        "|",
+        "eraser",
+        "source",
+      ],
 
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
-  };
+      buttonsMD: [
+        "bold",
+        "italic",
+        "underline",
+        "|",
+        "ul",
+        "ol",
+        "|",
+        "paragraph",
+        "|",
+        "link",
+        "|",
+        "undo",
+        "redo",
+        "|",
+        "eraser",
+      ],
 
-  /* -------------------------------------------------------
-     Add link
-  ------------------------------------------------------- */
+      buttonsSM: [
+        "bold",
+        "italic",
+        "underline",
+        "|",
+        "ul",
+        "ol",
+        "|",
+        "link",
+        "|",
+        "undo",
+        "redo",
+      ],
 
-  const addLink = () => {
-    const url = linkUrl.trim();
+      askBeforePasteHTML: false,
+      askBeforePasteFromWord: false,
 
-    if (!url) {
-      setShowLinkInput(false);
-      return;
-    }
+      processPasteHTML: true,
 
-    editorRef.current?.focus();
+      defaultActionOnPaste:
+        "insert_clear_html",
 
-    document.execCommand(
-      "createLink",
-      false,
-      url
-    );
+      enter: "P",
 
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
+      cleanHTML: {
+        fillEmptyParagraph: false,
+      },
 
-    setLinkUrl("");
-    setShowLinkInput(false);
-  };
-
-  /* -------------------------------------------------------
-     Input
-  ------------------------------------------------------- */
-
-  const handleInput = () => {
-    if (!editorRef.current) return;
-
-    onChange(editorRef.current.innerHTML);
-  };
-
-  /* -------------------------------------------------------
-     Keyboard shortcuts
-  ------------------------------------------------------- */
-
-  const handleKeyDown = (event) => {
-    if (
-      (event.ctrlKey || event.metaKey) &&
-      event.key.toLowerCase() === "b"
-    ) {
-      event.preventDefault();
-      command("bold");
-    }
-
-    if (
-      (event.ctrlKey || event.metaKey) &&
-      event.key.toLowerCase() === "i"
-    ) {
-      event.preventDefault();
-      command("italic");
-    }
-
-    if (
-      (event.ctrlKey || event.metaKey) &&
-      event.key.toLowerCase() === "u"
-    ) {
-      event.preventDefault();
-      command("underline");
-    }
-  };
+      style: {
+        fontSize: "14px",
+        color: "#374151",
+      },
+    }),
+    [minHeight, placeholder]
+  );
 
   return (
     <div className="mt-1 overflow-hidden rounded-lg border border-gray-200 bg-white focus-within:border-rust focus-within:ring-2 focus-within:ring-rust/20">
-
-      {/* =====================================================
-          TOOLBAR
-      ====================================================== */}
-
-      <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-gray-50 px-2 py-2">
-
-        {/* Bold */}
-        <button
-          type="button"
-          title="Bold"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => command("bold")}
-          className="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-bold text-gray-700 transition hover:bg-white hover:text-black"
-        >
-          B
-        </button>
-
-        {/* Italic */}
-        <button
-          type="button"
-          title="Italic"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => command("italic")}
-          className="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm italic text-gray-700 transition hover:bg-white hover:text-black"
-        >
-          I
-        </button>
-
-        {/* Underline */}
-        <button
-          type="button"
-          title="Underline"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => command("underline")}
-          className="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm underline text-gray-700 transition hover:bg-white hover:text-black"
-        >
-          U
-        </button>
-
-        <span className="mx-1 h-5 w-px bg-gray-200" />
-
-        {/* Bullet list */}
-        <button
-          type="button"
-          title="Bullet list"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => command("insertUnorderedList")}
-          className="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm text-gray-700 transition hover:bg-white hover:text-black"
-        >
-          ••
-        </button>
-
-        {/* Number list */}
-        <button
-          type="button"
-          title="Numbered list"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => command("insertOrderedList")}
-          className="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-xs font-semibold text-gray-700 transition hover:bg-white hover:text-black"
-        >
-          1.
-        </button>
-
-        <span className="mx-1 h-5 w-px bg-gray-200" />
-
-        {/* Heading */}
-        <select
-          defaultValue=""
-          title="Text format"
-          onMouseDown={(e) => e.stopPropagation()}
-          onChange={(e) => {
-            if (!e.target.value) return;
-
-            command(
-              "formatBlock",
-              e.target.value
-            );
-
-            e.target.value = "";
-          }}
-          className="h-8 rounded-md border-0 bg-transparent px-2 text-xs text-gray-600 outline-none hover:bg-white"
-        >
-          <option value="">Format</option>
-          <option value="p">Paragraph</option>
-          <option value="h3">Heading 3</option>
-          <option value="h4">Heading 4</option>
-        </select>
-
-        <span className="mx-1 h-5 w-px bg-gray-200" />
-
-        {/* Link */}
-        <button
-          type="button"
-          title="Add link"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => setShowLinkInput((v) => !v)}
-          className="flex h-8 items-center justify-center rounded-md px-2 text-xs font-medium text-gray-700 transition hover:bg-white hover:text-black"
-        >
-          Link
-        </button>
-
-        {/* Clear formatting */}
-        <button
-          type="button"
-          title="Clear formatting"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => command("removeFormat")}
-          className="flex h-8 items-center justify-center rounded-md px-2 text-xs text-gray-500 transition hover:bg-white hover:text-red-600"
-        >
-          Clear
-        </button>
-      </div>
-
-      {/* =====================================================
-          LINK INPUT
-      ====================================================== */}
-
-      {showLinkInput && (
-        <div className="flex gap-2 border-b border-gray-200 bg-white p-2">
-          <input
-            type="url"
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addLink();
-              }
-            }}
-            placeholder="https://example.com"
-            className="min-w-0 flex-1 rounded-md border border-gray-200 px-3 py-1.5 text-xs outline-none focus:border-rust"
-            autoFocus
-          />
-
-          <button
-            type="button"
-            onClick={addLink}
-            className="rounded-md bg-rust px-3 py-1.5 text-xs font-semibold text-black hover:bg-rust/90"
-          >
-            Add
-          </button>
-        </div>
-      )}
-
-      {/* =====================================================
-          EDITOR
-      ====================================================== */}
-
-      <div
-        ref={editorRef}
-        contentEditable
-        suppressContentEditableWarning
-        onInput={handleInput}
-        onKeyDown={handleKeyDown}
-        data-placeholder={placeholder}
-        className="prose prose-sm max-w-none overflow-y-auto px-3 py-3 text-sm text-gray-700 outline-none [&:empty]:before:pointer-events-none [&:empty]:before:text-gray-400 [&:empty]:before:content-[attr(data-placeholder)]"
-        style={{
-          minHeight,
+      <JoditEditor
+        value={value || ""}
+        config={config}
+        onBlur={(newContent) => {
+          onChange(newContent);
+        }}
+        onChange={(newContent) => {
+          onChange(newContent);
         }}
       />
     </div>
@@ -333,27 +215,28 @@ function RichTextEditor({
    PRODUCT FORM
 ========================================================= */
 
-export default function ProductForm({
+function ProductForm({
   initial,
   onSubmit,
   loading,
   submitLabel,
 }) {
-  const [imageUrl, setImageUrl] = useState(
-    initial?.image || ""
-  );
+  const [imageUrl, setImageUrl] =
+    useState(initial?.image || "");
 
-  const [imageFile, setImageFile] = useState(null);
+  const [imageFile, setImageFile] =
+    useState(null);
 
   const [form, setForm] = useState(() =>
     initialValues(initial)
   );
 
-  const setField = (name, value) =>
+  const setField = (name, value) => {
     setForm((current) => ({
       ...current,
       [name]: value,
     }));
+  };
 
   /* =======================================================
      SUBMIT
@@ -364,7 +247,9 @@ export default function ProductForm({
 
     const data = new FormData();
 
-    for (const [name, value] of Object.entries(form)) {
+    for (const [name, value] of Object.entries(
+      form
+    )) {
       if (
         FIELDS.some(
           (field) => field.name === name
@@ -373,7 +258,7 @@ export default function ProductForm({
         data.set(
           name,
           JSON.stringify(
-            value
+            String(value || "")
               .split("\n")
               .map((item) => item.trim())
               .filter(Boolean)
@@ -402,10 +287,6 @@ export default function ProductForm({
     );
   };
 
-  /* =======================================================
-     EXISTING CLASSES — UNCHANGED
-  ====================================================== */
-
   const inputClass =
     "mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-rust focus:ring-2 focus:ring-rust/20";
 
@@ -417,13 +298,9 @@ export default function ProductForm({
       onSubmit={handleSubmit}
       className="space-y-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
     >
-
-      {/* =====================================================
-          BASIC PRODUCT INFORMATION
-      ====================================================== */}
+      {/* BASIC INFORMATION */}
 
       <section className="grid gap-4 sm:grid-cols-2">
-
         <label className={labelClass}>
           Product name *
 
@@ -519,13 +396,11 @@ export default function ProductForm({
             onChange={(e) =>
               setImageUrl(e.target.value)
             }
-            placeholder="https://…"
+            placeholder="https://..."
           />
         </label>
 
-        <label
-          className={`${labelClass} sm:col-span-2`}
-        >
+        <label className="block text-sm font-medium text-gray-700 sm:col-span-2">
           Or upload a main image
 
           <input
@@ -547,9 +422,7 @@ export default function ProductForm({
           )}
         </label>
 
-        {/* =================================================
-            SHORT DESCRIPTION
-        ================================================= */}
+        {/* SHORT DESCRIPTION */}
 
         <div className="sm:col-span-2">
           <label className={labelClass}>
@@ -557,7 +430,9 @@ export default function ProductForm({
           </label>
 
           <RichTextEditor
-            value={form.shortDescription}
+            value={
+              form.shortDescription
+            }
             onChange={(value) =>
               setField(
                 "shortDescription",
@@ -569,14 +444,11 @@ export default function ProductForm({
           />
         </div>
 
-        {/* =================================================
-            DESCRIPTION
-        ================================================= */}
+        {/* DESCRIPTION */}
 
         <div className="sm:col-span-2">
           <label className={labelClass}>
             Description *
-
           </label>
 
           <RichTextEditor
@@ -593,12 +465,9 @@ export default function ProductForm({
         </div>
       </section>
 
-      {/* =====================================================
-          STOCK
-      ====================================================== */}
+      {/* STOCK */}
 
       <section className="grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
-
         <label className={labelClass}>
           Stock quantity
 
@@ -625,7 +494,9 @@ export default function ProductForm({
             type="number"
             min="0"
             step="1"
-            value={form.lowStockThreshold}
+            value={
+              form.lowStockThreshold
+            }
             onChange={(e) =>
               setField(
                 "lowStockThreshold",
@@ -636,12 +507,9 @@ export default function ProductForm({
         </label>
       </section>
 
-      {/* =====================================================
-          PRODUCT DETAILS
-      ====================================================== */}
+      {/* PRODUCT DETAILS */}
 
       <section className="grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
-
         {FIELDS.map(
           ({ name, label }) => (
             <label
@@ -653,7 +521,8 @@ export default function ProductForm({
               <textarea
                 className={inputClass}
                 rows={
-                  name === "extraImages"
+                  name ===
+                  "extraImages"
                     ? 2
                     : 3
                 }
@@ -665,7 +534,8 @@ export default function ProductForm({
                   )
                 }
                 placeholder={
-                  name === "extraImages"
+                  name ===
+                  "extraImages"
                     ? "One URL per line"
                     : "One item per line"
                 }
@@ -675,12 +545,9 @@ export default function ProductForm({
         )}
       </section>
 
-      {/* =====================================================
-          SOCIAL + SEO
-      ====================================================== */}
+      {/* SOCIAL + SEO */}
 
       <section className="grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
-
         <label className={labelClass}>
           YouTube URL
 
@@ -754,12 +621,9 @@ export default function ProductForm({
         </label>
       </section>
 
-      {/* =====================================================
-          STATUS
-      ====================================================== */}
+      {/* STATUS */}
 
       <section className="flex flex-wrap gap-x-6 gap-y-3 border-t border-gray-100 pt-5">
-
         {[
           [
             "featured",
@@ -799,12 +663,9 @@ export default function ProductForm({
         )}
       </section>
 
-      {/* =====================================================
-          SUBMIT
-      ====================================================== */}
+      {/* SUBMIT */}
 
       <div className="flex justify-end border-t border-gray-100 pt-5">
-
         <button
           type="submit"
           disabled={loading}
@@ -818,3 +679,9 @@ export default function ProductForm({
     </form>
   );
 }
+
+/* =========================================================
+   IMPORTANT — DEFAULT EXPORT
+========================================================= */
+
+export default ProductForm;

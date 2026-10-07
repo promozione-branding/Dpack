@@ -647,64 +647,68 @@ export default function CategoryProducts() {
     };
   }, []);
 
-  /* =======================================================
-     CREATE CATEGORIES
-  ======================================================= */
+const categories = useMemo(() => {
+  const categoryMap = new Map();
 
-  const categories = useMemo(() => {
-    const categoryMap = new Map();
+  products.forEach((product) => {
+    const rawCategory = product.category;
 
-    products.forEach((product) => {
-      const rawCategory =
-        product.category;
+    if (!rawCategory) return;
 
-      if (!rawCategory) return;
+    const key = normalizeCategory(rawCategory);
 
-      const key =
-        normalizeCategory(
-          rawCategory
-        );
+    if (!key) return;
 
-      if (!key) return;
-
-      if (!categoryMap.has(key)) {
-        categoryMap.set(key, {
-          id: key,
-          number: getCategoryNumber(
-            rawCategory,
-            categoryMap.size
-          ),
-          name: getCategoryName(
-            rawCategory
-          ),
-          shortName:
-            getCategoryName(
-              rawCategory
-            ),
-          description:
-            getCategoryDescription(
-              rawCategory
-            ),
-        });
-      }
-    });
-
-    return Array.from(
-      categoryMap.values()
-    ).map((category, index) => ({
-      ...category,
-
-      number:
-        categoryDesign[
-          category.id
-        ]?.number ||
-        String(index + 1).padStart(
-          2,
-          "0"
+    if (!categoryMap.has(key)) {
+      categoryMap.set(key, {
+        id: key,
+        number: getCategoryNumber(
+          rawCategory,
+          categoryMap.size
         ),
-    }));
-  }, [products]);
+        name: getCategoryName(rawCategory),
+        shortName: getCategoryName(rawCategory),
+        description: getCategoryDescription(rawCategory),
+      });
+    }
+  });
 
+  const categoryList = Array.from(categoryMap.values());
+
+  /*
+    CORRUGATED / CARDBOARD BOX CATEGORY
+    ALWAYS LAST
+  */
+  categoryList.sort((a, b) => {
+    const aName = a.name.toLowerCase();
+    const bName = b.name.toLowerCase();
+
+    const aIsBox =
+      aName.includes("corrugated box") ||
+      aName.includes("cardboard box") ||
+      aName.includes("corrugated") ||
+      aName.includes("cardboard");
+
+    const bIsBox =
+      bName.includes("corrugated box") ||
+      bName.includes("cardboard box") ||
+      bName.includes("corrugated") ||
+      bName.includes("cardboard");
+
+    if (aIsBox && !bIsBox) return 1;
+    if (!aIsBox && bIsBox) return -1;
+
+    return 0;
+  });
+
+  return categoryList.map((category, index) => ({
+    ...category,
+
+    number:
+      categoryDesign[category.id]?.number ||
+      String(index + 1).padStart(2, "0"),
+  }));
+}, [products]);
   /* =======================================================
      KEEP ACTIVE TAB VALID
   ======================================================= */
