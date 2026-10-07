@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/mongoose";
 import Product from "@/lib/models/Product";
+import { organizeProductFields } from "@/lib/productContent";
 
 export const runtime = "nodejs";
 
@@ -115,6 +116,7 @@ const STRING_FIELDS = [
   "slug",
   "name",
   "category",
+  "shortDescription",
   "description",
   "image",
   "imagePublicId",
@@ -282,6 +284,7 @@ function normalizeProduct(row) {
     slug,
     name,
     category: cleanString(row.category),
+    shortDescription: cleanString(row.shortDescription) || "",
     description: cleanString(row.description),
 
     overview: parseArray(row.overview),
@@ -332,6 +335,8 @@ function normalizeProduct(row) {
 
     isActive: parseBoolean(row.isActive, true),
   };
+
+  Object.assign(product, organizeProductFields(product));
 
   return product;
 }

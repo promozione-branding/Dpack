@@ -2,6 +2,7 @@ export const PRODUCT_CSV_FIELDS = [
   "slug",
   "name",
   "category",
+  "shortDescription",
   "description",
   "overview",
   "keyFeatures",

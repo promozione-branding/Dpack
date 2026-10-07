@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/db/mongoose";
 import Product from "@/lib/models/Product";
 import { requireAdmin, ok, err, parseFormData } from "@/lib/apiHelpers";
 import { uploadToCloudinary, deleteFromCloudinary } from "@/lib/cloudinary";
+import { organizeProductFields } from "@/lib/productContent";
 
 export async function GET(request, { params }) {
   const { error } = await requireAdmin(request);
@@ -101,6 +102,7 @@ export async function PUT(request, { params }) {
         "name",
         "slug",
         "category",
+        "shortDescription",
         "description",
         "metaTitle",
         "metaDescription",
@@ -133,6 +135,7 @@ export async function PUT(request, { params }) {
       Object.assign(product, body);
     }
 
+    Object.assign(product, organizeProductFields(product.toObject()));
     await product.save();
     return ok({ product });
   } catch (e) {

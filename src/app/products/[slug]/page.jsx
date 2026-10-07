@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
+import { organizeProductFields } from "@/lib/productContent";
 import {
   ShoppingCart,
   Heart,
@@ -485,14 +486,20 @@ function getContent(slug, product) {
 
 function toSpecificationPairs(specifications) {
   return specifications.map((specification, index) => {
-    const separator = specification.indexOf(":");
+    const text = Array.isArray(specification)
+      ? `${specification[0] ?? ""}: ${specification[1] ?? ""}`
+      : specification && typeof specification === "object"
+        ? `${specification.label || specification.name || `Specification ${index + 1}`}: ${specification.value ?? specification.description ?? ""}`
+        : String(specification ?? "");
+    const separator = text.indexOf(":");
+
     if (separator > 0) {
       return [
-        specification.slice(0, separator).trim(),
-        specification.slice(separator + 1).trim(),
+        text.slice(0, separator).trim(),
+        text.slice(separator + 1).trim(),
       ];
     }
-    return [`Specification ${index + 1}`, specification];
+    return [`Specification ${index + 1}`, text];
   });
 }
 
@@ -511,6 +518,68 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function normalizeDescriptionHeading(value) {
+  const heading = value
+    .replace(/\s+/g, " ")
+    .replace(/[.:]+\s*/g, " ")
+    .trim();
+
+  if (/^key\s+features?$/i.test(heading)) return "Key Features";
+  if (/^technical\s+specifications?$/i.test(heading)) {
+    return "Technical Specifications";
+  }
+  if (/^product\s+specifications?$/i.test(heading)) {
+    return "Product Specifications";
+  }
+  if (/^specifications?$/i.test(heading)) return "Specifications";
+  if (/^applications?$/i.test(heading)) return "Applications";
+  if (/^product\s+overview$/i.test(heading)) return "Product Overview";
+  if (/^overview$/i.test(heading)) return "Overview";
+  if (/^features?$/i.test(heading)) return "Features";
+  if (/^ideal\s+for$/i.test(heading)) return "Ideal For";
+  if (/^available\s+sizes?$/i.test(heading)) return "Available Sizes";
+  if (/^sizes?$/i.test(heading)) return "Sizes";
+  if (/^benefits?$/i.test(heading)) return "Benefits";
+  if (/^advantages?$/i.test(heading)) return "Advantages";
+  if (/^how\s+to\s+use$/i.test(heading)) return "How to Use";
+
+  const whyChoose = heading.match(/^why\s+choose\s+(.+)$/i);
+  if (whyChoose) {
+    return `Why Choose ${whyChoose[1].replace(/[.?]+$/, "").trim()}?`;
+  }
+  if (/^why\s+choose$/i.test(heading)) return "Why Choose";
+
+  return null;
+}
+
+function renderDescriptionHeading(value) {
+  return `<h2 class="description-heading">${escapeHtml(value)}</h2>`;
+}
+
+function renderPlainDescriptionBody(value) {
+  const items = value
+    .split(/(?<=[.!?])\s+(?=[A-Z0-9•◆🔹♦])/)
+    .map((item) => item.replace(/^[\s•◆🔹♦-]+/, "").trim())
+    .filter(Boolean);
+
+  if (!items.length) return "";
+
+  return `
+    <div class="description-points">
+      ${items
+        .map(
+          (item) => `
+            <div class="description-point">
+              <span class="description-diamond"></span>
+              <p>${escapeHtml(item)}</p>
+            </div>
+          `
+        )
+        .join("")}
+    </div>
+  `;
 }
 
 function formatProductDescription(description) {
@@ -534,6 +603,11 @@ function formatProductDescription(description) {
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 
+  text = text.replace(
+    /(Why\s*\.?\s*Choose)[.!]?[ \t]*\r?\n[ \t]*([^\r\n?]{1,60}\?)/gi,
+    "$1 $2"
+  );
+
   const hasHtml = /<\/?[a-z][\s\S]*>/i.test(text);
 
   /* =====================================================
@@ -541,106 +615,37 @@ function formatProductDescription(description) {
   ===================================================== */
 
   if (!hasHtml) {
-    const lines = text
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean);
+    const headingPattern =
+      /(^|(?<=[.!?])\s+|\r?\n)(Why\s*\.?\s*Choose(?:[.!?]\s*)?(?:[^.!?:\r\n]+\?)?|Product\s+Overview|Overview|Key\s*\.?\s*Features?|Features?|Technical\s+Specifications?|Product\s+Specifications?|Specifications?|Applications?|Ideal\s+For|Available\s+Sizes?|Sizes?|Benefits?|Advantages?|How\s+to\s+Use)(?=\s*[:\r\n]|[.!?](?=\s|$)|$|(?<=\?)(?=\s))/gim;
+    const sections = [];
+    let match;
+
+    while ((match = headingPattern.exec(text))) {
+      const heading = normalizeDescriptionHeading(match[2]);
+      if (!heading) continue;
+
+      sections.push({
+        heading,
+        start: match.index + match[1].length,
+        end: headingPattern.lastIndex,
+      });
+    }
 
     let html = "";
-    let paragraph = [];
-    let points = [];
+    let cursor = 0;
+    for (const section of sections) {
+      const body = text
+        .slice(cursor, section.start)
+        .replace(/[:.]\s*$/, "")
+        .trim();
+      if (body) html += renderPlainDescriptionBody(body);
+      html += renderDescriptionHeading(section.heading);
+      cursor = section.end;
+      while (/^[\s:.]/.test(text[cursor] || "")) cursor++;
+    }
 
-    const flushParagraph = () => {
-      if (!paragraph.length) return;
-
-      const items = paragraph
-        .join(" ")
-        .split(/(?<=[.!?])\s+(?=[A-Z0-9])/);
-
-      html += `
-        <div class="description-points">
-          ${items
-            .map((item) => item.trim())
-            .filter(Boolean)
-            .map(
-              (item) => `
-                <div class="description-point">
-                  <span class="description-diamond"></span>
-                  <p>${escapeHtml(item)}</p>
-                </div>
-              `
-            )
-            .join("")}
-        </div>
-      `;
-
-      paragraph = [];
-    };
-
-    const flushPoints = () => {
-      if (!points.length) return;
-
-      html += `
-        <div class="description-points">
-          ${points
-            .map((point) => {
-              const clean = point
-                .replace(/^[◆🔹♦]\s*/, "")
-                .trim();
-
-              if (!clean) return "";
-
-              const match = clean.match(
-                /^([^:]+):\s*(.*)$/
-              );
-
-              if (match) {
-                return `
-                  <div class="description-point">
-                    <span class="description-diamond"></span>
-                    <p>
-                      <strong>${escapeHtml(match[1])}:</strong>
-                      ${escapeHtml(match[2])}
-                    </p>
-                  </div>
-                `;
-              }
-
-              return `
-                <div class="description-point">
-                  <span class="description-diamond"></span>
-                  <p>${escapeHtml(clean)}</p>
-                </div>
-              `;
-            })
-            .filter(Boolean)
-            .join("")}
-        </div>
-      `;
-
-      points = [];
-    };
-
-    lines.forEach((line) => {
-      /* Ignore standalone ◆ */
-      if (/^[◆🔹♦]\s*$/.test(line)) {
-        return;
-      }
-
-      /* Actual point */
-      if (/^[◆🔹♦]\s*[^:]+:/i.test(line)) {
-        flushParagraph();
-        points.push(line);
-      } else {
-        flushPoints();
-        paragraph.push(line);
-        flushParagraph();
-      }
-    });
-
-    flushParagraph();
-    flushPoints();
-
+    const remaining = text.slice(cursor).trim();
+    if (remaining) html += renderPlainDescriptionBody(remaining);
     return html;
   }
 
@@ -648,25 +653,39 @@ function formatProductDescription(description) {
      RICH TEXT / HTML CONTENT
   ===================================================== */
 
-  return text.replace(
-    /<p\b[^>]*>([\s\S]*?)<\/p>/gi,
-    (paragraph, contents) => {
-      const clean = contents
-        .replace(/^\s*[◆🔹♦]\s*/, "")
-        .trim();
+  return text
+    .replace(
+      /<(p|div)\b[^>]*>([\s\S]*?)<\/\1>/gi,
+      (paragraph, tagName, contents) => {
+        const plainContents = contents
+          .replace(/<br\s*\/?>/gi, " ")
+          .replace(/<\/?[^>]+>/g, " ")
+          .replace(/&nbsp;/gi, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+        const heading = normalizeDescriptionHeading(plainContents);
 
-      if (!clean || /^[◆🔹♦]\s*$/.test(clean)) {
-        return "";
+        if (heading) return renderDescriptionHeading(heading);
+        if (!plainContents || /^[◆🔹♦]\s*$/.test(plainContents)) return "";
+
+        const clean = contents.replace(/^\s*[◆🔹♦]\s*/, "").trim();
+        return `
+          <div class="description-point">
+            <span class="description-diamond"></span>
+            <p>${clean}</p>
+          </div>
+        `;
       }
-
-      return `
-        <div class="description-point">
-          <span class="description-diamond"></span>
-          <p>${clean}</p>
-        </div>
-      `;
-    }
-  );
+    )
+    .replace(
+      /<(h[1-6])\b[^>]*>([\s\S]*?)<\/\1>/gi,
+      (headingElement, tagName, contents) => {
+        const heading = normalizeDescriptionHeading(
+          contents.replace(/<\/?[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+        );
+        return heading ? renderDescriptionHeading(heading) : headingElement;
+      }
+    );
 }
 
 function getYouTubeEmbedUrl(url) {
@@ -794,25 +813,51 @@ const [quantity, setQuantity] = useState(1);
   const baseContent = currentProduct
     ? getContent(currentProduct.slug || slug, currentProduct)
     : null;
+  const organizedFields = organizeProductFields(
+    currentProduct
+      ? {
+          ...currentProduct,
+          specs: currentProduct.specs || currentProduct.specifications,
+        }
+      : {}
+  );
   const content = databaseProduct
     ? {
         ...baseContent,
         category: databaseProduct.category || baseContent.category,
+        shortDescription: databaseProduct.shortDescription || "",
         description: databaseProduct.description || baseContent.description,
-        keyFeatures: databaseProduct.keyFeatures?.length
-          ? databaseProduct.keyFeatures
-          : baseContent.keyFeatures,
-        overviewParagraphs: databaseProduct.overview?.length
-          ? databaseProduct.overview
-          : baseContent.overviewParagraphs,
-        advantages: databaseProduct.applications?.length
-          ? databaseProduct.applications
-          : baseContent.advantages,
-        specs: databaseProduct.specs?.length
-          ? toSpecificationPairs(databaseProduct.specs)
-          : baseContent.specs,
-      }
-    : baseContent;
+      keyFeatures: organizedFields.keyFeatures,
+      overviewParagraphs: organizedFields.overview,
+        applications: organizedFields.applications,
+        specs: toSpecificationPairs(organizedFields.specs),
+        sizes: organizedFields.sizes,
+      description: organizedFields.description,
+    }
+    : currentProduct
+      ? {
+          ...baseContent,
+          shortDescription: currentProduct.shortDescription || "",
+          description: currentProduct.description || baseContent.description,
+          keyFeatures:
+            organizedFields.keyFeatures.length
+              ? organizedFields.keyFeatures
+              : currentProduct.features?.length
+              ? currentProduct.features
+              : baseContent.keyFeatures,
+          overviewParagraphs: organizedFields.overview.length
+            ? organizedFields.overview
+            : baseContent.overviewParagraphs,
+          description: organizedFields.description || baseContent.description,
+          applications: organizedFields.applications,
+          specs: toSpecificationPairs(
+            organizedFields.specs.length
+              ? organizedFields.specs
+              : baseContent.specs
+          ),
+          sizes: organizedFields.sizes,
+        }
+      : null;
 
   const relatedProducts =
     databaseRelated ||
@@ -1185,49 +1230,54 @@ const hasYoutubeVideo = Boolean(youtubeEmbedUrl);
 
             </div>
 
-            <div
-              className="
-                mt-6
-                text-[16px]
-                leading-8
-                text-gray-600
-                [&_.description-paragraph]:mb-5
-                [&_.description-paragraph:last-child]:mb-0
-                [&_.description-points]:my-5
-                [&_.description-points]:space-y-2
-                [&_.description-point]:flex
-                [&_.description-point]:items-start
-                [&_.description-point]:gap-3
-                [&_.description-point_p]:m-0
-                [&_.description-point_p]:leading-8
-                [&_.description-point_strong]:font-semibold
-                [&_.description-point_strong]:text-[#081A33]
-                [&_.description-diamond]:mt-[13px]
-                [&_.description-diamond]:h-2.5
-                [&_.description-diamond]:w-2.5
-                [&_.description-diamond]:shrink-0
-                [&_.description-diamond]:rotate-45
-                [&_.description-diamond]:bg-[#3B82F6]
-                [&_p]:mb-4
-                [&_p:last-child]:mb-0
-                [&_ul]:my-4
-                [&_ul]:list-disc
-                [&_ul]:pl-6
-                [&_ol]:my-4
-                [&_ol]:list-decimal
-                [&_ol]:pl-6
-                [&_li]:mb-2
-                [&_strong]:font-semibold
-                [&_em]:italic
-                [&_u]:underline
-                [&_a]:text-[#081A33]
-                [&_a]:underline
-                [&_a]:underline-offset-2
-              "
-              dangerouslySetInnerHTML={{
-                __html: formatProductDescription(content.description),
-              }}
-            />
+            {content.shortDescription && (
+              <div
+                className="
+                  mt-6
+                  text-[16px]
+                  leading-8
+                  text-gray-600
+                  [&_.description-heading]:mb-4
+                  [&_.description-heading]:mt-8
+                  [&_.description-heading]:text-xl
+                  [&_.description-heading]:font-black
+                  [&_.description-heading]:leading-tight
+                  [&_.description-heading]:text-[#081A33]
+                  [&_.description-heading:first-child]:mt-0
+                  [&_.description-point]:flex
+                  [&_.description-point]:items-start
+                  [&_.description-point]:gap-3
+                  [&_.description-point_p]:m-0
+                  [&_.description-point_p]:leading-8
+                  [&_.description-point_strong]:font-semibold
+                  [&_.description-point_strong]:text-[#081A33]
+                  [&_.description-diamond]:mt-[13px]
+                  [&_.description-diamond]:h-2.5
+                  [&_.description-diamond]:w-2.5
+                  [&_.description-diamond]:shrink-0
+                  [&_.description-diamond]:rotate-45
+                  [&_.description-diamond]:bg-[#3B82F6]
+                  [&_p]:mb-4
+                  [&_p:last-child]:mb-0
+                  [&_ul]:my-4
+                  [&_ul]:list-disc
+                  [&_ul]:pl-6
+                  [&_ol]:my-4
+                  [&_ol]:list-decimal
+                  [&_ol]:pl-6
+                  [&_li]:mb-2
+                  [&_strong]:font-semibold
+                  [&_em]:italic
+                  [&_u]:underline
+                  [&_a]:text-[#081A33]
+                  [&_a]:underline
+                  [&_a]:underline-offset-2
+                "
+                dangerouslySetInnerHTML={{
+                  __html: formatProductDescription(content.shortDescription),
+                }}
+              />
+            )}
 
             {/* PRICE */}
 
@@ -1645,92 +1695,96 @@ const hasYoutubeVideo = Boolean(youtubeEmbedUrl);
                         )
                       )}
 
-                    </div>
-
-                  </div>
-
-                  {/* PROTECTION CARDS */}
-
-                  <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-
-                    {[
-                      {
-                        no: "01",
-                        title: "Impact Protection",
-                        text: "Air-based cushioning helps absorb external shocks and reduce the impact transferred to the packed product.",
-                      },
-                      {
-                        no: "02",
-                        title: "Lightweight Design",
-                        text: "Provides reliable protection without adding unnecessary weight to the overall packaging.",
-                      },
-                      {
-                        no: "03",
-                        title: "Space Efficient",
-                        text: "Efficient packaging construction makes storage and transportation easier.",
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.no}
-                        className="group border border-gray-200 bg-white p-7 transition hover:border-[#F5A623]"
-                      >
-
-                        <span className="text-xs font-black text-gray-300 group-hover:text-[#F5A623]">
-                          {item.no}
-                        </span>
-
-                        <div className="mt-7 h-[3px] w-10 bg-[#F5A623] transition-all duration-300 group-hover:w-16" />
-
-                        <h3 className="mt-5 text-xl font-black text-[#081A33]">
-                          {item.title}
-                        </h3>
-
-                        <p className="mt-3 text-sm leading-7 text-gray-500">
-                          {item.text}
-                        </p>
-
-                      </div>
-                    ))}
-
-                  </div>
-
-                  {/* ADVANTAGES */}
-
-                  <div className="bg-[#081A33] p-8 md:p-12">
-
-                    <span className="text-xs font-bold uppercase tracking-[3px] text-[#F5A623]">
-                      Packaging Advantage
-                    </span>
-
-                    <h3 className="mt-3 text-2xl font-black text-white md:text-3xl">
-                      Why Choose{" "}
-                      {currentProduct.name}?
-                    </h3>
-
-                    <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-5 md:grid-cols-2">
-
-                      {content.advantages.map(
-                        (item, index) => (
+                      {content.description && (
+                        <div className="mt-8 max-w-3xl">
+                          <h3 className="text-sm font-extrabold uppercase tracking-wider text-[#081A33]">
+                            Detailed Description
+                          </h3>
                           <div
-                            key={item}
-                            className="flex items-start gap-4 border-b border-white/10 pb-4"
-                          >
-
-                            <span className="text-xs font-bold text-[#F5A623]">
-                              0{index + 1}
-                            </span>
-
-                            <span className="text-sm leading-6 text-white/75">
-                              {item}
-                            </span>
-
-                          </div>
-                        )
+                            className="mt-3 text-[16px] leading-8 text-gray-600 [&_.description-heading]:mb-4 [&_.description-heading]:mt-8 [&_.description-heading]:text-xl [&_.description-heading]:font-black [&_.description-heading]:leading-tight [&_.description-heading]:text-[#081A33] [&_.description-heading:first-child]:mt-0 [&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2 [&_strong]:font-semibold"
+                            dangerouslySetInnerHTML={{
+                              __html: formatProductDescription(content.description),
+                            }}
+                          />
+                        </div>
                       )}
 
                     </div>
 
                   </div>
+{content.specs.length > 0 && (
+  <div>
+    <span className="text-xs font-extrabold uppercase tracking-[3px] text-[#F5A623]">
+      Specifications
+    </span>
+
+    <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {content.specs.map(([label, value], index) => (
+        <div
+          key={`${label}-${index}`}
+          className="group border border-gray-200 bg-white p-5 transition hover:border-[#F5A623]"
+        >
+          <h3 className="text-sm font-bold text-[#081A33]">
+            {label}
+          </h3>
+
+          <p className="mt-2 text-sm leading-6 text-gray-500">
+            {value}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+                  {(content.applications.length > 0 ||
+                    content.sizes.length > 0) && (
+                    <div className="bg-[#081A33] p-8 md:p-12">
+                      {content.applications.length > 0 && (
+                        <>
+                          <span className="text-xs font-bold uppercase tracking-[3px] text-[#F5A623]">
+                            Applications
+                          </span>
+                          <h3 className="mt-3 text-2xl font-black text-white md:text-3xl">
+                            Uses for {currentProduct.name}
+                          </h3>
+                          <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-5 md:grid-cols-2">
+                            {content.applications.map((item, index) => (
+                              <div
+                                key={`${item}-${index}`}
+                                className="flex items-start gap-4 border-b border-white/10 pb-4"
+                              >
+                                <span className="text-xs font-bold text-[#F5A623]">
+                                  {String(index + 1).padStart(2, "0")}
+                                </span>
+                                <span className="text-sm leading-6 text-white/75">
+                                  {item}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+
+                      {content.sizes.length > 0 && (
+                        <div className={content.applications.length ? "mt-10 border-t border-white/10 pt-8" : ""}>
+                          <span className="text-xs font-bold uppercase tracking-[3px] text-[#F5A623]">
+                            Available Sizes
+                          </span>
+                          <div className="mt-5 flex flex-wrap gap-3">
+                            {content.sizes.map((size, index) => (
+                              <span
+                                key={`${size}-${index}`}
+                                className="border border-white/20 px-4 py-2 text-sm text-white/75"
+                              >
+                                {size}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                 </div>
               )}

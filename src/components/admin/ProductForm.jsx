@@ -1,8 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import "jodit/es2021/jodit.min.css";
+import { organizeProductFields } from "@/lib/productContent";
 
 const JoditEditor = dynamic(
   () => import("jodit-react"),
@@ -19,7 +20,6 @@ const FIELDS = [
   { name: "overview", label: "Product overview" },
   { name: "keyFeatures", label: "Key features" },
   { name: "applications", label: "Applications" },
-  { name: "specs", label: "Specifications" },
   { name: "sizes", label: "Available sizes" },
   { name: "extraImages", label: "Additional image URLs" },
 ];
@@ -35,6 +35,8 @@ function lines(value) {
 }
 
 function initialValues(product) {
+  const organizedFields = organizeProductFields(product);
+
   return {
     name: product?.name || "",
     slug: product?.slug || "",
@@ -44,9 +46,21 @@ function initialValues(product) {
       product?.shortDescription || "",
 
     description:
-      product?.description || "",
+      organizedFields.description ??
+      product?.description ??
+      "",
+
+    /* =====================================================
+       SPECIFICATIONS
+       Kept separately so it appears directly below
+       Description.
+    ===================================================== */
+    specs: lines(
+      organizedFields.specs || product?.specs
+    ),
 
     price: product?.price ?? "",
+
     compareAtPrice:
       product?.compareAtPrice ?? "",
 
@@ -79,7 +93,10 @@ function initialValues(product) {
     ...Object.fromEntries(
       FIELDS.map(({ name }) => [
         name,
-        lines(product?.[name]),
+        lines(
+          organizedFields[name] ||
+          product?.[name]
+        ),
       ])
     ),
   };
@@ -199,7 +216,7 @@ function RichTextEditor({
     <div className="mt-1 overflow-hidden rounded-lg border border-gray-200 bg-white focus-within:border-rust focus-within:ring-2 focus-within:ring-rust/20">
       <JoditEditor
         value={value || ""}
-        config={config}
+        // config={config}
         onBlur={(newContent) => {
           onChange(newContent);
         }}
@@ -253,7 +270,8 @@ function ProductForm({
       if (
         FIELDS.some(
           (field) => field.name === name
-        )
+        ) ||
+        name === "specs"
       ) {
         data.set(
           name,
@@ -282,7 +300,7 @@ function ProductForm({
       data,
       Boolean(
         imageFile ||
-          imageUrl.trim()
+        imageUrl.trim()
       )
     );
   };
@@ -298,9 +316,12 @@ function ProductForm({
       onSubmit={handleSubmit}
       className="space-y-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
     >
-      {/* BASIC INFORMATION */}
+      {/* =====================================================
+         BASIC INFORMATION
+      ====================================================== */}
 
       <section className="grid gap-4 sm:grid-cols-2">
+
         <label className={labelClass}>
           Product name *
 
@@ -391,7 +412,7 @@ function ProductForm({
 
           <input
             className={inputClass}
-            type="url"
+            // type="url"
             value={imageUrl}
             onChange={(e) =>
               setImageUrl(e.target.value)
@@ -410,7 +431,7 @@ function ProductForm({
             onChange={(e) =>
               setImageFile(
                 e.target.files?.[0] ||
-                  null
+                null
               )
             }
           />
@@ -422,7 +443,9 @@ function ProductForm({
           )}
         </label>
 
-        {/* SHORT DESCRIPTION */}
+        {/* =================================================
+           SHORT DESCRIPTION
+        ================================================== */}
 
         <div className="sm:col-span-2">
           <label className={labelClass}>
@@ -444,7 +467,9 @@ function ProductForm({
           />
         </div>
 
-        {/* DESCRIPTION */}
+        {/* =================================================
+           DESCRIPTION
+        ================================================== */}
 
         <div className="sm:col-span-2">
           <label className={labelClass}>
@@ -463,11 +488,39 @@ function ProductForm({
             minHeight="180px"
           />
         </div>
+
+        {/* =================================================
+           SPECIFICATIONS
+           DIRECTLY BELOW DESCRIPTION
+        ================================================== */}
+
+        <div className="sm:col-span-2">
+          <label className={labelClass}>
+            Specifications
+          </label>
+
+          <textarea
+            className={inputClass}
+            rows={6}
+            value={form.specs}
+            onChange={(e) =>
+              setField(
+                "specs",
+                e.target.value
+              )
+            }
+            placeholder="One specification per line"
+          />
+        </div>
+
       </section>
 
-      {/* STOCK */}
+      {/* =====================================================
+         STOCK
+      ====================================================== */}
 
       <section className="grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
+
         <label className={labelClass}>
           Stock quantity
 
@@ -505,11 +558,15 @@ function ProductForm({
             }
           />
         </label>
+
       </section>
 
-      {/* PRODUCT DETAILS */}
+      {/* =====================================================
+         PRODUCT DETAILS
+      ====================================================== */}
 
       <section className="grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
+
         {FIELDS.map(
           ({ name, label }) => (
             <label
@@ -543,11 +600,15 @@ function ProductForm({
             </label>
           )
         )}
+
       </section>
 
-      {/* SOCIAL + SEO */}
+      {/* =====================================================
+         SOCIAL + SEO
+      ====================================================== */}
 
       <section className="grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
+
         <label className={labelClass}>
           YouTube URL
 
@@ -619,11 +680,15 @@ function ProductForm({
             }
           />
         </label>
+
       </section>
 
-      {/* STATUS */}
+      {/* =====================================================
+         STATUS
+      ====================================================== */}
 
       <section className="flex flex-wrap gap-x-6 gap-y-3 border-t border-gray-100 pt-5">
+
         {[
           [
             "featured",
@@ -661,11 +726,15 @@ function ProductForm({
             </label>
           )
         )}
+
       </section>
 
-      {/* SUBMIT */}
+      {/* =====================================================
+         SUBMIT
+      ====================================================== */}
 
       <div className="flex justify-end border-t border-gray-100 pt-5">
+
         <button
           type="submit"
           disabled={loading}
@@ -675,13 +744,15 @@ function ProductForm({
             ? "Saving…"
             : submitLabel}
         </button>
+
       </div>
+
     </form>
   );
 }
 
 /* =========================================================
-   IMPORTANT — DEFAULT EXPORT
+   DEFAULT EXPORT
 ========================================================= */
 
 export default ProductForm;
