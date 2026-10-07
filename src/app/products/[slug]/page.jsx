@@ -501,20 +501,21 @@ function getVariants(product) {
   if (Array.isArray(product?.variants) && product.variants.length > 0) {
     return product.variants;
   }
-  // fallback: single virtual variant from top-level price
+  // Older products have size labels but share a single price.
   if (product?.price != null) {
-    return [
+    const sizes = product.sizes?.length ? product.sizes : ["Default"];
+    return sizes.map((size, index) => (
       {
-        size: product?.sizes?.[0] || "Default",
+        size,
         price: Number(product.price),
         compareAtPrice:
           product.compareAtPrice != null
             ? Number(product.compareAtPrice)
             : null,
         stock: Number(product.stock ?? 0),
-        isDefault: true,
-      },
-    ];
+        isDefault: index === 0,
+      }
+    ));
   }
   return [];
 }
@@ -536,6 +537,8 @@ function getDisplayPrice(product, selectedVariant = null) {
 
 function getDisplayComparePrice(product, selectedVariant = null) {
   const v = selectedVariant || getDefaultVariant(product);
+  // A variant without an MRP must not inherit another size's MRP.
+  if (product?.variants?.length && v) return Number(v.compareAtPrice ?? 0);
   if (v?.compareAtPrice != null) return Number(v.compareAtPrice);
   return Number(
     product?.compareAtPrice ??
@@ -820,6 +823,7 @@ const [selectedMedia, setSelectedMedia] = useState({
   index: 0,
 });
 const [quantity, setQuantity] = useState(1);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(null);
   const [activeTab, setActiveTab] = useState("description");
   const [zoom, setZoom] = useState(false);
   const { isWishlisted, toggleWishlist } = useAuth();
@@ -836,6 +840,8 @@ const [quantity, setQuantity] = useState(1);
       setLoadError("");
       setDatabaseProduct(null);
       setDatabaseRelated(null);
+      setSelectedVariantIndex(null);
+      setQuantity(1);
       setSelectedImage(0);
       setSelectedMedia({
   type: "image",
@@ -946,12 +952,13 @@ const youtubeEmbedUrl = getYouTubeEmbedUrl(youtubeUrl);
 
 const hasYoutubeVideo = Boolean(youtubeEmbedUrl);
 
-  const price = Number(currentProduct?.price || 0);
-  const oldPrice = Number(
-    currentProduct?.oldPrice || currentProduct?.compareAtPrice || 0
-  );
-  const inStock =
-    !currentProduct?.trackInventory || Number(currentProduct?.stock || 0) > 0;
+  const variants = getVariants(currentProduct);
+  const selectedVariant =
+    variants[selectedVariantIndex] || variants.find((variant) => variant.isDefault) || variants[0] || null;
+  const price = getDisplayPrice(currentProduct, selectedVariant);
+  const oldPrice = getDisplayComparePrice(currentProduct, selectedVariant);
+  const stock = getVariantStock(currentProduct, selectedVariant);
+  const inStock = isVariantInStock(currentProduct, selectedVariant);
   const saved = currentProduct ? isWishlisted(currentProduct._id || currentProduct.id) : false;
 
   if (loading) {
@@ -984,7 +991,7 @@ const hasYoutubeVideo = Boolean(youtubeEmbedUrl);
       : 0;
 
   const increaseQty = () =>
-    setQuantity((q) => q + 1);
+    setQuantity((q) => inStock ? Math.min(q + 1, stock) : q);
 
   const decreaseQty = () =>
     setQuantity((q) => (q > 1 ? q - 1 : 1));
@@ -994,6 +1001,7 @@ const hasYoutubeVideo = Boolean(youtubeEmbedUrl);
   ======================================================= */
 
   const addToCart = () => {
+    if (!inStock) return;
     if (typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("dpack-cart-add", {
@@ -1374,11 +1382,30 @@ const hasYoutubeVideo = Boolean(youtubeEmbedUrl);
               </p>
 
 
-{content?.sizes?.map((i)=>(
-  <button key={i} className="mt-2 mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-[#081A33] transition hover:border-[#F5A623]">
-    {i}
-  </button>
-))}
+              {(currentProduct.variants?.length > 0 || currentProduct.sizes?.length > 0) && (
+                <div className="mt-4" role="group" aria-label="Select product size">
+                  <p className="mb-2 text-sm font-semibold text-[#081A33]">Size: {selectedVariant?.size}</p>
+                  {variants.map((variant, index) => (
+                    <button
+                      key={variant._id || `${variant.size}-${index}`}
+                      type="button"
+                      aria-pressed={selectedVariant === variant}
+                      onClick={() => {
+                        setSelectedVariantIndex(index);
+                        setQuantity(1);
+                      }}
+                      className={`mr-2 mt-2 rounded border px-3 py-1 text-sm font-medium text-[#081A33] transition ${
+                        selectedVariant === variant
+                          ? "border-[#F5A623] bg-[#F5A623]"
+                          : "border-gray-300 bg-white hover:border-[#F5A623]"
+                      }`}
+                    >
+                      {variant.size}
+                      {!isVariantInStock(currentProduct, variant) && " (Out of stock)"}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* KEY FEATURES */}

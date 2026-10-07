@@ -22,9 +22,9 @@ const products = [
     name: "Dunnage Air Bags",
     image: "https://packingairbag.com/cat/1.webp",
     category: "Dunnage Bags",
-    price: 1299,
-    oldPrice: 1599,
-    discount: "19% OFF",
+   price: 1299,
+oldPrice: 1599,
+discount: "19% OFF",
     link: "/products/dunnage-air-bags",
   },
   {

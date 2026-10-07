@@ -30,6 +30,21 @@ export async function PUT(request, { params }) {
     if (contentType.includes("multipart/form-data")) {
       const { fields, files } = await parseFormData(request);
 
+      // The product editor sends size prices as a JSON array in FormData.
+      // Preserve existing variants when older clients omit this field.
+      if (fields.variants !== undefined) {
+        let variants;
+        try {
+          variants = JSON.parse(fields.variants || "[]");
+        } catch {
+          return err("Variants must be a valid JSON array", 400);
+        }
+        if (!Array.isArray(variants)) {
+          return err("Variants must be a valid JSON array", 400);
+        }
+        product.variants = variants;
+      }
+
       if (files.imageFile) {
         const { url, public_id } = await uploadToCloudinary(
           files.imageFile.buffer,
