@@ -75,15 +75,6 @@ const productContent = {
       "Its air-filled column structure absorbs external impact while keeping the packaging lightweight, space efficient and easy to handle.",
     ],
 
-    advantages: [
-      "Excellent cushioning against impact",
-      "Lightweight compared with traditional packaging",
-      "Efficient use of warehouse space",
-      "Suitable for fragile and sensitive products",
-      "Simple inflation and application",
-      "Customization available",
-    ],
-
     specs: [
       ["Product Type", "Air Column Bag"],
       ["Application", "Protective Product Packaging"],
@@ -1574,230 +1565,392 @@ const hasYoutubeVideo = Boolean(youtubeEmbedUrl);
 
       </section>
 
-      {/* =====================================================
-          PRODUCT DETAILS
-      ===================================================== */}
+    {/* =====================================================
+    CREATIVE PRODUCT DETAILS
+===================================================== */}
+<section className="border-t border-gray-200 bg-white">
+  <div className="mx-auto max-w-[1400px] px-5 py-20">
 
-      <section className="border-t border-gray-200">
+    {/* SECTION HEADER */}
+    <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+      <div>
+        <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
+          <span className="h-[2px] w-8 bg-[#F5A623]" />
+          Product Details
+        </span>
 
-        <div className="mx-auto max-w-[1400px] px-5 py-16">
+        <h2 className="mt-4 max-w-3xl text-4xl font-black leading-tight tracking-tight text-[#081A33] md:text-6xl">
+          Everything you need to know
+          <span className="block text-[#F5A623]">
+            before you pack.
+          </span>
+        </h2>
+      </div>
 
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[200px_1fr]">
+      <div className="max-w-md">
+        <p className="text-sm leading-7 text-gray-500">
+          Explore product information, specifications, applications and
+          packaging advantages designed to help you choose the right
+          solution for your requirements.
+        </p>
+      </div>
+    </div>
 
-            {/* LEFT STICKY TABS */}
+    {/* =================================================
+        OVERVIEW
+    ================================================= */}
+    <div className="relative overflow-hidden bg-[#F7F8FA]">
 
-            <aside className="lg:sticky lg:top-8 lg:self-start">
+      {/* BIG BACKGROUND NUMBER */}
+      <div className="pointer-events-none absolute -right-5 -top-16 text-[180px] font-black leading-none text-[#081A33]/[0.035]">
+        01
+      </div>
 
-              <div className="border border-gray-200 bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr]">
 
-                <div className="bg-[#081A33] px-5 py-4">
+        {/* NUMBER PANEL */}
+        <div className="hidden border-r border-gray-200 p-8 lg:block">
+          <div className="sticky top-10">
+            <span className="text-6xl font-black text-[#081A33]">
+              01
+            </span>
 
-                  <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-white/60">
-                    Product Details
-                  </span>
+            <div className="mt-6 h-20 w-[3px] bg-[#F5A623]" />
 
-                </div>
+            <p className="mt-5 text-[10px] font-black uppercase tracking-[2px] text-gray-400">
+              Product
+              <br />
+              Overview
+            </p>
+          </div>
+        </div>
 
-                <div className="flex flex-row lg:flex-col">
+        {/* CONTENT */}
+        <div className="relative p-7 md:p-12 lg:p-16">
 
-                  {/* DESCRIPTION TAB */}
+          <div className="mb-8">
+            <span className="text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
+              Product Overview
+            </span>
 
-                  <button
-                    onClick={() =>
-                      setActiveTab("description")
-                    }
-                    className={`group relative flex flex-1 items-center gap-3 px-5 py-5 text-left transition lg:flex-none ${
-                      activeTab === "description"
-                        ? "bg-[#F7F8FA]"
-                        : "bg-white hover:bg-[#F7F8FA]"
-                    }`}
-                  >
+            <h3 className="mt-4 max-w-4xl text-3xl font-black leading-tight text-[#081A33] md:text-5xl">
+              {content.overviewTitle}
+              <span className="block text-[#081A33]/60">
+                {content.overviewTitleSecond}
+              </span>
+            </h3>
+          </div>
 
-                    <span
-                      className={`text-xs font-black ${
-                        activeTab === "description"
-                          ? "text-[#F5A623]"
-                          : "text-gray-300"
-                      }`}
-                    >
-                      01
-                    </span>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            {content.overviewParagraphs.map((paragraph, index) => (
+              <div
+                key={paragraph}
+                className="border-l-2 border-[#F5A623] bg-white p-6 md:p-7"
+              >
+                <span className="mb-4 block text-xs font-black text-[#081A33]/30">
+                  0{index + 1}
+                </span>
 
-                    <span
-                      className={`text-xs font-extrabold uppercase tracking-[1.2px] ${
-                        activeTab === "description"
-                          ? "text-[#081A33]"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      Description
-                    </span>
+                <p className="text-[15px] leading-8 text-gray-600">
+                  {paragraph}
+                </p>
+              </div>
+            ))}
+          </div>
 
-                    {activeTab ===
-                      "description" && (
-                      <span className="absolute left-0 top-0 h-full w-[3px] bg-[#F5A623]" />
-                    )}
+          {/* DETAILED DESCRIPTION */}
+          {content.description && (
+            <div className="mt-12 border-t border-gray-200 pt-10">
 
-                  </button>
+              <div
+                className="
+                  max-w-4xl
+                  text-[16px]
+                  leading-8
+                  text-gray-600
 
+                  [&_.description-heading]:mb-5
+                  [&_.description-heading]:mt-10
+                  [&_.description-heading]:text-2xl
+                  [&_.description-heading]:font-black
+                  [&_.description-heading]:leading-tight
+                  [&_.description-heading]:text-[#081A33]
 
-                </div>
+                  [&_.description-heading:first-child]:mt-0
+
+                  [&_.description-point]:mb-4
+                  [&_.description-point]:flex
+                  [&_.description-point]:items-start
+                  [&_.description-point]:gap-4
+
+                  [&_.description-point_p]:m-0
+                  [&_.description-point_p]:leading-8
+
+                  [&_.description-diamond]:mt-[13px]
+                  [&_.description-diamond]:h-2.5
+                  [&_.description-diamond]:w-2.5
+                  [&_.description-diamond]:shrink-0
+                  [&_.description-diamond]:rotate-45
+                  [&_.description-diamond]:bg-[#F5A623]
+
+                  [&_p]:mb-5
+                  [&_p:last-child]:mb-0
+
+                  [&_ul]:my-5
+                  [&_ul]:list-disc
+                  [&_ul]:pl-6
+
+                  [&_ol]:my-5
+                  [&_ol]:list-decimal
+                  [&_ol]:pl-6
+
+                  [&_li]:mb-2
+
+                  [&_strong]:font-bold
+                  [&_strong]:text-[#081A33]
+
+                  [&_a]:font-semibold
+                  [&_a]:text-[#081A33]
+                  [&_a]:underline
+                "
+                dangerouslySetInnerHTML={{
+                  __html: formatProductDescription(content.description),
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+
+    {/* =================================================
+        SPECIFICATIONS
+    ================================================= */}
+    {content.specs.length > 0 && (
+      <div className="mt-20">
+
+        <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <span className="text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
+              02 / Specifications
+            </span>
+
+            <h3 className="mt-3 text-3xl font-black text-[#081A33] md:text-4xl">
+              Product Specifications
+            </h3>
+          </div>
+
+          <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+            Technical Information
+          </span>
+        </div>
+
+        <div className="overflow-hidden border border-gray-200">
+
+          {content.specs.map(([label, value], index) => (
+            <div
+              key={`${label}-${index}`}
+              className={`
+                group grid grid-cols-1 gap-3 p-5 transition
+                md:grid-cols-[280px_1fr]
+                md:items-center
+                ${
+                  index % 2 === 0
+                    ? "bg-[#F7F8FA]"
+                    : "bg-white"
+                }
+                hover:bg-[#081A33]
+              `}
+            >
+
+              <div className="flex items-center gap-4">
+
+                <span className="text-xs font-black text-[#F5A623]">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <span className="text-sm font-black text-[#081A33] transition group-hover:text-white">
+                  {label}
+                </span>
 
               </div>
 
-            </aside>
-
-            {/* RIGHT CONTENT */}
-
-            <div className="min-w-0">
-
-              {/* DESCRIPTION */}
-
-              {activeTab === "description" && (
-                <div className="space-y-12">
-
-                  <div className="grid grid-cols-1 gap-10 lg:grid-cols-[100px_1fr]">
-
-                    <div className="hidden lg:block">
-
-                      <div className="text-7xl font-black leading-none text-[#081A33]/10">
-                        01
-                      </div>
-
-                      <div className="mt-4 h-16 w-[2px] bg-[#F5A623]" />
-
-                    </div>
-
-                    <div>
-
-                      <span className="text-xs font-extrabold uppercase tracking-[3px] text-[#F5A623]">
-                        Product Overview
-                      </span>
-
-                      <h2 className="mt-4 text-3xl font-black leading-tight text-[#081A33] md:text-5xl">
-
-                        {content.overviewTitle}
-
-                        <span className="block">
-                          {content.overviewTitleSecond}
-                        </span>
-
-                      </h2>
-
-                      {content.overviewParagraphs.map(
-                        (paragraph) => (
-                          <p
-                            key={paragraph}
-                            className="mt-6 max-w-3xl text-[16px] leading-8 text-gray-600"
-                          >
-                            {paragraph}
-                          </p>
-                        )
-                      )}
-
-                      {content.description && (
-                        <div className="mt-8 max-w-3xl">
-                          <h3 className="text-sm font-extrabold uppercase tracking-wider text-[#081A33]">
-                            Detailed Description
-                          </h3>
-                          <div
-                            className="mt-3 text-[16px] leading-8 text-gray-600 [&_.description-heading]:mb-4 [&_.description-heading]:mt-8 [&_.description-heading]:text-xl [&_.description-heading]:font-black [&_.description-heading]:leading-tight [&_.description-heading]:text-[#081A33] [&_.description-heading:first-child]:mt-0 [&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2 [&_strong]:font-semibold"
-                            dangerouslySetInnerHTML={{
-                              __html: formatProductDescription(content.description),
-                            }}
-                          />
-                        </div>
-                      )}
-
-                    </div>
-
-                  </div>
-{content.specs.length > 0 && (
-  <div>
-    <span className="text-xs font-extrabold uppercase tracking-[3px] text-[#F5A623]">
-      Specifications
-    </span>
-
-    <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {content.specs.map(([label, value], index) => (
-        <div
-          key={`${label}-${index}`}
-          className="group border border-gray-200 bg-white p-5 transition hover:border-[#F5A623]"
-        >
-          <h3 className="text-sm font-bold text-[#081A33]">
-            {label}
-          </h3>
-
-          <p className="mt-2 text-sm leading-6 text-gray-500">
-            {value}
-          </p>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
-
-                  {(content.applications.length > 0 ||
-                    content.sizes.length > 0) && (
-                    <div className="bg-[#081A33] p-8 md:p-12">
-                      {content.applications.length > 0 && (
-                        <>
-                          <span className="text-xs font-bold uppercase tracking-[3px] text-[#F5A623]">
-                            Applications
-                          </span>
-                          <h3 className="mt-3 text-2xl font-black text-white md:text-3xl">
-                            Uses for {currentProduct.name}
-                          </h3>
-                          <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-5 md:grid-cols-2">
-                            {content.applications.map((item, index) => (
-                              <div
-                                key={`${item}-${index}`}
-                                className="flex items-start gap-4 border-b border-white/10 pb-4"
-                              >
-                                <span className="text-xs font-bold text-[#F5A623]">
-                                  {String(index + 1).padStart(2, "0")}
-                                </span>
-                                <span className="text-sm leading-6 text-white/75">
-                                  {item}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      )}
-
-                      {content.sizes.length > 0 && (
-                        <div className={content.applications.length ? "mt-10 border-t border-white/10 pt-8" : ""}>
-                          <span className="text-xs font-bold uppercase tracking-[3px] text-[#F5A623]">
-                            Available Sizes
-                          </span>
-                          <div className="mt-5 flex flex-wrap gap-3">
-                            {content.sizes.map((size, index) => (
-                              <span
-                                key={`${size}-${index}`}
-                                className="border border-white/20 px-4 py-2 text-sm text-white/75"
-                              >
-                                {size}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                </div>
-              )}
-
-
+              <div className="text-sm leading-6 text-gray-500 transition group-hover:text-white/70">
+                {value}
+              </div>
 
             </div>
-
-          </div>
+          ))}
 
         </div>
+      </div>
+    )}
 
-      </section>
+    {/* =================================================
+        APPLICATIONS
+    ================================================= */}
+    {(content.applications.length > 0 ||
+      content.sizes.length > 0) && (
+      <div className="relative mt-20 overflow-hidden bg-[#081A33]">
+
+        {/* Decorative circles */}
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full border-[60px] border-white/[0.03]" />
+        <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full border-[70px] border-[#F5A623]/[0.04]" />
+
+        <div className="relative p-8 md:p-14 lg:p-16">
+
+          <div className="max-w-2xl">
+            <span className="text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
+              03 / Applications
+            </span>
+
+            <h3 className="mt-4 text-3xl font-black leading-tight text-white md:text-5xl">
+              Where this product
+              <span className="block text-white/50">
+                makes a difference.
+              </span>
+            </h3>
+          </div>
+
+          {content.applications.length > 0 && (
+            <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2">
+
+              {content.applications.map((item, index) => (
+                <div
+                  key={`${item}-${index}`}
+                  className="
+                    group
+                    relative
+                    overflow-hidden
+                    border
+                    border-white/10
+                    bg-white/[0.04]
+                    p-6
+                    transition
+                    duration-300
+                    hover:-translate-y-1
+                    hover:border-[#F5A623]
+                    hover:bg-white/[0.08]
+                  "
+                >
+
+                  <span className="text-4xl font-black text-[#F5A623]/30 transition group-hover:text-[#F5A623]">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+
+                  <div className="mt-5 flex items-start gap-3">
+                    <span className="mt-2 h-2 w-2 shrink-0 rotate-45 bg-[#F5A623]" />
+
+                    <p className="text-sm leading-7 text-white/70">
+                      {item}
+                    </p>
+                  </div>
+
+                </div>
+              ))}
+
+            </div>
+          )}
+
+          {/* SIZES */}
+          {content.sizes.length > 0 && (
+            <div className="mt-12 border-t border-white/10 pt-10">
+
+              <span className="text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
+                Available Sizes
+              </span>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                {content.sizes.map((size, index) => (
+                  <span
+                    key={`${size}-${index}`}
+                    className="
+                      border
+                      border-white/15
+                      bg-white/[0.03]
+                      px-5
+                      py-3
+                      text-sm
+                      font-semibold
+                      text-white/70
+                      transition
+                      hover:border-[#F5A623]
+                      hover:bg-[#F5A623]
+                      hover:text-[#081A33]
+                    "
+                  >
+                    {size}
+                  </span>
+                ))}
+              </div>
+
+            </div>
+          )}
+
+        </div>
+      </div>
+    )}
+
+ 
+
+    {/* =================================================
+        FINAL CTA
+    ================================================= */}
+    <div className="relative mt-20 overflow-hidden bg-[#F5A623]">
+
+      <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full border-[45px] border-[#081A33]/[0.06]" />
+
+      <div className="relative flex flex-col gap-7 p-8 md:flex-row md:items-center md:justify-between md:p-12">
+
+        <div>
+          <span className="text-xs font-black uppercase tracking-[3px] text-[#081A33]/60">
+            Need bulk quantity?
+          </span>
+
+          <h3 className="mt-3 text-2xl font-black text-[#081A33] md:text-3xl">
+            Looking for a packaging solution?
+          </h3>
+
+          <p className="mt-2 max-w-xl text-sm leading-6 text-[#081A33]/70">
+            Contact our team for bulk orders, product requirements
+            and customized packaging solutions.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            window.dispatchEvent(
+              new CustomEvent("dpack-product-inquiry", {
+                detail: currentProduct,
+              })
+            );
+          }}
+          className="
+            shrink-0
+            border-2
+            border-[#081A33]
+            bg-[#081A33]
+            px-7
+            py-4
+            text-sm
+            font-black
+            uppercase
+            tracking-wide
+            text-white
+            transition
+            hover:bg-white
+            hover:text-[#081A33]
+          "
+        >
+          Enquire Now
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</section>
 
       {/* =====================================================
           RELATED PRODUCTS
