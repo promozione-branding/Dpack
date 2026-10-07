@@ -255,6 +255,50 @@ function parseNumber(value, defaultValue = null) {
   return Number.isFinite(number) ? number : defaultValue;
 }
 
+// Variant cells contain JSON objects, so the text-array parser cannot be used.
+function parseVariants(value) {
+  let variants;
+  try {
+    variants = JSON.parse(String(value).trim());
+  } catch {
+    throw new Error("Variants must contain a valid JSON array");
+  }
+  if (!Array.isArray(variants)) {
+    throw new Error("Variants must contain a valid JSON array");
+  }
+
+  return variants.map((variant, index) => {
+    if (!variant || typeof variant !== "object" || Array.isArray(variant)) {
+      throw new Error(`Variant ${index + 1} must be an object`);
+    }
+    const size = cleanString(variant.size);
+    if (!size) throw new Error(`Variant ${index + 1} size is required`);
+
+    const number = (field, defaultValue, integer = false) => {
+      const raw = variant[field];
+      if (raw == null || String(raw).trim() === "") {
+        if (defaultValue !== undefined) return defaultValue;
+        throw new Error(`Variant ${index + 1} ${field} is required`);
+      }
+      const result = parseNumber(raw);
+      if (result === null || result < 0 || (integer && !Number.isInteger(result))) {
+        throw new Error(`Variant ${index + 1} ${field} must be a non-negative ${integer ? "integer" : "number"}`);
+      }
+      return result;
+    };
+
+    return {
+      size,
+      price: number("price"),
+      compareAtPrice: number("compareAtPrice", null),
+      stock: number("stock", 0, true),
+      sku: cleanString(variant.sku),
+      weight: number("weight", null),
+      isDefault: parseBoolean(variant.isDefault, false),
+    };
+  });
+}
+
 /* =========================================================
    SLUG GENERATOR
 ========================================================= */
@@ -337,6 +381,11 @@ function normalizeProduct(row) {
   };
 
   Object.assign(product, organizeProductFields(product));
+
+  // Omitted/blank cells preserve existing variants; [] explicitly removes them.
+  if (row.variants !== undefined && String(row.variants).trim() !== "") {
+    product.variants = parseVariants(row.variants);
+  }
 
   return product;
 }
@@ -458,43 +507,19 @@ export async function POST(request) {
           }
         });
 
-        /* -----------------------------------------------
-           IMPORTANT
-
-           Using findOneAndUpdate + upsert means:
-
-           - Existing slug = UPDATE
-           - New slug = CREATE
-           - No Product.save()
-           - No Product.create()
-           - No validate middleware
-           - No "next is not a function"
-        ------------------------------------------------ */
-
+        // Save documents so schema validation and variant synchronization run:
+        // default price/MRP, size labels, total stock, and variant IDs.
         const existing = await Product.findOne({
           slug: product.slug,
-        })
-          .select("_id")
-          .lean();
+        });
 
         if (existing) {
-          await Product.updateOne(
-            { _id: existing._id },
-            {
-              $set: product,
-            },
-            {
-              runValidators: true,
-            }
-          );
+          existing.set(product);
+          await existing.save();
 
           updated++;
         } else {
-          await Product.collection.insertOne({
-            ...product,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          });
+          await new Product(product).save();
 
           created++;
         }

@@ -9,6 +9,7 @@ export const PRODUCT_CSV_FIELDS = [
   "applications",
   "specs",
   "sizes",
+  "variants",
   "image",
   "imagePublicId",
   "extraImages",
