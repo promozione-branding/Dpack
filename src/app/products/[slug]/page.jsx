@@ -493,7 +493,80 @@ function toSpecificationPairs(specifications) {
     return [`Specification ${index + 1}`, text];
   });
 }
+/* =========================================================
+   VARIANT HELPERS
+========================================================= */
 
+function getVariants(product) {
+  if (Array.isArray(product?.variants) && product.variants.length > 0) {
+    return product.variants;
+  }
+  // fallback: single virtual variant from top-level price
+  if (product?.price != null) {
+    return [
+      {
+        size: product?.sizes?.[0] || "Default",
+        price: Number(product.price),
+        compareAtPrice:
+          product.compareAtPrice != null
+            ? Number(product.compareAtPrice)
+            : null,
+        stock: Number(product.stock ?? 0),
+        isDefault: true,
+      },
+    ];
+  }
+  return [];
+}
+
+function getDefaultVariant(product) {
+  const variants = getVariants(product);
+  if (!variants.length) return null;
+  return (
+    variants.find((v) => v.isDefault) ||
+    variants[0]
+  );
+}
+
+function getDisplayPrice(product, selectedVariant = null) {
+  const v = selectedVariant || getDefaultVariant(product);
+  if (v?.price != null) return Number(v.price);
+  return Number(product?.price ?? 0);
+}
+
+function getDisplayComparePrice(product, selectedVariant = null) {
+  const v = selectedVariant || getDefaultVariant(product);
+  if (v?.compareAtPrice != null) return Number(v.compareAtPrice);
+  return Number(
+    product?.compareAtPrice ??
+      product?.oldPrice ??
+      product?.mrp ??
+      0
+  );
+}
+
+function getVariantStock(product, selectedVariant = null) {
+  const tracking =
+    product?.trackInventory ?? product?.inventoryTracking ?? true;
+  if (!tracking) return Infinity;
+
+  if (selectedVariant) {
+    return Number(selectedVariant.stock ?? 0);
+  }
+
+  const variants = getVariants(product);
+  if (variants.length > 0) {
+    return variants.reduce((sum, v) => sum + Number(v.stock || 0), 0);
+  }
+  return Number(product?.stock ?? 0);
+}
+
+function isVariantInStock(product, selectedVariant = null) {
+  const tracking =
+    product?.trackInventory ?? product?.inventoryTracking ?? true;
+  if (!tracking) return true;
+  return getVariantStock(product, selectedVariant) > 0;
+}
 /* =========================================================
    DESCRIPTION FORMATTER
    Supports:

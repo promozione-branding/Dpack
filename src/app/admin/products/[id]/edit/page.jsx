@@ -17,7 +17,8 @@ export default function EditProductPage({ params }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    adminAPI.getProduct(id)
+    adminAPI
+      .getProduct(id)
       .then((res) => setProduct(res.product))
       .catch((e) => setError(e.message))
       .finally(() => setLoadingProduct(false));
@@ -59,7 +60,9 @@ export default function EditProductPage({ params }) {
         </div>
       )}
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
       )}
 
       {loadingProduct ? (
@@ -67,7 +70,12 @@ export default function EditProductPage({ params }) {
           <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
         </div>
       ) : product ? (
-        <ProductForm initial={product} onSubmit={handleSubmit} loading={saving} submitLabel="Update Product" />
+        <ProductForm
+          initial={product}
+          onSubmit={handleSubmit}
+          loading={saving}
+          submitLabel="Update Product"
+        />
       ) : (
         <p className="text-gray-500">Product not found.</p>
       )}

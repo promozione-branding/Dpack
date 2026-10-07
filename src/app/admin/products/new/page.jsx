@@ -58,7 +58,11 @@ export default function NewProductPage() {
         </div>
       )}
 
-      <ProductForm onSubmit={handleSubmit} loading={loading} submitLabel="Create Product" />
+      <ProductForm
+        onSubmit={handleSubmit}
+        loading={loading}
+        submitLabel="Create Product"
+      />
     </div>
   );
 }

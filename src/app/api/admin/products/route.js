@@ -11,10 +11,44 @@ function parseArrayField(value) {
     const parsed = JSON.parse(value);
     if (Array.isArray(parsed)) return parsed.map(String);
   } catch {
-    // Support newline-separated values from older form submissions.
+    // newline-separated fallback
   }
 
-  return value.split("\n").map((item) => item.trim()).filter(Boolean);
+  return String(value)
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parseVariants(value) {
+  if (value === undefined || value === null || value === "") return [];
+
+  try {
+    const parsed = typeof value === "string" ? JSON.parse(value) : value;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed
+      .map((v) => ({
+        size: String(v.size || "").trim(),
+        price: Number(v.price),
+        compareAtPrice:
+          v.compareAtPrice === "" ||
+          v.compareAtPrice === undefined ||
+          v.compareAtPrice === null
+            ? null
+            : Number(v.compareAtPrice),
+        stock: Number(v.stock ?? 0),
+        sku: v.sku ? String(v.sku).trim() : null,
+        weight:
+          v.weight === "" || v.weight === undefined || v.weight === null
+            ? null
+            : Number(v.weight),
+        isDefault: Boolean(v.isDefault),
+      }))
+      .filter((v) => v.size && Number.isFinite(v.price) && v.price >= 0);
+  } catch {
+    return [];
+  }
 }
 
 function makeSlug(value) {
@@ -79,6 +113,7 @@ export async function POST(request) {
   try {
     await connectDB();
     const { fields, files } = await parseFormData(request);
+
     let image = fields.image?.trim() || "";
     let imagePublicId = null;
 
@@ -94,9 +129,23 @@ export async function POST(request) {
     const name = fields.name?.trim() || "";
     const category = fields.category?.trim() || "";
     const description = fields.description?.trim() || "";
-    const price = Number(fields.price);
+    const variants = parseVariants(fields.variants);
 
-    if (!name || !category || !description || !image || !Number.isFinite(price)) {
+    // price: from default variant OR top-level price field
+    let price = Number(fields.price);
+    if (variants.length > 0) {
+      const def =
+        variants.find((v) => v.isDefault) || variants[0];
+      price = def.price;
+    }
+
+    if (
+      !name ||
+      !category ||
+      !description ||
+      !image ||
+      !Number.isFinite(price)
+    ) {
       return err(
         "Product name, category, detailed description, image, and valid price are required."
       );
@@ -112,10 +161,12 @@ export async function POST(request) {
       keyFeatures: parseArrayField(fields.keyFeatures),
       applications: parseArrayField(fields.applications),
       specs: parseArrayField(fields.specs),
-      sizes: parseArrayField(fields.sizes),
+      variants,
+      sizes: parseArrayField(fields.sizes), // optional; schema syncs from variants
       image,
       imagePublicId,
       extraImages: parseArrayField(fields.extraImages),
+      extraImagePublicIds: parseArrayField(fields.extraImagePublicIds),
       youtubeUrl: fields.youtubeUrl?.trim() || null,
       instagramUrl: fields.instagramUrl?.trim() || null,
       price,
@@ -128,10 +179,28 @@ export async function POST(request) {
       trackInventory: fields.trackInventory === "true",
       featured: fields.featured === "true",
       isActive: fields.isActive !== "false",
+      weight:
+        fields.weight === "" || fields.weight === undefined
+          ? null
+          : Number(fields.weight),
+      length:
+        fields.length === "" || fields.length === undefined
+          ? null
+          : Number(fields.length),
+      breadth:
+        fields.breadth === "" || fields.breadth === undefined
+          ? null
+          : Number(fields.breadth),
+      height:
+        fields.height === "" || fields.height === undefined
+          ? null
+          : Number(fields.height),
       metaTitle: fields.metaTitle?.trim() || "",
       metaDescription: fields.metaDescription?.trim() || "",
     };
+
     Object.assign(productFields, organizeProductFields(productFields));
+
     const product = await Product.create(productFields);
 
     return ok({ product }, 201);
