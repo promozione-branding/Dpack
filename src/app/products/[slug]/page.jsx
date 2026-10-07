@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import {
   ShoppingCart,
@@ -17,6 +18,8 @@ import {
   ZoomIn,
   Check,
   MapPin,
+  Youtube,
+  Play,
 } from "lucide-react";
 
 import products, {
@@ -655,14 +658,74 @@ function formatProductDescription(description) {
     );
 }
 
+function getYouTubeEmbedUrl(url) {
+  if (!url) return null;
+
+  const value = String(url).trim();
+
+  if (!value) return null;
+
+  try {
+    const parsed = new URL(value);
+
+    // youtube.com/watch?v=VIDEO_ID
+    if (
+      parsed.hostname.includes("youtube.com") &&
+      parsed.searchParams.get("v")
+    ) {
+      return `https://www.youtube.com/embed/${parsed.searchParams.get("v")}`;
+    }
+
+    // youtu.be/VIDEO_ID
+    if (parsed.hostname === "youtu.be") {
+      const videoId = parsed.pathname.replace("/", "").split("?")[0];
+
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+    }
+
+    // youtube.com/shorts/VIDEO_ID
+    if (
+      parsed.hostname.includes("youtube.com") &&
+      parsed.pathname.startsWith("/shorts/")
+    ) {
+      const videoId = parsed.pathname
+        .replace("/shorts/", "")
+        .split("/")[0];
+
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+    }
+
+    // Already embed URL
+    if (
+      parsed.hostname.includes("youtube.com") &&
+      parsed.pathname.startsWith("/embed/")
+    ) {
+      return value;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 /* =========================================================
    PAGE
 ========================================================= */
 
 export default function ProductPage({ params }) {
+  const router = useRouter();
   const { slug } = use(params);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+const [selectedMedia, setSelectedMedia] = useState({
+  type: "image",
+  index: 0,
+});
+const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
   const [zoom, setZoom] = useState(false);
   const { isWishlisted, toggleWishlist } = useAuth();
@@ -680,6 +743,10 @@ export default function ProductPage({ params }) {
       setDatabaseProduct(null);
       setDatabaseRelated(null);
       setSelectedImage(0);
+      setSelectedMedia({
+  type: "image",
+  index: 0,
+});
 
       try {
         const response = await fetch(`/api/products/${encodeURIComponent(slug)}`, {
@@ -748,6 +815,17 @@ export default function ProductPage({ params }) {
       : [currentProduct?.image, ...(currentProduct?.extraImages || [])]
     ).filter(Boolean);
 
+    const youtubeUrl =
+  currentProduct?.youtubeUrl ||
+  currentProduct?.youtubeLink ||
+  currentProduct?.youtubeVideo ||
+  currentProduct?.youtube ||
+  "";
+
+const youtubeEmbedUrl = getYouTubeEmbedUrl(youtubeUrl);
+
+const hasYoutubeVideo = Boolean(youtubeEmbedUrl);
+
   const price = Number(currentProduct?.price || 0);
   const oldPrice = Number(
     currentProduct?.oldPrice || currentProduct?.compareAtPrice || 0
@@ -808,6 +886,13 @@ export default function ProductPage({ params }) {
     }
   };
 
+  const buyNow = () => {
+    if (!inStock) return;
+
+    addToCart();
+    router.push("/checkout");
+  };
+
   return (
     <main className="min-h-screen bg-white text-[#1d2939]">
 
@@ -855,59 +940,102 @@ export default function ProductPage({ params }) {
           <div className="lg:sticky lg:top-5 lg:self-start">
 
             <div className="grid grid-cols-[95px_1fr] gap-5">
+<div className="flex flex-col gap-4">
 
-              {/* THUMBNAILS */}
+  {/* IMAGE THUMBNAILS */}
+  {images.map((image, index) => (
+    <button
+      key={`${image}-${index}`}
+      onClick={() => {
+        setSelectedImage(index);
+        setSelectedMedia({
+          type: "image",
+          index,
+        });
+      }}
+      className={`flex h-[90px] items-center justify-center border bg-white p-2 transition ${
+        selectedMedia.type === "image" &&
+        selectedMedia.index === index
+          ? "border-2 border-[#F5A623]"
+          : "border-gray-200 hover:border-[#081A33]"
+      }`}
+    >
+      <img
+        src={image}
+        alt={`${currentProduct.name} view ${index + 1}`}
+        className="h-full w-full object-contain"
+      />
+    </button>
+  ))}
 
-              <div className="flex flex-col gap-4">
+  {/* YOUTUBE THUMBNAIL */}
+  {hasYoutubeVideo && (
+    <button
+      type="button"
+      onClick={() => {
+        setSelectedMedia({
+          type: "youtube",
+          index: 0,
+        });
+      }}
+      className={`group relative flex h-[90px] items-center justify-center overflow-hidden border bg-[#081A33] transition ${
+        selectedMedia.type === "youtube"
+          ? "border-2 border-[#F5A623]"
+          : "border-gray-200 hover:border-[#081A33]"
+      }`}
+      aria-label="Watch product video"
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-[#081A33] via-[#10284a] to-black" />
 
-                {images.map((image, index) => (
-                  <button
-                    key={`${image}-${index}`}
-                    onClick={() =>
-                      setSelectedImage(index)
-                    }
-                    className={`flex h-[90px] items-center justify-center border bg-white p-2 transition ${
-                      selectedImage === index
-                        ? "border-2 border-[#F5A623]"
-                        : "border-gray-200 hover:border-[#081A33]"
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${currentProduct.name} view ${
-                        index + 1
-                      }`}
-                      className="h-full w-full object-contain"
-                    />
-                  </button>
-                ))}
+      <div className="relative z-10 flex flex-col items-center justify-center gap-1 text-white">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5A623] text-[#081A33]">
+          <Play size={16} fill="currentColor" />
+        </span>
 
-              </div>
+        <span className="text-[9px] font-extrabold uppercase tracking-wider">
+          Video
+        </span>
+      </div>
+    </button>
+  )}
 
-              {/* MAIN VIEWER */}
+</div>
+{/* MAIN VIEWER */}
+<div className="relative flex min-h-[570px] items-center justify-center overflow-hidden border border-gray-200 bg-[#F7F9FB]">
 
-              <div className="relative flex min-h-[570px] items-center justify-center overflow-hidden border border-gray-200 bg-[#F7F9FB]">
+  <div className="absolute left-5 top-5 z-20 bg-[#081A33] px-4 py-2 text-[15px] font-bold uppercase tracking-wider text-white">
+    {currentProduct.badge || "Featured Product"}
+  </div>
 
-                <div className="absolute left-5 top-5 z-20 bg-[#081A33] px-4 py-2 text-[15px] font-bold uppercase tracking-wider text-white">
-                  {currentProduct.badge ||
-                    "Featured Product"}
-                </div>
+  {selectedMedia.type === "youtube" && youtubeEmbedUrl ? (
+    <div className="relative h-full min-h-[570px] w-full bg-black">
+      <iframe
+        src={youtubeEmbedUrl}
+        title={`${currentProduct.name} YouTube Video`}
+        className="absolute inset-0 h-full w-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+      />
+    </div>
+  ) : (
+    <img
+      src={images[selectedImage]}
+      alt={currentProduct.name}
+      className="w-full object-contain transition duration-300 hover:scale-105"
+    />
+  )}
 
-                <img
-                  src={images[selectedImage]}
-                  alt={currentProduct.name}
-                  className="h-[500px] w-full object-contain p-0 transition duration-300 hover:scale-105"
-                />
+  {selectedMedia.type === "image" && (
+    <button
+      onClick={() => setZoom(true)}
+      className="absolute bottom-5 right-5 z-20 flex h-11 w-11 items-center justify-center border border-gray-200 bg-white text-[#081A33] shadow-sm transition hover:bg-[#F5A623]"
+      aria-label="Zoom product image"
+    >
+      <ZoomIn size={19} />
+    </button>
+  )}
 
-                <button
-                  onClick={() => setZoom(true)}
-                  className="absolute bottom-5 right-5 z-20 flex h-11 w-11 items-center justify-center border border-gray-200 bg-white text-[#081A33] shadow-sm transition hover:bg-[#F5A623]"
-                  aria-label="Zoom product image"
-                >
-                  <ZoomIn size={19} />
-                </button>
-
-              </div>
+</div>
 
             </div>
 
@@ -1230,7 +1358,12 @@ export default function ProductPage({ params }) {
 
             {/* BUY NOW */}
 
-            <button className="mt-4 h-12 w-full border-2 border-[#081A33] bg-[#081A33] text-sm font-extrabold uppercase tracking-wide text-white transition hover:bg-white hover:text-[#081A33]">
+            <button
+              type="button"
+              onClick={buyNow}
+              disabled={!inStock}
+              className="mt-4 h-12 w-full border-2 border-[#081A33] bg-[#081A33] text-sm font-extrabold uppercase tracking-wide text-white transition hover:bg-white hover:text-[#081A33] disabled:cursor-not-allowed disabled:opacity-50"
+            >
               Buy It Now
             </button>
 

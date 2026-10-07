@@ -75,9 +75,20 @@ function getProductImage(product) {
   }
 
   if (typeof image === "string") {
+    image = image.trim();
+
+    if (image.startsWith("products/")) {
+      image = `/${image}`;
+    }
+
     try {
       const imageUrl = new URL(image);
-      if (
+      if (imageUrl.hostname === "products") {
+        const pathname = imageUrl.pathname.startsWith("/products/")
+          ? imageUrl.pathname
+          : `/products${imageUrl.pathname}`;
+        image = `${pathname}${imageUrl.search}${imageUrl.hash}`;
+      } else if (
         (imageUrl.hostname === "localhost" ||
           imageUrl.hostname === "127.0.0.1") &&
         imageUrl.pathname.startsWith("/products/")
@@ -294,7 +305,7 @@ function ProductCard({
                 (max-width: 1024px) 33vw,
                 25vw
               "
-              className="object-contain p-4 sm:p-5"
+              className="object-contain "
             />
           </motion.div>
         </Link>
