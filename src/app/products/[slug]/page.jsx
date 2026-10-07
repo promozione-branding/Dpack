@@ -774,7 +774,7 @@ const [quantity, setQuantity] = useState(1);
           cache: "no-store",
         });
         const data = await response.json();
-
+console.log(data)
         if (!response.ok || !data.success) {
           if (response.status !== 404) {
             throw new Error(data.error || "Failed to load product.");
@@ -1300,6 +1300,12 @@ const hasYoutubeVideo = Boolean(youtubeEmbedUrl);
                 Inclusive of applicable taxes
               </p>
 
+
+{content?.sizes?.map((i)=>(
+  <button key={i} className="mt-2 mr-2 rounded border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-[#081A33] transition hover:border-[#F5A623]">
+    {i}
+  </button>
+))}
             </div>
 
             {/* KEY FEATURES */}
