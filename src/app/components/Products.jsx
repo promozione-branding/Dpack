@@ -443,7 +443,35 @@ export default function TrendingProducts() {
     };
   }, []);
 
-  const visibleProducts = products.slice(0, 3);
+const visibleProducts = [...products]
+  .sort((a, b) => {
+    const aName = a.name?.toLowerCase() || "";
+    const bName = b.name?.toLowerCase() || "";
+
+    const getPriority = (name) => {
+      // Dunnage Bag sabse pehle
+      if (
+        name.includes("dunnage") ||
+        name.includes("dunnage bag")
+      ) {
+        return 1;
+      }
+
+      // Corrugated Box sabse last
+      if (
+        name.includes("corrugated") ||
+        name.includes("corrugated box")
+      ) {
+        return 3;
+      }
+
+      // Baaki products beech mein
+      return 2;
+    };
+
+    return getPriority(aName) - getPriority(bName);
+  })
+  .slice(0, 3);
 
   return (
     <section

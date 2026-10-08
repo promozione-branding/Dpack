@@ -16,35 +16,30 @@ const categoryDesign = {
   "dunnage-bags": {
     name: "Dunnage Air Bags",
     image: "/Dannage.webp",
-    href: "/products/dunnage-air-bags",
+    href: "/products",
   },
 
   "air-column-bags": {
     name: "Air Column Bags",
     image: "/Air column bag (2).webp",
-    href: "/products/air-column-bags",
+    href: "/products",
   },
 
   "air-column-roll": {
     name: "Air Column Rolls",
     image: "/Air Column Roll (2).webp",
-    href: "/products/air-column-roll",
+    href: "/products",
   },
 
   "gap-filler": {
     name: "Gap Fillers",
     image: "/Gap filler (3).webp",
-    href: "/products/gap-fillers",
+    href: "/products",
   },
 
   "packaging-air-bags": {
     name: "Packaging Air Bags",
     image: "/packing bag.webp",
-
-    /*
-      Packaging Air Bags card is visible,
-      but its category-specific link is removed.
-    */
     href: "/products",
   },
 };
