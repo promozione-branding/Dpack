@@ -28,7 +28,7 @@ const categoryDesign = {
   "air-column-roll": {
     name: "Air Column Rolls",
     image: "/Air Column Roll (2).webp",
-    href: "/products",
+    href: "/products?category=Gap%20Filler",
   },
 
   "gap-filler": {
