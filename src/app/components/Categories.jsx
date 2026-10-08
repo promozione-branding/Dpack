@@ -313,11 +313,6 @@ export default function Categories() {
             existing?.products || []
           ),
 
-          /*
-            Packaging Air Bags also appears,
-            but its specific category URL is removed.
-          */
-
           href:
             design?.href ||
             "/products",
@@ -338,29 +333,23 @@ export default function Categories() {
   if (loading) {
     return (
       <section className="w-full bg-[#F1EEE8] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-
         <div className="mx-auto max-w-[1400px]">
-
           <div className="overflow-hidden rounded-[20px] bg-[#062033] p-5 shadow-[0_18px_50px_rgba(6,32,51,0.10)] sm:p-7 lg:p-8">
-
             <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:gap-8">
 
               {/* LEFT */}
 
-              <div className="shrink-0 lg:w-[205px] xl:w-[225px]">
+              <div className="shrink-0 text-center lg:w-[205px] lg:text-left xl:w-[225px]">
+                <div className="mx-auto h-3 w-16 animate-pulse rounded bg-white/10 lg:mx-0" />
 
-                <div className="h-3 w-16 animate-pulse rounded bg-white/10" />
+                <div className="mx-auto mt-4 h-20 w-40 animate-pulse rounded bg-white/10 lg:mx-0" />
 
-                <div className="mt-4 h-20 w-40 animate-pulse rounded bg-white/10" />
-
-                <div className="mt-4 h-8 w-44 animate-pulse rounded bg-white/10" />
-
+                <div className="mx-auto mt-4 h-8 w-44 animate-pulse rounded bg-white/10 lg:mx-0" />
               </div>
 
               {/* CARDS */}
 
               <div className="grid grid-flow-col auto-cols-[205px] gap-4 overflow-hidden sm:auto-cols-[220px] sm:gap-5 lg:grid-flow-col lg:auto-cols-fr">
-
                 {Array.from({
                   length: 5,
                 }).map((_, index) => (
@@ -368,28 +357,19 @@ export default function Categories() {
                     key={index}
                     className="overflow-hidden rounded-[13px] bg-[#F5F2ED]"
                   >
-
                     <div className="h-[175px] animate-pulse bg-[#E5E1DA] sm:h-[190px] lg:h-[195px]" />
 
                     <div className="space-y-3 p-4">
-
                       <div className="h-3 w-28 animate-pulse rounded bg-[#DDD8D0]" />
 
                       <div className="h-[2px] w-8 animate-pulse rounded bg-[#DDD8D0]" />
-
                     </div>
-
                   </div>
                 ))}
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </section>
     );
   }
@@ -400,7 +380,6 @@ export default function Categories() {
 
   return (
     <section className="w-full bg-[#F1EEE8] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-
       <div className="mx-auto max-w-[1400px]">
 
         {/* =================================================
@@ -446,13 +425,12 @@ export default function Categories() {
                 duration: 0.65,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="shrink-0 lg:w-[205px] xl:w-[225px]"
+              className="shrink-0 text-center lg:w-[205px] lg:text-left xl:w-[225px]"
             >
 
               {/* BRAND */}
 
-              <div className="flex items-center gap-2">
-
+              <div className="flex items-center justify-center gap-2 lg:justify-start">
                 <span className="font-quicksand text-[9px] font-bold uppercase tracking-[0.2em] text-[#F5A623]">
                   DPACK
                 </span>
@@ -471,27 +449,22 @@ export default function Categories() {
                 >
                   ✦
                 </motion.span>
-
               </div>
 
               {/* HEADING */}
 
               <h2 className="mt-2 font-outfit text-[28px] font-semibold leading-[1.02] tracking-[-0.04em] text-white sm:text-[31px] lg:text-[32px]">
-
                 Explore
-                <br />
+               
                 Categories
-
               </h2>
 
               {/* DESCRIPTION */}
 
-              <p className="mt-3 max-w-[195px] font-quicksand text-[11px] leading-[1.55] text-white/50">
-
+              <p className="mx-auto mt-3 max-w-[195px] font-quicksand text-[14px] leading-[1.55] text-white/50 lg:mx-0">
                 Protective packaging solutions
                 designed for safe and secure
                 transportation.
-
               </p>
 
               {/* SEE ALL */}
@@ -500,16 +473,13 @@ export default function Categories() {
                 href="/products"
                 className="group mt-5 inline-flex items-center gap-2 border-b border-white/25 pb-1.5 font-quicksand text-[12px] font-semibold text-white/75 transition-all duration-300 hover:border-[#F5A623] hover:text-[#F5A623]"
               >
-
                 See all
 
                 <ArrowUpRight
                   size={13}
                   className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
                 />
-
               </Link>
-
             </motion.div>
 
             {/* =================================================
@@ -517,12 +487,10 @@ export default function Categories() {
             ================================================= */}
 
             <div className="min-w-0 flex-1 overflow-x-auto scrollbar-hide">
-
               <div className="grid grid-flow-col auto-cols-[205px] gap-4 sm:auto-cols-[220px] sm:gap-5 lg:grid-flow-col lg:auto-cols-fr">
 
                 {categories.map(
                   (category, index) => (
-
                     <motion.div
                       key={category.id}
                       custom={index}
@@ -563,7 +531,6 @@ export default function Categories() {
                               ease: [0.22, 1, 0.36, 1],
                             }}
                           >
-
                             <Image
                               src={category.image}
                               alt={category.name}
@@ -572,7 +539,6 @@ export default function Categories() {
                               sizes="(max-width: 640px) 205px, (max-width: 1024px) 220px, 260px"
                               className="object-contain px-4 py-3 sm:px-5 sm:py-3"
                             />
-
                           </motion.div>
 
                           {/* PRODUCT SHADOW */}
@@ -582,19 +548,14 @@ export default function Categories() {
                           {/* NUMBER */}
 
                           <span className="absolute left-3 top-3 flex h-7 min-w-7 items-center justify-center rounded-full border border-black/[0.06] bg-white/90 px-1.5 font-outfit text-[9px] font-semibold text-[#062033] shadow-sm backdrop-blur-sm">
-
                             {category.number}
-
                           </span>
 
                           {/* ARROW */}
 
                           <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[#062033] text-white opacity-80 shadow-lg transition-all duration-300 group-hover:rotate-[-8deg] group-hover:bg-[#F5A623] group-hover:opacity-100">
-
                             <ArrowUpRight size={14} />
-
                           </span>
-
                         </div>
 
                         {/* =================================
@@ -604,36 +565,24 @@ export default function Categories() {
                         <div className="relative border-t border-black/[0.06] px-4 py-3.5">
 
                           <h3 className="font-outfit text-[13px] font-semibold leading-[1.25] text-[#15191C] transition-colors duration-300 group-hover:text-[#D78B00] sm:text-[14px]">
-
                             {category.name}
-
                           </h3>
 
                           <div className="mt-2 h-[2px] w-7 rounded-full bg-[#F5A623] transition-all duration-500 group-hover:w-12" />
-
                         </div>
 
                         {/* BOTTOM ACCENT */}
 
                         <div className="absolute bottom-0 left-0 h-[3px] w-0 bg-[#F5A623] transition-all duration-500 group-hover:w-full" />
-
                       </Link>
-
                     </motion.div>
-
                   )
                 )}
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </section>
   );
 }

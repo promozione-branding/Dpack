@@ -174,7 +174,7 @@ function ProductCard({ product, index }) {
               bg-[#F5A623]
               px-1.5
               py-0.5
-              text-[6px]
+              text-[10px]
               font-black
               uppercase
               tracking-[0.02em]
@@ -330,7 +330,7 @@ function ProductCard({ product, index }) {
         <p
           className="
             truncate
-            text-[6px]
+            text-[10px]
             font-black
             uppercase
             tracking-[0.08em]
@@ -362,7 +362,7 @@ function ProductCard({ product, index }) {
               mt-0.5
               min-h-[30px]
               line-clamp-2
-              text-[9px]
+              text-[12px]
               font-bold
               leading-[1.2]
               tracking-[-0.02em]
@@ -398,7 +398,7 @@ function ProductCard({ product, index }) {
               sm:py-1
             "
           >
-            <span className="text-[6px] font-bold text-[#123B5D] sm:text-[10px]">
+            <span className="text-[10px] font-bold text-[#123B5D] sm:text-[10px] text-center">
               {product.rating}
             </span>
 
@@ -408,8 +408,8 @@ function ProductCard({ product, index }) {
               strokeWidth={0}
               className="
                 text-[#F5A623]
-                sm:h-[9px]
-                sm:w-[9px]
+                sm:h-[12px]
+                sm:w-[12px]
               "
             />
           </span>
@@ -423,7 +423,7 @@ function ProductCard({ product, index }) {
 
         <div className="mt-1 flex flex-wrap items-center gap-1 sm:mt-2 sm:gap-2">
           {product.price && (
-            <span className="text-[9px] font-black text-[#123B5D] sm:text-[16px]">
+            <span className="text-[12px] font-black text-[#123B5D] sm:text-[13px]">
               {product.price}
             </span>
           )}
@@ -616,7 +616,7 @@ useEffect(() => {
         style={{
           backgroundImage:
             "radial-gradient(#123B5D 0.7px, transparent 0.7px)",
-          backgroundSize: "9px 9px",
+          backgroundSize: "12px 12px",
         }}
       />
 
@@ -950,7 +950,7 @@ useEffect(() => {
               <h3
                 className="
                   max-w-[330px]
-                  text-[26px]
+                  text-[21px]
                   font-black
                   leading-[1]
                   tracking-[-0.04em]

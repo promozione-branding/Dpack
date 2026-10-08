@@ -290,12 +290,12 @@ export default function Main() {
 
               <p
                 className="
-                  text-[11px]
+                  text-[13px]
                   font-semibold
                   uppercase
                   tracking-[0.2em]
                   text-white/75
-                  sm:text-[11px]
+                  sm:text-[13px]
                   sm:tracking-[0.25em]
                 "
               >
@@ -343,7 +343,7 @@ export default function Main() {
                 leading-[1.55]
                 text-white/70
                 sm:mt-4
-                sm:text-[11px]
+                sm:text-[13px]
               "
             >
               Protective packaging solutions designed to keep your products
@@ -593,7 +593,7 @@ export default function Main() {
                   tracking-[0.14em]
                   text-white/50
                   sm:ml-2
-                  sm:text-[8px]
+                  sm:text-[13px]
                 "
               >
                 05 Products
@@ -839,7 +839,7 @@ function SideCard({
               leading-[1.4]
               text-white/75
               sm:mt-2
-              sm:text-[11px]
+              sm:text-[13px]
             "
           >
             {product.description}
@@ -867,10 +867,10 @@ function SideCard({
               flex
               items-center
               gap-1
-              text-[11px]
+              text-[13px]
               font-semibold
               text-white/90
-              sm:text-[11px]
+              sm:text-[13px]
             "
           >
             View Details
