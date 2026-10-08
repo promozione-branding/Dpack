@@ -47,7 +47,9 @@ function normalizeProduct(product, index) {
     );
 
     if (old > current && current > 0) {
-      discount = `${Math.round(((old - current) / old) * 100)}% OFF`;
+      discount = `${Math.round(
+        ((old - current) / old) * 100
+      )}% OFF`;
     }
   }
 
@@ -60,17 +62,25 @@ function normalizeProduct(product, index) {
   return {
     id: product?._id || product?.id || index,
     brand: product?.brand || "D PACK",
-    name: product?.name || product?.title || "Product",
+    name:
+      product?.name ||
+      product?.title ||
+      "Product",
     image,
     rating: product?.rating || "4.8",
-    reviews: product?.reviews || product?.reviewCount || "0",
+    reviews:
+      product?.reviews ||
+      product?.reviewCount ||
+      "0",
     price:
       typeof price === "number"
         ? `₹${price.toLocaleString("en-IN")}`
         : price,
     oldPrice:
       typeof oldPrice === "number"
-        ? `₹${oldPrice.toLocaleString("en-IN")}`
+        ? `₹${oldPrice.toLocaleString(
+            "en-IN"
+          )}`
         : oldPrice,
     discount,
     link:
@@ -89,13 +99,30 @@ function normalizeProduct(product, index) {
 function ProductCard({ product, index }) {
   return (
     <motion.article
-      initial={{ opacity: 0, y: 25 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
+      initial={{
+        opacity: 0,
+        y: 25,
+      }}
+      whileInView={{
+        opacity: 1,
+        y: 0,
+      }}
+      viewport={{
+        once: true,
+        amount: 0.2,
+      }}
       transition={{
         duration: 0.6,
-        delay: Math.min(index * 0.08, 0.24),
-        ease: [0.16, 1, 0.3, 1],
+        delay: Math.min(
+          index * 0.08,
+          0.24
+        ),
+        ease: [
+          0.16,
+          1,
+          0.3,
+          1,
+        ],
       }}
       className="
         group
@@ -128,10 +155,10 @@ function ProductCard({ product, index }) {
         className="
           relative
           block
-          h-[205px]
+          h-[125px]
           overflow-hidden
           bg-white
-          sm:h-[225px]
+          sm:h-[180px]
           lg:h-[255px]
         "
       >
@@ -141,17 +168,21 @@ function ProductCard({ product, index }) {
           <span
             className="
               absolute
-              left-3
-              top-3
+              left-1.5
+              top-1.5
               z-20
               bg-[#F5A623]
-              px-2.5
-              py-1
-              text-[9px]
+              px-1.5
+              py-0.5
+              text-[6px]
               font-black
               uppercase
-              tracking-[0.04em]
+              tracking-[0.02em]
               text-[#123B5D]
+              sm:left-3
+              sm:top-3
+              sm:px-2.5
+              sm:py-1
               sm:text-[10px]
             "
           >
@@ -166,17 +197,21 @@ function ProductCard({ product, index }) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Wishlist:", product);
+
+            console.log(
+              "Wishlist:",
+              product
+            );
           }}
           aria-label={`Add ${product.name} to wishlist`}
           className="
             absolute
-            right-3
-            top-3
+            right-1.5
+            top-1.5
             z-30
             flex
-            h-8
-            w-8
+            h-6
+            w-6
             items-center
             justify-center
             rounded-full
@@ -187,21 +222,28 @@ function ProductCard({ product, index }) {
             duration-300
             hover:bg-[#123B5D]
             hover:text-white
+            sm:right-3
+            sm:top-3
+            sm:h-8
+            sm:w-8
           "
         >
-          <Heart size={15} />
+          <Heart
+            size={11}
+            className="sm:h-[15px] sm:w-[15px]"
+          />
         </button>
 
         {/* Product image */}
 
-        <div className="absolute inset-4 sm:inset-5">
+        <div className="absolute inset-2 sm:inset-4 lg:inset-5">
           <Image
             src={product.image}
             alt={product.name}
             fill
             unoptimized
             sizes="
-              (max-width: 640px) 45vw,
+              (max-width: 640px) 25vw,
               (max-width: 1024px) 45vw,
               22vw
             "
@@ -222,12 +264,13 @@ function ProductCard({ product, index }) {
             absolute
             bottom-0
             left-0
-            h-[3px]
+            h-[2px]
             w-0
             bg-[#F5A623]
             transition-all
             duration-500
             group-hover:w-full
+            sm:h-[3px]
           "
         />
 
@@ -236,11 +279,11 @@ function ProductCard({ product, index }) {
         <span
           className="
             absolute
-            bottom-3
-            right-3
+            bottom-2
+            right-2
             flex
-            h-8
-            w-8
+            h-6
+            w-6
             translate-y-3
             items-center
             justify-center
@@ -251,14 +294,20 @@ function ProductCard({ product, index }) {
             duration-300
             group-hover:translate-y-0
             group-hover:opacity-100
+            sm:bottom-3
+            sm:right-3
+            sm:h-8
+            sm:w-8
           "
         >
           <ArrowUpRight
-            size={14}
+            size={11}
             className="
               transition-transform
               duration-300
               group-hover:rotate-45
+              sm:h-[14px]
+              sm:w-[14px]
             "
           />
         </span>
@@ -266,18 +315,28 @@ function ProductCard({ product, index }) {
 
       {/* CONTENT */}
 
-      <div className="px-3 pb-3 pt-3 sm:px-4 sm:pb-4 sm:pt-3.5">
-
+      <div
+        className="
+          px-1.5
+          pb-2
+          pt-2
+          sm:px-4
+          sm:pb-4
+          sm:pt-3.5
+        "
+      >
         {/* Brand */}
 
         <p
           className="
-            text-[9px]
+            truncate
+            text-[6px]
             font-black
             uppercase
-            tracking-[0.14em]
+            tracking-[0.08em]
             text-[#2F7180]
             sm:text-[10px]
+            sm:tracking-[0.14em]
           "
         >
           {product.brand}
@@ -300,18 +359,21 @@ function ProductCard({ product, index }) {
         >
           <h3
             className="
-              mt-1
-              min-h-[38px]
-              text-[13px]
+              mt-0.5
+              min-h-[30px]
+              line-clamp-2
+              text-[9px]
               font-bold
-              leading-[1.25]
+              leading-[1.2]
               tracking-[-0.02em]
               text-[#202830]
               transition-colors
               duration-300
               hover:text-[#123B5D]
+              sm:mt-1
               sm:min-h-[40px]
               sm:text-[15px]
+              sm:leading-[1.25]
             "
           >
             {product.name}
@@ -320,46 +382,54 @@ function ProductCard({ product, index }) {
 
         {/* Rating */}
 
-        <div className="mt-2 flex items-center gap-1.5 sm:gap-2">
+        <div className="mt-1 flex min-w-0 items-center gap-1 sm:mt-2 sm:gap-2">
           <span
             className="
               flex
+              shrink-0
               items-center
-              gap-1
+              gap-0.5
               rounded-sm
               bg-[#EEF4F7]
-              px-1.5
-              py-1
+              px-1
+              py-0.5
+              sm:gap-1
+              sm:px-1.5
+              sm:py-1
             "
           >
-            <span className="text-[9px] font-bold text-[#123B5D] sm:text-[10px]">
+            <span className="text-[6px] font-bold text-[#123B5D] sm:text-[10px]">
               {product.rating}
             </span>
 
             <Star
-              size={9}
+              size={6}
               fill="currentColor"
               strokeWidth={0}
-              className="text-[#F5A623]"
+              className="
+                text-[#F5A623]
+                sm:h-[9px]
+                sm:w-[9px]
+              "
             />
           </span>
 
-          <span className="text-[9px] text-[#929BA2] sm:text-[10px]">
+          <span className="truncate text-[10px] text-[#929BA2] sm:text-[10px]">
             {product.reviews} reviews
           </span>
         </div>
 
         {/* Price */}
 
-        <div className="mt-2 flex flex-wrap items-center gap-2">
+        <div className="mt-1 flex flex-wrap items-center gap-1 sm:mt-2 sm:gap-2">
           {product.price && (
-            <span className="text-[14px] font-black text-[#123B5D] sm:text-[16px]">
+            <span className="text-[9px] font-black text-[#123B5D] sm:text-[16px]">
               {product.price}
             </span>
           )}
 
           {product.oldPrice && (
-            <span className="text-[10px] text-[#929BA2] line-through sm:text-[11px]">
+            <span className="text-[7px] text-[#929BA2] line-through sm:text-[11px]">
               {product.oldPrice}
             </span>
           )}
@@ -384,13 +454,24 @@ function ProductSkeleton() {
         bg-white
       "
     >
-      <div className="h-[205px] animate-pulse bg-[#EEF1F2] sm:h-[225px] lg:h-[255px]" />
+      <div
+        className="
+          h-[125px]
+          animate-pulse
+          bg-[#EEF1F2]
+          sm:h-[180px]
+          lg:h-[255px]
+        "
+      />
 
-      <div className="space-y-2 p-3 sm:p-4">
-        <div className="h-2.5 w-16 animate-pulse rounded bg-[#EEF1F2]" />
-        <div className="h-4 w-full animate-pulse rounded bg-[#EEF1F2]" />
-        <div className="h-4 w-3/4 animate-pulse rounded bg-[#EEF1F2]" />
-        <div className="h-3 w-20 animate-pulse rounded bg-[#EEF1F2]" />
+      <div className="space-y-2 p-2 sm:p-4">
+        <div className="h-2 w-10 animate-pulse rounded bg-[#EEF1F2] sm:h-2.5 sm:w-16" />
+
+        <div className="h-3 w-full animate-pulse rounded bg-[#EEF1F2] sm:h-4" />
+
+        <div className="h-3 w-3/4 animate-pulse rounded bg-[#EEF1F2] sm:h-4" />
+
+        <div className="h-2.5 w-14 animate-pulse rounded bg-[#EEF1F2] sm:h-3 sm:w-20" />
       </div>
     </div>
   );
@@ -401,8 +482,11 @@ function ProductSkeleton() {
 ========================================================= */
 
 export default function TrendingProducts() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -411,7 +495,8 @@ export default function TrendingProducts() {
       try {
         setLoading(true);
 
-        const adminProducts = await getHomeProducts();
+        const adminProducts =
+          await getHomeProducts();
 
         if (!cancelled) {
           setProducts(
@@ -443,35 +528,67 @@ export default function TrendingProducts() {
     };
   }, []);
 
-const visibleProducts = [...products]
-  .sort((a, b) => {
-    const aName = a.name?.toLowerCase() || "";
-    const bName = b.name?.toLowerCase() || "";
+  /* =========================================================
+     PRODUCT SORTING
 
-    const getPriority = (name) => {
-      // Dunnage Bag sabse pehle
-      if (
-        name.includes("dunnage") ||
-        name.includes("dunnage bag")
-      ) {
-        return 1;
-      }
+     Dunnage → Other Products → Corrugated
+  ========================================================= */
+const [isMobile, setIsMobile] = useState(false);
 
-      // Corrugated Box sabse last
-      if (
-        name.includes("corrugated") ||
-        name.includes("corrugated box")
-      ) {
-        return 3;
-      }
+useEffect(() => {
+  const checkMobile = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
 
-      // Baaki products beech mein
-      return 2;
-    };
+  checkMobile();
 
-    return getPriority(aName) - getPriority(bName);
-  })
-  .slice(0, 3);
+  window.addEventListener("resize", checkMobile);
+
+  return () => {
+    window.removeEventListener("resize", checkMobile);
+  };
+}, []);
+
+  const visibleProducts = [
+    ...products,
+  ]
+  
+    .sort((a, b) => {
+      const aName =
+        a.name?.toLowerCase() || "";
+
+      const bName =
+        b.name?.toLowerCase() || "";
+
+      const getPriority = (name) => {
+        // Dunnage first
+        if (
+          name.includes("dunnage") ||
+          name.includes("dunnage bag")
+        ) {
+          return 1;
+        }
+
+        // Corrugated last
+        if (
+          name.includes("corrugated") ||
+          name.includes(
+            "corrugated box"
+          )
+        ) {
+          return 3;
+        }
+
+        // Other products
+        return 2;
+      };
+
+      return (
+        getPriority(aName) -
+        getPriority(bName)
+      );
+    })
+    .slice(0, 4);
 
   return (
     <section
@@ -485,7 +602,9 @@ const visibleProducts = [...products]
         lg:py-12
       "
     >
-      {/* Background dots */}
+      {/* =====================================================
+          BACKGROUND DOTS
+      ===================================================== */}
 
       <div
         className="
@@ -501,7 +620,9 @@ const visibleProducts = [...products]
         }}
       />
 
-      {/* Main */}
+      {/* =====================================================
+          MAIN
+      ===================================================== */}
 
       <div
         className="
@@ -522,30 +643,39 @@ const visibleProducts = [...products]
             lg:grid-cols-[minmax(0,2fr)_minmax(330px,1fr)]
           "
         >
-
           {/* =================================================
               LEFT SIDE
           ================================================= */}
 
           <div className="min-w-0">
-
             {/* Heading */}
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
               whileInView={{
                 opacity: 1,
                 y: 0,
               }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="mb-5 sm:mb-6"
+              viewport={{
+                once: true,
+              }}
+              transition={{
+                duration: 0.6,
+              }}
+              className="
+                mb-5
+                text-center
+                sm:mb-6
+              "
             >
               <h2
                 className="
-                  text-[26px]
+                  text-[24px]
                   font-black
-                  leading-[1.05]
+                  leading-[1.08]
                   tracking-[-0.04em]
                   text-[#202830]
                   sm:text-[34px]
@@ -554,53 +684,63 @@ const visibleProducts = [...products]
               >
                 Protective packaging
                 <span className="text-[#123B5D]">
-                  {" "}collection of the week
+                  {" "}
+                  collection of the week
                 </span>
               </h2>
 
               <p
                 className="
+                  mx-auto
                   mt-3
-                  text-[13px]
+                  max-w-2xl
+                  text-[12px]
                   leading-6
                   text-[#66737D]
                   sm:text-[15px]
                 "
               >
-                The most popular products from our
-                protective packaging collection.
+                The most popular products from
+                our protective packaging
+                collection.
               </p>
             </motion.div>
 
-            {/* PRODUCT GRID */}
+            {/* =================================================
+                PRODUCT GRID
 
-            <div
-              className="
-                grid
-                grid-cols-2
-                gap-3
-                sm:grid-cols-2
-                sm:gap-4
-                xl:grid-cols-3
-              "
-            >
+                Mobile  = 4
+                Desktop = 3
+            ================================================= */}
+
+ <div
+  className="
+    grid
+    grid-cols-2
+    gap-2
+    sm:grid-cols-2
+    sm:gap-4
+    lg:grid-cols-3
+  "
+>
               {loading ? (
                 <>
                   <ProductSkeleton />
                   <ProductSkeleton />
                   <ProductSkeleton />
+                  <ProductSkeleton />
                 </>
-              ) : visibleProducts.length > 0 ? (
-                visibleProducts.map(
-                  (product, index) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      index={index}
-                    />
-                  )
-                )
-              ) : (
+             ) : visibleProducts.length > 0 ? (
+  visibleProducts
+    .slice(0, isMobile ? 4 : 3)
+    .map((product, index) => (
+      <ProductCard
+        key={product.id}
+        product={product}
+        index={index}
+      />
+    ))
+) : (
                 <div
                   className="
                     col-span-full
@@ -619,7 +759,9 @@ const visibleProducts = [...products]
               )}
             </div>
 
-            {/* Bottom button */}
+            {/* =================================================
+                BOTTOM BUTTON
+            ================================================= */}
 
             <motion.div
               initial={{
@@ -637,7 +779,7 @@ const visibleProducts = [...products]
                 duration: 0.5,
                 delay: 0.2,
               }}
-              className="mt-5"
+              className="mt-5 text-center"
             >
               <Link
                 href="/products"
@@ -678,7 +820,9 @@ const visibleProducts = [...products]
                     group-hover:translate-x-1
                   "
                 >
-                  <ArrowRight size={13} />
+                  <ArrowRight
+                    size={13}
+                  />
                 </span>
               </Link>
             </motion.div>
@@ -705,7 +849,12 @@ const visibleProducts = [...products]
             }}
             transition={{
               duration: 0.8,
-              ease: [0.16, 1, 0.3, 1],
+              ease: [
+                0.16,
+                1,
+                0.3,
+                1,
+              ],
             }}
             className="
               group
@@ -717,7 +866,6 @@ const visibleProducts = [...products]
               sm:min-h-[430px]
             "
           >
-
             {/* Image */}
 
             <Image

@@ -68,18 +68,18 @@ export default function Main() {
 
   return (
     <section
-      className="
-        relative
-        w-full
-        overflow-hidden
-        bg-[#F4F6F8]
-        p-2
-        sm:p-3
-        min-h-[760px]
-        md:h-[78vh]
-        md:min-h-[590px]
-      "
-    >
+  className="
+    relative
+    w-full
+    overflow-hidden
+    bg-[#F4F6F8]
+    p-2
+    sm:p-3
+    min-h-[700px]
+    md:h-[78vh]
+    md:min-h-[590px]
+  "
+>
       {/* =====================================================
           MAIN GRID
       ===================================================== */}
@@ -101,19 +101,20 @@ export default function Main() {
             LEFT SIDE
         ==================================================== */}
 
-        <div
-          className="
-            order-2
-            grid
-            h-[380px]
-            grid-rows-2
-            gap-2
-            sm:h-[430px]
-            sm:gap-3
-            md:order-1
-            md:h-full
-          "
-        >
+      <div
+  className="
+    order-2
+    hidden
+    h-[380px]
+    grid-rows-2
+    gap-2
+    sm:h-[430px]
+    sm:gap-3
+    md:order-1
+    md:grid
+    md:h-full
+  "
+>
           <SideCard
             product={products[0]}
             color="#F7774F"
@@ -635,19 +636,19 @@ export default function Main() {
         {/* ===================================================
             RIGHT SIDE
         ==================================================== */}
-
-        <div
-          className="
-            order-3
-            grid
-            h-[380px]
-            grid-rows-2
-            gap-2
-            sm:h-[430px]
-            sm:gap-3
-            md:h-full
-          "
-        >
+<div
+  className="
+    order-3
+    hidden
+    h-[380px]
+    grid-rows-2
+    gap-2
+    sm:h-[430px]
+    sm:gap-3
+    md:grid
+    md:h-full
+  "
+>
           <SideCard
             product={products[3]}
             color="#ED4D78"
@@ -664,53 +665,7 @@ export default function Main() {
         </div>
       </div>
 
-      {/* =====================================================
-          MOBILE PRODUCT NAVIGATION
-      ====================================================== */}
-
-      <div
-        className="
-          absolute
-          bottom-4
-          left-3
-          right-3
-          z-40
-          flex
-          gap-2
-          overflow-x-auto
-          pb-1
-          md:hidden
-        "
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
-      >
-        {products.map((product, index) => (
-          <button
-            key={product.id}
-            type="button"
-            onClick={() => setActiveProduct(index)}
-            className={`
-              shrink-0
-              rounded-full
-              px-4
-              py-2
-              text-[12px]
-              font-semibold
-              shadow-sm
-              transition-colors
-              ${
-                activeProduct === index
-                  ? "bg-[#081A33] text-white"
-                  : "bg-white/95 text-[#111827]"
-              }
-            `}
-          >
-            {product.name}
-          </button>
-        ))}
-      </div>
+     
     </section>
   );
 }
