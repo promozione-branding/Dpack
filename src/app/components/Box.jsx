@@ -289,12 +289,12 @@ export default function Main() {
 
               <p
                 className="
-                  text-[8px]
+                  text-[11px]
                   font-semibold
                   uppercase
                   tracking-[0.2em]
                   text-white/75
-                  sm:text-[10px]
+                  sm:text-[11px]
                   sm:tracking-[0.25em]
                 "
               >
@@ -338,7 +338,7 @@ export default function Main() {
               className="
                 mt-3
                 max-w-[340px]
-                text-[10px]
+                text-[12px]
                 leading-[1.55]
                 text-white/70
                 sm:mt-4
@@ -361,7 +361,7 @@ export default function Main() {
                 bg-white
                 px-5
                 py-3
-                text-[10px]
+                text-[12px]
                 font-bold
                 text-[#172333]
                 shadow-xl
@@ -507,7 +507,7 @@ export default function Main() {
                 <div>
                   <p
                     className="
-                      text-[7px]
+                      text-[12px]
                       uppercase
                       tracking-[0.15em]
                       text-white/50
@@ -516,7 +516,7 @@ export default function Main() {
                     Designed For
                   </p>
 
-                  <p className="text-[9px] font-bold text-white">
+                  <p className="text-[12px] font-bold text-white">
                     {active.tag}
                   </p>
                 </div>
@@ -586,7 +586,7 @@ export default function Main() {
               <span
                 className="
                   ml-1
-                  text-[7px]
+                  text-[10px]
                   font-semibold
                   uppercase
                   tracking-[0.14em]
@@ -696,7 +696,7 @@ export default function Main() {
               rounded-full
               px-4
               py-2
-              text-[10px]
+              text-[12px]
               font-semibold
               shadow-sm
               transition-colors
@@ -847,12 +847,12 @@ function SideCard({
             <p
               className="
                 truncate
-                text-[7px]
+                text-[10px]
                 font-semibold
                 uppercase
                 tracking-[0.12em]
                 text-white/75
-                sm:text-[9px]
+                sm:text-[12px]
                 sm:tracking-[0.16em]
               "
             >
@@ -880,7 +880,7 @@ function SideCard({
             className="
               mt-1
               max-w-[165px]
-              text-[9px]
+              text-[12px]
               leading-[1.4]
               text-white/75
               sm:mt-2
@@ -912,7 +912,7 @@ function SideCard({
               flex
               items-center
               gap-1
-              text-[9px]
+              text-[11px]
               font-semibold
               text-white/90
               sm:text-[11px]
