@@ -461,7 +461,7 @@ export default function Categories() {
 
               {/* DESCRIPTION */}
 
-              <p className="mx-auto mt-3 max-w-[195px] font-quicksand text-[14px] leading-[1.55] text-white/50 lg:mx-0">
+              <p className="mx-auto mt-3 max-w-[195px] font-quicksand text-[16px] leading-[1.55] text-white/50 lg:mx-0">
                 Protective packaging solutions
                 designed for safe and secure
                 transportation.
@@ -564,7 +564,7 @@ export default function Categories() {
 
                         <div className="relative border-t border-black/[0.06] px-4 py-3.5">
 
-                          <h3 className="font-outfit text-[13px] font-semibold leading-[1.25] text-[#15191C] transition-colors duration-300 group-hover:text-[#D78B00] sm:text-[14px]">
+                          <h3 className="font-outfit text-[13px] font-semibold leading-[1.25] text-[#15191C] transition-colors duration-300 group-hover:text-[#D78B00] sm:text-[16px]">
                             {category.name}
                           </h3>
 

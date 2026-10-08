@@ -174,7 +174,7 @@ function ProductCard({ product, index }) {
               bg-[#F5A623]
               px-1.5
               py-0.5
-              text-[10px]
+              text-[12px]
               font-black
               uppercase
               tracking-[0.02em]
@@ -183,7 +183,7 @@ function ProductCard({ product, index }) {
               sm:top-3
               sm:px-2.5
               sm:py-1
-              sm:text-[10px]
+              sm:text-[12px]
             "
           >
             {product.discount}
@@ -330,12 +330,12 @@ function ProductCard({ product, index }) {
         <p
           className="
             truncate
-            text-[10px]
+            text-[12px]
             font-black
             uppercase
             tracking-[0.08em]
             text-[#2F7180]
-            sm:text-[10px]
+            sm:text-[12px]
             sm:tracking-[0.14em]
           "
         >
@@ -362,7 +362,7 @@ function ProductCard({ product, index }) {
               mt-0.5
               min-h-[30px]
               line-clamp-2
-              text-[12px]
+              text-[16px]
               font-bold
               leading-[1.2]
               tracking-[-0.02em]
@@ -372,7 +372,7 @@ function ProductCard({ product, index }) {
               hover:text-[#123B5D]
               sm:mt-1
               sm:min-h-[40px]
-              sm:text-[15px]
+              sm:text-[17px]
               sm:leading-[1.25]
             "
           >
@@ -398,7 +398,7 @@ function ProductCard({ product, index }) {
               sm:py-1
             "
           >
-            <span className="text-[10px] font-bold text-[#123B5D] sm:text-[10px] text-center">
+            <span className="text-[12px] font-bold text-[#123B5D] sm:text-[12px] text-center">
               {product.rating}
             </span>
 
@@ -414,7 +414,7 @@ function ProductCard({ product, index }) {
             />
           </span>
 
-          <span className="truncate text-[10px] text-[#929BA2] sm:text-[10px]">
+          <span className="truncate text-[12px] text-[#929BA2] sm:text-[13px]">
             {product.reviews} reviews
           </span>
         </div>
@@ -423,13 +423,13 @@ function ProductCard({ product, index }) {
 
         <div className="mt-1 flex flex-wrap items-center gap-1 sm:mt-2 sm:gap-2">
           {product.price && (
-            <span className="text-[12px] font-black text-[#123B5D] sm:text-[13px]">
+            <span className="text-[13px] font-black text-[#123B5D] sm:text-[13px]">
               {product.price}
             </span>
           )}
 
           {product.oldPrice && (
-            <span className="text-[7px] text-[#929BA2] line-through sm:text-[11px]">
+            <span className="text-[12px] text-[#929BA2] line-through sm:text-[13px]">
               {product.oldPrice}
             </span>
           )}
@@ -694,10 +694,10 @@ useEffect(() => {
                   mx-auto
                   mt-3
                   max-w-2xl
-                  text-[12px]
+                  text-[16px]
                   leading-6
                   text-[#66737D]
-                  sm:text-[15px]
+                  sm:text-[16px]
                 "
               >
                 The most popular products from
@@ -792,7 +792,7 @@ useEffect(() => {
                   bg-[#123B5D]
                   px-5
                   py-3
-                  text-[10px]
+                  text-[12px]
                   font-black
                   uppercase
                   tracking-[0.05em]
@@ -970,7 +970,7 @@ useEffect(() => {
                   inline-flex
                   items-center
                   gap-2
-                  text-[10px]
+                  text-[12px]
                   font-black
                   uppercase
                   tracking-[0.07em]

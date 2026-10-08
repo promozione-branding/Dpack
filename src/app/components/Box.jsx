@@ -339,11 +339,11 @@ export default function Main() {
               className="
                 mt-3
                 max-w-[340px]
-                text-[12px]
+                text-[16px]
                 leading-[1.55]
                 text-white/70
                 sm:mt-4
-                sm:text-[13px]
+                sm:text-[16px]
               "
             >
               Protective packaging solutions designed to keep your products
