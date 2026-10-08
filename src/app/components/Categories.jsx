@@ -461,7 +461,7 @@ export default function Categories() {
 
               {/* DESCRIPTION */}
 
-              <p className="mx-auto mt-3 max-w-[195px] font-quicksand text-[16px] leading-[1.55] text-white/50 lg:mx-0">
+              <p className="mx-auto mt-3 max-w-[195px] sm:max-w-[200px] font-quicksand text-[16px] leading-[1.55] text-white/50 lg:mx-0">
                 Protective packaging solutions
                 designed for safe and secure
                 transportation.
