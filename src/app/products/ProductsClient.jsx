@@ -544,7 +544,7 @@ function ProductCard({
           )}
         </div>
 
-       {/* =====================================================
+{/* =====================================================
     PRICE + ADD TO CART
 ===================================================== */}
 
@@ -552,20 +552,24 @@ function ProductCard({
   className="
     mt-auto
     flex
-    items-end
-    justify-between
-    gap-2
+    flex-col
+    gap-3
     pt-4
+    sm:flex-row
+    sm:items-end
+    sm:justify-between
+    sm:gap-2
   "
 >
   {/* PRICE */}
 
   <div className="min-w-0">
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex flex-wrap items-baseline gap-1.5">
       <span
         className="
-          text-[17px]
+          text-[15px]
           font-black
+          leading-none
           tracking-[-0.03em]
           text-[#081A33]
           sm:text-[18px]
@@ -577,7 +581,8 @@ function ProductCard({
       {oldPrice > price && (
         <span
           className="
-            text-[11px]
+            text-[10px]
+            leading-none
             text-[#929BA2]
             line-through
             sm:text-[12px]
@@ -589,7 +594,7 @@ function ProductCard({
     </div>
   </div>
 
-  {/* HIGHLIGHTED ADD TO CART */}
+  {/* ADD TO CART */}
 
   <button
     type="button"
@@ -599,11 +604,13 @@ function ProductCard({
       group/cart
       flex
       h-10
+      w-full
       shrink-0
       items-center
+      justify-center
       gap-1.5
       bg-[#F5A623]
-      px-3
+      px-2.5
       text-[#081A33]
 
       shadow-[0_6px_18px_rgba(245,166,35,0.22)]
@@ -620,7 +627,8 @@ function ProductCard({
       disabled:text-[#89949C]
       disabled:shadow-none
 
-      sm:h-10
+      sm:w-auto
+      sm:min-w-[118px]
       sm:px-3.5
     "
   >
@@ -634,11 +642,14 @@ function ProductCard({
         text-[9px]
         font-black
         uppercase
-        tracking-[0.04em]
+        tracking-[0.02em]
         sm:text-[10px]
+        sm:tracking-[0.04em]
       "
     >
-      {inStock ? "Add to Cart" : "Unavailable"}
+      {inStock
+        ? "Add to Cart"
+        : "Unavailable"}
     </span>
 
     <ArrowRight
