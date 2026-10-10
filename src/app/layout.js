@@ -1,11 +1,11 @@
 import Footer from "./components/Footer";
 import CartDrawer from "./components/CartDrawer";
 import Navbar from "./components/Navbaar";
-import LenisScroll from "./components/Smooth";
 import { AuthProvider } from "./context/AuthContext";
 import "./globals.css";
 
 import { Urbanist, Work_Sans } from "next/font/google";
+import LenisScroll from "./components/Smooth";
 
 /* =========================================================
    FONTS
@@ -46,14 +46,13 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
           <Navbar />
-
+    <LenisScroll>
           <main className="flex-1">
             {children}
           </main>
+          </LenisScroll>
 
-          <LenisScroll />
-
-          <Footer />
+      <Footer />
           <CartDrawer />
         </AuthProvider>
       </body>

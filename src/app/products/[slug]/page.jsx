@@ -21,6 +21,8 @@ import {
   Check,
   MapPin,
   Play,
+  X,
+  Send,
 } from "lucide-react";
 
 import {
@@ -1040,8 +1042,8 @@ export default function ProductPage({
     setSelectedVariantIndex,
   ] = useState(null);
 
-  const [zoom, setZoom] =
-    useState(false);
+  const [zoom, setZoom] = useState(false);
+  const [isBulkEnquiryOpen, setisBulkEnquiryOpen] = useState(false);
 
   const {
     isWishlisted,
@@ -1492,15 +1494,13 @@ export default function ProductPage({
       ===================================================== */}
 
       <section className="mx-auto max-w-[1400px] px-4 py-7 sm:px-5 sm:py-10">
-
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
+<div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
 
           {/* =================================================
               LEFT: GALLERY
           ================================================= */}
 
-          <div className="lg:sticky lg:top-5 lg:self-start">
-
+<div className="lg:sticky lg:top-6 lg:self-start">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[90px_1fr] lg:gap-5">
 
               {/* =================================================
@@ -2131,18 +2131,27 @@ export default function ProductPage({
 
             </div>
 
-            {/* =================================================
-                BUY NOW
-            ================================================= */}
+    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+  {/* Buy It Now */}
+  <button
+    type="button"
+    onClick={buyNow}
+    disabled={!inStock}
+    className="flex h-12 w-full items-center justify-center border-2 border-[#081A33] bg-[#081A33] px-5 text-sm font-extrabold uppercase tracking-wide text-white transition-all duration-300 hover:bg-white hover:text-[#081A33] disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    Buy It Now
+  </button>
 
-            <button
-              type="button"
-              onClick={buyNow}
-              disabled={!inStock}
-              className="mt-4 h-12 w-full border-2 border-[#081A33] bg-[#081A33] text-sm font-extrabold uppercase tracking-wide text-white transition hover:bg-white hover:text-[#081A33] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Buy It Now
-            </button>
+  {/* Bulk Enquiry */}
+  <button
+    type="button"
+    onClick={() => setisBulkEnquiryOpen(true)}
+    className="flex h-12 w-full items-center justify-center gap-2 border-2 border-[#F5A623] bg-[#F5A623] px-5 text-sm font-extrabold uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:bg-[#081A33] hover:text-white"
+  >
+    <Send size={17} />
+    <span>Bulk Enquiry</span>
+  </button>
+</div>
 
             {/* =================================================
                 DELIVERY INFO
@@ -2986,6 +2995,123 @@ export default function ProductPage({
 
         </div>
       )}
+
+
+{/* BULK ENQUIRY POPUP */}
+
+{isBulkEnquiryOpen && (
+  <div
+    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4"
+    onClick={() => setisBulkEnquiryOpen(false)}
+  >
+    <div
+      className="relative w-full max-w-xl rounded-2xl bg-white p-5 shadow-2xl sm:p-7"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        type="button"
+        onClick={() => setisBulkEnquiryOpen(false)}
+        className="absolute right-4 top-4 text-2xl text-gray-500 hover:text-black"
+        aria-label="Close enquiry form"
+      >
+        &times;
+      </button>
+
+      <h2 className="pr-8 text-2xl font-extrabold text-[#081A33]">
+        Bulk Enquiry
+      </h2>
+
+      <p className="mt-2 text-sm text-gray-600">
+        Minimum Order Quantity:{" "}
+        <span className="font-bold text-[#D95026]">
+          20,000 pieces
+        </span>
+      </p>
+
+      <p className="mt-3 text-sm font-medium text-gray-500">
+        Selected Product
+      </p>
+
+      <p className="mt-1 text-sm font-extrabold text-[#081A33] sm:text-base">
+        {typeof name !== "undefined" && name
+          ? name
+          : "Selected Product"}
+      </p>
+
+      <form
+        className="mt-6 space-y-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+
+          const formData = new FormData(e.currentTarget);
+          const customerName = formData.get("customerName");
+          const mobile = formData.get("mobile");
+          const place = formData.get("place");
+          const quantity = formData.get("quantity");
+
+          const message = [
+            "Bulk Enquiry",
+            `Product: ${typeof name !== "undefined" && name ? name : "Selected Product"}`,
+            `Minimum Order Quantity: 20000 pieces`,
+            `Name: ${customerName}`,
+            `Mobile: ${mobile}`,
+            `Place: ${place}`,
+            `Required Quantity: ${quantity}`,
+          ].join("\n");
+
+          window.open(
+            `https://wa.link/dsy7ee`,
+            "_blank",
+            "noopener,noreferrer"
+          );
+        }}
+      >
+        <input
+          type="text"
+          name="customerName"
+          placeholder="Your Name"
+          required
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+        />
+
+        <input
+          type="tel"
+          name="mobile"
+          placeholder="Mobile Number"
+          required
+          pattern="[0-9+\-\s()]{10,}"
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+        />
+
+        <input
+          type="text"
+          name="place"
+          placeholder="City / Delivery Location"
+          required
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+        />
+
+        <input
+          type="number"
+          name="quantity"
+          placeholder="Required Quantity (Minimum 20000)"
+          min="20000"
+          defaultValue="20000"
+          required
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+        />
+
+        <button
+          type="submit"
+          className="w-full rounded-xl bg-[#081A33] px-5 py-3.5 font-bold text-white transition hover:bg-[#D95026]"
+        >
+          Submit Bulk Enquiry
+        </button>
+      </form>
+    </div>
+  </div>
+)}
+
 
     </main>
   );

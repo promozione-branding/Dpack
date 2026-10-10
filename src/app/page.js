@@ -1,6 +1,10 @@
 import dynamic from "next/dynamic";
 
 import PackagingBanner from "./components/Box";
+import Clientele from "./cart/Clientele";
+import Catificate from "./components/Catificate";
+import LenisScroll from "./components/Smooth";
+
 
 const Products = dynamic(() => import("./components/Products"));
 const SaleNow = dynamic(() => import("./components/SaleNow"));
@@ -19,16 +23,21 @@ const Testimonials = dynamic(() => import("./components/Testimonials"));
 
 export default function Home() {
   return (
+   
     <>
   
  
     <PackagingBanner/>
 {/* <BestSellingProducts/> */}
  <Products/>
+ 
  <SaleNow/>
  <Product360/>
  <Categories/>
+ <Clientele/>
+ 
  <VideoSection/> 
+ <Catificate/>
  <PromoBanners/>
   <CategoryMarquee/>
  <BannerProduct/>
@@ -39,6 +48,8 @@ export default function Home() {
 {/* <ProductEditorial/> */}
 <Marquee/>
  <Testimonials/>
+
+
 
 
  

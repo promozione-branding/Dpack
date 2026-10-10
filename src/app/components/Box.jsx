@@ -20,7 +20,7 @@ const products = [
     name: "Air Column Bags",
     category: "Protective Packaging",
     description: "Shockproof. Safe. Reliable.",
-    image: "/Air column bag (2).webp",
+    image: "/Air Column Roll (2).webp",
     tag: "Impact Protection",
   },
   {
@@ -41,7 +41,7 @@ const products = [
   },
   {
     id: 4,
-    name: "Gap Fillers",
+    name: "Shoe Gap Fillers",
     category: "Smart Protection",
     description: "Keep your products stable.",
     image: "/Gap filler (3).webp",
