@@ -1,11 +1,13 @@
-import Footer from "./components/Footer";
-import CartDrawer from "./components/CartDrawer";
-import Navbar from "./components/Navbaar";
+import Navbar from "@/components/Navbaar";
+
 import { AuthProvider } from "./context/AuthContext";
 import "./globals.css";
 
 import { Urbanist, Work_Sans } from "next/font/google";
-import LenisScroll from "./components/Smooth";
+import Footer from "@/components/Footer";
+import CartDrawer from "@/components/CartDrawer";
+import LenisScroll from "@/components/Smooth";
+
 
 /* =========================================================
    FONTS

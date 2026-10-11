@@ -1,59 +1,44 @@
-import dynamic from "next/dynamic";
-
-import PackagingBanner from "./components/Box";
+import TrendingProducts from "@/components/Products";
 import Clientele from "./cart/Clientele";
-import Catificate from "./components/Catificate";
-import LenisScroll from "./components/Smooth";
+import SaleNow from "@/components/SaleNow";
+import Product360 from "@/components/Products360";
+import Categories from "@/components/Categories";
+import VideoSection from "@/components/Video";
+import PromoBanners from "@/components/Banner";
+import CategoryMarquee from "@/components/CategoryMarquee";
+import BannerProduct from "@/components/BannerProduct";
+import Newbanner from "@/components/NewBanner";
+import Marquee from "@/components/Marquee";
+import Testimonials from "@/components/Testimonials";
+import Cartificat from "@/components/Catificate";
+import WhyChooseUs from "@/components/WhyChoose";
+import Main from "@/components/Box";
 
-
-const Products = dynamic(() => import("./components/Products"));
-const SaleNow = dynamic(() => import("./components/SaleNow"));
-const Product360 = dynamic(() => import("./components/Products360"));
-const Categories = dynamic(() => import("./components/Categories"));
-const VideoSection = dynamic(() => import("./components/Video"));
-const PromoBanners = dynamic(() => import("./components/Banner"));
-const CategoryMarquee = dynamic(() => import("./components/CategoryMarquee"));
-const BannerProduct = dynamic(() => import("./components/BannerProduct"));
-const Newbanner = dynamic(() => import("./components/NewBanner"));
-const CategoryProducts = dynamic(() => import("./components/TabProducts"));
-const WhyChooseUs = dynamic(() => import("./components/WhyChoose"));
-const Marquee = dynamic(() => import("./components/Marquee"));
-const Testimonials = dynamic(() => import("./components/Testimonials"));
 
 
 export default function Home() {
   return (
    
-    <>
-  
- 
-    <PackagingBanner/>
+    <> 
+    <Main/>
 {/* <BestSellingProducts/> */}
- <Products/>
- 
+ <TrendingProducts/> 
  <SaleNow/>
  <Product360/>
  <Categories/>
  <Clientele/>
- 
  <VideoSection/> 
- <Catificate/>
+ <Cartificat />
  <PromoBanners/>
   <CategoryMarquee/>
  <BannerProduct/>
   <Newbanner/>
- <CategoryProducts/>
+  <Cate
 
-<WhyChooseUs/>
+<WhyChooseUs />
 {/* <ProductEditorial/> */}
 <Marquee/>
  <Testimonials/>
-
-
-
-
- 
-
- </>
+</>
   );
 }
