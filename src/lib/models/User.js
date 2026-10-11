@@ -13,6 +13,7 @@ const UserSchema = new mongoose.Schema(
   {
     name: { type: String, trim: true },
     email: { type: String, lowercase: true, trim: true, sparse: true },
+    passwordHash: { type: String, select: false },
     mobile: { type: String, required: true, unique: true, trim: true },
     address: { type: AddressSchema, default: {} },
     billingAddress: { type: AddressSchema, default: {} },

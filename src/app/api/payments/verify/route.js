@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db/mongoose";
 import User from "@/lib/models/User";
 import Product from "@/lib/models/Product";
 import Order from "@/lib/models/Order";
+import Coupon from "@/lib/models/Coupon";
 import { requireAuth, ok, err } from "@/lib/apiHelpers";
 
 export async function POST(request) {
@@ -37,8 +38,33 @@ export async function POST(request) {
     expectedSignature.length !== razorpay_signature.length ||
     !crypto.timingSafeEqual(Buffer.from(expectedSignature), Buffer.from(razorpay_signature))
   ) {
-    order.paymentStatus = "failed";
-    await order.save();
+    if (order.couponCode && !order.couponUsageReleased) {
+      const releasedOrder = await Order.findOneAndUpdate(
+        {
+          _id: order._id,
+          userId: authUser._id,
+          paymentStatus: { $ne: "paid" },
+          couponUsageReleased: { $ne: true },
+        },
+        {
+          $set: {
+            paymentStatus: "failed",
+            status: "cancelled",
+            couponUsageReleased: true,
+          },
+        },
+        { new: true }
+      );
+      if (releasedOrder) {
+        await Coupon.updateOne(
+          { code: releasedOrder.couponCode, usedCount: { $gt: 0 } },
+          { $inc: { usedCount: -1 } }
+        );
+      }
+    } else {
+      order.paymentStatus = "failed";
+      await order.save();
+    }
     return err("Payment verification failed", 400);
   }
 
@@ -58,6 +84,12 @@ export async function POST(request) {
   if (!claimed) {
     const existing = await Order.findById(order._id);
     return ok({ order: existing });
+  }
+
+  if (claimed.couponCode && claimed.couponUsageReleased) {
+    await Coupon.updateOne({ code: claimed.couponCode }, { $inc: { usedCount: 1 } });
+    claimed.couponUsageReleased = false;
+    await claimed.save();
   }
 
   const stockIssues = [];

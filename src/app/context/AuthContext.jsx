@@ -115,6 +115,17 @@ export function AuthProvider({ children }) {
     setLoginIntent(null);
   }, []);
 
+  const loginWithPassword = useCallback(async (email, password) => {
+    try {
+      const result = await authAPI.passwordLogin(email, password);
+      await loginWithToken(result.token);
+      closeLogin();
+      return { ok: true, user: result.user };
+    } catch (error) {
+      return { ok: false, error: error.message || "Login failed" };
+    }
+  }, [loginWithToken, closeLogin]);
+
   const logout = useCallback(() => {
     clearToken();
     setUser(null);
@@ -262,6 +273,7 @@ export function AuthProvider({ children }) {
       loginIntent,
       sendOtp,
       loginWithOtp,
+      loginWithPassword,
       loginWithToken,
       logout,
     }),
@@ -271,6 +283,7 @@ export function AuthProvider({ children }) {
       clearWishlist,
       loginOpen, openLogin, closeLogin, loginIntent,
       sendOtp, loginWithOtp, loginWithToken, logout,
+      loginWithPassword,
     ]
   );
 

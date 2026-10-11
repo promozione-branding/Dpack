@@ -25,11 +25,6 @@ import {
   Send,
 } from "lucide-react";
 
-import {
-  getProductBySlug,
-  getRelatedProducts,
-} from "@/app/Data/products";
-
 /* =========================================================
    DEFAULT SPECIFICATIONS
 ========================================================= */
@@ -1157,9 +1152,7 @@ export default function ProductPage({
      PRODUCT DATA
   ======================================================= */
 
-  const currentProduct =
-    databaseProduct ||
-    getProductBySlug(slug);
+  const currentProduct = databaseProduct;
 
   const baseContent = currentProduct
     ? getContent(
@@ -1252,14 +1245,7 @@ export default function ProductPage({
         }
       : null;
 
-  const relatedProducts =
-    databaseRelated ||
-    (currentProduct
-      ? getRelatedProducts(
-          currentProduct.slug,
-          4
-        )
-      : []);
+  const relatedProducts = databaseRelated || [];
 
   const images = (
     currentProduct?.images
@@ -1449,7 +1435,7 @@ export default function ProductPage({
   };
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-white text-[#1d2939]">
+   <main className="min-h-screen overflow-x-clip bg-white text-[#1d2939]">
 
       {/* =====================================================
           BREADCRUMB
@@ -1500,7 +1486,7 @@ export default function ProductPage({
               LEFT: GALLERY
           ================================================= */}
 
-<div className="lg:sticky lg:top-6 lg:self-start">
+<div className="lg:sticky lg:top-[100px] lg:self-start">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[90px_1fr] lg:gap-5">
 
               {/* =================================================

@@ -89,13 +89,10 @@ export default function AdminLoginPage() {
 
           {/* Logo / Heading */}
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0B1F3A] shadow-[0_12px_35px_rgba(11,31,58,0.18)]">
-              <BarChart3 className="h-8 w-8 text-white" strokeWidth={1.8} />
+            <div className="mx-auto mb-5 flex h-20 w-45 items-center justify-center">
+            <img src="/logo (21).webp" alt="" />
             </div>
 
-            <h1 className="text-[28px] font-bold tracking-[-0.5px] text-[#111827]">
-              DPack Admin
-            </h1>
 
             <p className="mt-2 text-[14px] text-gray-500">
               Manage your store from one place

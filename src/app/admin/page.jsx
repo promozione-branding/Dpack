@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Package, Users, AlertTriangle, TrendingUp,
-  ShoppingBag, Layers, ArrowRight, RefreshCw,
+  ShoppingBag, Layers, ArrowRight, RefreshCw, TicketPercent,
 } from "lucide-react";
 import { adminAPI } from "@/lib/apiClient";
 
@@ -50,7 +50,10 @@ export default function AdminDashboard() {
     }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => { void load(); }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSeed = async () => {
     setSeeding(true);
@@ -114,6 +117,8 @@ export default function AdminDashboard() {
           <StatCard icon={TrendingUp} label="Low Stock" value={stats?.lowStock} sub="below threshold" color="amber" href="/admin/inventory" />
           <StatCard icon={Users} label="Total Users" value={stats?.totalUsers} sub="registered" color="green" href="/admin/users" />
           <StatCard icon={ShoppingBag} label="New Users (30d)" value={stats?.recentUsers} sub="this month" color="blue" />
+          <StatCard icon={ShoppingBag} label="Total Orders" value={stats?.totalOrders} sub={`${stats?.pendingOrders ?? 0} awaiting fulfillment`} color="rust" href="/admin/orders" />
+          <StatCard icon={TrendingUp} label="Paid Revenue" value={stats?.paidRevenue == null ? "—" : `₹${Number(stats.paidRevenue).toLocaleString("en-IN")}`} sub="confirmed payments" color="green" href="/admin/orders" />
         </div>
       )}
 
@@ -134,6 +139,8 @@ export default function AdminDashboard() {
         {[
           { href: "/admin/products", label: "Manage Products", desc: "Add, edit or remove products", icon: Package, color: "rust" },
           { href: "/admin/inventory", label: "Inventory", desc: "Track and update stock levels", icon: Layers, color: "amber" },
+          { href: "/admin/orders", label: "Orders", desc: "Review and fulfill customer orders", icon: ShoppingBag, color: "blue" },
+          { href: "/admin/coupons", label: "Coupon codes", desc: "Create and manage checkout discounts", icon: TicketPercent, color: "rust" },
           { href: "/admin/users", label: "Users", desc: "View registered customers", icon: Users, color: "blue" },
         ].map(({ href, label, desc, icon: Icon, color }) => (
           <Link

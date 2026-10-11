@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
+import { authAPI } from "@/lib/apiClient";
 import {
   User,
   Mail,
@@ -16,8 +19,12 @@ import {
 } from "lucide-react";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const { loginWithToken } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -37,20 +44,39 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setError("");
     if (!form.terms) {
-      alert("Please accept the Terms & Conditions.");
+      setError("Please accept the Terms & Conditions.");
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match.");
+      setError("Passwords do not match.");
       return;
     }
 
-    alert("Account created successfully!");
+    if (form.password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await authAPI.register({
+        name: form.name,
+        email: form.email,
+        mobile: form.phone,
+        password: form.password,
+      });
+      await loginWithToken(result.token);
+      router.replace("/my-account");
+    } catch (submitError) {
+      setError(submitError.message || "Could not create your account.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -454,7 +480,7 @@ export default function RegisterPage() {
                         onChange={handleChange}
                         placeholder="Create a password"
                         required
-                        minLength={6}
+                        minLength={8}
                         className="dpack-input h-11 w-full border border-[#081A33]/10 bg-[#F8F9FB] pl-10 pr-11 text-sm text-[#081A33] placeholder:text-[#081A33]/30"
                       />
 
@@ -501,7 +527,7 @@ export default function RegisterPage() {
                         onChange={handleChange}
                         placeholder="Confirm your password"
                         required
-                        minLength={6}
+                        minLength={8}
                         className="dpack-input h-11 w-full border border-[#081A33]/10 bg-[#F8F9FB] pl-10 pr-11 text-sm text-[#081A33] placeholder:text-[#081A33]/30"
                       />
 
@@ -557,12 +583,18 @@ export default function RegisterPage() {
                   </div>
 
                   {/* Submit */}
+                  {error && (
+                    <p role="alert" className="mt-4 border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                      {error}
+                    </p>
+                  )}
                   <button
                     type="submit"
-                    className="dpack-shine dpack-pulse mt-4 flex h-11 w-full items-center justify-center gap-2 bg-[#F5A623] text-sm font-black text-[#081A33] transition duration-300 hover:bg-[#081A33] hover:text-white"
+                    disabled={loading}
+                    className="dpack-shine dpack-pulse mt-4 flex h-11 w-full items-center justify-center gap-2 bg-[#F5A623] text-sm font-black text-[#081A33] transition duration-300 hover:bg-[#081A33] hover:text-white disabled:cursor-wait disabled:opacity-60"
                   >
-                    Create Account
-                    <ArrowRight size={17} />
+                    {loading ? "Creating Account…" : "Create Account"}
+                    {!loading && <ArrowRight size={17} />}
                   </button>
                 </form>
 

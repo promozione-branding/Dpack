@@ -1,8 +1,10 @@
 import { connectDB } from "@/lib/db/mongoose";
 import Product from "@/lib/models/Product";
 import Order from "@/lib/models/Order";
+import Coupon from "@/lib/models/Coupon";
 import { requireAuth, ok, err } from "@/lib/apiHelpers";
 import { getRazorpay } from "@/lib/razorpay";
+import { getCouponDiscount, getCouponError } from "@/lib/coupons";
 
 function cleanAddress(addr = {}) {
   return {
@@ -28,6 +30,7 @@ export async function POST(request) {
     shippingAddress,
     billingAddress,
     sameAsShipping,
+    couponCode,
     gstNumber,
     notes,
   } = body;
@@ -75,25 +78,62 @@ export async function POST(request) {
     : cleanAddress(billingAddress || shippingAddress);
 
   const shipping = subtotal >= 3000 ? 0 : 99;
-  const total = subtotal + shipping;
+  let coupon = null;
+  let discount = 0;
+  if (couponCode) {
+    coupon = await Coupon.findOne({ code: String(couponCode).trim().toUpperCase() });
+    const couponError = getCouponError(coupon, subtotal);
+    if (couponError) return err(couponError);
 
-  const order = await Order.create({
-    userId: authUser._id,
-    items: orderItems,
-    subtotal,
-    shipping,
-    total,
-    status: "pending",
-    paymentStatus: "pending",
-    paymentMethod: "razorpay",
-    customerName: customerName.trim(),
-    customerEmail: customerEmail?.trim() || "",
-    customerMobile: customerMobile || authUser.mobile,
-    shippingAddress: cleanAddress(shippingAddress),
-    billingAddress: resolvedBilling,
-    gstNumber: gstNumber?.trim() || "",
-    notes: notes?.trim() || "",
-  });
+    const availableCoupon = await Coupon.findOneAndUpdate(
+      {
+        _id: coupon._id,
+        isActive: true,
+        $and: [
+          { $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }] },
+          {
+            $or: [
+              { usageLimit: null },
+              { $expr: { $lt: ["$usedCount", "$usageLimit"] } },
+            ],
+          },
+        ],
+      },
+      { $inc: { usedCount: 1 } },
+      { new: true }
+    );
+    if (!availableCoupon) return err("This coupon code is no longer available");
+    coupon = availableCoupon;
+    discount = getCouponDiscount(coupon, subtotal);
+  }
+  const total = Math.max(0, subtotal + shipping - discount);
+
+  let order;
+  try {
+    order = await Order.create({
+      userId: authUser._id,
+      items: orderItems,
+      subtotal,
+      shipping,
+      couponCode: coupon?.code || "",
+      discount,
+      couponUsageReleased: false,
+      total,
+      status: "pending",
+      paymentStatus: "pending",
+      paymentMethod: "razorpay",
+      customerName: customerName.trim(),
+      customerEmail: customerEmail?.trim() || "",
+      customerMobile: customerMobile || authUser.mobile,
+      shippingAddress: cleanAddress(shippingAddress),
+      billingAddress: resolvedBilling,
+      gstNumber: gstNumber?.trim() || "",
+      notes: notes?.trim() || "",
+    });
+  } catch (createError) {
+    if (coupon) await Coupon.updateOne({ _id: coupon._id }, { $inc: { usedCount: -1 } });
+    throw createError;
+  }
 
   let razorpayOrder;
   try {
@@ -106,7 +146,9 @@ export async function POST(request) {
   } catch (e) {
     console.error("Razorpay order creation failed:", e);
     order.paymentStatus = "failed";
+    order.couponUsageReleased = Boolean(coupon);
     await order.save();
+    if (coupon) await Coupon.updateOne({ _id: coupon._id, usedCount: { $gt: 0 } }, { $inc: { usedCount: -1 } });
     return err("Could not start payment. Please try again.", 502);
   }
 

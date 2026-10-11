@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Package, Layers, Users, LogOut, Menu, X,
-  ChevronRight, BarChart3, Grid3x3,
+  ChevronRight, BarChart3, Grid3x3, ShoppingBag, TicketPercent,
 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
      
@@ -14,6 +14,8 @@ const NAV = [
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/categories", label: "Categories", icon: Grid3x3 },
   { href: "/admin/inventory", label: "Inventory", icon: Layers },
+  { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/coupons", label: "Coupons", icon: TicketPercent },
   { href: "/admin/users", label: "Users", icon: Users },
 ];
 
@@ -105,7 +107,7 @@ export default function AdminLayout({ children }) {
             </div>
             <div className="min-w-0">
               <p className="truncate text-[13px] font-semibold text-white">{user?.name || "Admin"}</p>
-              <p className="text-[11px] text-white/40">{user?.mobile}</p>
+              <p className="truncate text-[11px] text-white/40">{user?.email || user?.mobile}</p>
             </div>
           </div>
           <button

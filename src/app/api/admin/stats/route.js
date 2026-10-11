@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/db/mongoose";
 import Product from "@/lib/models/Product";
 import User from "@/lib/models/User";
+import Order from "@/lib/models/Order";
 import { requireAdmin, ok, err } from "@/lib/apiHelpers";
 
 export async function GET(request) {
@@ -18,6 +19,9 @@ export async function GET(request) {
       totalUsers,
       recentUsers,
       categories,
+      totalOrders,
+      pendingOrders,
+      paidRevenue,
     ] = await Promise.all([
       Product.countDocuments(),
       Product.countDocuments({ isActive: true }),
@@ -32,6 +36,12 @@ export async function GET(request) {
         createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
       }),
       Product.distinct("category"),
+      Order.countDocuments(),
+      Order.countDocuments({ status: "pending" }),
+      Order.aggregate([
+        { $match: { paymentStatus: "paid" } },
+        { $group: { _id: null, total: { $sum: "$total" } } },
+      ]),
     ]);
 
     return ok({
@@ -44,6 +54,9 @@ export async function GET(request) {
         recentUsers,
         totalCategories: categories.length,
         categories,
+        totalOrders,
+        pendingOrders,
+        paidRevenue: paidRevenue[0]?.total || 0,
       },
     });
   } catch (e) {

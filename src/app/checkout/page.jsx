@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
-import { ordersAPI, paymentsAPI } from "@/lib/apiClient";
+import { couponsAPI, ordersAPI, paymentsAPI } from "@/lib/apiClient";
 import { clearCart, updateQty, useCart } from "@/lib/cartBus";
 import {
   ChevronRight,
@@ -20,6 +20,7 @@ import {
   ShoppingBag,
   Minus,
   Plus,
+  TicketPercent,
 } from "lucide-react";
 
 export default function CheckoutPage() {
@@ -31,6 +32,11 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [orderComplete, setOrderComplete] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponMessage, setCouponMessage] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [couponEntryOpen, setCouponEntryOpen] = useState(false);
 
   const [form, setForm] = useState({
     firstName: "",
@@ -72,7 +78,32 @@ export default function CheckoutPage() {
 
   const shipping = subtotal >= 3000 ? 0 : 99;
 
-  const total = subtotal + shipping;
+  const couponDiscount = appliedCoupon?.subtotal === subtotal ? appliedCoupon.discount : 0;
+  const total = subtotal + shipping - couponDiscount;
+
+  const applyCoupon = async (event) => {
+    event.preventDefault();
+    setCouponMessage("");
+    setApplyingCoupon(true);
+    try {
+      const result = await couponsAPI.validate(couponCode, subtotal);
+      setAppliedCoupon({ ...result.coupon, subtotal });
+      setCouponCode(result.coupon.code);
+      setCouponMessage("Coupon applied successfully.");
+    } catch (error) {
+      setAppliedCoupon(null);
+      setCouponMessage(error.message || "Could not validate the coupon.");
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponMessage("");
+    setCouponEntryOpen(false);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -167,6 +198,7 @@ export default function CheckoutPage() {
           country: "India",
         },
         sameAsShipping: true,
+        couponCode: couponDiscount > 0 ? appliedCoupon.code : "",
       });
 
       if (!window.Razorpay) {
@@ -1110,6 +1142,57 @@ export default function CheckoutPage() {
               <div className="p-6">
 
                 <div className="space-y-4">
+                  <div className="border-b border-gray-100 pb-4">
+                    {couponDiscount > 0 ? (
+                      <div className="flex items-center justify-between gap-3 rounded-lg border border-green-200 bg-green-50 p-3">
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-wide text-green-800">Coupon applied</p>
+                          <p className="mt-1 text-sm font-semibold text-green-700">{appliedCoupon.code} · Save ₹{couponDiscount.toLocaleString("en-IN")}</p>
+                        </div>
+                        <button type="button" onClick={removeCoupon} className="shrink-0 rounded-md px-2.5 py-1.5 text-xs font-bold text-red-700 hover:bg-red-100">
+                          Remove
+                        </button>
+                      </div>
+                    ) : !couponEntryOpen ? (
+                      <button
+                        type="button"
+                        onClick={() => setCouponEntryOpen(true)}
+                        className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#081A33]/20 bg-white px-4 py-3 text-sm font-bold text-[#081A33] transition hover:border-[#F5A623] hover:bg-[#FFF9ED]"
+                      >
+                        <TicketPercent size={17} className="text-[#C97A00]" />
+                        Add coupon code
+                      </button>
+                    ) : (
+                      <form onSubmit={applyCoupon}>
+                        <label htmlFor="coupon-code" className="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">
+                          Enter coupon code
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            id="coupon-code"
+                            value={couponCode}
+                            onChange={(event) => setCouponCode(event.target.value.toUpperCase())}
+                            placeholder="e.g. SAVE10"
+                            autoComplete="off"
+                            className="h-11 min-w-0 flex-1 rounded-lg border border-gray-200 px-3 text-sm uppercase outline-none focus:border-[#F5A623]"
+                          />
+                          <button type="submit" disabled={applyingCoupon || !couponCode.trim()} className="rounded-lg bg-[#081A33] px-4 text-xs font-bold text-white hover:bg-[#142b49] disabled:cursor-not-allowed disabled:opacity-50">
+                            {applyingCoupon ? "Checking…" : "Apply"}
+                          </button>
+                        </div>
+                        <div className="mt-2 flex items-center justify-between">
+                          {couponMessage ? (
+                            <p role="status" className={`text-xs ${appliedCoupon ? "text-green-700" : "text-red-600"}`}>
+                              {couponMessage}
+                            </p>
+                          ) : <span />}
+                          <button type="button" onClick={removeCoupon} className="text-xs font-semibold text-gray-500 hover:text-gray-800">
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-500">
@@ -1136,6 +1219,13 @@ export default function CheckoutPage() {
                       {shipping === 0 ? "FREE" : `₹${shipping}`}
                     </span>
                   </div>
+
+                  {couponDiscount > 0 && (
+                    <div className="flex items-center justify-between text-green-700">
+                      <span className="text-sm">Discount ({appliedCoupon.code})</span>
+                      <span className="font-bold">−₹{couponDiscount.toLocaleString("en-IN")}</span>
+                    </div>
+                  )}
 
                 </div>
 

@@ -51,6 +51,18 @@ async function download(path) {
 }
 
 export const authAPI = {
+  register: (data) =>
+    request("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  passwordLogin: (email, password) =>
+    request("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    }),
+
   sendOtp: (mobile) =>
     request("/api/auth/send-otp", {
       method: "POST",
@@ -130,6 +142,14 @@ export const ordersAPI = {
   list: () => request("/api/orders"),
 };
 
+export const couponsAPI = {
+  validate: (code, subtotal) =>
+    request("/api/coupons/validate", {
+      method: "POST",
+      body: JSON.stringify({ code, subtotal }),
+    }),
+};
+
 export const paymentsAPI = {
   verify: (data) =>
     request("/api/payments/verify", {
@@ -161,6 +181,34 @@ export const productsAPI = {
 
 export const adminAPI = {
   getStats: () => request("/api/admin/stats"),
+
+  listOrders: (params = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return request(`/api/admin/orders${qs ? `?${qs}` : ""}`);
+  },
+
+  updateOrder: (orderId, status) =>
+    request("/api/admin/orders", {
+      method: "PATCH",
+      body: JSON.stringify({ orderId, status }),
+    }),
+
+  listCoupons: () => request("/api/admin/coupons"),
+
+  createCoupon: (data) =>
+    request("/api/admin/coupons", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  updateCoupon: (id, data) =>
+    request(`/api/admin/coupons/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+
+  deleteCoupon: (id) =>
+    request(`/api/admin/coupons/${id}`, { method: "DELETE" }),
 
   listProducts: (params = {}) => {
     const qs = new URLSearchParams(

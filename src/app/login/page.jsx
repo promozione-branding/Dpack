@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import {
   Phone,
+  Mail,
+  LockKeyhole,
   ArrowRight,
   ShieldCheck,
   ShoppingBag,
@@ -16,7 +18,10 @@ import {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { sendOtp, loginWithOtp } = useAuth();
+  const { sendOtp, loginWithOtp, loginWithPassword } = useAuth();
+  const [method, setMethod] = useState("email");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -28,6 +33,13 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
+      if (method === "email") {
+        const result = await loginWithPassword(email, password);
+        if (!result.ok) throw new Error(result.error || "Could not sign in.");
+        const destination = new URLSearchParams(window.location.search).get("next");
+        router.replace(destination?.startsWith("/") && !destination.startsWith("//") ? destination : "/my-account");
+        return;
+      }
       if (!otpSent) {
         const result = await sendOtp(mobile);
         if (!result.ok) throw new Error(result.error || "Could not send verification code.");
@@ -186,8 +198,24 @@ export default function LoginPage() {
               </h2>
 
               <p className="mt-3 text-sm leading-6 text-[#081A33]/50">
-                Sign in securely with a one-time code sent to your mobile.
+                Sign in with your email and password, or use a one-time code.
               </p>
+            </div>
+
+            <div className="mb-4 grid grid-cols-2 border border-[#081A33]/10 bg-white p-1">
+              {[
+                { id: "email", label: "Email & Password" },
+                { id: "otp", label: "Mobile OTP" },
+              ].map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => { setMethod(option.id); setError(""); }}
+                  className={`px-3 py-2.5 text-xs font-bold transition ${method === option.id ? "bg-[#081A33] text-white" : "text-[#081A33]/55 hover:bg-gray-50"}`}
+                >
+                  {option.label}
+                </button>
+              ))}
             </div>
 
             <form
@@ -195,6 +223,47 @@ export default function LoginPage() {
               className="border border-[#081A33]/10 bg-white p-6 shadow-[0_20px_60px_rgba(8,26,51,0.06)] sm:p-8"
             >
 
+              {method === "email" ? (
+                <>
+                  <div>
+                    <label htmlFor="email" className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#081A33]/55">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#081A33]/30" />
+                      <input
+                        id="email"
+                        type="email"
+                        required
+                        autoComplete="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        placeholder="you@example.com"
+                        className="h-13 w-full border border-[#081A33]/15 bg-[#F7F8FA] pl-12 pr-4 text-sm text-[#081A33] outline-none transition placeholder:text-[#081A33]/25 focus:border-[#F5A623] focus:bg-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-5">
+                    <label htmlFor="password" className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#081A33]/55">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <LockKeyhole size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#081A33]/30" />
+                      <input
+                        id="password"
+                        type="password"
+                        required
+                        autoComplete="current-password"
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                        placeholder="Enter your password"
+                        className="h-13 w-full border border-[#081A33]/15 bg-[#F7F8FA] pl-12 pr-4 text-sm text-[#081A33] outline-none transition placeholder:text-[#081A33]/25 focus:border-[#F5A623] focus:bg-white"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+              <>
               <div>
                 <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#081A33]/55">
                   Mobile Number
@@ -241,6 +310,8 @@ export default function LoginPage() {
                   />
                 </div>
               )}
+              </>
+              )}
 
               {error && (
                 <p role="alert" className="mt-5 flex items-start gap-2 text-sm text-red-600">
@@ -257,10 +328,10 @@ export default function LoginPage() {
                 disabled={loading}
                 className="group mt-7 flex h-13 w-full items-center justify-center gap-3 bg-[#F5A623] text-sm font-bold text-[#081A33] transition hover:bg-[#081A33] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? <Loader2 size={18} className="animate-spin" /> : otpSent ? "Verify and Sign In" : "Send Verification Code"}
+                {loading ? <Loader2 size={18} className="animate-spin" /> : method === "email" ? "Sign In" : otpSent ? "Verify and Sign In" : "Send Verification Code"}
                 {!loading && <ArrowRight size={18} className="transition group-hover:translate-x-1" />}
               </button>
-              {otpSent && (
+              {method === "otp" && otpSent && (
                 <button type="button" onClick={() => { setOtpSent(false); setOtp(""); setError(""); }} className="mt-4 w-full text-xs font-semibold text-[#081A33]/60 hover:text-[#F5A623]">
                   Change mobile number
                 </button>
