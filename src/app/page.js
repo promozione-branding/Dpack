@@ -13,6 +13,7 @@ import Testimonials from "@/components/Testimonials";
 import Cartificat from "@/components/Catificate";
 import WhyChooseUs from "@/components/WhyChoose";
 import Main from "@/components/Box";
+import Highlight from "@/components/Highlight";
 
 
 
@@ -22,7 +23,8 @@ export default function Home() {
     <> 
     <Main/>
 {/* <BestSellingProducts/> */}
- <TrendingProducts/> 
+ <TrendingProducts/>
+ <Highlight/> 
  <SaleNow/>
  <Product360/>
  <Categories/>
@@ -33,11 +35,8 @@ export default function Home() {
   <CategoryMarquee/>
  <BannerProduct/>
   <Newbanner/>
-  <Cate
-
-<WhyChooseUs />
-{/* <ProductEditorial/> */}
-<Marquee/>
+  <CategoryMarquee/>
+  <WhyChooseUs/>
  <Testimonials/>
 </>
   );
