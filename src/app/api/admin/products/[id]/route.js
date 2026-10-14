@@ -59,17 +59,6 @@ export async function PUT(request, { params }) {
         product.image = fields.image.trim();
       }
 
-      for (let i = 0; i < 10; i++) {
-        const key = `extraImage_${i}`;
-        if (files[key]) {
-          const res = await uploadToCloudinary(files[key].buffer, "dpack/products");
-          product.extraImages = product.extraImages || [];
-          product.extraImagePublicIds = product.extraImagePublicIds || [];
-          product.extraImages.push(res.url);
-          product.extraImagePublicIds.push(res.public_id);
-        }
-      }
-
       const parseArrayField = (value) => {
         if (value === undefined) return undefined;
         try {
@@ -111,6 +100,20 @@ export async function PUT(request, { params }) {
         product.extraImagePublicIds = extraImages.map(
           (url) => existingIdsByUrl.get(url) || ""
         );
+      }
+
+      for (let i = 0; i < 10; i++) {
+        const file = files[`extraImage_${i}`];
+        if (!file) continue;
+        const res = await uploadToCloudinary(
+          file.buffer,
+          "dpack/products",
+          file.type || "image/jpeg"
+        );
+        product.extraImages = product.extraImages || [];
+        product.extraImagePublicIds = product.extraImagePublicIds || [];
+        product.extraImages.push(res.url);
+        product.extraImagePublicIds.push(res.public_id);
       }
 
       for (const field of [

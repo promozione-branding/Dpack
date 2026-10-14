@@ -1,7 +1,7 @@
 import { connectDB } from "@/lib/db/mongoose";
 import Product from "@/lib/models/Product";
 import { requireAdmin, ok, err, parseFormData } from "@/lib/apiHelpers";
-import { uploadToCloudinary } from "@/lib/cloudinary";
+import { uploadToCloudinary, deleteFromCloudinary } from "@/lib/cloudinary";
 import { organizeProductFields } from "@/lib/productContent";
 
 function parseArrayField(value) {
@@ -79,7 +79,10 @@ export async function GET(request) {
       )
     );
     const search = searchParams.get("search")?.trim() || "";
+    const compact = searchParams.get("compact") === "true";
+    const activeOnly = searchParams.get("activeOnly") === "true";
     const query = {};
+    if (activeOnly) query.isActive = true;
 
     if (search) {
       const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -90,12 +93,14 @@ export async function GET(request) {
       ];
     }
 
-    const [products, total] = await Promise.all([
-      Product.find(query)
+    const productQuery = Product.find(query)
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
-        .limit(limit)
-        .lean(),
+        .limit(limit);
+    if (compact) productQuery.select("name image price category isActive");
+
+    const [products, total] = await Promise.all([
+      productQuery.lean(),
       Product.countDocuments(query),
     ]);
 
@@ -110,6 +115,7 @@ export async function POST(request) {
   const { error } = await requireAdmin(request);
   if (error) return error;
 
+  const uploadedGalleryImages = [];
   try {
     await connectDB();
     const { fields, files } = await parseFormData(request);
@@ -151,6 +157,18 @@ export async function POST(request) {
       );
     }
 
+    for (let index = 0; index < 10; index++) {
+      const file = files[`extraImage_${index}`];
+      if (!file) continue;
+      const uploaded = await uploadToCloudinary(
+        file.buffer,
+        "dpack/products",
+        file.type || "image/jpeg"
+      );
+      uploadedGalleryImages.push(uploaded);
+    }
+
+    const extraImageUrls = parseArrayField(fields.extraImages);
     const productFields = {
       name,
       slug: fields.slug?.trim() || makeSlug(name),
@@ -165,8 +183,14 @@ export async function POST(request) {
       sizes: parseArrayField(fields.sizes), // optional; schema syncs from variants
       image,
       imagePublicId,
-      extraImages: parseArrayField(fields.extraImages),
-      extraImagePublicIds: parseArrayField(fields.extraImagePublicIds),
+      extraImages: [
+        ...extraImageUrls,
+        ...uploadedGalleryImages.map(({ url }) => url),
+      ],
+      extraImagePublicIds: [
+        ...extraImageUrls.map(() => ""),
+        ...uploadedGalleryImages.map(({ public_id }) => public_id),
+      ],
       youtubeUrl: fields.youtubeUrl?.trim() || null,
       instagramUrl: fields.instagramUrl?.trim() || null,
       price,
@@ -206,6 +230,13 @@ export async function POST(request) {
     return ok({ product }, 201);
   } catch (error) {
     console.error("ADMIN PRODUCT CREATE ERROR:", error);
+    for (const uploaded of uploadedGalleryImages) {
+      try {
+        await deleteFromCloudinary(uploaded.public_id);
+      } catch (cleanupError) {
+        console.error("Failed to clean up uploaded gallery image", cleanupError);
+      }
+    }
     if (error.code === 11000) {
       return err("A product with this slug already exists.", 409);
     }

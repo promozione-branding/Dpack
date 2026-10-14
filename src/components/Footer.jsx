@@ -27,23 +27,23 @@ import { usePathname } from "next/navigation";
 const productLinks = [
   {
     name: "Dunnage Bags",
-    href: "/products/dunnage-bags",
+    href: "/products?category=Dunnage%20Bags",
   },
   {
     name: "Air Column Bags",
-    href: "/products/air-column-bags",
+    href: "/products?category=Air%20Column%20Bags",
   },
   {
     name: "Air Column Rolls",
-    href: "/products/air-column-rolls",
+    href: "/products?category=Air%20Column%20Roll",
   },
   {
     name: "Packaging Air Bags",
-    href: "/products/packaging-air-bags",
+    href: "/products?category=Packaging%20Air%20Bags",
   },
   {
     name: "Gap Fillers",
-    href: "/products/gap-fillers",
+    href: "/products?category=Gap%20Filler",
   },
 ];
 
@@ -57,16 +57,16 @@ const shopLinks = [
     href: "/products",
   },
   {
-    name: "New Arrivals",
-    href: "/products",
+    name: "Wishlist",
+    href: "/wishlist",
   },
   {
-    name: "Best Sellers",
-    href: "/products",
+    name: "Cart",
+    href: "/cart",
   },
   {
-    name: "Shop by Category",
-    href: "/products",
+    name: "Checkout",
+    href: "/checkout",
   },
 ];
 
@@ -77,23 +77,19 @@ const shopLinks = [
 const customerLinks = [
   {
     name: "Contact Us",
-    href: "/contact",
+    href: "/contact-us",
   },
   {
-    name: "Track Order",
-    href: "/track-order",
+    name: "About Us",
+    href: "/about-us",
   },
   {
-    name: "Shipping & Delivery",
-    href: "/shipping",
+    name: "My Account",
+    href: "/my-account",
   },
   {
-    name: "Returns & Refunds",
-    href: "/returns",
-  },
-  {
-    name: "FAQs",
-    href: "/faq",
+    name: "Login",
+    href: "/login",
   },
 ];
 
@@ -1014,57 +1010,6 @@ export default function Footer() {
             © {new Date().getFullYear()} D Pack.
             All rights reserved.
           </p>
-
-          <div
-            className="
-              flex
-              flex-wrap
-              items-center
-              gap-5
-            "
-          >
-            <Link
-              href="/privacy-policy"
-              className="
-                text-[10px]
-                text-white/40
-
-                transition-colors
-
-                hover:text-[#F5A623]
-              "
-            >
-              Privacy Policy
-            </Link>
-
-            <Link
-              href="/terms"
-              className="
-                text-[10px]
-                text-white/40
-
-                transition-colors
-
-                hover:text-[#F5A623]
-              "
-            >
-              Terms & Conditions
-            </Link>
-
-            <Link
-              href="/shipping"
-              className="
-                text-[10px]
-                text-white/40
-
-                transition-colors
-
-                hover:text-[#F5A623]
-              "
-            >
-              Shipping Policy
-            </Link>
-          </div>
 
           <span
             className="

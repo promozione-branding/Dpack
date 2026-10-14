@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { couponsAPI } from "@/lib/apiClient";
 import { removeFromCart, updateQty, useCart } from "@/lib/cartBus";
 import {
   Minus,
@@ -18,7 +19,9 @@ import {
 export default function CartPage() {
   const cart = useCart();
   const [coupon, setCoupon] = useState("");
-  const [couponApplied, setCouponApplied] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponMessage, setCouponMessage] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   const updateQuantity = (id, type) => {
     const item = cart.find((entry) => entry.key === id);
@@ -36,13 +39,38 @@ export default function CartPage() {
 
   const shipping = subtotal >= 3000 ? 0 : 99;
 
-  const discount = couponApplied ? 150 : 0;
+  const cartFingerprint = cart
+    .map((item) => `${item.key}:${item.qty}`)
+    .sort()
+    .join("|");
+  const discount =
+    appliedCoupon?.cartFingerprint === cartFingerprint
+      ? appliedCoupon.discount
+      : 0;
 
   const total = subtotal + shipping - discount;
 
-  const applyCoupon = () => {
-    if (coupon.trim().length > 0) {
-      setCouponApplied(true);
+  const applyCoupon = async (event) => {
+    event.preventDefault();
+    setCouponMessage("");
+    setApplyingCoupon(true);
+    try {
+      const result = await couponsAPI.validate(
+        coupon,
+        cart.map((item) => ({ productId: item.key, qty: item.qty }))
+      );
+      setAppliedCoupon({ ...result.coupon, cartFingerprint });
+      setCoupon(result.coupon.code);
+      setCouponMessage(
+        result.coupon.productRestricted
+          ? "Coupon applied to eligible products."
+          : "Coupon applied successfully."
+      );
+    } catch (error) {
+      setAppliedCoupon(null);
+      setCouponMessage(error.message || "Could not validate the coupon.");
+    } finally {
+      setApplyingCoupon(false);
     }
   };
 
@@ -539,7 +567,7 @@ export default function CartPage() {
 
                   {/* DISCOUNT */}
 
-                  {couponApplied && (
+                  {discount > 0 && (
                     <div className="flex items-center justify-between border-b border-gray-100 py-4">
 
                       <span className="text-sm text-gray-500">
@@ -561,31 +589,33 @@ export default function CartPage() {
                       Have a Coupon?
                     </label>
 
-                    <div className="flex h-12">
+                    <form onSubmit={applyCoupon} className="flex h-12">
 
                       <input
                         type="text"
                         value={coupon}
                         onChange={(e) => {
                           setCoupon(e.target.value);
-                          setCouponApplied(false);
+                          setAppliedCoupon(null);
+                          setCouponMessage("");
                         }}
                         placeholder="Enter coupon code"
                         className="min-w-0 flex-1 border border-gray-300 bg-white px-4 text-sm outline-none transition-colors focus:border-[#F5A623]"
                       />
 
                       <button
-                        onClick={applyCoupon}
+                        type="submit"
+                        disabled={applyingCoupon || !coupon.trim() || cart.length === 0}
                         className="bg-[#081A33] px-5 text-xs font-black uppercase tracking-wide text-white transition-colors hover:bg-[#F5A623] hover:text-[#081A33]"
                       >
-                        Apply
+                        {applyingCoupon ? "Checking…" : "Apply"}
                       </button>
 
-                    </div>
+                    </form>
 
-                    {couponApplied && (
-                      <p className="mt-2 text-xs font-semibold text-green-600">
-                        Coupon applied successfully.
+                    {couponMessage && (
+                      <p role="status" className={`mt-2 text-xs font-semibold ${discount > 0 ? "text-green-600" : "text-red-600"}`}>
+                        {couponMessage}
                       </p>
                     )}
 
@@ -618,7 +648,7 @@ export default function CartPage() {
                   {/* CHECKOUT */}
 
                  <Link
-  href="/checkout"
+  href={`/checkout${coupon ? `?coupon=${encodeURIComponent(coupon)}` : ""}`}
   className="cart-shine mt-6 flex h-14 w-full items-center justify-center gap-3 bg-[#F5A623] text-sm font-black uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:-translate-y-1 hover:bg-[#ffb735] hover:shadow-xl"
 >
   Proceed to Checkout

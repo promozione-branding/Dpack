@@ -2983,6 +2983,7 @@ export default function ProductPage({
       )}
 
 
+
 {/* BULK ENQUIRY POPUP */}
 
 {isBulkEnquiryOpen && (
@@ -3008,20 +3009,10 @@ export default function ProductPage({
       </h2>
 
       <p className="mt-2 text-sm text-gray-600">
-        Minimum Order Quantity:{" "}
+        Minimum Order Value: {" "}
         <span className="font-bold text-[#D95026]">
-          20,000 pieces
+          ₹20,000 or above:
         </span>
-      </p>
-
-      <p className="mt-3 text-sm font-medium text-gray-500">
-        Selected Product
-      </p>
-
-      <p className="mt-1 text-sm font-extrabold text-[#081A33] sm:text-base">
-        {typeof name !== "undefined" && name
-          ? name
-          : "Selected Product"}
       </p>
 
       <form
@@ -3030,28 +3021,39 @@ export default function ProductPage({
           e.preventDefault();
 
           const formData = new FormData(e.currentTarget);
+
           const customerName = formData.get("customerName");
+          const companyName = formData.get("companyName");
           const mobile = formData.get("mobile");
           const place = formData.get("place");
-          const quantity = formData.get("quantity");
+          const productRequirement = formData.get("productRequirement");
+          const messageText = formData.get("message");
+
+          const selectedProduct =
+            typeof name !== "undefined" && name
+              ? name
+              : "Selected Product";
 
           const message = [
             "Bulk Enquiry",
-            `Product: ${typeof name !== "undefined" && name ? name : "Selected Product"}`,
-            `Minimum Order Quantity: 20000 pieces`,
+            `Product: ${selectedProduct}`,
+            `Requirement: ${productRequirement}`,
             `Name: ${customerName}`,
+            `Company Name: ${companyName}`,
             `Mobile: ${mobile}`,
             `Place: ${place}`,
-            `Required Quantity: ${quantity}`,
+            `Message: ${messageText}`,
           ].join("\n");
 
+          // Open WhatsApp
           window.open(
-            `https://wa.link/dsy7ee`,
+            "https://wa.link/dsy7ee",
             "_blank",
             "noopener,noreferrer"
           );
         }}
       >
+        {/* NAME */}
         <input
           type="text"
           name="customerName"
@@ -3060,15 +3062,27 @@ export default function ProductPage({
           className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
         />
 
+        {/* COMPANY NAME */}
+        <input
+          type="text"
+          name="companyName"
+          placeholder="Company Name"
+          required
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+        />
+
+        {/* MOBILE */}
         <input
           type="tel"
           name="mobile"
+          maxLength="10" 
           placeholder="Mobile Number"
           required
           pattern="[0-9+\-\s()]{10,}"
           className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
         />
 
+        {/* PLACE */}
         <input
           type="text"
           name="place"
@@ -3077,16 +3091,17 @@ export default function ProductPage({
           className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
         />
 
-        <input
-          type="number"
-          name="quantity"
-          placeholder="Required Quantity (Minimum 20000)"
-          min="20000"
-          defaultValue="20000"
+
+        {/* MESSAGE */}
+        <textarea
+          name="message"
+          rows="4"
+          placeholder="Message / Requirement Details"
           required
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+          className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
         />
 
+        {/* SUBMIT */}
         <button
           type="submit"
           className="w-full rounded-xl bg-[#081A33] px-5 py-3.5 font-bold text-white transition hover:bg-[#D95026]"
@@ -3097,6 +3112,7 @@ export default function ProductPage({
     </div>
   </div>
 )}
+)
 
 
     </main>

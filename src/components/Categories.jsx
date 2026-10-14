@@ -14,31 +14,31 @@ import { getHomeProducts } from "@/lib/homeProducts";
 const categoryDesign = {
   "dunnage-bags": {
     name: "Dunnage Air Bags",
-    image: "/Dannage.webp",
+    image: "/dunnage.webp",
     href: "/products",
   },
 
   "air-column-bags": {
     name: "Air Column Bags",
-    image: "/Air column bag (2).webp",
+    image: "/22.webp",
     href: "/products",
   },
 
   "air-column-roll": {
     name: "Air Column Rolls",
-    image: "/Air Column Roll (2).webp",
+    image: "/18 (3).webp",
     href: "/products?category=Air%20Column%20Roll",
   },
 
   "gap-filler": {
     name: "Gap Fillers",
-    image: "/Gap filler (3).webp",
+    image: "/42.webp",
     href: "/products",
   },
 
   "packaging-air-bags": {
     name: "Packaging Air Bags",
-    image: "/packing bag.webp",
+    image: "/36.webp",
     href: "/products",
   },
 };

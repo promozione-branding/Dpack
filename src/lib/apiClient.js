@@ -143,10 +143,10 @@ export const ordersAPI = {
 };
 
 export const couponsAPI = {
-  validate: (code, subtotal) =>
+  validate: (code, items) =>
     request("/api/coupons/validate", {
       method: "POST",
-      body: JSON.stringify({ code, subtotal }),
+      body: JSON.stringify({ code, items }),
     }),
 };
 
@@ -248,10 +248,19 @@ export const adminAPI = {
   uploadCategoryImage: (formData) =>
     request("/api/admin/categories", { method: "POST", body: formData }),
 
+  updateCategory: (formData) =>
+    request("/api/admin/categories", { method: "PATCH", body: formData }),
+
   removeCategoryImage: (name) =>
     request("/api/admin/categories", {
       method: "DELETE",
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, action: "removeImage" }),
+    }),
+
+  deleteCategory: (name) =>
+    request("/api/admin/categories", {
+      method: "DELETE",
+      body: JSON.stringify({ name, action: "delete" }),
     }),
 
   getInventory: (id) => request(`/api/admin/products/${id}/inventory`),

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { couponsAPI, ordersAPI, paymentsAPI } from "@/lib/apiClient";
 import { clearCart, updateQty, useCart } from "@/lib/cartBus";
@@ -37,6 +37,7 @@ export default function CheckoutPage() {
   const [couponMessage, setCouponMessage] = useState("");
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [couponEntryOpen, setCouponEntryOpen] = useState(false);
+  const autoCouponAttempted = useRef(false);
 
   const [form, setForm] = useState({
     firstName: "",
@@ -78,25 +79,57 @@ export default function CheckoutPage() {
 
   const shipping = subtotal >= 3000 ? 0 : 99;
 
-  const couponDiscount = appliedCoupon?.subtotal === subtotal ? appliedCoupon.discount : 0;
+  const cartFingerprint = items
+    .map((item) => `${item.key}:${item.qty}`)
+    .sort()
+    .join("|");
+  const couponDiscount =
+    appliedCoupon?.cartFingerprint === cartFingerprint
+      ? appliedCoupon.discount
+      : 0;
   const total = subtotal + shipping - couponDiscount;
 
-  const applyCoupon = async (event) => {
-    event.preventDefault();
+  const applyCouponCode = useCallback(async (code) => {
     setCouponMessage("");
     setApplyingCoupon(true);
     try {
-      const result = await couponsAPI.validate(couponCode, subtotal);
-      setAppliedCoupon({ ...result.coupon, subtotal });
+      const result = await couponsAPI.validate(
+        code,
+        items.map((item) => ({ productId: item.key, qty: item.qty }))
+      );
+      setAppliedCoupon({ ...result.coupon, cartFingerprint });
       setCouponCode(result.coupon.code);
-      setCouponMessage("Coupon applied successfully.");
+      setCouponMessage(
+        result.coupon.productRestricted
+          ? "Coupon applied to eligible products."
+          : "Coupon applied successfully."
+      );
     } catch (error) {
       setAppliedCoupon(null);
       setCouponMessage(error.message || "Could not validate the coupon.");
     } finally {
       setApplyingCoupon(false);
     }
+  }, [cartFingerprint, items]);
+
+  const applyCoupon = (event) => {
+    event.preventDefault();
+    void applyCouponCode(couponCode);
   };
+
+  useEffect(() => {
+    if (!items.length || autoCouponAttempted.current) return;
+    const code = new URLSearchParams(window.location.search).get("coupon")?.trim();
+    if (!code) return;
+
+    const timer = setTimeout(() => {
+      autoCouponAttempted.current = true;
+      setCouponEntryOpen(true);
+      setCouponCode(code.toUpperCase());
+      void applyCouponCode(code);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [applyCouponCode, items.length]);
 
   const removeCoupon = () => {
     setAppliedCoupon(null);

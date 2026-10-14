@@ -7,6 +7,7 @@ const CouponSchema = new mongoose.Schema(
     discountValue: { type: Number, required: true, min: 0 },
     minimumOrder: { type: Number, default: 0, min: 0 },
     maxDiscount: { type: Number, default: null, min: 0 },
+    productIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     usageLimit: { type: Number, default: null, min: 1 },
     usedCount: { type: Number, default: 0, min: 0 },
     expiresAt: { type: Date, default: null },

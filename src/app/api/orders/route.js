@@ -82,7 +82,16 @@ export async function POST(request) {
   let discount = 0;
   if (couponCode) {
     coupon = await Coupon.findOne({ code: String(couponCode).trim().toUpperCase() });
-    const couponError = getCouponError(coupon, subtotal);
+    const eligibleProductIds = new Set((coupon?.productIds || []).map(String));
+    const eligibleItems = orderItems.filter(
+      (item) =>
+        eligibleProductIds.size === 0 || eligibleProductIds.has(String(item.productId))
+    );
+    const eligibleSubtotal = eligibleItems.reduce(
+      (sum, item) => sum + item.price * item.qty,
+      0
+    );
+    const couponError = getCouponError(coupon, eligibleSubtotal, eligibleItems.length);
     if (couponError) return err(couponError);
 
     const availableCoupon = await Coupon.findOneAndUpdate(
@@ -104,7 +113,7 @@ export async function POST(request) {
     );
     if (!availableCoupon) return err("This coupon code is no longer available");
     coupon = availableCoupon;
-    discount = getCouponDiscount(coupon, subtotal);
+    discount = getCouponDiscount(coupon, eligibleSubtotal);
   }
   const total = Math.max(0, subtotal + shipping - discount);
 

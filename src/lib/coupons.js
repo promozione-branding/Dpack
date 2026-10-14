@@ -6,10 +6,11 @@ export function getCouponDiscount(coupon, subtotal) {
   return Math.min(coupon.discountValue, subtotal);
 }
 
-export function getCouponError(coupon, subtotal) {
+export function getCouponError(coupon, subtotal, eligibleProductCount = 1) {
   if (!coupon || !coupon.isActive) return "This coupon code is not valid";
   if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) return "This coupon code has expired";
   if (coupon.usageLimit != null && coupon.usedCount >= coupon.usageLimit) return "This coupon code has reached its usage limit";
+  if (coupon.productIds?.length && eligibleProductCount === 0) return "This coupon does not apply to products in your cart";
   if (subtotal < coupon.minimumOrder) return `This coupon requires a minimum order of ₹${coupon.minimumOrder}`;
   return "";
 }

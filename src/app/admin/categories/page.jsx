@@ -1,10 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { RefreshCw, Upload, X, Loader2, ImageOff, Plus } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  RefreshCw,
+  Upload,
+  X,
+  Loader2,
+  ImageOff,
+  Plus,
+  Trash2,
+  Pencil,
+} from "lucide-react";
 import { adminAPI } from "@/lib/apiClient";
 
-function CategoryCard({ category, onUploaded, onDeleted }) {
+function CategoryCard({ category, onUploaded, onImageRemoved, onDeleted, onEdit }) {
   const fileRef = useRef(null);
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState(null);
@@ -32,18 +41,34 @@ function CategoryCard({ category, onUploaded, onDeleted }) {
     }
   };
 
-  const handleDelete = async () => {
-    const message = category.inUse
-      ? `Remove the image for "${category.name}"? It'll fall back to the default — the category stays since products still use it.`
-      : `Delete "${category.name}"? No products use it yet, so this removes it entirely.`;
-    if (!confirm(message)) return;
+  const handleImageRemoval = async () => {
+    if (!confirm(`Remove the image for "${category.name}"?`)) return;
 
     setBusy(true);
     try {
       await adminAPI.removeCategoryImage(category.name);
-      onDeleted(category.name, category.inUse);
+      onImageRemoved(category.name);
     } catch (err) {
-      alert("Failed: " + err.message);
+      alert("Failed to remove image: " + err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    const productMessage = category.productCount
+      ? ` This will also permanently delete ${category.productCount} ${
+          category.productCount === 1 ? "product" : "products"
+        } assigned to it.`
+      : "";
+    if (!confirm(`Delete "${category.name}"?${productMessage} This cannot be undone.`)) return;
+
+    setBusy(true);
+    try {
+      await adminAPI.deleteCategory(category.name);
+      onDeleted(category.name);
+    } catch (err) {
+      alert("Failed to delete category: " + err.message);
     } finally {
       setBusy(false);
     }
@@ -76,6 +101,9 @@ function CategoryCard({ category, onUploaded, onDeleted }) {
 
       <div className="p-4">
         <p className="truncate text-sm font-semibold text-gray-900">{category.name}</p>
+        <p className="mt-1 text-xs text-gray-500">
+          {category.productCount} {category.productCount === 1 ? "product" : "products"}
+        </p>
 
         <input
           ref={fileRef}
@@ -88,6 +116,16 @@ function CategoryCard({ category, onUploaded, onDeleted }) {
         <div className="mt-3 flex gap-2">
           <button
             type="button"
+            onClick={() => onEdit(category)}
+            disabled={busy}
+            aria-label={`Edit ${category.name}`}
+            title="Edit category"
+            className="flex items-center justify-center rounded-xl border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition-colors hover:border-rust hover:bg-orange-50 hover:text-rust disabled:opacity-50"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
             onClick={pickFile}
             disabled={busy}
             className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition-colors hover:border-rust hover:text-rust disabled:opacity-50"
@@ -95,25 +133,37 @@ function CategoryCard({ category, onUploaded, onDeleted }) {
             <Upload className="h-3.5 w-3.5" />
             {category.image ? "Replace" : "Upload"}
           </button>
-          {(category.image || !category.inUse) && (
+          {category.image && (
             <button
               type="button"
-              onClick={handleDelete}
+              onClick={handleImageRemoval}
               disabled={busy}
-              title={category.inUse ? "Remove image" : "Delete category"}
+              aria-label={`Remove image for ${category.name}`}
+              title="Remove image"
               className="flex items-center justify-center rounded-xl border border-gray-200 px-3 py-2 text-xs font-medium text-red-500 transition-colors hover:border-red-300 hover:bg-red-50 disabled:opacity-50"
             >
               <X className="h-3.5 w-3.5" />
             </button>
           )}
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={busy}
+            aria-label={`Delete ${category.name} and its products`}
+            title="Delete category and its products"
+            className="flex items-center justify-center rounded-xl border border-red-200 px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:border-red-300 hover:bg-red-50 disabled:opacity-50"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-function NewCategoryForm({ onCreated, onCancel }) {
-  const [name, setName] = useState("");
+function CategoryForm({ category, onSaved, onCancel }) {
+  const isEditing = Boolean(category);
+  const [name, setName] = useState(category?.name || "");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -138,9 +188,12 @@ function NewCategoryForm({ onCreated, onCancel }) {
     try {
       const formData = new FormData();
       formData.append("name", name.trim());
+      if (category) formData.append("oldName", category.name);
       if (file) formData.append("image", file);
-      const res = await adminAPI.uploadCategoryImage(formData);
-      onCreated(res.category);
+      const res = category
+        ? await adminAPI.updateCategory(formData)
+        : await adminAPI.uploadCategoryImage(formData);
+      onSaved(res.category, category, res.warning);
     } catch (err) {
       setError(err.message || "Failed to create category");
     } finally {
@@ -156,7 +209,7 @@ function NewCategoryForm({ onCreated, onCancel }) {
       <div className="flex flex-wrap items-end gap-4">
         <div className="flex-1 min-w-[200px]">
           <label className="mb-1.5 block text-sm font-medium text-gray-700">
-            Category name
+            {isEditing ? "Edit category name" : "Category name"}
           </label>
           <input
             value={name}
@@ -185,10 +238,12 @@ function NewCategoryForm({ onCreated, onCancel }) {
           >
             {preview ? (
               <img src={preview} alt="" className="h-5 w-5 rounded object-cover" />
+            ) : category?.image ? (
+              <img src={category.image} alt="" className="h-5 w-5 rounded object-cover" />
             ) : (
               <Upload className="h-4 w-4" />
             )}
-            {file ? file.name : "Choose file"}
+            {file ? file.name : category?.image ? "Replace current image (optional)" : "Choose file"}
           </button>
         </div>
 
@@ -199,7 +254,7 @@ function NewCategoryForm({ onCreated, onCancel }) {
             className="flex items-center gap-2 rounded-xl bg-rust px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-rust/90 disabled:opacity-60"
           >
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            Create
+            {saving ? (isEditing ? "Saving…" : "Creating…") : isEditing ? "Save changes" : "Create"}
           </button>
           <button
             type="button"
@@ -220,37 +275,71 @@ export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showNew, setShowNew] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
 
-  const load = () => {
+  const fetchCategories = useCallback(() => adminAPI.listCategoryImages(), []);
+
+  const load = useCallback(async () => {
     setLoading(true);
-    adminAPI
-      .listCategoryImages()
-      .then((res) => setCategories(res.categories || []))
-      .catch(() => setCategories([]))
-      .finally(() => setLoading(false));
-  };
+    setError("");
+    try {
+      const res = await fetchCategories();
+      setCategories(res.categories || []);
+    } catch (cause) {
+      setError(cause.message || "Failed to load categories.");
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchCategories]);
 
-  useEffect(load, []);
+  useEffect(() => {
+    let active = true;
+    fetchCategories()
+      .then((res) => {
+        if (active) setCategories(res.categories || []);
+      })
+      .catch((cause) => {
+        if (active) setError(cause.message || "Failed to load categories.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [fetchCategories]);
 
   const handleUploaded = (name, image) => {
     setCategories((prev) => prev.map((c) => (c.name === name ? { ...c, image } : c)));
   };
 
-  const handleDeleted = (name, wasInUse) => {
-    if (wasInUse) {
-      setCategories((prev) => prev.map((c) => (c.name === name ? { ...c, image: null } : c)));
-    } else {
-      setCategories((prev) => prev.filter((c) => c.name !== name));
-    }
+  const handleImageRemoved = (name) => {
+    setCategories((prev) => prev.map((c) => (c.name === name ? { ...c, image: null } : c)));
   };
 
-  const handleCreated = (category) => {
+  const handleDeleted = (name) => {
+    setCategories((prev) => prev.filter((c) => c.name !== name));
+  };
+
+  const handleSaved = (category, previousCategory, warning) => {
     setCategories((prev) =>
-      [...prev.filter((c) => c.name !== category.name), { ...category, inUse: false }].sort(
-        (a, b) => a.name.localeCompare(b.name)
-      )
+      [
+        ...prev.filter(
+          (c) => c.name !== previousCategory?.name && c.name !== category.name
+        ),
+        {
+          ...category,
+          inUse: previousCategory?.inUse || false,
+          productCount: previousCategory?.productCount || 0,
+        },
+      ].sort((a, b) => a.name.localeCompare(b.name))
     );
     setShowNew(false);
+    setEditingCategory(null);
+    setNotice(warning || (previousCategory ? "Category updated." : "Category created."));
   };
 
   return (
@@ -270,9 +359,12 @@ export default function AdminCategoriesPage() {
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
-          {!showNew && (
+          {!showNew && !editingCategory && (
             <button
-              onClick={() => setShowNew(true)}
+              onClick={() => {
+                setEditingCategory(null);
+                setShowNew(true);
+              }}
               className="flex items-center gap-2 rounded-xl bg-rust px-4 py-2 text-sm font-semibold text-white hover:bg-rust/90"
             >
               <Plus className="h-4 w-4" />
@@ -282,8 +374,26 @@ export default function AdminCategoriesPage() {
         </div>
       </div>
 
-      {showNew && (
-        <NewCategoryForm onCreated={handleCreated} onCancel={() => setShowNew(false)} />
+      {error && (
+        <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </p>
+      )}
+      {notice && (
+        <p role="status" className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          {notice}
+        </p>
+      )}
+
+      {(showNew || editingCategory) && (
+        <CategoryForm
+          category={editingCategory}
+          onSaved={handleSaved}
+          onCancel={() => {
+            setShowNew(false);
+            setEditingCategory(null);
+          }}
+        />
       )}
 
       {loading ? (
@@ -301,7 +411,12 @@ export default function AdminCategoriesPage() {
               key={c.name}
               category={c}
               onUploaded={handleUploaded}
+              onImageRemoved={handleImageRemoved}
               onDeleted={handleDeleted}
+              onEdit={(category) => {
+                setShowNew(false);
+                setEditingCategory(category);
+              }}
             />
           ))}
         </div>

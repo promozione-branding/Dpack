@@ -1,5 +1,7 @@
 import { connectDB } from "@/lib/db/mongoose";
+import mongoose from "mongoose";
 import Coupon from "@/lib/models/Coupon";
+import Product from "@/lib/models/Product";
 import { requireAdmin, ok, err } from "@/lib/apiHelpers";
 
 export async function GET(request) {
@@ -29,6 +31,7 @@ export async function POST(request) {
     const maxDiscount = body?.maxDiscount === "" || body?.maxDiscount == null ? null : Number(body.maxDiscount);
     const usageLimit = body?.usageLimit === "" || body?.usageLimit == null ? null : Number(body.usageLimit);
     const expiresAt = body?.expiresAt ? new Date(body.expiresAt) : null;
+    const productIds = body?.productIds;
 
     if (!/^[A-Z0-9_-]{3,30}$/.test(code)) return err("Use 3–30 letters, numbers, hyphens or underscores for the code");
     if (!["percent", "fixed"].includes(discountType)) return err("Choose a valid discount type");
@@ -37,14 +40,28 @@ export async function POST(request) {
     if (maxDiscount !== null && (!Number.isFinite(maxDiscount) || maxDiscount <= 0)) return err("Enter a valid maximum discount");
     if (usageLimit !== null && (!Number.isInteger(usageLimit) || usageLimit < 1)) return err("Usage limit must be a positive whole number");
     if (expiresAt && Number.isNaN(expiresAt.getTime())) return err("Enter a valid expiry date");
+    if (!Array.isArray(productIds)) return err("Select valid products for this coupon");
+    if (productIds.some((id) => !mongoose.isValidObjectId(id))) return err("One or more selected products are invalid");
 
     await connectDB();
+    const uniqueProductIds = [...new Set(productIds.map(String))];
+    const activeProductCount = uniqueProductIds.length
+      ? await Product.countDocuments({
+          _id: { $in: uniqueProductIds },
+          isActive: true,
+        })
+      : 0;
+    if (activeProductCount !== uniqueProductIds.length) {
+      return err("One or more selected products are unavailable");
+    }
+
     const coupon = await Coupon.create({
       code,
       discountType,
       discountValue,
       minimumOrder,
       maxDiscount: discountType === "percent" ? maxDiscount : null,
+      productIds: uniqueProductIds,
       usageLimit,
       expiresAt,
       isActive: body?.isActive !== false,

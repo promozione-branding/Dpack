@@ -1,10 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "jodit/es2021/jodit.min.css";
 import { organizeProductFields } from "@/lib/productContent";
-import { Plus, Trash2, Star } from "lucide-react";
+import { Plus, Trash2, Star, X } from "lucide-react";
 
 const JoditEditor = dynamic(() => import("jodit-react"), {
   ssr: false,
@@ -18,7 +18,6 @@ const FIELDS = [
   { name: "overview", label: "Product overview" },
   { name: "keyFeatures", label: "Key features" },
   { name: "applications", label: "Applications" },
-  { name: "extraImages", label: "Additional image URLs" },
 ];
 
 /* =========================================================
@@ -104,6 +103,7 @@ function initialValues(product) {
     instagramUrl: product?.instagramUrl || "",
     metaTitle: product?.metaTitle || "",
     metaDescription: product?.metaDescription || "",
+    extraImages: lines(organizedFields.extraImages || product?.extraImages),
 
     ...Object.fromEntries(
       FIELDS.map(({ name }) => [
@@ -228,6 +228,9 @@ function RichTextEditor({
 function ProductForm({ initial, onSubmit, loading, submitLabel }) {
   const [imageUrl, setImageUrl] = useState(initial?.image || "");
   const [imageFile, setImageFile] = useState(null);
+  const [galleryFiles, setGalleryFiles] = useState([]);
+  const galleryFilesRef = useRef([]);
+  const galleryInputRef = useRef(null);
 
   const [form, setForm] = useState(() => initialValues(initial));
   const [variants, setVariants] = useState(() =>
@@ -235,6 +238,40 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
   );
 
   const hasVariants = variants.length > 0;
+
+  useEffect(
+    () => () => {
+      galleryFilesRef.current.forEach(({ preview }) =>
+        URL.revokeObjectURL(preview)
+      );
+    },
+    []
+  );
+
+  const setSelectedGalleryFiles = (nextFiles) => {
+    galleryFilesRef.current = nextFiles;
+    setGalleryFiles(nextFiles);
+  };
+
+  const handleGallerySelection = (event) => {
+    const selected = Array.from(event.target.files || []);
+    const remaining = Math.max(0, 10 - galleryFiles.length);
+    if (selected.length > remaining) {
+      window.alert(`You can select up to 10 gallery images. ${remaining} slots remaining.`);
+    }
+    const additions = selected.slice(0, remaining).map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setSelectedGalleryFiles([...galleryFiles, ...additions]);
+    event.target.value = "";
+  };
+
+  const removeGalleryFile = (index) => {
+    const removedFile = galleryFiles[index];
+    URL.revokeObjectURL(removedFile.preview);
+    setSelectedGalleryFiles(galleryFiles.filter((_, fileIndex) => fileIndex !== index));
+  };
 
   const setField = (name, value) => {
     setForm((current) => ({
@@ -284,6 +321,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
     const arrayFieldNames = new Set([
       ...FIELDS.map((f) => f.name),
       "specs",
+      "extraImages",
     ]);
 
     for (const [name, value] of Object.entries(form)) {
@@ -360,6 +398,10 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
     if (imageFile) {
       data.set("imageFile", imageFile);
     }
+
+    galleryFiles.forEach(({ file }, index) => {
+      data.set(`extraImage_${index}`, file);
+    });
 
     onSubmit(data, Boolean(imageFile || imageUrl.trim()));
   };
@@ -469,6 +511,74 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             placeholder="One specification per line"
           />
         </div>
+      </section>
+
+      {/* =====================================================
+         PRODUCT IMAGE GALLERY
+      ====================================================== */}
+
+      <section className="space-y-4 border-t border-gray-100 pt-5">
+        <div>
+          <h3 className="text-sm font-semibold text-gray-900">Product image gallery</h3>
+          <p className="mt-1 text-xs text-gray-500">
+            Select up to 10 images. They will appear alongside the main product image.
+          </p>
+        </div>
+
+        <input
+          ref={galleryInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          onChange={handleGallerySelection}
+          className="hidden"
+        />
+        <button
+          type="button"
+          onClick={() => galleryInputRef.current?.click()}
+          disabled={galleryFiles.length >= 10 || loading}
+          className="inline-flex items-center gap-2 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-rust hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Plus className="h-4 w-4" />
+          Select gallery images ({galleryFiles.length}/10)
+        </button>
+
+        {galleryFiles.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {galleryFiles.map(({ file, preview }, index) => (
+              <div
+                key={`${file.name}-${file.lastModified}-${index}`}
+                className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-50"
+              >
+                <img
+                  src={preview}
+                  alt={file.name}
+                  className="aspect-square w-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeGalleryFile(index)}
+                  aria-label={`Remove ${file.name} from gallery`}
+                  className="absolute right-2 top-2 rounded-full bg-white/95 p-1.5 text-gray-700 shadow transition hover:bg-red-50 hover:text-red-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+                <p className="truncate px-2 py-1.5 text-xs text-gray-600">{file.name}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <label className={labelClass}>
+          Additional image URLs (optional, one per line)
+          <textarea
+            className={inputClass}
+            rows={2}
+            value={form.extraImages}
+            onChange={(event) => setField("extraImages", event.target.value)}
+            placeholder="https://..."
+          />
+        </label>
       </section>
 
       {/* =====================================================
@@ -673,14 +783,10 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             {label}
             <textarea
               className={inputClass}
-              rows={name === "extraImages" ? 2 : 3}
+              rows={3}
               value={form[name]}
               onChange={(e) => setField(name, e.target.value)}
-              placeholder={
-                name === "extraImages"
-                  ? "One URL per line"
-                  : "One item per line"
-              }
+              placeholder="One item per line"
             />
           </label>
         ))}

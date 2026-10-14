@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Percent, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { Check, Percent, Plus, RefreshCw, Search, Trash2 } from "lucide-react";
 import { adminAPI } from "@/lib/apiClient";
 
 const EMPTY_FORM = {
@@ -22,10 +22,15 @@ function discountLabel(coupon) {
 
 export default function AdminCouponsPage() {
   const [coupons, setCoupons] = useState([]);
+  const [products, setProducts] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [selectedProductIds, setSelectedProductIds] = useState([]);
+  const [productSearch, setProductSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [productError, setProductError] = useState("");
   const [notice, setNotice] = useState("");
 
   const load = useCallback(async () => {
@@ -41,10 +46,60 @@ export default function AdminCouponsPage() {
     }
   }, []);
 
+  const loadProducts = useCallback(async () => {
+    setProductsLoading(true);
+    setProductError("");
+    try {
+      const pageSize = 200;
+      const firstPage = await adminAPI.listProducts({
+        page: 1,
+        limit: pageSize,
+        compact: true,
+        activeOnly: true,
+      });
+      const allProducts = firstPage.products || [];
+      const pageCount = Math.ceil((firstPage.total || 0) / pageSize);
+
+      for (let page = 2; page <= pageCount; page++) {
+        const result = await adminAPI.listProducts({
+          page,
+          limit: pageSize,
+          compact: true,
+          activeOnly: true,
+        });
+        allProducts.push(...(result.products || []));
+      }
+      setProducts(allProducts);
+    } catch (cause) {
+      setProductError(cause.message || "Could not load products.");
+    } finally {
+      setProductsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => { void load(); }, 0);
     return () => clearTimeout(timer);
   }, [load]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => { void loadProducts(); }, 0);
+    return () => clearTimeout(timer);
+  }, [loadProducts]);
+
+  const filteredProducts = products.filter((product) =>
+    `${product.name} ${product.category || ""}`
+      .toLowerCase()
+      .includes(productSearch.trim().toLowerCase())
+  );
+
+  const toggleProduct = (productId) => {
+    setSelectedProductIds((current) =>
+      current.includes(productId)
+        ? current.filter((id) => id !== productId)
+        : [...current, productId]
+    );
+  };
 
   const submit = async (event) => {
     event.preventDefault();
@@ -54,9 +109,12 @@ export default function AdminCouponsPage() {
     try {
       await adminAPI.createCoupon({
         ...form,
+        productIds: selectedProductIds,
         expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
       });
       setForm(EMPTY_FORM);
+      setSelectedProductIds([]);
+      setProductSearch("");
       setNotice("Coupon created.");
       await load();
     } catch (cause) {
@@ -101,6 +159,7 @@ export default function AdminCouponsPage() {
 
       {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
       {notice && <p role="status" className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{notice}</p>}
+      {productError && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{productError}</p>}
 
       <form onSubmit={submit} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
         <h2 className="mb-5 flex items-center gap-2 font-semibold text-gray-900"><Plus className="h-4 w-4 text-rust" /> Create a coupon</h2>
@@ -116,7 +175,7 @@ export default function AdminCouponsPage() {
           <label className="text-xs font-semibold text-gray-600">Discount {form.discountType === "percent" ? "(%)" : "(₹)"}
             <input required type="number" min="0.01" max={form.discountType === "percent" ? "100" : undefined} step="0.01" value={form.discountValue} onChange={(event) => setForm({ ...form, discountValue: event.target.value })} className="mt-1.5 h-10 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-rust" />
           </label>
-          <label className="text-xs font-semibold text-gray-600">Minimum order (₹)
+          <label className="text-xs font-semibold text-gray-600">Minimum eligible subtotal (₹)
             <input type="number" min="0" step="1" value={form.minimumOrder} onChange={(event) => setForm({ ...form, minimumOrder: event.target.value })} className="mt-1.5 h-10 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-rust" />
           </label>
           {form.discountType === "percent" && <label className="text-xs font-semibold text-gray-600">Maximum discount (₹, optional)
@@ -129,9 +188,80 @@ export default function AdminCouponsPage() {
             <input type="datetime-local" value={form.expiresAt} onChange={(event) => setForm({ ...form, expiresAt: event.target.value })} className="mt-1.5 h-10 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-rust" />
           </label>
         </div>
+        <section className="mt-5 border-t border-gray-100 pt-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-800">Eligible products</h3>
+              <p className="mt-1 text-xs text-gray-500">
+                {selectedProductIds.length === 0
+                  ? "No products selected — this coupon applies to all products."
+                  : `Coupon applies to ${selectedProductIds.length} selected ${selectedProductIds.length === 1 ? "product" : "products"} only.`}
+              </p>
+            </div>
+            {selectedProductIds.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setSelectedProductIds([])}
+                className="text-xs font-semibold text-rust hover:underline"
+              >
+                Clear selection
+              </button>
+            )}
+          </div>
+          <label className="relative mt-3 block">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="search"
+              value={productSearch}
+              onChange={(event) => setProductSearch(event.target.value)}
+              placeholder="Search products by name or category"
+              className="h-10 w-full rounded-lg border border-gray-200 pl-9 pr-3 text-sm outline-none focus:border-rust"
+            />
+          </label>
+          <div className="mt-3 max-h-64 overflow-y-auto rounded-xl border border-gray-200">
+            {productsLoading ? (
+              <p className="p-4 text-sm text-gray-500">Loading active products…</p>
+            ) : filteredProducts.length === 0 ? (
+              <p className="p-4 text-sm text-gray-500">
+                {products.length ? "No products match your search." : "No active products available."}
+              </p>
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {filteredProducts.map((product) => {
+                  const id = String(product._id || product.id);
+                  const selected = selectedProductIds.includes(id);
+                  return (
+                    <li key={id}>
+                      <label className="flex cursor-pointer items-center gap-3 px-3 py-2.5 hover:bg-gray-50">
+                        <input
+                          type="checkbox"
+                          checked={selected}
+                          onChange={() => toggleProduct(id)}
+                          className="h-4 w-4 rounded border-gray-300 accent-[#081A33]"
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-medium text-gray-800">
+                            {product.name}
+                          </span>
+                          <span className="block truncate text-xs text-gray-500">
+                            {product.category || "Uncategorized"}
+                          </span>
+                        </span>
+                        <span className="shrink-0 text-xs font-semibold text-gray-600">
+                          ₹{Number(product.price || 0).toLocaleString("en-IN")}
+                        </span>
+                        {selected && <Check className="h-4 w-4 shrink-0 text-green-600" />}
+                      </label>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </section>
         <div className="mt-5 border-t border-gray-100 pt-4">
           <button
-            disabled={saving}
+            disabled={saving || productsLoading || Boolean(productError)}
             type="submit"
             className="flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#081A33] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#142b49] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5A623] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-52"
           >
@@ -157,7 +287,12 @@ export default function AdminCouponsPage() {
                 {coupons.map((coupon) => (
                   <tr key={coupon._id}>
                     <td className="px-5 py-4 font-mono font-bold text-gray-900">{coupon.code}</td>
-                    <td className="px-4 py-4 text-gray-700">{discountLabel(coupon)}</td>
+                    <td className="px-4 py-4 text-gray-700">
+                      {discountLabel(coupon)}
+                      <span className="mt-1 block text-xs text-gray-400">
+                        {coupon.productIds?.length ? `${coupon.productIds.length} selected products` : "All products"}
+                      </span>
+                    </td>
                     <td className="px-4 py-4 text-gray-600">₹{Number(coupon.minimumOrder || 0).toLocaleString("en-IN")}</td>
                     <td className="px-4 py-4 text-gray-600">{coupon.usedCount || 0} / {coupon.usageLimit ?? "∞"}</td>
                     <td className="px-4 py-4 text-gray-500">{coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString("en-IN") : "Never"}</td>
