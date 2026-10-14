@@ -10,44 +10,9 @@ import {
   ShoppingCart,
   PackageCheck,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { addToCart } from "@/lib/cartBus";
-
-/* =========================================================
-   PRODUCTS
-========================================================= */
-
-const products = [
-  {
-    id: 1,
-    name: "Dunnage Air Bags",
-    image: "https://packingairbag.com/cat/1.webp",
-    category: "Dunnage Bags",
-   price: 1299,
-oldPrice: 1599,
-discount: "19% OFF",
-    link: "/products/dunnage-air-bags",
-  },
-  {
-    id: 2,
-    name: "Air Column Bags",
-    image: "https://packingairbag.com/cat/5.webp",
-    category: "Protective Packaging",
-    price: 899,
-    oldPrice: 1099,
-    discount: "18% OFF",
-    link: "/products/air-column-bags",
-  },
-  {
-    id: 3,
-    name: "Air Column Rolls",
-    image: "https://packingairbag.com/cat/2.webp",
-    category: "Air Packaging",
-    price: 1499,
-    oldPrice: 1799,
-    discount: "17% OFF",
-    link: "/products/air-column-rolls",
-  },
-];
+import { getHomeProducts } from "@/lib/homeProducts";
 
 /* =========================================================
    PRODUCT CARD
@@ -58,8 +23,8 @@ function ProductCard({ product, index }) {
     e.preventDefault();
     addToCart({
       ...product,
-      slug: product.link.split("/").filter(Boolean).at(-1),
-      compareAtPrice: product.oldPrice,
+      slug: product.slug,
+      compareAtPrice: product.compareAtPrice,
     });
   };
 
@@ -133,25 +98,27 @@ function ProductCard({ product, index }) {
       >
         {/* DISCOUNT */}
 
-        <span
-          className="
-            absolute
-            left-4
-            top-4
-            z-20
+        {product.discount && (
+          <span
+            className="
+              absolute
+              left-4
+              top-4
+              z-20
 
-            bg-[#F5A623]
+              bg-[#F5A623]
 
-            px-3
-            py-1.5
+              px-3
+              py-1.5
 
-            text-[12px]
-            font-black
-            text-[#123B5D]
-          "
-        >
-          {product.discount}
-        </span>
+              text-[12px]
+              font-black
+              text-[#123B5D]
+            "
+          >
+            {product.discount}
+          </span>
+        )}
 
         {/* WISHLIST */}
 
@@ -350,15 +317,17 @@ function ProductCard({ product, index }) {
             ₹{product.price.toLocaleString("en-IN")}
           </span>
 
-          <span
-            className="
-              text-[13px]
-              text-[#8A959D]
-              line-through
-            "
-          >
-            ₹{product.oldPrice.toLocaleString("en-IN")}
-          </span>
+          {product.compareAtPrice > product.price && (
+            <span
+              className="
+                text-[13px]
+                text-[#8A959D]
+                line-through
+              "
+            >
+              ₹{product.compareAtPrice.toLocaleString("en-IN")}
+            </span>
+          )}
         </div>
 
         {/* ADD TO CART */}
@@ -425,6 +394,63 @@ function ProductCard({ product, index }) {
 ========================================================= */
 
 export default function BannerProduct() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProducts() {
+      try {
+        const catalog = await getHomeProducts();
+        const activeProducts = catalog
+          .filter((product) => product && product.isActive !== false)
+          .slice(0, 3)
+          .map((product) => {
+            const price = Number(product.price ?? product.salePrice ?? 0);
+            const compareAtPrice = Number(
+              product.compareAtPrice ?? product.oldPrice ?? product.mrp ?? 0
+            );
+            const discount =
+              compareAtPrice > price && price > 0
+                ? `${Math.round(((compareAtPrice - price) / compareAtPrice) * 100)}% OFF`
+                : "";
+
+            return {
+              ...product,
+              id: String(product._id || product.id || product.slug),
+              name: product.name || product.title || "Product",
+              image: product.image || product.images?.[0] || "/AirBag.webp",
+              category:
+                typeof product.category === "string"
+                  ? product.category
+                  : product.category?.name || product.category?.title || "Air bag Packaging",
+              price,
+              compareAtPrice,
+              oldPrice: compareAtPrice,
+              discount,
+              link: product.slug ? `/products/${product.slug}` : "/products",
+            };
+          });
+
+        if (!cancelled) setProducts(activeProducts);
+      } catch (cause) {
+        console.error("Banner products failed to load:", cause);
+        if (!cancelled) {
+          setError(cause.message || "Unable to load products.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void loadProducts();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section
       className="
@@ -839,13 +865,24 @@ export default function BannerProduct() {
               xl:grid-cols-3
             "
           >
-            {products.map((product, index) => (
+            {loading ? (
+              Array.from({ length: 3 }, (_, index) => (
+                <div
+                  key={index}
+                  className="h-[420px] animate-pulse border border-[#DCE3E7] bg-white"
+                />
+              ))
+            ) : products.length > 0 ? products.map((product, index) => (
               <ProductCard
                 key={product.id}
                 product={product}
                 index={index}
               />
-            ))}
+            )) : (
+              <p role={error ? "alert" : "status"} className="col-span-full border border-[#DCE3E7] bg-white p-8 text-center text-sm text-[#66737D]">
+                {error || "No products are available right now."}
+              </p>
+            )}
           </div>
         </div>
       </div>

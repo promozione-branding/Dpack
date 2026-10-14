@@ -6,6 +6,20 @@ import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getHomeProducts } from "@/lib/homeProducts";
 
+const HIGHLIGHT_PRODUCT_TYPES = [
+  ["dunnage"],
+  ["gap filler"],
+  ["air pillow", "pillow bag", "air cushion film roll"],
+  ["air cushion", "cushion bag"],
+  ["shredder"],
+];
+
+function getProductIdentity(product) {
+  return `${product.name || ""} ${product.slug || ""}`
+    .toLowerCase()
+    .replace(/[_-]+/g, " ");
+}
+
 export default function Highlight() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState([]);
@@ -27,8 +41,24 @@ export default function Highlight() {
           const activeProducts = allProducts.filter(
             (product) => product && product.isActive !== false
           );
-          const featured = activeProducts.filter((product) => product.featured);
-          setProducts((featured.length ? featured : activeProducts).slice(0, 10));
+          const usedProducts = new Set();
+          const highlightedProducts = HIGHLIGHT_PRODUCT_TYPES.flatMap((terms) => {
+            const product = activeProducts.find((candidate) => {
+              const identity = getProductIdentity(candidate);
+              const id = candidate._id || candidate.id || candidate.slug;
+              const isPillow =
+                identity.includes("air pillow") ||
+                identity.includes("air cushion film roll");
+              if (usedProducts.has(id)) return false;
+              if (terms.includes("air cushion") && isPillow) return false;
+              return terms.some((term) => identity.includes(term));
+            });
+
+            if (!product) return [];
+            usedProducts.add(product._id || product.id || product.slug);
+            return [product];
+          });
+          setProducts(highlightedProducts);
         }
       } catch (error) {
         console.error("Featured products error:", error);
@@ -118,8 +148,8 @@ export default function Highlight() {
   };
 
   return (
-    <section className="bg-[#F7F8FA] py-14 sm:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-10">
+    <section className="bg-[#F7F8FA] py-11 sm:py-10 lg:py-15">
+      <div className="mx-auto max-w-7xl ">
 
         {/* Heading */}
         <div className="mb-8 flex flex-col gap-5 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
@@ -137,9 +167,8 @@ export default function Highlight() {
           </div>
 
           <p className="max-w-md text-sm leading-6 text-slate-600 sm:text-base sm:leading-7">
-            Explore our range of inflatable and protective packaging
-            solutions designed to reduce transit damage and keep products
-            secure.
+            Explore dunnage bags, gap fillers, air pillow bags, air cushion
+            bags, and shredder machines for safer packaging and transport.
           </p>
         </div>
 
@@ -200,7 +229,7 @@ export default function Highlight() {
                       hover:shadow-xl
                       sm:h-[430px]
                       sm:p-5
-                      lg:h-[470px]
+                      lg:h-[390px]
                     "
                   >
 
@@ -222,12 +251,12 @@ export default function Highlight() {
                         alt={product.name}
                         fill
                         className="
-                          object-contain
-                          p-5
+                          object-cover
+                          
                           transition
                           duration-500
                           group-hover:scale-105
-                          sm:p-7
+                       
                         "
                         sizes="
                           (max-width: 640px) 50vw,
@@ -270,12 +299,12 @@ export default function Highlight() {
                       <h3
                         className="
                           line-clamp-2
-                          min-h-[40px]
+                          
                           text-sm
                           font-bold
                           leading-5
                           text-[#081A33]
-                          sm:min-h-[48px]
+                      
                           sm:text-lg
                           sm:leading-6
                         "
@@ -283,24 +312,7 @@ export default function Highlight() {
                         {product.name}
                       </h3>
 
-                      <p
-                        className="
-                          mt-2
-                          line-clamp-3
-                          text-[11px]
-                          leading-4
-                          text-slate-500
-                          sm:text-sm
-                          sm:leading-6
-                        "
-                      >
-                        {description}
-                      </p>
-
-                      {/* Push CTA to same position */}
-                      <div className="mt-auto pt-3 text-[11px] font-bold text-[#F5A623] sm:pt-4 sm:text-sm">
-                        Explore Product →
-                      </div>
+                    
 
                     </div>
                   </Link>
@@ -399,30 +411,7 @@ export default function Highlight() {
 
         {/* Bottom CTA */}
         <div className="mt-8 flex justify-center sm:mt-10">
-          <Link
-            href="/products"
-            className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-full
-              bg-[#081A33]
-              px-6
-              py-3
-              text-xs
-              font-bold
-              text-white
-              transition
-              hover:bg-[#F5A623]
-              hover:text-[#081A33]
-              sm:px-7
-              sm:py-3.5
-              sm:text-sm
-            "
-          >
-            View All Products
-            <ArrowUpRight size={17} />
-          </Link>
+        
         </div>
 
       </div>

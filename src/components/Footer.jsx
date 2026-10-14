@@ -773,8 +773,8 @@ export default function Footer() {
               <ContactItem
                 icon={Phone}
                 label="Call Us"
-                value="+91 99999 99999"
-                href="tel:+919999999999"
+                value="91 7669988825"
+                href="tel:7669988825"
               />
 
               {/* EMAIL */}
@@ -782,8 +782,8 @@ export default function Footer() {
               <ContactItem
                 icon={Mail}
                 label="Email"
-                value="info@dpack.in"
-                href="mailto:info@dpack.in"
+                value="dpacksolutionindia@gmail.com"
+                href="mailto:dpacksolutionindia@gmail.com"
               />
 
               {/* LOCATION */}
@@ -791,7 +791,8 @@ export default function Footer() {
               <ContactItem
                 icon={MapPin}
                 label="Location"
-                value="India"
+                value="Shakti Auto, Second Floor, 24/54B, Lala Ganesh Das Marg, Tilak Nagar
+                , West Delhi, New Delhi - 110018, Delhi, India."
               />
 
             </div>

@@ -13,7 +13,7 @@ import Testimonials from "@/components/Testimonials";
 import Cartificat from "@/components/Catificate";
 import WhyChooseUs from "@/components/WhyChoose";
 import Main from "@/components/Box";
-import Highlight from "@/components/Highlight";
+ import Highlight from "@/components/Highlight";
 
 
 
@@ -24,7 +24,7 @@ export default function Home() {
     <Main/>
 {/* <BestSellingProducts/> */}
  <TrendingProducts/>
- <Highlight/>
+   <Highlight/>  
  <SaleNow/>
  <Product360/>
  <Categories/>
