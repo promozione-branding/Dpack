@@ -67,6 +67,45 @@ const navLinks = [
   },
 ];
 
+
+/* =========================================================
+   CATEGORY URL HELPER
+========================================================= */
+
+function getCategorySlug(category) {
+  const categorySlugs = {
+    "Dunnage Bag": "dunnage-bag",
+    "Dunnage Bags": "dunnage-bag",
+    "Dunnage Air Bags": "dunnage-bag",
+
+    "Air Column Bag": "air-column-bags",
+    "Air Column Bags": "air-column-bags",
+
+    "Air Column Roll": "air-column-roll",
+    "Air Column Rolls": "air-column-roll",
+
+    "Gap Filler": "gap-filler",
+    "Gap Fillers": "gap-filler",
+
+    "Packaging Air Bag": "packaging-air-bags",
+    "Packaging Air Bags": "packaging-air-bags",
+  };
+
+  const categoryName = String(
+    typeof category === "string" ? category : category?.name || ""
+  ).trim();
+
+  return (
+    categorySlugs[categoryName] ||
+    categoryName
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+  );
+}
+
+
 /* =========================================================
    SOCIAL ICONS
 ========================================================= */
@@ -1019,37 +1058,44 @@ export default function Navbar() {
                       <ArrowRight size={14} />
                     </Link>
 
-                    {categories.map((category) => (
-                      <Link
-                        key={category}
-                        href={`/products?category=${encodeURIComponent(
-                          category
-                        )}`}
-                        role="menuitem"
-                        onClick={() =>
-                          setCategoriesOpen(false)
-                        }
-                        className="
-                          flex
-                          items-center
-                          justify-between
-                          px-5
-                          py-3
-                          text-[13px]
-                          font-medium
-                          transition-colors
-                          hover:bg-[#F7F7F5]
-                          hover:text-[#F5A623]
-                        "
-                      >
-                        {category}
+                   
+{categories.map((category) => {
+  const categoryName =
+    typeof category === "string"
+      ? category
+      : category?.name || "";
 
-                        <ArrowRight
-                          size={14}
-                          className="text-gray-300"
-                        />
-                      </Link>
-                    ))}
+  const categorySlug = getCategorySlug(category);
+
+  return (
+    <Link
+      key={categorySlug || categoryName}
+      href={`/products-categories/${categorySlug}`}
+      role="menuitem"
+      onClick={() => setCategoriesOpen(false)}
+      className="
+        flex
+        items-center
+        justify-between
+        px-5
+        py-3
+        text-[13px]
+        font-medium
+        transition-colors
+        hover:bg-[#F7F7F5]
+        hover:text-[#F5A623]
+      "
+    >
+      {categoryName}
+
+      <ArrowRight
+        size={14}
+        className="text-gray-300"
+      />
+    </Link>
+  );
+})}
+
 
                     {categoriesError && (
                       <p

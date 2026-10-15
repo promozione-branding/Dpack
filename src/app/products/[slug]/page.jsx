@@ -1584,10 +1584,7 @@ export default function ProductPage({
 
               <div className="relative order-1 flex h-[380px] w-full items-center justify-center overflow-hidden border border-gray-200 bg-[#F7F9FB] sm:h-[450px] lg:order-2 lg:h-auto lg:min-h-[570px]">
 
-                <div className="absolute left-3 top-3 z-20 bg-[#081A33] px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white sm:left-5 sm:top-5 sm:px-4 sm:text-[15px]">
-                  {currentProduct.badge ||
-                    "Featured Product"}
-                </div>
+               
 
                 {selectedMedia.type ===
                   "youtube" &&
@@ -2734,39 +2731,31 @@ export default function ProductPage({
 
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  window.dispatchEvent(
-                    new CustomEvent(
-                      "dpack-product-inquiry",
-                      {
-                        detail:
-                          currentProduct,
-                      }
-                    )
-                  );
-                }}
-                className="
-                  shrink-0
-                  border-2
-                  border-[#081A33]
-                  bg-[#081A33]
-                  px-6
-                  py-4
-                  text-sm
-                  font-black
-                  uppercase
-                  tracking-wide
-                  text-white
-                  transition
-                  hover:bg-white
-                  hover:text-[#081A33]
-                  sm:px-7
-                "
-              >
-                Enquire Now
-              </button>
+           
+<button
+  type="button"
+  onClick={() => setisBulkEnquiryOpen(true)}
+  className="
+    shrink-0
+    border-2
+    border-[#081A33]
+    bg-[#081A33]
+    px-6
+    py-4
+    text-sm
+    font-black
+    uppercase
+    tracking-wide
+    text-white
+    transition
+    hover:bg-white
+    hover:text-[#081A33]
+    sm:px-7
+  "
+>
+  Enquire Now
+</button>
+
 
             </div>
 

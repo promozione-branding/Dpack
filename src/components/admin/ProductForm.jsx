@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import "jodit/es2021/jodit.min.css";
 import { organizeProductFields } from "@/lib/productContent";
+import { adminAPI } from "@/lib/apiClient";
 import { Plus, Trash2, Star, X } from "lucide-react";
 
 const JoditEditor = dynamic(() => import("jodit-react"), {
@@ -236,8 +237,37 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
   const [variants, setVariants] = useState(() =>
     buildInitialVariants(initial)
   );
+  const [categories, setCategories] = useState([]);
+  const [categoriesError, setCategoriesError] = useState("");
 
   const hasVariants = variants.length > 0;
+
+  useEffect(() => {
+    let mounted = true;
+
+    adminAPI
+      .listCategoryImages()
+      .then((result) => {
+        if (mounted) {
+          setCategories(
+            Array.isArray(result.categories)
+              ? result.categories
+                  .map((category) => category?.name)
+                  .filter(Boolean)
+              : []
+          );
+        }
+      })
+      .catch((error) => {
+        if (mounted) {
+          setCategoriesError(error.message || "Unable to load categories.");
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(
     () => () => {
@@ -443,12 +473,27 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
 
         <label className={labelClass}>
           Category *
-          <input
+          <select
             className={inputClass}
             required
             value={form.category}
             onChange={(e) => setField("category", e.target.value)}
-          />
+          >
+            <option value="">Select a category</option>
+            {form.category && !categories.includes(form.category) && (
+              <option value={form.category}>{form.category}</option>
+            )}
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+          {categoriesError && (
+            <span className="mt-1 block text-xs text-red-600">
+              Could not load categories: {categoriesError}
+            </span>
+          )}
         </label>
 
         <label className={labelClass}>
