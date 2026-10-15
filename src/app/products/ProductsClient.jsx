@@ -1527,6 +1527,8 @@ export default function ProductsPage({
     };
   }, []);
 
+  
+
   /* =======================================================
      WISHLIST LOAD
   ======================================================= */
@@ -1620,19 +1622,55 @@ const addToCart = (product) => {
       /* CATEGORY */
 
       if (
-        selectedCategory &&
-        selectedCategory !==
-          "All Products"
-      ) {
-        result =
-          result.filter(
-            (product) =>
-              getProductCategory(
-                product
-              ) ===
-              selectedCategory
-          );
-      }
+  selectedCategory &&
+  selectedCategory !== "All Products"
+) {
+  result = result.filter((product) =>
+    categoriesMatch(
+      getProductCategory(product),
+      selectedCategory
+    )
+  );
+}
+
+      
+function normalizeCategory(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function categoriesMatch(productCategory, selectedCategory) {
+  const productName = normalizeCategory(productCategory);
+  const selectedName = normalizeCategory(selectedCategory);
+
+  if (!productName || !selectedName) return false;
+
+  const aliases = {
+    "air column bag": "air column bags",
+    "air column bags": "air column bags",
+    "air column roll": "air column rolls",
+    "air column rolls": "air column rolls",
+    "dunnage bag": "dunnage bags",
+    "dunnage bags": "dunnage bags",
+    "dunnage air bag": "dunnage air bags",
+    "dunnage air bags": "dunnage air bags",
+    "gap filler": "gap fillers",
+    "gap fillers": "gap fillers",
+    "packaging air bag": "packaging air bags",
+    "packaging air bags": "packaging air bags",
+  };
+
+  return (
+    (aliases[productName] || productName) ===
+    (aliases[selectedName] || selectedName)
+  );
+}
+
 
       /* SEARCH */
 

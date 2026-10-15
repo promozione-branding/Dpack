@@ -1,29 +1,32 @@
 import ProductsClient from "@/app/products/ProductsClient";
+import { notFound } from "next/navigation";
+
 
 const categoryNames = {
-  "dunnage-bag": "Dunnage Bags",
-  "dunnage-bags": "Dunnage Bags",
   "air-column-bag": "Air Column Bags",
   "air-column-bags": "Air Column Bags",
-  "air-column-roll": "Air Column Roll",
-  "air-column-rolls": "Air Column Roll",
-  "gap-filler": "Gap Filler",
-  "gap-fillers": "Gap Filler",
+  "air-column-roll": "Air Column Rolls",
+  "air-column-rolls": "Air Column Rolls",
+  "dunnage-bag": "Dunnage Bags",
+  "dunnage-bags": "Dunnage Bags",
+  "gap-filler": "Gap Fillers",
+  "gap-fillers": "Gap Fillers",
   "packaging-air-bag": "Packaging Air Bags",
   "packaging-air-bags": "Packaging Air Bags",
 };
 
+
 export default async function ProductsCategoryPage({ params }) {
   const { slug } = await params;
-  const normalizedSlug = String(slug || "").trim().toLowerCase();
-  const fallbackSlug = normalizedSlug.endsWith("s")
-    ? normalizedSlug.slice(0, -1)
-    : normalizedSlug;
+  const normalizedSlug = String(slug || "")
+    .trim()
+    .toLowerCase();
 
-  const initialCategory =
-    categoryNames[normalizedSlug] ||
-    categoryNames[fallbackSlug] ||
-    normalizedSlug.replace(/-/g, " ");
+  const initialCategory = categoryNames[normalizedSlug];
+
+  if (!initialCategory) {
+    notFound();
+  }
 
   return <ProductsClient initialCategory={initialCategory} />;
 }
