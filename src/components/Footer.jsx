@@ -773,7 +773,7 @@ export default function Footer() {
               <ContactItem
                 icon={Phone}
                 label="Call Us"
-                value="91 7669988825"
+                value="91-7669988825"
                 href="tel:7669988825"
               />
 
@@ -855,7 +855,7 @@ export default function Footer() {
               tracking-[0.14em]
               text-white/25
 
-              lg:block
+            
             "
           >
            Website Designed By Inquiry Bazaar Pvt. Ltd.  <a href="https://www.inquirybazaar.com/" target="_blank" rel="noopener noreferrer" className="text-[#F5A623] hover:underline">
