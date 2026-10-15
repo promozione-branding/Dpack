@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Eye,
   PackageCheck,
+  Plus,
 } from "lucide-react";
 
 /* ============================================================
@@ -96,7 +97,7 @@ function SectionLabel({ children, light = false }) {
       <span className="h-[3px] w-10 shrink-0 bg-[#F5A623]" />
 
       <span
-        className={`text-[10px] font-black uppercase tracking-[0.3em] ${
+        className={`text-[14px] font-black uppercase tracking-[0.3em] ${
           light ? "text-[#F5A623]" : "text-[#D98C00]"
         }`}
       >
@@ -258,7 +259,7 @@ export default function AboutUs() {
               >
                 <span className="h-px w-12 bg-[#081A33]" />
 
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em]">
+                <span className="text-[14px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em]">
                   Protect • Pack • Move
                 </span>
               </motion.div>
@@ -487,7 +488,7 @@ export default function AboutUs() {
                 />
               </div>
 
-              <p className="text-[10px] font-black uppercase tracking-[0.3em]">
+              <p className="text-[14px] font-black uppercase tracking-[0.3em]">
                 01 / Mission
               </p>
 
@@ -520,7 +521,7 @@ export default function AboutUs() {
                 />
               </div>
 
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#89929A]">
+              <p className="text-[14px] font-black uppercase tracking-[0.3em] text-[#89929A]">
                 02 / Vision
               </p>
 
@@ -623,7 +624,7 @@ export default function AboutUs() {
                       className="flex min-h-[60px] items-center justify-between gap-3 border-b border-[#081A33]/15 py-4 transition-colors duration-300 hover:bg-[#081A33]/[0.025] sm:gap-4"
                     >
                       <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-                        <span className="shrink-0 text-[10px] font-black text-[#F5A623]">
+                        <span className="shrink-0 text-[14px] font-black text-[#F5A623]">
                           {product.number}
                         </span>
 
@@ -656,7 +657,7 @@ export default function AboutUs() {
 
               <Link
                 href="/products"
-                className="group mt-7 inline-flex min-h-[50px] items-center justify-center gap-3 bg-[#081A33] px-5 py-4 text-center text-[10px] font-black uppercase tracking-[0.15em] text-white transition-colors duration-300 hover:bg-[#F5A623] hover:text-[#081A33] sm:mt-8 sm:px-6 sm:tracking-[0.2em]"
+                className="group mt-7 inline-flex min-h-[50px] items-center justify-center gap-3 bg-[#081A33] px-5 py-4 text-center text-[14px] font-black uppercase tracking-[0.15em] text-white transition-colors duration-300 hover:bg-[#F5A623] hover:text-[#081A33] sm:mt-8 sm:px-6 sm:tracking-[0.2em]"
               >
                 Explore All Products
 
@@ -699,7 +700,7 @@ export default function AboutUs() {
 
           <Link
             href="/contact"
-            className="group inline-flex min-h-[50px] items-center justify-center gap-3 border border-white/20 px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-white transition-colors duration-300 hover:border-[#F5A623] hover:bg-[#F5A623] hover:text-[#081A33]"
+            className="group inline-flex min-h-[50px] items-center justify-center gap-3 border border-white/20 px-6 py-4 text-[14px] font-black uppercase tracking-[0.2em] text-white transition-colors duration-300 hover:border-[#F5A623] hover:bg-[#F5A623] hover:text-[#081A33]"
           >
             Talk To Us
 
@@ -710,6 +711,106 @@ export default function AboutUs() {
           </Link>
         </div>
       </section>
+
+
+      
+{/* ======================================================
+    FREQUENTLY ASKED QUESTIONS
+====================================================== */}
+
+<section className="relative overflow-hidden bg-white px-5 py-10 sm:px-8 sm:py-12 lg:px-12 lg:py-15">
+  <DotPattern />
+
+  <div className="relative z-10 mx-auto max-w-[1200px]">
+    <motion.div
+      {...revealProps}
+      variants={fadeUp}
+      className="mx-auto max-w-3xl text-center"
+    >
+      <div className="flex justify-center">
+        <SectionLabel>FAQs</SectionLabel>
+      </div>
+
+      <h2 className="mt-6 text-[35px] font-black leading-[1.02] tracking-[-0.05em] sm:text-5xl lg:text-6xl">
+        Questions about
+        <span className="block text-[#F5A623]">
+          DPack packaging?
+        </span>
+      </h2>
+
+      <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#65707B] sm:text-base">
+        Find answers to common questions about our protective
+        packaging products, bulk orders and business enquiries.
+      </p>
+    </motion.div>
+
+    <div className="mx-auto mt-10 max-w-4xl border-t border-[#081A33]/15 sm:mt-14">
+      {[
+        {
+          question: "What packaging products does DPack offer?",
+          answer:
+            "DPack offers protective packaging solutions including Dunnage Air Bags, Air Column Bags, Packaging Air Bags, Gap Fillers and Air Column Rolls for product protection during storage and transportation.",
+        },
+        {
+          question: "What are Dunnage Air Bags used for?",
+          answer:
+            "Dunnage Air Bags help fill empty spaces between cargo loads during transportation. They help stabilize goods and reduce movement that may cause damage in transit.",
+        },
+        {
+          question: "Can I place a bulk order?",
+          answer:
+            "Yes, you can contact our team for bulk orders. Share your required product, quantity and packaging specifications so our team can discuss your requirements.",
+        },
+        {
+          question: "Can I request customized packaging solutions?",
+          answer:
+            "You can share your product dimensions, packaging requirements and intended application with our team. We can review your requirements and discuss suitable packaging options.",
+        },
+        {
+          question: "How can I get product pricing?",
+          answer:
+            "For pricing, contact our team with the product name, required quantity and delivery location. Pricing can depend on product specifications and order volume.",
+        },
+        {
+          question: "How do I contact DPack for an enquiry?",
+          answer:
+            "You can visit our Contact Us page or submit an enquiry with your product requirements. Our team can then follow up to discuss the next steps.",
+        },
+      ].map((faq, index) => (
+        <details
+          key={faq.question}
+          className="group border-b border-[#081A33]/15"
+        >
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 sm:py-6 [&::-webkit-details-marker]:hidden">
+            <span className="flex min-w-0 items-start gap-4">
+              <span className="mt-1 shrink-0 text-xs font-black text-[#D98C00]">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+
+              <span className="text-sm font-bold leading-6 text-[#081A33] transition-colors group-open:text-[#B87800] sm:text-base">
+                {faq.question}
+              </span>
+            </span>
+
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center border border-[#081A33]/15 transition-all duration-300 group-open:rotate-45 group-open:border-[#F5A623] group-open:bg-[#F5A623]">
+              <Plus
+                size={18}
+                className="text-[#081A33]"
+              />
+            </span>
+          </summary>
+
+          <div className="pb-6 pl-8 pr-2 sm:pl-10 sm:pr-12">
+            <p className="max-w-3xl text-sm leading-7 text-[#65707B]">
+              {faq.answer}
+            </p>
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
     </main>
   );
 }
