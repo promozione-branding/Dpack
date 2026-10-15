@@ -62,11 +62,6 @@ const navLinks = [
     dropdown: true,
   },
   {
-    name: "Articles",
-    href: "/articles",
-    dropdown: true,
-  },
-  {
     name: "Contact Us",
     href: "/contact-us",
   },

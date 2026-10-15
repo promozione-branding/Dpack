@@ -332,7 +332,7 @@ export default function Footer() {
                   <div>
                     <h3
                       className="
-                        text-[12px]
+                        text-[14px]
                         font-black
                         uppercase
                         tracking-[0.04em]
@@ -425,7 +425,7 @@ export default function Footer() {
 
               <span
                 className="
-                  text-[12px]
+                  text-[14px]
                   font-black
                   uppercase
                   tracking-[0.14em]
@@ -519,7 +519,7 @@ export default function Footer() {
 
                   py-3
 
-                  text-[12px]
+                  text-[14px]
                   text-white
 
                   outline-none
@@ -544,7 +544,7 @@ export default function Footer() {
 
                 px-5
 
-                text-[12px]
+                text-[14px]
                 font-black
                 uppercase
                 tracking-[0.05em]
@@ -651,7 +651,7 @@ export default function Footer() {
                 mt-5
                 max-w-[310px]
 
-                text-[12px]
+                text-[14px]
                 leading-6
                 text-white/55
               "
@@ -681,7 +681,7 @@ export default function Footer() {
                 px-5
                 py-3
 
-                text-[12px]
+                text-[14px]
                 font-black
                 uppercase
                 tracking-[0.05em]
@@ -800,174 +800,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ===================================================
-          SHOPPING INFORMATION STRIP
-      =================================================== */}
 
-      <div
-        className="
-          relative
-          z-10
-
-          border-y
-          border-white/10
-
-          bg-[#09243A]
-        "
-      >
-        <div
-          className="
-            mx-auto
-            flex
-            max-w-[1500px]
-
-            flex-col
-            gap-5
-
-            px-5
-            py-5
-
-            sm:px-8
-
-            md:flex-row
-            md:items-center
-            md:justify-between
-
-            lg:px-12
-          "
-        >
-          {/* LEFT */}
-
-          <div
-            className="
-              flex
-              flex-wrap
-              items-center
-              gap-x-7
-              gap-y-3
-            "
-          >
-            <div
-              className="
-                flex
-                items-center
-                gap-2
-              "
-            >
-              <Truck
-                size={15}
-                className="
-                  text-[#F5A623]
-                "
-              />
-
-              <span
-                className="
-                  text-[12px]
-                  font-bold
-                  text-white/65
-                "
-              >
-                Reliable Delivery
-              </span>
-            </div>
-
-            <div
-              className="
-                flex
-                items-center
-                gap-2
-              "
-            >
-              <RotateCcw
-                size={15}
-                className="
-                  text-[#F5A623]
-                "
-              />
-
-              <span
-                className="
-                  text-[12px]
-                  font-bold
-                  text-white/65
-                "
-              >
-                Easy Support
-              </span>
-            </div>
-
-            <div
-              className="
-                flex
-                items-center
-                gap-2
-              "
-            >
-              <Box
-                size={15}
-                className="
-                  text-[#F5A623]
-                "
-              />
-
-              <span
-                className="
-                  text-[12px]
-                  font-bold
-                  text-white/65
-                "
-              >
-                Protective Packaging
-              </span>
-            </div>
-          </div>
-
-          {/* SHOP CTA */}
-
-          <Link
-            href="/products"
-
-            className="
-              group/all
-
-              flex
-              w-fit
-              items-center
-              gap-3
-
-              text-[12px]
-              font-black
-              uppercase
-              tracking-[0.06em]
-              text-white
-            "
-          >
-            Explore All Products
-
-            <span
-              className="
-                flex
-                h-8
-                w-8
-                items-center
-                justify-center
-
-                bg-[#F5A623]
-
-                text-[#123B5D]
-
-                transition-transform
-                duration-300
-
-                group-hover/all:rotate-45
-              "
-            >
-              <ArrowUpRight size={14} />
-            </span>
-          </Link>
-        </div>
-      </div>
 
       {/* ===================================================
           BOTTOM BAR
@@ -1004,7 +837,7 @@ export default function Footer() {
         >
           <p
             className="
-              text-[10px]
+              text-[14px]
               text-white/35
             "
           >
@@ -1016,7 +849,7 @@ export default function Footer() {
             className="
               hidden
 
-              text-[10px]
+              text-[14px]
               font-bold
               uppercase
               tracking-[0.14em]
@@ -1025,7 +858,8 @@ export default function Footer() {
               lg:block
             "
           >
-            Protect • Pack • Deliver
+           Website Designed By Inquiry Bazaar Pvt. Ltd.  <a href="https://www.inquirybazaar.com/" target="_blank" rel="noopener noreferrer" className="text-[#F5A623] hover:underline">
+              B2B Marketplace </a>
           </span>
         </div>
       </div>
@@ -1094,7 +928,7 @@ function FooterLinks({
 
                 py-0.5
 
-                text-[12px]
+                text-[14px]
                 text-white/55
 
                 transition-all
@@ -1156,7 +990,7 @@ function FooterTitle({ children }) {
     <div className="mb-5">
       <h3
         className="
-          text-[12px]
+          text-[14px]
           font-black
           uppercase
           tracking-[0.1em]
@@ -1227,7 +1061,7 @@ function ContactItem({
           className="
             block
 
-            text-[10px]
+            text-[14px]
             font-bold
             uppercase
             tracking-[0.1em]
@@ -1242,7 +1076,7 @@ function ContactItem({
             mt-1
             block
 
-            text-[12px]
+            text-[14px]
             font-medium
             text-white
           "
