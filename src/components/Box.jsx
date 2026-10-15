@@ -69,33 +69,31 @@ export default function Main() {
   return (
     <section
   className="
-    relative
-    w-full
-    overflow-hidden
-    bg-[#F4F6F8]
-    p-2
-    sm:p-3
-    min-h-[700px]
-    md:h-[78vh]
-    md:min-h-[590px]
-  "
+  relative
+  w-full
+  overflow-hidden
+  bg-[#F4F6F8]
+  p-2
+  sm:p-3
+  md:h-[78vh]
+  md:min-h-[590px]
+"
 >
       {/* =====================================================
           MAIN GRID
       ===================================================== */}
 
       <div
-        className="
-          grid
-          min-h-[744px]
-          w-full
-          grid-cols-1
-          gap-2
-          sm:gap-3
-          md:h-full
-          md:min-h-0
-          md:grid-cols-[0.85fr_1.7fr_0.85fr]
-        "
+       className="
+  grid
+  w-full
+  grid-cols-1
+  gap-2
+  sm:gap-3
+  md:h-full
+  md:min-h-0
+  md:grid-cols-[0.85fr_1.7fr_0.85fr]
+"
       >
         {/* ===================================================
             LEFT SIDE
@@ -135,18 +133,21 @@ export default function Main() {
         ==================================================== */}
 
         <div
-          className="
-            order-1
-            relative
-            min-h-[520px]
-            overflow-hidden
-            rounded-[18px]
-            bg-[#438FB8]
-            sm:min-h-[580px]
-            md:order-2
-            md:min-h-0
-            md:rounded-[22px]
-          "
+         className="
+  order-1
+  relative
+  aspect-square
+  w-full
+  overflow-hidden
+  rounded-[18px]
+  bg-[#438FB8]
+  sm:aspect-auto
+  sm:min-h-[580px]
+  md:order-2
+  md:h-full
+  md:min-h-0
+  md:rounded-[22px]
+"
         >
           {/* BASE GRADIENT */}
 
@@ -343,6 +344,8 @@ export default function Main() {
                 leading-[1.55]
                 text-white/70
                 sm:mt-4
+                hidden
+                md:block
                 sm:text-[16px]
               "
             >

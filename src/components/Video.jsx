@@ -198,7 +198,7 @@ export default function VideoSection() {
                 <div
                   className="
                     relative
-                    aspect-[0.78]
+                    aspect-[0.68]
                     w-full
                     overflow-hidden
                   "
