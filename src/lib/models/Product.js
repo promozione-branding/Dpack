@@ -121,6 +121,13 @@ const ProductSchema = new mongoose.Schema(
       default: null,
     },
 
+    shippingPrice: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 99,
+    },
+
     featured: {
       type: Boolean,
       default: false,

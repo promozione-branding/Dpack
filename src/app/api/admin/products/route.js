@@ -136,6 +136,10 @@ export async function POST(request) {
     const category = fields.category?.trim() || "";
     const description = fields.description?.trim() || "";
     const variants = parseVariants(fields.variants);
+    const shippingPrice =
+      fields.shippingPrice === undefined || fields.shippingPrice === ""
+        ? 99
+        : Number(fields.shippingPrice);
 
     // price: from default variant OR top-level price field
     let price = Number(fields.price);
@@ -150,7 +154,9 @@ export async function POST(request) {
       !category ||
       !description ||
       !image ||
-      !Number.isFinite(price)
+      !Number.isFinite(price) ||
+      !Number.isFinite(shippingPrice) ||
+      shippingPrice < 0
     ) {
       return err(
         "Product name, category, detailed description, image, and valid price are required."
@@ -198,6 +204,7 @@ export async function POST(request) {
         fields.compareAtPrice === "" || fields.compareAtPrice === undefined
           ? null
           : Number(fields.compareAtPrice),
+      shippingPrice,
       stock: Number(fields.stock || 0),
       lowStockThreshold: Number(fields.lowStockThreshold || 10),
       trackInventory: fields.trackInventory === "true",

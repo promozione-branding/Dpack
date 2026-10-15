@@ -130,9 +130,18 @@ export async function PUT(request, { params }) {
         }
       }
 
-      for (const field of ["price", "stock", "lowStockThreshold"]) {
+      for (const field of [
+        "price",
+        "stock",
+        "lowStockThreshold",
+        "shippingPrice",
+      ]) {
         if (fields[field] !== undefined && fields[field] !== "") {
-          product[field] = Number(fields[field]);
+          const value = Number(fields[field]);
+          if (!Number.isFinite(value) || value < 0) {
+            return err(`${field} must be a valid non-negative number`, 400);
+          }
+          product[field] = value;
         }
       }
 

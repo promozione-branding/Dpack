@@ -93,6 +93,7 @@ function initialValues(product) {
     // Used only when there are NO variants
     price: product?.price ?? "",
     compareAtPrice: product?.compareAtPrice ?? "",
+    shippingPrice: product?.shippingPrice ?? 99,
     stock: product?.stock ?? 0,
 
     lowStockThreshold: product?.lowStockThreshold ?? 10,
@@ -796,6 +797,23 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             </p>
           </div>
         )}
+
+        <label className={`${labelClass} block max-w-sm`}>
+          Custom shipping price (₹)
+          <input
+            className={inputClass}
+            type="number"
+            min="0"
+            step="0.01"
+            value={form.shippingPrice}
+            onChange={(event) =>
+              setField("shippingPrice", event.target.value)
+            }
+          />
+          <span className="mt-1 block text-xs font-normal text-gray-500">
+            New products default to ₹99. Adjust this if needed.
+          </span>
+        </label>
       </section>
 
       {/* =====================================================

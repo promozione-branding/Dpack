@@ -206,6 +206,9 @@ function ProductCard({
   const oldPrice = getProductOldPrice(product);
 
   const image = getProductImage(product);
+  const isBeltCategory = ["belt", "belts"].includes(
+    String(getProductCategory(product)).trim().toLowerCase()
+  );
 
   const rating = Number(
     product?.rating ??
@@ -561,46 +564,45 @@ function ProductCard({
     sm:gap-2
   "
 >
-  {/* PRICE */}
-
-  <div className="min-w-0">
-    <div className="flex flex-wrap items-baseline gap-1.5">
-      <span
-        className="
-          text-[15px]
-          font-black
-          leading-none
-          tracking-[-0.03em]
-          text-[#081A33]
-          sm:text-[18px]
-        "
-      >
-        {formatPrice(price)}
-      </span>
-
-      {oldPrice > price && (
+  {/* BELT PRODUCTS SHOW ENQUIRY DETAILS INSTEAD OF PRICING */}
+  {!isBeltCategory && (
+    <div className="min-w-0">
+      <div className="flex flex-wrap items-baseline gap-1.5">
         <span
           className="
-            text-[10px]
+            text-[15px]
+            font-black
             leading-none
-            text-[#929BA2]
-            line-through
-            sm:text-[12px]
+            tracking-[-0.03em]
+            text-[#081A33]
+            sm:text-[18px]
           "
         >
-          {formatPrice(oldPrice)}
+          {formatPrice(price)}
         </span>
-      )}
+        {oldPrice > price && (
+          <span
+            className="
+              text-[10px]
+              leading-none
+              text-[#929BA2]
+              line-through
+              sm:text-[12px]
+            "
+          >
+            {formatPrice(oldPrice)}
+          </span>
+        )}
+      </div>
     </div>
-  </div>
+  )}
 
-  {/* ADD TO CART */}
+  {/* BELT PRODUCTS LINK TO DETAILS; OTHER PRODUCTS CAN BE ADDED TO CART */}
 
-  <button
-    type="button"
-    onClick={() => addToCart(product)}
-    disabled={!inStock}
-    className="
+  {isBeltCategory ? (
+    <Link
+      href={`/products/${slug}`}
+      className="
       group/cart
       flex
       h-10
@@ -621,24 +623,13 @@ function ProductCard({
       hover:bg-[#081A33]
       hover:text-white
       hover:shadow-[0_8px_22px_rgba(8,26,51,0.18)]
-
-      disabled:cursor-not-allowed
-      disabled:bg-[#E6E8EA]
-      disabled:text-[#89949C]
-      disabled:shadow-none
-
       sm:w-auto
       sm:min-w-[118px]
       sm:px-3.5
     "
-  >
-    <ShoppingCart
-      size={14}
-      strokeWidth={2.3}
-    />
-
-    <span
-      className="
+    >
+      <span
+        className="
         text-[9px]
         font-black
         uppercase
@@ -646,21 +637,72 @@ function ProductCard({
         sm:text-[10px]
         sm:tracking-[0.04em]
       "
-    >
-      {inStock
-        ? "Add to Cart"
-        : "Unavailable"}
-    </span>
+      >
+        Read More
+      </span>
 
-    <ArrowRight
-      size={13}
-      className="
+      <ArrowRight
+        size={13}
+        className="
         transition-transform
         duration-300
         group-hover/cart:translate-x-1
       "
-    />
-  </button>
+      />
+    </Link>
+  ) : (
+    <button
+      type="button"
+      onClick={() => addToCart(product)}
+      disabled={!inStock}
+      className="
+        group/cart
+        flex
+        h-10
+        w-full
+        shrink-0
+        items-center
+        justify-center
+        gap-1.5
+        bg-[#F5A623]
+        px-2.5
+        text-[#081A33]
+        shadow-[0_6px_18px_rgba(245,166,35,0.22)]
+        transition-all
+        duration-300
+        hover:bg-[#081A33]
+        hover:text-white
+        hover:shadow-[0_8px_22px_rgba(8,26,51,0.18)]
+        disabled:cursor-not-allowed
+        disabled:bg-[#E6E8EA]
+        disabled:text-[#89949C]
+        disabled:shadow-none
+        sm:w-auto
+        sm:min-w-[118px]
+        sm:px-3.5
+      "
+    >
+      <ShoppingCart size={14} strokeWidth={2.3} />
+
+      <span
+        className="
+          text-[9px]
+          font-black
+          uppercase
+          tracking-[0.02em]
+          sm:text-[10px]
+          sm:tracking-[0.04em]
+        "
+      >
+        {inStock ? "Add to Cart" : "Unavailable"}
+      </span>
+
+      <ArrowRight
+        size={13}
+        className="transition-transform duration-300 group-hover/cart:translate-x-1"
+      />
+    </button>
+  )}
 </div>
       </div>
     </motion.article>

@@ -20,6 +20,7 @@ const products = [
     id: 1,
     name: "Air Column Bags",
     category: "Protective Packaging",
+    categorySlug: "air-column-bags",
     description: "Shockproof. Safe. Reliable.",
     image: "/Air Column Roll (2).webp",
     tag: "Impact Protection",
@@ -28,6 +29,7 @@ const products = [
     id: 2,
     name: "Dunnage Air Bags",
     category: "Cargo Safety",
+    categorySlug: "dunnage-bag",
     description: "Strong support for heavy loads.",
     image: "/Dannage.webp",
     tag: "Heavy Duty",
@@ -36,6 +38,7 @@ const products = [
     id: 3,
     name: "Air Column Rolls",
     category: "Flexible Protection",
+    categorySlug: "air-column-rolls",
     description: "Flexible protection for every shipment.",
     image: "/Air Column Roll (2).webp",
     tag: "Flexible Shield",
@@ -44,6 +47,7 @@ const products = [
     id: 4,
     name: "Shoe Gap Fillers",
     category: "Smart Protection",
+    categorySlug: "gap-filler",
     description: "Keep your products stable.",
     image: "/Gap filler (3).webp",
     tag: "Load Stability",
@@ -52,6 +56,7 @@ const products = [
     id: 5,
     name: "Packaging Air Bags",
     category: "Product Protection",
+    categorySlug: "packaging-air-bags",
     description: "Durable. Versatile. Secure.",
     image: "/packing bag.webp",
     tag: "Safe Packaging",
@@ -654,7 +659,6 @@ useEffect(() => {
 /* =========================================================
    SIDE PRODUCT CARD
 ========================================================= */
-
 function SideCard({
   product,
   color,
@@ -662,12 +666,13 @@ function SideCard({
   onClick,
 }) {
   return (
-    <button
-      type="button"
+    <Link
+      href={`/products-categories/${product.categorySlug}`}
       onClick={onClick}
       className="
         group
         relative
+        block
         min-h-0
         overflow-hidden
         rounded-[15px]
@@ -678,7 +683,7 @@ function SideCard({
       style={{
         backgroundColor: color,
       }}
-      aria-pressed={active}
+      aria-current={active ? "true" : undefined}
     >
       {/* Soft gradient */}
 
@@ -855,7 +860,6 @@ function SideCard({
             "
           >
             View Details
-
             <ArrowUpRight size={13} />
           </span>
         </div>
@@ -891,7 +895,7 @@ function SideCard({
           group-hover:bg-white/[0.035]
         "
       />
-    </button>
+    </Link>
   );
 }
 

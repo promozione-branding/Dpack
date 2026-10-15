@@ -476,10 +476,9 @@ function toSpecificationPairs(specifications = []) {
       ? `${specification[0] ?? ""}: ${specification[1] ?? ""}`
       : specification && typeof specification === "object"
         ? `${specification.label ||
-            specification.name ||
-            `Specification ${index + 1}`}: ${
-            specification.value ?? specification.description ?? ""
-          }`
+        specification.name ||
+        `Specification ${index + 1}`}: ${specification.value ?? specification.description ?? ""
+        }`
         : String(specification ?? "");
 
     const separator = text.indexOf(":");
@@ -565,9 +564,9 @@ function getDisplayComparePrice(
 
   return Number(
     product?.compareAtPrice ??
-      product?.oldPrice ??
-      product?.mrp ??
-      0
+    product?.oldPrice ??
+    product?.mrp ??
+    0
   );
 }
 
@@ -739,15 +738,15 @@ function renderPlainDescriptionBody(value) {
   return `
     <div class="description-points">
       ${items
-        .map(
-          (item) => `
+      .map(
+        (item) => `
             <div class="description-point">
               <span class="description-diamond"></span>
               <p>${escapeHtml(item)}</p>
             </div>
           `
-        )
-        .join("")}
+      )
+      .join("")}
     </div>
   `;
 }
@@ -927,8 +926,8 @@ function formatProductDescription(description) {
 
         return heading
           ? renderDescriptionHeading(
-              heading
-            )
+            heading
+          )
           : headingElement;
       }
     );
@@ -1104,7 +1103,7 @@ export default function ProductPage({
           ) {
             throw new Error(
               data.error ||
-                "Failed to load product."
+              "Failed to load product."
             );
           }
 
@@ -1131,7 +1130,7 @@ export default function ProductPage({
         if (!cancelled) {
           setLoadError(
             error.message ||
-              "Failed to load product."
+            "Failed to load product."
           );
         }
       } finally {
@@ -1156,94 +1155,97 @@ export default function ProductPage({
 
   const baseContent = currentProduct
     ? getContent(
-        currentProduct.slug || slug,
-        currentProduct
-      )
+      currentProduct.slug || slug,
+      currentProduct
+    )
     : null;
 
   const organizedFields =
     organizeProductFields(
       currentProduct
         ? {
-            ...currentProduct,
-            specs:
-              currentProduct.specs ||
-              currentProduct.specifications,
-          }
+          ...currentProduct,
+          specs:
+            currentProduct.specs ||
+            currentProduct.specifications,
+        }
         : {}
     );
 
   const content = databaseProduct
     ? {
+      ...baseContent,
+
+      category:
+        databaseProduct.category ||
+        baseContent.category,
+
+      shortDescription:
+        databaseProduct.shortDescription ||
+        "",
+
+      description:
+        databaseProduct.description ||
+        baseContent.description,
+
+      keyFeatures:
+        organizedFields.keyFeatures,
+
+      overviewParagraphs:
+        organizedFields.overview,
+
+      applications:
+        organizedFields.applications,
+
+      specs: toSpecificationPairs(
+        organizedFields.specs
+      ),
+
+      sizes: organizedFields.sizes,
+    }
+    : currentProduct
+      ? {
         ...baseContent,
 
-        category:
-          databaseProduct.category ||
-          baseContent.category,
-
         shortDescription:
-          databaseProduct.shortDescription ||
+          currentProduct.shortDescription ||
           "",
 
         description:
-          databaseProduct.description ||
+          currentProduct.description ||
           baseContent.description,
 
         keyFeatures:
-          organizedFields.keyFeatures,
+          organizedFields.keyFeatures
+            .length
+            ? organizedFields.keyFeatures
+            : currentProduct.features
+              ?.length
+              ? currentProduct.features
+              : baseContent.keyFeatures,
 
         overviewParagraphs:
-          organizedFields.overview,
+          organizedFields.overview
+            .length
+            ? organizedFields.overview
+            : baseContent.overviewParagraphs,
 
         applications:
           organizedFields.applications,
 
         specs: toSpecificationPairs(
-          organizedFields.specs
+          organizedFields.specs.length
+            ? organizedFields.specs
+            : baseContent.specs
         ),
 
-        sizes: organizedFields.sizes,
+        sizes:
+          organizedFields.sizes,
       }
-    : currentProduct
-      ? {
-          ...baseContent,
-
-          shortDescription:
-            currentProduct.shortDescription ||
-            "",
-
-          description:
-            currentProduct.description ||
-            baseContent.description,
-
-          keyFeatures:
-            organizedFields.keyFeatures
-              .length
-              ? organizedFields.keyFeatures
-              : currentProduct.features
-                  ?.length
-                ? currentProduct.features
-                : baseContent.keyFeatures,
-
-          overviewParagraphs:
-            organizedFields.overview
-              .length
-              ? organizedFields.overview
-              : baseContent.overviewParagraphs,
-
-          applications:
-            organizedFields.applications,
-
-          specs: toSpecificationPairs(
-            organizedFields.specs.length
-              ? organizedFields.specs
-              : baseContent.specs
-          ),
-
-          sizes:
-            organizedFields.sizes,
-        }
       : null;
+
+  const isBeltCategory =
+    String(content?.category || "").trim().toLowerCase() === "belts";
 
   const relatedProducts = databaseRelated || [];
 
@@ -1252,10 +1254,10 @@ export default function ProductPage({
       ?.length > 0
       ? currentProduct.images
       : [
-          currentProduct?.image,
-          ...(currentProduct?.extraImages ||
-            []),
-        ]
+        currentProduct?.image,
+        ...(currentProduct?.extraImages ||
+          []),
+      ]
   ).filter(Boolean);
 
   /* =======================================================
@@ -1285,14 +1287,14 @@ export default function ProductPage({
   const selectedVariant =
     selectedVariantIndex !== null
       ? variants[
-          selectedVariantIndex
-        ]
+      selectedVariantIndex
+      ]
       : variants.find(
-          (variant) =>
-            variant.isDefault
-        ) ||
-        variants[0] ||
-        null;
+        (variant) =>
+          variant.isDefault
+      ) ||
+      variants[0] ||
+      null;
 
   const price =
     getDisplayPrice(
@@ -1320,9 +1322,9 @@ export default function ProductPage({
 
   const saved = currentProduct
     ? isWishlisted(
-        currentProduct._id ||
-          currentProduct.id
-      )
+      currentProduct._id ||
+      currentProduct.id
+    )
     : false;
 
   /* =======================================================
@@ -1368,10 +1370,10 @@ export default function ProductPage({
   const discount =
     oldPrice > price
       ? Math.round(
-          ((oldPrice - price) /
-            oldPrice) *
-            100
-        )
+        ((oldPrice - price) /
+          oldPrice) *
+        100
+      )
       : 0;
 
   /* =======================================================
@@ -1382,9 +1384,9 @@ export default function ProductPage({
     setQuantity((current) =>
       inStock
         ? Math.min(
-            current + 1,
-            stock
-          )
+          current + 1,
+          stock
+        )
         : current
     );
   };
@@ -1435,7 +1437,7 @@ export default function ProductPage({
   };
 
   return (
-   <main className="min-h-screen overflow-x-clip bg-white text-[#1d2939]">
+    <main className="min-h-screen overflow-x-clip bg-white text-[#1d2939]">
 
       {/* =====================================================
           BREADCRUMB
@@ -1480,13 +1482,13 @@ export default function ProductPage({
       ===================================================== */}
 
       <section className="mx-auto max-w-[1400px] px-4 py-7 sm:px-5 sm:py-10">
-<div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
 
           {/* =================================================
               LEFT: GALLERY
           ================================================= */}
 
-<div className="lg:sticky lg:top-[100px] lg:self-start">
+          <div className="lg:sticky lg:top-[100px] lg:self-start">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[90px_1fr] lg:gap-5">
 
               {/* =================================================
@@ -1512,20 +1514,18 @@ export default function ProductPage({
                           }
                         );
                       }}
-                      className={`flex h-[75px] w-[75px] shrink-0 items-center justify-center border bg-white p-2 transition sm:h-[85px] sm:w-[85px] lg:h-[90px] lg:w-[90px] ${
-                        selectedMedia.type ===
-                          "image" &&
+                      className={`flex h-[75px] w-[75px] shrink-0 items-center justify-center border bg-white p-2 transition sm:h-[85px] sm:w-[85px] lg:h-[90px] lg:w-[90px] ${selectedMedia.type ===
+                        "image" &&
                         selectedMedia.index ===
-                          index
-                          ? "border-2 border-[#F5A623]"
-                          : "border-gray-200 hover:border-[#081A33]"
-                      }`}
+                        index
+                        ? "border-2 border-[#F5A623]"
+                        : "border-gray-200 hover:border-[#081A33]"
+                        }`}
                     >
                       <img
                         src={image}
-                        alt={`${currentProduct.name} view ${
-                          index + 1
-                        }`}
+                        alt={`${currentProduct.name} view ${index + 1
+                          }`}
                         className="h-full w-full object-contain"
                       />
                     </button>
@@ -1547,12 +1547,11 @@ export default function ProductPage({
                         }
                       );
                     }}
-                    className={`group relative flex h-[75px] w-[75px] shrink-0 items-center justify-center overflow-hidden border bg-[#081A33] transition sm:h-[85px] sm:w-[85px] lg:h-[90px] lg:w-[90px] ${
-                      selectedMedia.type ===
+                    className={`group relative flex h-[75px] w-[75px] shrink-0 items-center justify-center overflow-hidden border bg-[#081A33] transition sm:h-[85px] sm:w-[85px] lg:h-[90px] lg:w-[90px] ${selectedMedia.type ===
                       "youtube"
-                        ? "border-2 border-[#F5A623]"
-                        : "border-gray-200 hover:border-[#081A33]"
-                    }`}
+                      ? "border-2 border-[#F5A623]"
+                      : "border-gray-200 hover:border-[#081A33]"
+                      }`}
                     aria-label="Watch product video"
                   >
 
@@ -1584,11 +1583,11 @@ export default function ProductPage({
 
               <div className="relative order-1 flex h-[380px] w-full items-center justify-center overflow-hidden border border-gray-200 bg-[#F7F9FB] sm:h-[450px] lg:order-2 lg:h-auto lg:min-h-[570px]">
 
-               
+
 
                 {selectedMedia.type ===
                   "youtube" &&
-                youtubeEmbedUrl ? (
+                  youtubeEmbedUrl ? (
                   <div className="relative h-full min-h-[380px] w-full bg-black sm:min-h-[450px] lg:min-h-[570px]">
 
                     <iframe
@@ -1606,7 +1605,7 @@ export default function ProductPage({
                   <img
                     src={
                       images[
-                        selectedImage
+                      selectedImage
                       ]
                     }
                     alt={
@@ -1618,19 +1617,19 @@ export default function ProductPage({
 
                 {selectedMedia.type ===
                   "image" && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setZoom(true)
-                    }
-                    className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center border border-gray-200 bg-white text-[#081A33] shadow-sm transition hover:bg-[#F5A623] sm:bottom-5 sm:right-5 sm:h-11 sm:w-11"
-                    aria-label="Zoom product image"
-                  >
-                    <ZoomIn
-                      size={18}
-                    />
-                  </button>
-                )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setZoom(true)
+                      }
+                      className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center border border-gray-200 bg-white text-[#081A33] shadow-sm transition hover:bg-[#F5A623] sm:bottom-5 sm:right-5 sm:h-11 sm:w-11"
+                      aria-label="Zoom product image"
+                    >
+                      <ZoomIn
+                        size={18}
+                      />
+                    </button>
+                  )}
 
               </div>
 
@@ -1718,11 +1717,10 @@ export default function ProductPage({
               </span>
 
               <span
-                className={`px-3 py-1 text-[11px] font-bold sm:text-[15px] ${
-                  inStock
-                    ? "bg-green-50 text-green-700"
-                    : "bg-red-50 text-red-700"
-                }`}
+                className={`px-3 py-1 text-[11px] font-bold sm:text-[15px] ${inStock
+                  ? "bg-green-50 text-green-700"
+                  : "bg-red-50 text-red-700"
+                  }`}
               >
                 {inStock
                   ? "In Stock"
@@ -1750,12 +1748,12 @@ export default function ProductPage({
                       size={16}
                       fill={
                         item <=
-                        Math.round(
-                          Number(
-                            currentProduct.rating ||
+                          Math.round(
+                            Number(
+                              currentProduct.rating ||
                               0
+                            )
                           )
-                        )
                           ? "#F5A623"
                           : "none"
                       }
@@ -1846,109 +1844,109 @@ export default function ProductPage({
             {/* =================================================
                 PRICE
             ================================================= */}
+            {!isBeltCategory &&
+              <div className="mt-7 bg-[#F7F8FA] p-4 sm:p-6">
 
-            <div className="mt-7 bg-[#F7F8FA] p-4 sm:p-6">
+                <div className="flex flex-wrap items-end gap-3 sm:gap-4">
 
-              <div className="flex flex-wrap items-end gap-3 sm:gap-4">
-
-                <span className="text-3xl font-black text-[#081A33] sm:text-4xl">
-                  ₹
-                  {price.toLocaleString(
-                    "en-IN"
-                  )}
-                </span>
-
-                {oldPrice > price && (
-                  <span className="pb-1 text-base text-gray-400 line-through sm:text-lg">
+                  <span className="text-3xl font-black text-[#081A33] sm:text-4xl">
                     ₹
-                    {oldPrice.toLocaleString(
+                    {price.toLocaleString(
                       "en-IN"
                     )}
                   </span>
-                )}
 
-                {discount > 0 && (
-                  <span className="mb-1 bg-[#F5A623] px-2 py-1 text-xs font-extrabold text-[#081A33] sm:px-3 sm:text-[15px]">
-                    SAVE {discount}%
-                  </span>
-                )}
+                  {oldPrice > price && (
+                    <span className="pb-1 text-base text-gray-400 line-through sm:text-lg">
+                      ₹
+                      {oldPrice.toLocaleString(
+                        "en-IN"
+                      )}
+                    </span>
+                  )}
 
-              </div>
+                  {discount > 0 && (
+                    <span className="mb-1 bg-[#F5A623] px-2 py-1 text-xs font-extrabold text-[#081A33] sm:px-3 sm:text-[15px]">
+                      SAVE {discount}%
+                    </span>
+                  )}
 
-              <p className="mt-2 text-xs text-gray-500 sm:text-[15px]">
-                Inclusive of applicable taxes
-              </p>
+                </div>
 
-              {/* =================================================
+                <p className="mt-2 text-xs text-gray-500 sm:text-[15px]">
+                  Inclusive of applicable taxes
+                </p>
+
+                {/* =================================================
                   VARIANTS
               ================================================= */}
 
-              {(currentProduct.variants
-                ?.length > 0 ||
-                currentProduct.sizes
-                  ?.length > 0) && (
-                <div
-                  className="mt-5"
-                  role="group"
-                  aria-label="Select product size"
-                >
+                {(currentProduct.variants
+                  ?.length > 0 ||
+                  currentProduct.sizes
+                    ?.length > 0) && (
+                    <div
+                      className="mt-5"
+                      role="group"
+                      aria-label="Select product size"
+                    >
 
-                  <p className="mb-2 text-sm font-semibold text-[#081A33]">
-                    Size:{" "}
-                    {selectedVariant?.size ||
-                      "Default"}
-                  </p>
+                      <p className="mb-2 text-sm font-semibold text-[#081A33]">
+                        Size:{" "}
+                        {selectedVariant?.size ||
+                          "Default"}
+                      </p>
 
-                  <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2">
 
-                    {variants.map(
-                      (
-                        variant,
-                        index
-                      ) => (
-                        <button
-                          key={
-                            variant._id ||
-                            `${variant.size}-${index}`
-                          }
-                          type="button"
-                          aria-pressed={
-                            selectedVariant ===
-                            variant
-                          }
-                          onClick={() => {
-                            setSelectedVariantIndex(
-                              index
-                            );
+                        {variants.map(
+                          (
+                            variant,
+                            index
+                          ) => (
+                            <button
+                              key={
+                                variant._id ||
+                                `${variant.size}-${index}`
+                              }
+                              type="button"
+                              aria-pressed={
+                                selectedVariant ===
+                                variant
+                              }
+                              onClick={() => {
+                                setSelectedVariantIndex(
+                                  index
+                                );
 
-                            setQuantity(
-                              1
-                            );
-                          }}
-                          className={`rounded border px-3 py-2 text-xs font-medium text-[#081A33] transition sm:text-sm ${
-                            selectedVariant ===
-                            variant
-                              ? "border-[#F5A623] bg-[#F5A623]"
-                              : "border-gray-300 bg-white hover:border-[#F5A623]"
-                          }`}
-                        >
-                          {variant.size}
+                                setQuantity(
+                                  1
+                                );
+                              }}
+                              className={`rounded border px-3 py-2 text-xs font-medium text-[#081A33] transition sm:text-sm ${selectedVariant ===
+                                variant
+                                ? "border-[#F5A623] bg-[#F5A623]"
+                                : "border-gray-300 bg-white hover:border-[#F5A623]"
+                                }`}
+                            >
+                              {variant.size}
 
-                          {!isVariantInStock(
-                            currentProduct,
-                            variant
-                          ) &&
-                            " (Out of stock)"}
-                        </button>
-                      )
-                    )}
+                              {!isVariantInStock(
+                                currentProduct,
+                                variant
+                              ) &&
+                                " (Out of stock)"}
+                            </button>
+                          )
+                        )}
 
-                  </div>
+                      </div>
 
-                </div>
-              )}
+                    </div>
+                  )}
 
-            </div>
+              </div>
+            }
 
             {/* =================================================
                 KEY FEATURES
@@ -1991,6 +1989,17 @@ export default function ProductPage({
                 QUANTITY + CART
             ================================================= */}
 
+            {isBeltCategory ? (
+              <button
+                type="button"
+                onClick={() => setisBulkEnquiryOpen(true)}
+                className="flex h-12 w-full items-center justify-center gap-2 border-2 border-[#F5A623] bg-[#F5A623] px-5 text-sm font-extrabold uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:bg-[#081A33] hover:text-white"
+              >
+                <Send size={17} />
+                <span>Bulk Enquiry</span>
+              </button>
+            ) : (
+              <>
             <div className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-end gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-5">
 
               {/* QUANTITY */}
@@ -2063,11 +2072,10 @@ export default function ProductPage({
                     currentProduct
                   )
                 }
-                className={`mt-0 flex h-12 w-12 shrink-0 items-center justify-center border transition sm:mt-5 ${
-                  saved
-                    ? "border-[#F5A623] bg-[#F5A623]"
-                    : "border-gray-300 bg-white hover:border-[#081A33]"
-                }`}
+                className={`mt-0 flex h-12 w-12 shrink-0 items-center justify-center border transition sm:mt-5 ${saved
+                  ? "border-[#F5A623] bg-[#F5A623]"
+                  : "border-gray-300 bg-white hover:border-[#081A33]"
+                  }`}
                 aria-label="Add to wishlist"
               >
                 <Heart
@@ -2096,27 +2104,29 @@ export default function ProductPage({
 
             </div>
 
-    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-  {/* Buy It Now */}
-  <button
-    type="button"
-    onClick={buyNow}
-    disabled={!inStock}
-    className="flex h-12 w-full items-center justify-center border-2 border-[#081A33] bg-[#081A33] px-5 text-sm font-extrabold uppercase tracking-wide text-white transition-all duration-300 hover:bg-white hover:text-[#081A33] disabled:cursor-not-allowed disabled:opacity-50"
-  >
-    Buy It Now
-  </button>
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {/* Buy It Now */}
+              <button
+                type="button"
+                onClick={buyNow}
+                disabled={!inStock}
+                className="flex h-12 w-full items-center justify-center border-2 border-[#081A33] bg-[#081A33] px-5 text-sm font-extrabold uppercase tracking-wide text-white transition-all duration-300 hover:bg-white hover:text-[#081A33] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Buy It Now
+              </button>
 
-  {/* Bulk Enquiry */}
-  <button
-    type="button"
-    onClick={() => setisBulkEnquiryOpen(true)}
-    className="flex h-12 w-full items-center justify-center gap-2 border-2 border-[#F5A623] bg-[#F5A623] px-5 text-sm font-extrabold uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:bg-[#081A33] hover:text-white"
-  >
-    <Send size={17} />
-    <span>Bulk Enquiry</span>
-  </button>
-</div>
+              {/* Bulk Enquiry */}
+              <button
+                type="button"
+                onClick={() => setisBulkEnquiryOpen(true)}
+                className="flex h-12 w-full items-center justify-center gap-2 border-2 border-[#F5A623] bg-[#F5A623] px-5 text-sm font-extrabold uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:bg-[#081A33] hover:text-white"
+              >
+                <Send size={17} />
+                <span>Bulk Enquiry</span>
+              </button>
+            </div>
+              </>
+            )}
 
             {/* =================================================
                 DELIVERY INFO
@@ -2468,82 +2478,81 @@ export default function ProductPage({
 
           {content.specs.length >
             0 && (
-            <div className="mt-14 sm:mt-20">
+              <div className="mt-14 sm:mt-20">
 
-              <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
 
-                <div>
+                  <div>
 
-                  <span className="text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
-                    02 / Specifications
+                    <span className="text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
+                      02 / Specifications
+                    </span>
+
+                    <h3 className="mt-3 text-2xl font-black text-[#081A33] sm:text-3xl md:text-4xl">
+                      Product Specifications
+                    </h3>
+
+                  </div>
+
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    Technical Information
                   </span>
-
-                  <h3 className="mt-3 text-2xl font-black text-[#081A33] sm:text-3xl md:text-4xl">
-                    Product Specifications
-                  </h3>
 
                 </div>
 
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                  Technical Information
-                </span>
+                <div className="overflow-hidden border border-gray-200">
 
-              </div>
-
-              <div className="overflow-hidden border border-gray-200">
-
-                {content.specs.map(
-                  (
-                    [label, value],
-                    index
-                  ) => (
-                    <div
-                      key={`${label}-${index}`}
-                      className={`
+                  {content.specs.map(
+                    (
+                      [label, value],
+                      index
+                    ) => (
+                      <div
+                        key={`${label}-${index}`}
+                        className={`
                         group grid grid-cols-1 gap-3 p-4 transition sm:p-5
                         md:grid-cols-[280px_1fr]
                         md:items-center
-                        ${
-                          index %
+                        ${index %
                             2 ===
-                          0
+                            0
                             ? "bg-[#F7F8FA]"
                             : "bg-white"
-                        }
+                          }
                         hover:bg-[#081A33]
                       `}
-                    >
+                      >
 
-                      <div className="flex items-start gap-4">
+                        <div className="flex items-start gap-4">
 
-                        <span className="text-xs font-black text-[#F5A623]">
-                          {String(
-                            index +
+                          <span className="text-xs font-black text-[#F5A623]">
+                            {String(
+                              index +
                               1
-                          ).padStart(
-                            2,
-                            "0"
-                          )}
-                        </span>
+                            ).padStart(
+                              2,
+                              "0"
+                            )}
+                          </span>
 
-                        <span className="text-sm font-black text-[#081A33] transition group-hover:text-white">
-                          {label}
-                        </span>
+                          <span className="text-sm font-black text-[#081A33] transition group-hover:text-white">
+                            {label}
+                          </span>
+
+                        </div>
+
+                        <div className="text-sm leading-6 text-gray-500 transition group-hover:text-white/70">
+                          {value}
+                        </div>
 
                       </div>
+                    )
+                  )}
 
-                      <div className="text-sm leading-6 text-gray-500 transition group-hover:text-white/70">
-                        {value}
-                      </div>
-
-                    </div>
-                  )
-                )}
+                </div>
 
               </div>
-
-            </div>
-          )}
+            )}
 
           {/* =================================================
               APPLICATIONS
@@ -2554,44 +2563,44 @@ export default function ProductPage({
               .applications
               .length > 0 ||
             content.sizes.length >
-              0
+            0
           ) && (
-            <div className="relative mt-14 overflow-hidden bg-[#081A33] sm:mt-20">
+              <div className="relative mt-14 overflow-hidden bg-[#081A33] sm:mt-20">
 
-              <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full border-[60px] border-white/[0.03]" />
+                <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full border-[60px] border-white/[0.03]" />
 
-              <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full border-[70px] border-[#F5A623]/[0.04]" />
+                <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full border-[70px] border-[#F5A623]/[0.04]" />
 
-              <div className="relative p-5 sm:p-8 md:p-14 lg:p-16">
+                <div className="relative p-5 sm:p-8 md:p-14 lg:p-16">
 
-                <div className="max-w-2xl">
+                  <div className="max-w-2xl">
 
-                  <span className="text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
-                    03 / Applications
-                  </span>
-
-                  <h3 className="mt-4 text-2xl font-black leading-tight text-white sm:text-3xl md:text-5xl">
-                    Where this product
-
-                    <span className="block text-white/50">
-                      makes a difference.
+                    <span className="text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
+                      03 / Applications
                     </span>
-                  </h3>
 
-                </div>
+                    <h3 className="mt-4 text-2xl font-black leading-tight text-white sm:text-3xl md:text-5xl">
+                      Where this product
 
-                {content.applications.length >
-                  0 && (
-                  <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 sm:mt-12">
+                      <span className="block text-white/50">
+                        makes a difference.
+                      </span>
+                    </h3>
 
-                    {content.applications.map(
-                      (
-                        item,
-                        index
-                      ) => (
-                        <div
-                          key={`${item}-${index}`}
-                          className="
+                  </div>
+
+                  {content.applications.length >
+                    0 && (
+                      <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 sm:mt-12">
+
+                        {content.applications.map(
+                          (
+                            item,
+                            index
+                          ) => (
+                            <div
+                              key={`${item}-${index}`}
+                              className="
                             group
                             relative
                             overflow-hidden
@@ -2606,57 +2615,57 @@ export default function ProductPage({
                             hover:bg-white/[0.08]
                             sm:p-6
                           "
-                        >
+                            >
 
-                          <span className="text-4xl font-black text-[#F5A623]/30 transition group-hover:text-[#F5A623]">
-                            {String(
-                              index +
-                                1
-                            ).padStart(
-                              2,
-                              "0"
-                            )}
-                          </span>
+                              <span className="text-4xl font-black text-[#F5A623]/30 transition group-hover:text-[#F5A623]">
+                                {String(
+                                  index +
+                                  1
+                                ).padStart(
+                                  2,
+                                  "0"
+                                )}
+                              </span>
 
-                          <div className="mt-5 flex items-start gap-3">
+                              <div className="mt-5 flex items-start gap-3">
 
-                            <span className="mt-2 h-2 w-2 shrink-0 rotate-45 bg-[#F5A623]" />
+                                <span className="mt-2 h-2 w-2 shrink-0 rotate-45 bg-[#F5A623]" />
 
-                            <p className="text-sm leading-7 text-white/70">
-                              {item}
-                            </p>
+                                <p className="text-sm leading-7 text-white/70">
+                                  {item}
+                                </p>
 
-                          </div>
+                              </div>
 
-                        </div>
-                      )
+                            </div>
+                          )
+                        )}
+
+                      </div>
                     )}
 
-                  </div>
-                )}
-
-                {/* =================================================
+                  {/* =================================================
                     SIZES
                 ================================================= */}
 
-                {content.sizes.length >
-                  0 && (
-                  <div className="mt-10 border-t border-white/10 pt-8 sm:mt-12 sm:pt-10">
+                  {content.sizes.length >
+                    0 && (
+                      <div className="mt-10 border-t border-white/10 pt-8 sm:mt-12 sm:pt-10">
 
-                    <span className="text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
-                      Available Sizes
-                    </span>
+                        <span className="text-xs font-black uppercase tracking-[3px] text-[#F5A623]">
+                          Available Sizes
+                        </span>
 
-                    <div className="mt-5 flex flex-wrap gap-3">
+                        <div className="mt-5 flex flex-wrap gap-3">
 
-                      {content.sizes.map(
-                        (
-                          size,
-                          index
-                        ) => (
-                          <span
-                            key={`${size}-${index}`}
-                            className="
+                          {content.sizes.map(
+                            (
+                              size,
+                              index
+                            ) => (
+                              <span
+                                key={`${size}-${index}`}
+                                className="
                               border
                               border-white/15
                               bg-white/[0.03]
@@ -2671,21 +2680,21 @@ export default function ProductPage({
                               hover:text-[#081A33]
                               sm:px-5
                             "
-                          >
-                            {size}
-                          </span>
-                        )
-                      )}
+                              >
+                                {size}
+                              </span>
+                            )
+                          )}
 
-                    </div>
+                        </div>
 
-                  </div>
-                )}
+                      </div>
+                    )}
+
+                </div>
 
               </div>
-
-            </div>
-          )}
+            )}
 
           {/* =================================================
               FINAL CTA
@@ -2713,11 +2722,11 @@ export default function ProductPage({
 
               </div>
 
-           
-<button
-  type="button"
-  onClick={() => setisBulkEnquiryOpen(true)}
-  className="
+
+              <button
+                type="button"
+                onClick={() => setisBulkEnquiryOpen(true)}
+                className="
     shrink-0
     border-2
     border-[#081A33]
@@ -2734,9 +2743,9 @@ export default function ProductPage({
     hover:text-[#081A33]
     sm:px-7
   "
->
-  Enquire Now
-</button>
+              >
+                Enquire Now
+              </button>
 
 
             </div>
@@ -2864,7 +2873,7 @@ export default function ProductPage({
                         ₹
                         {Number(
                           item.price ||
-                            0
+                          0
                         ).toLocaleString(
                           "en-IN"
                         )}
@@ -2938,7 +2947,7 @@ export default function ProductPage({
           <img
             src={
               images[
-                selectedImage
+              selectedImage
               ]
             }
             alt={
@@ -2955,135 +2964,135 @@ export default function ProductPage({
 
 
 
-{/* BULK ENQUIRY POPUP */}
+      {/* BULK ENQUIRY POPUP */}
 
-{isBulkEnquiryOpen && (
-  <div
-    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4"
-    onClick={() => setisBulkEnquiryOpen(false)}
-  >
-    <div
-      className="relative w-full max-w-xl rounded-2xl bg-white p-5 shadow-2xl sm:p-7"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        type="button"
-        onClick={() => setisBulkEnquiryOpen(false)}
-        className="absolute right-4 top-4 text-2xl text-gray-500 hover:text-black"
-        aria-label="Close enquiry form"
-      >
-        &times;
-      </button>
-
-      <h2 className="pr-8 text-2xl font-extrabold text-[#081A33]">
-        Bulk Enquiry
-      </h2>
-
-      <p className="mt-2 text-sm text-gray-600">
-        Minimum Order Value: {" "}
-        <span className="font-bold text-[#D95026]">
-          ₹20,000 or above:
-        </span>
-      </p>
-
-      <form
-        className="mt-6 space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-
-          const formData = new FormData(e.currentTarget);
-
-          const customerName = formData.get("customerName");
-          const companyName = formData.get("companyName");
-          const mobile = formData.get("mobile");
-          const place = formData.get("place");
-          const productRequirement = formData.get("productRequirement");
-          const messageText = formData.get("message");
-
-          const selectedProduct =
-            typeof name !== "undefined" && name
-              ? name
-              : "Selected Product";
-
-          const message = [
-            "Bulk Enquiry",
-            `Product: ${selectedProduct}`,
-            `Requirement: ${productRequirement}`,
-            `Name: ${customerName}`,
-            `Company Name: ${companyName}`,
-            `Mobile: ${mobile}`,
-            `Place: ${place}`,
-            `Message: ${messageText}`,
-          ].join("\n");
-
-          // Open WhatsApp
-          window.open(
-            "https://wa.link/dsy7ee",
-            "_blank",
-            "noopener,noreferrer"
-          );
-        }}
-      >
-        {/* NAME */}
-        <input
-          type="text"
-          name="customerName"
-          placeholder="Your Name"
-          required
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
-        />
-
-        {/* COMPANY NAME */}
-        <input
-          type="text"
-          name="companyName"
-          placeholder="Company Name"
-          required
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
-        />
-
-        {/* MOBILE */}
-        <input
-          type="tel"
-          name="mobile"
-          maxLength="10" 
-          placeholder="Mobile Number"
-          required
-          pattern="[0-9+\-\s()]{10,}"
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
-        />
-
-        {/* PLACE */}
-        <input
-          type="text"
-          name="place"
-          placeholder="City / Delivery Location"
-          required
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
-        />
-
-
-        {/* MESSAGE */}
-        <textarea
-          name="message"
-          rows="4"
-          placeholder="Message / Requirement Details"
-          required
-          className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
-        />
-
-        {/* SUBMIT */}
-        <button
-          type="submit"
-          className="w-full rounded-xl bg-[#081A33] px-5 py-3.5 font-bold text-white transition hover:bg-[#D95026]"
+      {isBulkEnquiryOpen && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setisBulkEnquiryOpen(false)}
         >
-          Submit Bulk Enquiry
-        </button>
-      </form>
-    </div>
-  </div>
-)}
-)
+          <div
+            className="relative w-full max-w-xl rounded-2xl bg-white p-5 shadow-2xl sm:p-7"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setisBulkEnquiryOpen(false)}
+              className="absolute right-4 top-4 text-2xl text-gray-500 hover:text-black"
+              aria-label="Close enquiry form"
+            >
+              &times;
+            </button>
+
+            <h2 className="pr-8 text-2xl font-extrabold text-[#081A33]">
+              Bulk Enquiry
+            </h2>
+
+            <p className="mt-2 text-sm text-gray-600">
+              Minimum Order Value: {" "}
+              <span className="font-bold text-[#D95026]">
+                ₹20,000 or above:
+              </span>
+            </p>
+
+            <form
+              className="mt-6 space-y-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+
+                const formData = new FormData(e.currentTarget);
+
+                const customerName = formData.get("customerName");
+                const companyName = formData.get("companyName");
+                const mobile = formData.get("mobile");
+                const place = formData.get("place");
+                const productRequirement = formData.get("productRequirement");
+                const messageText = formData.get("message");
+
+                const selectedProduct =
+                  typeof name !== "undefined" && name
+                    ? name
+                    : "Selected Product";
+
+                const message = [
+                  "Bulk Enquiry",
+                  `Product: ${selectedProduct}`,
+                  `Requirement: ${productRequirement}`,
+                  `Name: ${customerName}`,
+                  `Company Name: ${companyName}`,
+                  `Mobile: ${mobile}`,
+                  `Place: ${place}`,
+                  `Message: ${messageText}`,
+                ].join("\n");
+
+                // Open WhatsApp
+                window.open(
+                  "https://wa.link/dsy7ee",
+                  "_blank",
+                  "noopener,noreferrer"
+                );
+              }}
+            >
+              {/* NAME */}
+              <input
+                type="text"
+                name="customerName"
+                placeholder="Your Name"
+                required
+                className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+              />
+
+              {/* COMPANY NAME */}
+              <input
+                type="text"
+                name="companyName"
+                placeholder="Company Name"
+                required
+                className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+              />
+
+              {/* MOBILE */}
+              <input
+                type="tel"
+                name="mobile"
+                maxLength="10"
+                placeholder="Mobile Number"
+                required
+                pattern="[0-9+\-\s()]{10,}"
+                className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+              />
+
+              {/* PLACE */}
+              <input
+                type="text"
+                name="place"
+                placeholder="City / Delivery Location"
+                required
+                className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+              />
+
+
+              {/* MESSAGE */}
+              <textarea
+                name="message"
+                rows="4"
+                placeholder="Message / Requirement Details"
+                required
+                className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+              />
+
+              {/* SUBMIT */}
+              <button
+                type="submit"
+                className="w-full rounded-xl bg-[#081A33] px-5 py-3.5 font-bold text-white transition hover:bg-[#D95026]"
+              >
+                Submit Bulk Enquiry
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      )
 
 
     </main>
