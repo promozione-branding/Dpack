@@ -412,15 +412,25 @@ export default function Categories() {
                         </span>
                       </div>
 
-                      {/* CATEGORY TITLE */}
+{/* CATEGORY TITLE + BUTTON */}
 
-                      <div className="relative border-t border-black/[0.06] px-3 py-4 sm:px-4">
-                        <h3 className="font-outfit text-[14px] font-semibold leading-[1.3] text-[#15191C] transition-colors duration-300 group-hover:text-[#D78B00] sm:text-[16px]">
-                          {category.name}
-                        </h3>
+<div className="relative flex flex-col border-t border-black/[0.06] px-3 py-4 sm:px-4">
+  <h3 className="min-h-[38px] font-outfit text-[14px] font-semibold leading-[1.4] text-[#15191C] transition-colors duration-300 group-hover:text-[#D78B00] sm:text-[16px]">
+    {category.name}
+  </h3>
 
-                        <div className="mt-2 h-[2px] w-7 rounded-full bg-[#F5A623] transition-all duration-500 group-hover:w-12" />
-                      </div>
+  <div className="mt-2 h-[2px] w-7 rounded-full bg-[#F5A623] transition-all duration-500 group-hover:w-12" />
+
+  <div className="mt-2">
+    <span className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#062033] px-3 py-2.5 font-outfit text-xs font-semibold text-white transition-all duration-300 group-hover:bg-[#F5A623] group-hover:text-[#062033] sm:text-sm">
+      Explore Category
+      <ArrowUpRight
+        size={15}
+        className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+      />
+    </span>
+  </div>
+</div>
 
                       {/* BOTTOM ACCENT */}
 

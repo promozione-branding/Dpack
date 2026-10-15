@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -18,6 +18,71 @@ import {
 ========================================================= */
 
 export default function ContactPage() {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [product, setProduct] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const normalizedPhone = phone.trim();
+    if (!/^\d{10}$/.test(normalizedPhone)) {
+      setStatus("Enter a valid 10-digit phone number.");
+      return;
+    }
+
+    setLoading(true);
+    setStatus("Sending...");
+
+    try {
+      const response = await fetch("/api/contact-enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: normalizedPhone,
+          email: email.trim(),
+          product: product.trim(),
+          message: message.trim(),
+        }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || "Failed to send. Please try again.");
+      }
+
+      setStatus("Your enquiry has been submitted successfully!");
+
+      const whatsappText = `Hi, I am ${name.trim()}.
+Email: ${email.trim()}
+Product: ${product.trim()}
+Message: ${message.trim()}
+Contact: ${normalizedPhone}`;
+
+      window.open(
+        `https://wa.me/917669988825?text=${encodeURIComponent(whatsappText)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+      setName("");
+      setPhone("");
+      setEmail("");
+      setProduct("");
+      setMessage("");
+    } catch (error) {
+      console.error("Contact enquiry submission failed:", error);
+      setStatus(error.message || "Server error. Try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen overflow-hidden bg-[#F6F7F9] text-[#123B5D]">
 
@@ -337,7 +402,7 @@ export default function ContactPage() {
 
               <form
                 className="mt-6 space-y-4"
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={handleSubmit}
               >
 
                 {/* Row 1 */}
@@ -348,12 +413,17 @@ export default function ContactPage() {
                     label="Your Name"
                     placeholder="Enter your name"
                     type="text"
+                    value={name}
+                    onChange={setName}
+                    required
                   />
 
                   <InputField
-                    label="Company Name"
-                    placeholder="Enter company name"
+                    label="Product / Requirement"
+                    placeholder="What product do you need?"
                     type="text"
+                    value={product}
+                    onChange={setProduct}
                   />
 
                 </div>
@@ -367,12 +437,19 @@ export default function ContactPage() {
                     label="Email Address"
                     placeholder="Enter your email"
                     type="email"
+                    value={email}
+                    onChange={setEmail}
+                    required
                   />
 
                   <InputField
                     label="Phone Number"
                     placeholder="Enter phone number"
                     type="tel"
+                    value={phone}
+                    onChange={setPhone}
+                    required
+                    maxLength={10}
                   />
 
                 </div>
@@ -391,6 +468,8 @@ export default function ContactPage() {
                     rows={3}
                     placeholder="Tell us about your requirement..."
                     className="w-full resize-none border-b border-slate-200 bg-[#FAFBFC] px-3 py-2.5 text-[10px] text-[#123B5D] outline-none transition-all placeholder:text-slate-400 focus:border-[#F5A623]"
+                    value={message}
+                    onChange={(event) => setMessage(event.target.value)}
                   />
 
                 </div>
@@ -400,17 +479,35 @@ export default function ContactPage() {
 
                 <div className="flex flex-col gap-4 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
 
-                  <p className="max-w-[310px] text-[16px] leading-4 text-slate-400">
-                    Your information will only be used to respond to
-                    your enquiry.
-                  </p>
+                  <div className="max-w-[310px]">
+                    <p className="text-[16px] leading-4 text-slate-400">
+                      Your information will only be used to respond to
+                      your enquiry.
+                    </p>
+                    {status && (
+                      <p
+                        role="status"
+                        aria-live="polite"
+                        className={`mt-2 text-sm ${
+                          status.includes("successfully")
+                            ? "text-green-700"
+                            : status === "Sending..."
+                              ? "text-slate-500"
+                              : "text-red-600"
+                        }`}
+                      >
+                        {status}
+                      </p>
+                    )}
+                  </div>
 
                   <button
                     type="submit"
-                    className="group inline-flex items-center justify-center gap-3 rounded-full bg-[#123B5D] px-6 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-white transition-all duration-300 hover:gap-5 hover:bg-[#F5A623] hover:text-[#123B5D]"
+                    disabled={loading}
+                    className="group inline-flex items-center justify-center gap-3 rounded-full bg-[#123B5D] px-6 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-white transition-all duration-300 hover:gap-5 hover:bg-[#F5A623] hover:text-[#123B5D] disabled:cursor-not-allowed disabled:opacity-60"
                   >
 
-                    Send Enquiry
+                    {loading ? "Sending..." : "Send Enquiry"}
 
                     <ArrowRight
                       size={13}
@@ -638,7 +735,11 @@ export default function ContactPage() {
   label,
   placeholder,
   type,
-     }) {
+    value,
+    onChange,
+    required = false,
+    maxLength,
+       }) {
   return (
     <div>
 
@@ -649,6 +750,10 @@ export default function ContactPage() {
       <input
         type={type}
         placeholder={placeholder}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        required={required}
+        maxLength={maxLength}
         className="h-11 w-full border-b border-slate-200 bg-[#FAFBFC] px-3 text-[10px] text-[#123B5D] outline-none transition-all placeholder:text-slate-400 focus:border-[#F5A623]"
       />
 

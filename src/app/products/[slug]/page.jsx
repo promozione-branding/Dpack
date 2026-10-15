@@ -1771,24 +1771,6 @@ export default function ProductPage({
                   "4.5"}
               </span>
 
-              <span className="text-sm text-gray-500">
-                (
-                {currentProduct.reviews ||
-                  0}{" "}
-                Reviews)
-              </span>
-
-              <span className="hidden text-gray-300 sm:inline">
-                |
-              </span>
-
-              <span className="text-xs text-gray-500 sm:text-sm">
-                SKU:{" "}
-                <span className="font-bold text-[#081A33]">
-                  {currentProduct.sku ||
-                    "N/A"}
-                </span>
-              </span>
 
             </div>
 

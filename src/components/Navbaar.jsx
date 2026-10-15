@@ -1201,7 +1201,7 @@ export default function Navbar() {
 
             <div className="ml-auto flex shrink-0 items-center">
               <Link
-                href="/flash-sale"
+                href="/products"
                 className="
                   flex
                   items-center
@@ -1224,7 +1224,7 @@ export default function Navbar() {
               </Link>
 
               <Link
-                href="/faqs"
+                href="/about-us"
                 className="
                   flex
                   items-center

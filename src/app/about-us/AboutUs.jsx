@@ -281,20 +281,16 @@ export default function AboutUs() {
                 src="/Dannage.webp"
                 alt="DPack Dunnage Air Bags"
                 priority
-                sizes="(max-width: 768px) 100vw, 60vw"
+                sizes="(max-width: 568px)"
                 heightClass="h-[320px] sm:h-[520px] lg:h-[590px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-[#081A33]/90 via-[#081A33]/10 to-transparent" />
 
                 <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-3 sm:bottom-7 sm:left-7 sm:right-7">
                   <div className="min-w-0">
-                    <p className="text-4xl font-black leading-none text-white sm:text-6xl">
-                      DPack
-                    </p>
+                
 
-                    <p className="mt-2 text-[9px] font-bold uppercase tracking-[0.2em] text-white/65 sm:tracking-[0.35em]">
-                      Packaging Solutions
-                    </p>
+                
                   </div>
 
                   <PackageCheck
@@ -331,7 +327,7 @@ export default function AboutUs() {
           ABOUT STORY
       ====================================================== */}
 
-      <section className="relative overflow-hidden bg-white px-5 py-14 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
+      <section className="relative overflow-hidden bg-white px-5 py-10 sm:px-8 sm:py-12 lg:px-12 lg:py-15">
         <DotPattern />
 
         <div className="relative z-10 mx-auto max-w-[1400px]">
@@ -356,7 +352,7 @@ export default function AboutUs() {
                     DPACK
                   </p>
 
-                  <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.2em] text-white/60 sm:tracking-[0.3em]">
+                  <p className="mt-1 text-[14px] font-bold uppercase tracking-[0.2em] text-white/60 sm:tracking-[0.3em]">
                     Protective Packaging
                   </p>
                 </div>
@@ -407,7 +403,7 @@ export default function AboutUs() {
                     01
                   </p>
 
-                  <p className="mt-2 text-[8px] font-black uppercase tracking-[0.1em] text-[#8A939B] sm:text-[9px] sm:tracking-[0.18em]">
+                  <p className="mt-2 text-[8px] font-black uppercase tracking-[0.1em] text-[#8A939B] sm:text-[14px] sm:tracking-[0.18em]">
                     Protection
                   </p>
                 </div>
@@ -417,7 +413,7 @@ export default function AboutUs() {
                     05+
                   </p>
 
-                  <p className="mt-2 text-[8px] font-black uppercase tracking-[0.1em] text-[#8A939B] sm:text-[9px] sm:tracking-[0.18em]">
+                  <p className="mt-2 text-[8px] font-black uppercase tracking-[0.1em] text-[#8A939B] sm:text-[14px] sm:tracking-[0.18em]">
                     Solutions
                   </p>
                 </div>
@@ -427,7 +423,7 @@ export default function AboutUs() {
                     PAN
                   </p>
 
-                  <p className="mt-2 text-[8px] font-black uppercase tracking-[0.1em] text-[#8A939B] sm:text-[9px] sm:tracking-[0.18em]">
+                  <p className="mt-2 text-[8px] font-black uppercase tracking-[0.1em] text-[#8A939B] sm:text-[14px] sm:tracking-[0.18em]">
                     Reach
                   </p>
                 </div>
@@ -436,7 +432,7 @@ export default function AboutUs() {
               <div className="mt-6 flex items-center gap-3 sm:mt-7 sm:gap-4">
                 <span className="h-px w-8 shrink-0 bg-[#081A33]/30 sm:w-12" />
 
-                <p className="text-[9px] font-black uppercase tracking-[0.12em] text-[#8A939B] sm:tracking-[0.25em]">
+                <p className="text-[14px] font-black uppercase tracking-[0.12em] text-[#8A939B] sm:tracking-[0.25em]">
                   Packaging • Protection • Performance
                 </p>
               </div>
@@ -449,7 +445,7 @@ export default function AboutUs() {
           MISSION + VISION
       ====================================================== */}
 
-      <section className="relative overflow-hidden bg-[#081A33] px-5 py-14 text-white sm:px-8 sm:py-20 lg:px-12 lg:py-28">
+      <section className="relative overflow-hidden bg-[#081A33] px-5 py-10 text-white sm:px-8 sm:py-12 lg:px-12 lg:py-15">
         <DotPattern dark />
 
         <div className="pointer-events-none absolute -right-40 bottom-[-250px] h-[600px] w-[600px] rounded-full border border-[#F5A623]/25" />
@@ -546,7 +542,7 @@ export default function AboutUs() {
           PRODUCT FOCUS
       ====================================================== */}
 
-      <section className="relative overflow-hidden bg-[#F7F7F5] px-5 py-14 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
+      <section className="relative overflow-hidden bg-[#F7F7F5] px-5 py-10 sm:px-8 sm:py-12 lg:px-12 lg:py-15">
         <DotPattern />
 
         <div className="relative z-10 mx-auto max-w-[1400px]">
@@ -567,7 +563,7 @@ export default function AboutUs() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#081A33]/90 via-transparent to-transparent" />
 
                 <div className="absolute bottom-5 left-5 right-4 sm:bottom-7 sm:left-7">
-                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#F5A623]">
+                  <p className="text-[14px] font-black uppercase tracking-[0.3em] text-[#F5A623]">
                     Product Focus
                   </p>
 
@@ -689,7 +685,7 @@ export default function AboutUs() {
 
         <div className="relative z-10 mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
           <div>
-            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#F5A623]">
+            <p className="text-[14px] font-black uppercase tracking-[0.3em] text-[#F5A623]">
               DPack
             </p>
 
@@ -699,7 +695,7 @@ export default function AboutUs() {
           </div>
 
           <Link
-            href="/contact"
+            href="/contact-us"
             className="group inline-flex min-h-[50px] items-center justify-center gap-3 border border-white/20 px-6 py-4 text-[14px] font-black uppercase tracking-[0.2em] text-white transition-colors duration-300 hover:border-[#F5A623] hover:bg-[#F5A623] hover:text-[#081A33]"
           >
             Talk To Us

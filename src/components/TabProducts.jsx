@@ -437,7 +437,7 @@ function ProductCard({ product, index }) {
    MAIN COMPONENT
 ========================================================= */
 
-export default function BannerProduct() {
+export default function TabProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 

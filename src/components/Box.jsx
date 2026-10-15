@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -62,9 +63,20 @@ const products = [
 ========================================================= */
 
 export default function Main() {
+  
   const [activeProduct, setActiveProduct] = useState(0);
 
   const active = products[activeProduct];
+
+  
+useEffect(() => {
+  const sliderInterval = setInterval(() => {
+    setActiveProduct((current) => (current + 1) % products.length);
+  }, 3000);
+
+  return () => clearInterval(sliderInterval);
+}, []);
+
 
   return (
     <section
@@ -345,7 +357,7 @@ export default function Main() {
                 text-white/70
                 sm:mt-4
                 hidden
-                md:block
+                md:
                 sm:text-[16px]
               "
             >
@@ -442,27 +454,31 @@ export default function Main() {
                 "
               />
 
-              {/* Product image */}
+             
+<div className="absolute inset-0">
+  <AnimatePresence mode="sync">
+    <motion.div
+      key={active.id}
+      className="absolute inset-0"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{
+        opacity: { duration: 0.7, ease: "easeInOut" },
+      }}
+    >
+      <Image
+        src={active.image}
+        alt={active.name}
+        fill
+        priority={activeProduct === 0}
+        sizes="(max-width: 640px) 90vw, (max-width: 768px) 70vw, 45vw"
+        className="object-contain object-center drop-shadow-[0_25px_25px_rgba(0,35,60,0.28)]"
+      />
+    </motion.div>
+  </AnimatePresence>
+</div>
 
-              <div className="relative h-full w-full">
-                <Image
-                  src={active.image}
-                  alt={active.name}
-                  fill
-                  priority={activeProduct === 0}
-                  sizes="
-                    (max-width: 640px) 80vw,
-                    (max-width: 768px) 70vw,
-                    (max-width: 1280px) 55vw,
-                    60vw
-                  "
-                  className="
-                    object-contain
-                    object-center
-                    drop-shadow-[0_30px_30px_rgba(0,35,60,0.28)]
-                  "
-                />
-              </div>
             </div>
 
             {/* =================================================
@@ -508,22 +524,7 @@ export default function Main() {
                   <ShieldCheck size={12} />
                 </span>
 
-                <div>
-                  <p
-                    className="
-                      text-[12px]
-                      uppercase
-                      tracking-[0.15em]
-                      text-white/50
-                    "
-                  >
-                    Designed For
-                  </p>
-
-                  <p className="text-[12px] font-bold text-white">
-                    {active.tag}
-                  </p>
-                </div>
+               
               </div>
             </div>
 
@@ -531,21 +532,7 @@ export default function Main() {
                 STATIC SPARK
             ================================================= */}
 
-            <div
-              className="
-                absolute
-                left-[12%]
-                top-[25%]
-                z-30
-                hidden
-                sm:block
-              "
-            >
-              <Sparkles
-                size={18}
-                className="text-[#FFE15A]"
-              />
-            </div>
+            
           </div>
 
           {/* =================================================

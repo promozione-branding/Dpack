@@ -379,7 +379,7 @@ export default function SaleNow() {
             {/* SHOP BUTTON */}
 
             <Link
-              href="/shop"
+              href="/products"
               className="
                 group
                 flex

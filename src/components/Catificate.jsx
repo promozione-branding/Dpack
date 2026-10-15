@@ -15,14 +15,14 @@ import {
 const certificates = [
   {
  
-    title: "ISRO Certificate",
-    image: "/gem (1).webp",
+    title: "ISO Certificate",
+    image: "/iso.webp",
 
   },
   {
   
-    title: "GeM Registered",
-    image: "/iso.webp",
+    title: "GEM Registered",
+    image: "/gem (1).webp",
   },
 ];
 

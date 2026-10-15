@@ -24,12 +24,12 @@ export default function Home() {
     <Main/>
 {/* <BestSellingProducts/> */}
  <TrendingProducts/>
-   <Highlight/>  
+   <Highlight/> 
+   <VideoSection/> 
  <SaleNow/>
  <Product360/>
  <Categories/>
  <Clientele/>
- <VideoSection/> 
  <Cartificat />
  <PromoBanners/>
   <CategoryMarquee/>
