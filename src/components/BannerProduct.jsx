@@ -403,10 +403,37 @@ export default function BannerProduct() {
 
     async function loadProducts() {
       try {
-        const catalog = await getHomeProducts();
-        const activeProducts = catalog
-          .filter((product) => product && product.isActive !== false)
-          .slice(0, 3)
+    
+const catalog = await getHomeProducts();
+
+const airBagKeywords = [
+  "air bag",
+  "air bags",
+  "air column",
+  "air cushion",
+  "air pillow",
+  "inflatable packaging",
+];
+
+const activeProducts = catalog
+  .filter((product) => {
+    if (!product || product.isActive === false) return false;
+
+    const name = String(product.name || product.title || "").toLowerCase();
+
+    const category =
+      typeof product.category === "string"
+        ? product.category
+        : product.category?.name || product.category?.title || "";
+
+    const searchText = `${name} ${category}`.toLowerCase();
+
+    return airBagKeywords.some((keyword) =>
+      searchText.includes(keyword)
+    );
+  })
+  .slice(0, 3)
+
           .map((product) => {
             const price = Number(product.price ?? product.salePrice ?? 0);
             const compareAtPrice = Number(
@@ -430,7 +457,7 @@ export default function BannerProduct() {
               compareAtPrice,
               oldPrice: compareAtPrice,
               discount,
-              link: product.slug ? `/products/${product.slug}` : "/products",
+              link: product.slug ? `/products/${product.slug}` : "/AirColumnBags",
             };
           });
 

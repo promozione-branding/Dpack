@@ -43,7 +43,7 @@ export default function VideoSection() {
     bg-[#F8F8F6]
 
     py-12
-    lg:py-10
+    lg:py-5
     px-10
 
     before:pointer-events-none

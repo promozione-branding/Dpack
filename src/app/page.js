@@ -33,8 +33,9 @@ export default function Home() {
  <Cartificat />
  <PromoBanners/>
   <CategoryMarquee/>
- <BannerProduct/>
+ 
   <Newbanner/>
+  <BannerProduct/>
   <CategoryMarquee/>
   <WhyChooseUs/>
  <Testimonials/>

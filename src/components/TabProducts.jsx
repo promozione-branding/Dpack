@@ -518,8 +518,8 @@ export default function TabProducts() {
 
             return (
               normalizedCategory === "gap fillers" ||
-              normalizedCategory === "gap filler" ||
-              normalizedCategory.includes("gap filler")
+              normalizedCategory === "gap fillers" ||
+              normalizedCategory.includes("gap fillers")
             );
           }
         );

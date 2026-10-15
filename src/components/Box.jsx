@@ -606,16 +606,7 @@ useEffect(() => {
               sm:block
             "
           >
-            <p
-              className="
-                text-[8px]
-                uppercase
-                tracking-[0.18em]
-                text-white/45
-              "
-            >
-              Featured Product
-            </p>
+           
 
             <p className="mt-1 text-[12px] font-bold text-white">
               {active.name}
