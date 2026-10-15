@@ -27,23 +27,23 @@ import { usePathname } from "next/navigation";
 const productLinks = [
   {
     name: "Dunnage Bags",
-    href: "/products?category=Dunnage%20Bags",
+    href: "/products-categories/dunnage-bags",
   },
   {
     name: "Air Column Bags",
-    href: "/products?category=Air%20Column%20Bags",
+    href: "/products-categories/air-column-bags",
   },
   {
     name: "Air Column Rolls",
-    href: "/products?category=Air%20Column%20Roll",
+    href: "/products-categories/air-column-roll",
   },
   {
     name: "Packaging Air Bags",
-    href: "/products?category=Packaging%20Air%20Bags",
+    href: "/products-categories/packaging-air-bags",
   },
   {
     name: "Gap Fillers",
-    href: "/products?category=Gap%20Filler",
+    href: "/products-categories/gap-fillers",
   },
 ];
 

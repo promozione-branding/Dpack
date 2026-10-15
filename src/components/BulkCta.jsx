@@ -27,7 +27,7 @@ const products = [
     description:
       "Shockproof, safe and reliable protection for your valuable products.",
     image: "/Air column bag (2).webp",
-    href: "/products/air-column-bags",
+    href: "/products-categories/air-column-bags",
     accent: "#F5A623",
     icon: Sparkles,
   },
@@ -38,7 +38,7 @@ const products = [
     description:
       "Strong support for heavy loads and safer transportation during transit.",
     image: "/Dannage.webp",
-    href: "/products/dunnage-air-bags",
+    href: "/products-categories/dunnage-bags",
     accent: "#F5A623",
     icon: ShieldCheck,
   },
@@ -49,7 +49,7 @@ const products = [
     description:
       "Flexible protection for every shipment, product and packaging requirement.",
     image: "/Air Column Roll (2).webp",
-    href: "/products/air-column-rolls",
+    href: "/products-categories/air-column-roll",
     accent: "#2F7180",
     icon: Sparkles,
   },
@@ -60,7 +60,7 @@ const products = [
     description:
       "Keep your products stable, secure and protected during transportation.",
     image: "/Gap filler (3).webp",
-    href: "/products/gap-fillers",
+    href: "/products-categories/gap-fillers",
     accent: "#F5A623",
     icon: Package,
   },
@@ -71,7 +71,7 @@ const products = [
     description:
       "Durable, versatile and secure packaging solutions for all your needs.",
     image: "/packing bag.webp",
-    href: "/products/packaging-air-bags",
+    href: "/products-categories/packaging-air-bags",
     accent: "#F5A623",
     icon: ShieldCheck,
   },

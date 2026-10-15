@@ -27,7 +27,7 @@ const bestSellers = [
 
     image: "https://packingairbag.com/cat/1.webp",
 
-    link: "https://packingairbag.com/categories/dunnage-bag",
+    link: "/products-categories/dunnage-bags",
 
     tag: "BEST SELLER",
   },
@@ -38,7 +38,7 @@ const bestSellers = [
 
     image: "https://packingairbag.com/cat/2.webp",
 
-    link: "https://packingairbag.com/categories/air-column-roll",
+    link: "/products-categories/air-column-roll",
 
     tag: "POPULAR",
   },
@@ -49,7 +49,7 @@ const bestSellers = [
 
     image: "https://packingairbag.com/cat/5.webp",
 
-    link: "https://packingairbag.com/categories/air-column-bag",
+    link: "/products-categories/air-column-bags",
 
     tag: "TOP PICK",
   },
@@ -60,7 +60,7 @@ const bestSellers = [
 
     image: "https://packingairbag.com/cat/3.webp",
 
-    link: "https://packingairbag.com/categories/packaging-air-bag",
+    link: "/products-categories/packaging-air-bags",
 
     tag: "POPULAR",
   },
@@ -71,7 +71,7 @@ const bestSellers = [
 
     image: "https://packingairbag.com/sideimg.png",
 
-    link: "https://packingairbag.com/categories/gap-filler",
+    link: "/products-categories/gap-fillers",
 
     tag: "BEST SELLER",
   },

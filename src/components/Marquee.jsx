@@ -5,27 +5,27 @@ import Link from "next/link";
 const categories = [
   {
     name: "DUNNAGE BAG",
-    href: "https://packingairbag.com/categories/dunnage-bag",
+    href: "/products-categories/dunnage-bags",
     color: "white",
   },
   {
     name: "AIR COLUMN ROLL",
-    href: "https://packingairbag.com/categories/air-column-roll",
+    href: "/products-categories/air-column-roll",
     color: "gradient",
   },
   {
     name: "AIR COLUMN BAG",
-    href: "https://packingairbag.com/categories/air-column-bag",
+    href: "/products-categories/air-column-bags",
     color: "white",
   },
   {
     name: "PACKAGING AIR BAG",
-    href: "https://packingairbag.com/categories/packaging-air-bag",
+    href: "/products-categories/packaging-air-bags",
     color: "gradient",
   },
   {
     name: "GAP FILLER",
-    href: "https://packingairbag.com/categories/gap-filler",
+    href: "/products-categories/gap-fillers",
     color: "white",
   },
 ];

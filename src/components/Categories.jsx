@@ -15,31 +15,31 @@ const categoryDesign = {
   "dunnage-bags": {
     name: "Dunnage Air Bags",
     image: "/dunnage.webp",
-    href: "/products",
+    href: "/products-categories/dunnage-bags",
   },
 
   "air-column-bags": {
     name: "Air Column Bags",
     image: "/22.webp",
-    href: "/products",
+    href: "/products-categories/air-column-bags",
   },
 
   "air-column-roll": {
     name: "Air Column Rolls",
     image: "/18 (3).webp",
-    href: "/products?category=Air%20Column%20Roll",
+    href: "/products-categories/air-column-roll",
   },
 
   "gap-filler": {
     name: "Gap Fillers",
     image: "/42.webp",
-    href: "/products",
+    href: "/products-categories/gap-fillers",
   },
 
   "packaging-air-bags": {
     name: "Packaging Air Bags",
     image: "/36.webp",
-    href: "/products",
+    href: "/products-categories/packaging-air-bags",
   },
 };
 

@@ -15,7 +15,7 @@ import {
 const certificates = [
   {
  
-    title: "ISRO Certif",
+    title: "ISRO Certificate",
     image: "/gem (1).webp",
 
   },
