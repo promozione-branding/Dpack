@@ -28,5 +28,10 @@ export default async function ProductsCategoryPage({ params }) {
     notFound();
   }
 
-  return <ProductsClient initialCategory={initialCategory} />;
+  return (
+    <ProductsClient
+      key={normalizedSlug}
+      initialCategory={initialCategory}
+    />
+  );
 }

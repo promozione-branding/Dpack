@@ -1478,38 +1478,44 @@ export default function ProductsPage({
         setLoading(true);
         setError("");
 
-        const response = await fetch(
-          "/api/products?page=1&limit=100",
-          {
-            cache: "no-store",
-          }
-        );
-
-        const data =
-          await response.json();
-
-        if (
-          !response.ok ||
-          data?.success === false
-        ) {
-          throw new Error(
-            data?.error ||
-              "Unable to load products."
+        const fetchProductPage = async (page) => {
+          const response = await fetch(
+            `/api/products?page=${page}&limit=100`,
+            { cache: "no-store" }
           );
-        }
+          const data = await response.json();
 
-        const fetchedProducts =
-          Array.isArray(data)
-            ? data
-            : Array.isArray(
-                  data?.products
-                )
-              ? data.products
-              : Array.isArray(
-                    data?.data
-                  )
-                ? data.data
-                : [];
+          if (!response.ok || data?.success === false) {
+            throw new Error(
+              data?.error || "Unable to load products."
+            );
+          }
+
+          return {
+            products: Array.isArray(data)
+              ? data
+              : Array.isArray(data?.products)
+                ? data.products
+                : Array.isArray(data?.data)
+                  ? data.data
+                  : [],
+            total: Number(data?.total),
+          };
+        };
+
+        const firstPage = await fetchProductPage(1);
+        const pageCount = Number.isFinite(firstPage.total)
+          ? Math.ceil(firstPage.total / 100)
+          : 1;
+        const remainingPages = await Promise.all(
+          Array.from({ length: Math.max(0, pageCount - 1) }, (_, index) =>
+            fetchProductPage(index + 2)
+          )
+        );
+        const fetchedProducts = [
+          ...firstPage.products,
+          ...remainingPages.flatMap((page) => page.products),
+        ];
 
         if (!mounted) return;
 
