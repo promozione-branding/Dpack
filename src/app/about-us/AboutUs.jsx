@@ -114,7 +114,7 @@ function SectionLabel({ children, light = false }) {
 function FramedImage({
   src,
   alt,
-  heightClass = "h-[320px] sm:h-[520px] lg:h-[550px]",
+  heightClass = "h-[340px] sm:h-[520px] lg:h-[580px]",
   priority = false,
   sizes = "(max-width: 768px) 100vw, 50vw",
   children,
@@ -131,7 +131,7 @@ function FramedImage({
             fill
             priority={priority}
             sizes={sizes}
-            className="object-cover object-center"
+            className="object-cover"
           />
 
           {children}
@@ -278,7 +278,7 @@ export default function AboutUs() {
               className="relative mx-2 mb-5 min-w-0 sm:mx-3 sm:mb-6 lg:mx-0"
             >
               <FramedImage
-                src="/Dannage.webp"
+                src="/product/5 (11).webp"
                 alt="DPack Dunnage Air Bags"
                 priority
                 sizes="(max-width: 568px)"
@@ -341,7 +341,7 @@ export default function AboutUs() {
               className="relative mx-2 min-w-0 sm:mx-3 lg:mx-0"
             >
               <FramedImage
-                src="/Air column bag (2).webp"
+                src="/dunnage.webp"
                 alt="DPack Air Column Packaging"
                 heightClass="h-[320px] sm:h-[520px] lg:h-[550px]"
               >
@@ -556,7 +556,7 @@ export default function AboutUs() {
               className="relative mx-2 min-w-0 sm:mx-3 lg:mx-0"
             >
               <FramedImage
-                src="/Air Column Roll (2).webp"
+                src="/product/23.webp"
                 alt="DPack Air Column Roll"
                 heightClass="h-[320px] sm:h-[520px] lg:h-[550px]"
               >

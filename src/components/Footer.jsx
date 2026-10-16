@@ -31,7 +31,7 @@ const productLinks = [
   },
   {
     name: "Air Column Bags",
-    href: "/products-categories/air-column-bags",
+    href: "/products-categories/packaging-air-bags",
   },
   {
     name: "Air Column Rolls",
