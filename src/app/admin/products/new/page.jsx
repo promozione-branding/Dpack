@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -18,14 +19,21 @@ export default function NewProductPage() {
       setError("Please upload a product image before saving.");
       return;
     }
+
     setLoading(true);
     setError("");
+
     try {
       await adminAPI.createProduct(formData);
       setSuccess(true);
-      setTimeout(() => router.push("/admin/products"), 1200);
+
+      setTimeout(() => {
+        router.push("/admin/products");
+      }, 1200);
     } catch (e) {
-      setError(e.message);
+      setError(
+        e?.message || "Failed to create product. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -40,9 +48,14 @@ export default function NewProductPage() {
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
+
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Add Product</h1>
-          <p className="text-sm text-gray-500">Create a new product listing</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Add Product
+          </h1>
+          <p className="text-sm text-gray-500">
+            Create a new product listing
+          </p>
         </div>
       </div>
 
@@ -52,6 +65,7 @@ export default function NewProductPage() {
           Product created successfully! Redirecting…
         </div>
       )}
+
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}

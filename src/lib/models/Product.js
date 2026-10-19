@@ -32,6 +32,11 @@ const VariantSchema = new mongoose.Schema(
       type: Number,
       default: null,
     },
+    shippingPrice: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
     isDefault: {
       type: Boolean,
       default: false,

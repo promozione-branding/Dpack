@@ -1,3 +1,4 @@
+
 "use client";
 
 import dynamic from "next/dynamic";
@@ -11,19 +12,11 @@ const JoditEditor = dynamic(() => import("jodit-react"), {
   ssr: false,
 });
 
-/* =========================================================
-   FIELDS (text arrays — sizes handled via variants now)
-========================================================= */
-
 const FIELDS = [
   { name: "overview", label: "Product overview" },
   { name: "keyFeatures", label: "Key features" },
   { name: "applications", label: "Applications" },
 ];
-
-/* =========================================================
-   HELPERS
-========================================================= */
 
 function lines(value) {
   return Array.isArray(value) ? value.join("\n") : value || "";
@@ -34,6 +27,7 @@ function emptyVariant(isDefault = false) {
     size: "",
     price: "",
     compareAtPrice: "",
+    shippingPrice: "99",
     stock: "0",
     sku: "",
     weight: "",
@@ -48,6 +42,10 @@ function buildInitialVariants(product) {
       price: v.price != null ? String(v.price) : "",
       compareAtPrice:
         v.compareAtPrice != null ? String(v.compareAtPrice) : "",
+      shippingPrice:
+        v.shippingPrice != null
+          ? String(v.shippingPrice)
+          : String(product?.shippingPrice ?? 99),
       stock: v.stock != null ? String(v.stock) : "0",
       sku: v.sku || "",
       weight: v.weight != null ? String(v.weight) : "",
@@ -55,7 +53,7 @@ function buildInitialVariants(product) {
     }));
   }
 
-  // Migrate old sizes[] + single price → variants
+  // Migrate old sizes[] + single price to variants
   if (product?.sizes?.length) {
     return product.sizes.map((s, i) => ({
       size: s,
@@ -65,6 +63,7 @@ function buildInitialVariants(product) {
         i === 0 && product.compareAtPrice != null
           ? String(product.compareAtPrice)
           : "",
+      shippingPrice: String(product?.shippingPrice ?? 99),
       stock: i === 0 ? String(product.stock ?? 0) : "0",
       sku: "",
       weight: "",
@@ -82,15 +81,12 @@ function initialValues(product) {
     name: product?.name || "",
     slug: product?.slug || "",
     category: product?.category || "",
-
     shortDescription: product?.shortDescription || "",
-
     description:
       organizedFields.description ?? product?.description ?? "",
-
     specs: lines(organizedFields.specs || product?.specs),
 
-    // Used only when there are NO variants
+    // Used when there are no variants
     price: product?.price ?? "",
     compareAtPrice: product?.compareAtPrice ?? "",
     shippingPrice: product?.shippingPrice ?? 99,
@@ -105,7 +101,9 @@ function initialValues(product) {
     instagramUrl: product?.instagramUrl || "",
     metaTitle: product?.metaTitle || "",
     metaDescription: product?.metaDescription || "",
-    extraImages: lines(organizedFields.extraImages || product?.extraImages),
+    extraImages: lines(
+      organizedFields.extraImages || product?.extraImages
+    ),
 
     ...Object.fromEntries(
       FIELDS.map(({ name }) => [
@@ -115,10 +113,6 @@ function initialValues(product) {
     ),
   };
 }
-
-/* =========================================================
-   JODIT EDITOR
-========================================================= */
 
 function RichTextEditor({
   value,
@@ -138,71 +132,29 @@ function RichTextEditor({
       showWordsCounter: false,
       showXPathInStatusbar: false,
       buttons: [
-        "bold",
-        "italic",
-        "underline",
-        "|",
-        "ul",
-        "ol",
-        "|",
-        "paragraph",
-        "fontsize",
-        "|",
-        "left",
-        "center",
-        "right",
-        "justify",
-        "|",
-        "link",
-        "|",
-        "undo",
-        "redo",
-        "|",
-        "eraser",
-        "source",
+        "bold", "italic", "underline", "|",
+        "ul", "ol", "|",
+        "paragraph", "fontsize", "|",
+        "left", "center", "right", "justify", "|",
+        "link", "|", "undo", "redo", "|",
+        "eraser", "source",
       ],
       buttonsMD: [
-        "bold",
-        "italic",
-        "underline",
-        "|",
-        "ul",
-        "ol",
-        "|",
-        "paragraph",
-        "|",
-        "link",
-        "|",
-        "undo",
-        "redo",
-        "|",
-        "eraser",
+        "bold", "italic", "underline", "|",
+        "ul", "ol", "|", "paragraph", "|",
+        "link", "|", "undo", "redo", "|", "eraser",
       ],
       buttonsSM: [
-        "bold",
-        "italic",
-        "underline",
-        "|",
-        "ul",
-        "ol",
-        "|",
-        "link",
-        "|",
-        "undo",
-        "redo",
+        "bold", "italic", "underline", "|",
+        "ul", "ol", "|", "link", "|", "undo", "redo",
       ],
       askBeforePasteHTML: false,
       askBeforePasteFromWord: false,
       processPasteHTML: true,
       defaultActionOnPaste: "insert_clear_html",
       enter: "P",
-      cleanHTML: {
-        fillEmptyParagraph: false,
-      },
-      style: {
-        fontSize: "14px",
-        color: "#374151",
-      },
+      cleanHTML: { fillEmptyParagraph: false },
+      style: { fontSize: "14px", color: "#374151" },
     }),
     [minHeight, placeholder]
   );
@@ -211,21 +163,13 @@ function RichTextEditor({
     <div className="mt-1 overflow-hidden rounded-lg border border-gray-200 bg-white focus-within:border-rust focus-within:ring-2 focus-within:ring-rust/20">
       <JoditEditor
         value={value || ""}
-        // config={config}
-        onBlur={(newContent) => {
-          onChange(newContent);
-        }}
-        onChange={(newContent) => {
-          onChange(newContent);
-        }}
+        config={config}
+        onBlur={onChange}
+        onChange={onChange}
       />
     </div>
   );
 }
-
-/* =========================================================
-   PRODUCT FORM
-========================================================= */
 
 function ProductForm({ initial, onSubmit, loading, submitLabel }) {
   const [imageUrl, setImageUrl] = useState(initial?.image || "");
@@ -261,7 +205,9 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
       })
       .catch((error) => {
         if (mounted) {
-          setCategoriesError(error.message || "Unable to load categories.");
+          setCategoriesError(
+            error.message || "Unable to load categories."
+          );
         }
       });
 
@@ -287,13 +233,18 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
   const handleGallerySelection = (event) => {
     const selected = Array.from(event.target.files || []);
     const remaining = Math.max(0, 10 - galleryFiles.length);
+
     if (selected.length > remaining) {
-      window.alert(`You can select up to 10 gallery images. ${remaining} slots remaining.`);
+      window.alert(
+        `You can select up to 10 gallery images. ${remaining} slots remaining.`
+      );
     }
+
     const additions = selected.slice(0, remaining).map((file) => ({
       file,
       preview: URL.createObjectURL(file),
     }));
+
     setSelectedGalleryFiles([...galleryFiles, ...additions]);
     event.target.value = "";
   };
@@ -301,7 +252,10 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
   const removeGalleryFile = (index) => {
     const removedFile = galleryFiles[index];
     URL.revokeObjectURL(removedFile.preview);
-    setSelectedGalleryFiles(galleryFiles.filter((_, fileIndex) => fileIndex !== index));
+
+    setSelectedGalleryFiles(
+      galleryFiles.filter((_, fileIndex) => fileIndex !== index)
+    );
   };
 
   const setField = (name, value) => {
@@ -313,13 +267,18 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
 
   const updateVariant = (index, field, value) => {
     setVariants((prev) =>
-      prev.map((v, i) => (i === index ? { ...v, [field]: value } : v))
+      prev.map((v, i) =>
+        i === index ? { ...v, [field]: value } : v
+      )
     );
   };
 
   const setDefaultVariant = (index) => {
     setVariants((prev) =>
-      prev.map((v, i) => ({ ...v, isDefault: i === index }))
+      prev.map((v, i) => ({
+        ...v,
+        isDefault: i === index,
+      }))
     );
   };
 
@@ -333,16 +292,14 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
   const removeVariant = (index) => {
     setVariants((prev) => {
       const next = prev.filter((_, i) => i !== index);
+
       if (next.length && !next.some((v) => v.isDefault)) {
         next[0] = { ...next[0], isDefault: true };
       }
+
       return next;
     });
   };
-
-  /* =======================================================
-     SUBMIT
-  ====================================================== */
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -356,12 +313,9 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
     ]);
 
     for (const [name, value] of Object.entries(form)) {
-      // Skip single price/stock when variants exist — server uses variants
       if (
         hasVariants &&
-        (name === "price" ||
-          name === "compareAtPrice" ||
-          name === "stock")
+        ["price", "compareAtPrice", "stock"].includes(name)
       ) {
         continue;
       }
@@ -381,7 +335,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
       }
     }
 
-    // Variants
+    // Include per-variant shipping price
     const cleanedVariants = variants
       .filter((v) => v.size.trim() && v.price !== "")
       .map((v) => ({
@@ -391,6 +345,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
           v.compareAtPrice === "" || v.compareAtPrice == null
             ? null
             : Number(v.compareAtPrice),
+        shippingPrice: Number(v.shippingPrice || 0),
         stock: Number(v.stock || 0),
         sku: v.sku?.trim() || null,
         weight:
@@ -402,26 +357,35 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
 
     data.set("variants", JSON.stringify(cleanedVariants));
 
-    // sizes synced from variants (backward compatible)
     data.set(
       "sizes",
       JSON.stringify(cleanedVariants.map((v) => v.size))
     );
 
-    // When variants exist, still send base price from default for listing
     if (cleanedVariants.length > 0) {
       const def =
-        cleanedVariants.find((v) => v.isDefault) || cleanedVariants[0];
+        cleanedVariants.find((v) => v.isDefault) ||
+        cleanedVariants[0];
+
       data.set("price", String(def.price));
+
       if (def.compareAtPrice != null) {
         data.set("compareAtPrice", String(def.compareAtPrice));
       }
+
       data.set(
         "stock",
         String(
-          cleanedVariants.reduce((sum, v) => sum + (v.stock || 0), 0)
+          cleanedVariants.reduce(
+            (sum, v) => sum + (v.stock || 0),
+            0
+          )
         )
       );
+
+      // Keep the legacy base shipping price in sync with the default
+      // variant so older listing and checkout code remains compatible.
+      data.set("shippingPrice", String(def.shippingPrice));
     }
 
     data.set("image", imageUrl);
@@ -447,10 +411,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
       onSubmit={handleSubmit}
       className="space-y-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
     >
-      {/* =====================================================
-         BASIC INFORMATION
-      ====================================================== */}
-
+      {/* BASIC INFORMATION */}
       <section className="grid gap-4 sm:grid-cols-2">
         <label className={labelClass}>
           Product name *
@@ -490,6 +451,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
               </option>
             ))}
           </select>
+
           {categoriesError && (
             <span className="mt-1 block text-xs text-red-600">
               Could not load categories: {categoriesError}
@@ -524,7 +486,6 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
           )}
         </label>
 
-        {/* SHORT DESCRIPTION */}
         <div className="sm:col-span-2">
           <label className={labelClass}>Short Description</label>
           <RichTextEditor
@@ -535,7 +496,6 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
           />
         </div>
 
-        {/* DESCRIPTION */}
         <div className="sm:col-span-2">
           <label className={labelClass}>Description *</label>
           <RichTextEditor
@@ -546,7 +506,6 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
           />
         </div>
 
-        {/* SPECIFICATIONS */}
         <div className="sm:col-span-2">
           <label className={labelClass}>Specifications</label>
           <textarea
@@ -559,15 +518,15 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
         </div>
       </section>
 
-      {/* =====================================================
-         PRODUCT IMAGE GALLERY
-      ====================================================== */}
-
+      {/* PRODUCT IMAGE GALLERY */}
       <section className="space-y-4 border-t border-gray-100 pt-5">
         <div>
-          <h3 className="text-sm font-semibold text-gray-900">Product image gallery</h3>
+          <h3 className="text-sm font-semibold text-gray-900">
+            Product image gallery
+          </h3>
           <p className="mt-1 text-xs text-gray-500">
-            Select up to 10 images. They will appear alongside the main product image.
+            Select up to 10 images. They will appear alongside the main
+            product image.
           </p>
         </div>
 
@@ -579,6 +538,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
           onChange={handleGallerySelection}
           className="hidden"
         />
+
         <button
           type="button"
           onClick={() => galleryInputRef.current?.click()}
@@ -609,7 +569,9 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                 >
                   <X className="h-4 w-4" />
                 </button>
-                <p className="truncate px-2 py-1.5 text-xs text-gray-600">{file.name}</p>
+                <p className="truncate px-2 py-1.5 text-xs text-gray-600">
+                  {file.name}
+                </p>
               </div>
             ))}
           </div>
@@ -621,16 +583,13 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             className={inputClass}
             rows={2}
             value={form.extraImages}
-            onChange={(event) => setField("extraImages", event.target.value)}
+            onChange={(e) => setField("extraImages", e.target.value)}
             placeholder="https://..."
           />
         </label>
       </section>
 
-      {/* =====================================================
-         SIZE VARIANTS & PRICING
-      ====================================================== */}
-
+      {/* SIZE VARIANTS & PRICING */}
       <section className="space-y-4 border-t border-gray-100 pt-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -638,13 +597,15 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
               Size variants & pricing
             </h3>
             <p className="text-xs text-gray-500">
-              Add multiple sizes with different prices. Leave empty for a
-              single-price product.
+              Set a separate product price and shipping charge for each
+              size. Shipping is configured per unit.
             </p>
           </div>
+
           <button
             type="button"
             onClick={addVariant}
+            disabled={loading}
             className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
           >
             <Plus className="h-4 w-4" />
@@ -657,22 +618,23 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             {variants.map((v, index) => (
               <div
                 key={index}
-                className="grid gap-2 rounded-xl border border-gray-100 bg-gray-50/70 p-3 sm:grid-cols-12 sm:items-end"
+                className="grid gap-3 rounded-xl border border-gray-100 bg-gray-50/70 p-3 sm:grid-cols-2 lg:grid-cols-4"
               >
-                <div className="sm:col-span-3">
-                  <label className={labelClass}>Size *</label>
+                <label className={labelClass}>
+                  Size *
                   <input
                     className={inputClass}
                     value={v.size}
                     onChange={(e) =>
                       updateVariant(index, "size", e.target.value)
                     }
-                    placeholder="e.g. 120mm x 180mm"
+                    placeholder="e.g. Small / 120mm x 180mm"
                     required
                   />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className={labelClass}>Price (₹) *</label>
+                </label>
+
+                <label className={labelClass}>
+                  Price (₹) *
                   <input
                     className={inputClass}
                     type="number"
@@ -684,9 +646,10 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                     }
                     required
                   />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className={labelClass}>Compare-at (₹)</label>
+                </label>
+
+                <label className={labelClass}>
+                  Compare-at price (₹)
                   <input
                     className={inputClass}
                     type="number"
@@ -701,9 +664,29 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                       )
                     }
                   />
-                </div>
-                <div className="sm:col-span-1">
-                  <label className={labelClass}>Stock</label>
+                </label>
+
+                <label className={labelClass}>
+                  Shipping Price (₹/unit) *
+                  <input
+                    className={inputClass}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={v.shippingPrice}
+                    onChange={(e) =>
+                      updateVariant(
+                        index,
+                        "shippingPrice",
+                        e.target.value
+                      )
+                    }
+                    required
+                  />
+                </label>
+
+                <label className={labelClass}>
+                  Stock
                   <input
                     className={inputClass}
                     type="number"
@@ -714,9 +697,10 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                       updateVariant(index, "stock", e.target.value)
                     }
                   />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className={labelClass}>SKU</label>
+                </label>
+
+                <label className={labelClass}>
+                  SKU
                   <input
                     className={inputClass}
                     value={v.sku}
@@ -724,11 +708,28 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                       updateVariant(index, "sku", e.target.value)
                     }
                   />
-                </div>
-                <div className="flex items-center gap-2 sm:col-span-2 sm:pb-1">
+                </label>
+
+                <label className={labelClass}>
+                  Weight
+                  <input
+                    className={inputClass}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={v.weight}
+                    onChange={(e) =>
+                      updateVariant(index, "weight", e.target.value)
+                    }
+                    placeholder="Optional"
+                  />
+                </label>
+
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    title="Default size (listing price)"
+                    title="Set as default variant"
+                    aria-label={`Set variant ${index + 1} as default`}
                     onClick={() => setDefaultVariant(index)}
                     className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border ${
                       v.isDefault
@@ -742,19 +743,37 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                       }`}
                     />
                   </button>
+
+                  <span className="text-xs text-gray-500">
+                    {v.isDefault ? "Default variant" : "Set default"}
+                  </span>
+
                   <button
                     type="button"
                     onClick={() => removeVariant(index)}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-100 bg-white text-red-500 hover:bg-red-50"
+                    aria-label={`Remove variant ${index + 1}`}
+                    className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-100 bg-white text-red-500 hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
+                </div>
+
+                <div className="rounded-lg bg-orange-50 px-3 py-2 text-xs text-gray-600 sm:col-span-2 lg:col-span-4">
+                  Example: Quantity 3 × shipping ₹
+                  {Number(v.shippingPrice || 0).toLocaleString("en-IN")} =
+                  <span className="ml-1 font-semibold text-gray-900">
+                    ₹
+                    {(
+                      Math.max(0, Number(v.shippingPrice) || 0) * 3
+                    ).toLocaleString("en-IN")}
+                  </span>{" "}
+                  total shipping for this variant.
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <label className={labelClass}>
               Price (₹) *
               <input
@@ -767,6 +786,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                 onChange={(e) => setField("price", e.target.value)}
               />
             </label>
+
             <label className={labelClass}>
               Compare-at price (₹)
               <input
@@ -780,6 +800,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                 }
               />
             </label>
+
             <label className={labelClass}>
               Stock quantity
               <input
@@ -791,35 +812,36 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                 onChange={(e) => setField("stock", e.target.value)}
               />
             </label>
-            <p className="sm:col-span-3 text-xs text-gray-500">
-              No size variants — single price applies. Click “Add size”
-              for multiple sizes with different prices.
+
+            <p className="text-xs text-gray-500 sm:col-span-2 lg:col-span-3">
+              No size variants — the single product price and shipping
+              price apply. Click “Add size” to configure different
+              shipping charges for each size.
             </p>
           </div>
         )}
 
-        <label className={`${labelClass} block max-w-sm`}>
-          Custom shipping price (₹)
-          <input
-            className={inputClass}
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.shippingPrice}
-            onChange={(event) =>
-              setField("shippingPrice", event.target.value)
-            }
-          />
-          <span className="mt-1 block text-xs font-normal text-gray-500">
-            New products default to ₹99. Adjust this if needed.
-          </span>
-        </label>
+        {!hasVariants && (
+          <label className={`${labelClass} block max-w-sm`}>
+            Shipping Price (₹/unit)
+            <input
+              className={inputClass}
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.shippingPrice}
+              onChange={(e) =>
+                setField("shippingPrice", e.target.value)
+              }
+            />
+            <span className="mt-1 block text-xs font-normal text-gray-500">
+              Default shipping price is ₹99 per unit.
+            </span>
+          </label>
+        )}
       </section>
 
-      {/* =====================================================
-         STOCK THRESHOLD (always)
-      ====================================================== */}
-
+      {/* STOCK THRESHOLD */}
       <section className="grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
         <label className={labelClass}>
           Low-stock threshold
@@ -836,10 +858,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
         </label>
       </section>
 
-      {/* =====================================================
-         PRODUCT DETAILS
-      ====================================================== */}
-
+      {/* PRODUCT DETAILS */}
       <section className="grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
         {FIELDS.map(({ name, label }) => (
           <label key={name} className={labelClass}>
@@ -855,17 +874,14 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
         ))}
       </section>
 
-      {/* =====================================================
-         SOCIAL + SEO
-      ====================================================== */}
-
+      {/* SOCIAL & SEO */}
       <section className="grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
         <label className={labelClass}>
           YouTube URL
           <input
             className={inputClass}
             type="url"
-            value={form.youtubeUrl || ""}
+            value={form.youtubeUrl}
             onChange={(e) => setField("youtubeUrl", e.target.value)}
           />
         </label>
@@ -875,7 +891,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
           <input
             className={inputClass}
             type="url"
-            value={form.instagramUrl || ""}
+            value={form.instagramUrl}
             onChange={(e) => setField("instagramUrl", e.target.value)}
           />
         </label>
@@ -884,7 +900,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
           Meta title
           <input
             className={inputClass}
-            value={form.metaTitle || ""}
+            value={form.metaTitle}
             onChange={(e) => setField("metaTitle", e.target.value)}
           />
         </label>
@@ -894,7 +910,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
           <textarea
             className={inputClass}
             rows={2}
-            value={form.metaDescription || ""}
+            value={form.metaDescription}
             onChange={(e) =>
               setField("metaDescription", e.target.value)
             }
@@ -902,10 +918,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
         </label>
       </section>
 
-      {/* =====================================================
-         STATUS
-      ====================================================== */}
-
+      {/* STATUS */}
       <section className="flex flex-wrap gap-x-6 gap-y-3 border-t border-gray-100 pt-5">
         {[
           ["featured", "Featured product"],
@@ -927,10 +940,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
         ))}
       </section>
 
-      {/* =====================================================
-         SUBMIT
-      ====================================================== */}
-
+      {/* SUBMIT */}
       <div className="flex justify-end border-t border-gray-100 pt-5">
         <button
           type="submit"

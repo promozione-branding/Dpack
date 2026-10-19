@@ -494,13 +494,25 @@ function toSpecificationPairs(specifications = []) {
   });
 }
 
+
 /* =========================================================
    VARIANT HELPERS
 ========================================================= */
 
 function getVariants(product) {
   if (Array.isArray(product?.variants) && product.variants.length > 0) {
-    return product.variants;
+    return product.variants.map((variant) => ({
+      ...variant,
+      price: Number(variant.price ?? 0),
+      compareAtPrice:
+        variant.compareAtPrice != null
+          ? Number(variant.compareAtPrice)
+          : null,
+      shippingPrice: Number(
+        variant.shippingPrice ?? product.shippingPrice ?? 0
+      ),
+      stock: Number(variant.stock ?? 0),
+    }));
   }
 
   if (product?.price != null) {
@@ -515,6 +527,7 @@ function getVariants(product) {
         product.compareAtPrice != null
           ? Number(product.compareAtPrice)
           : null,
+      shippingPrice: Number(product.shippingPrice ?? 0),
       stock: Number(product.stock ?? 0),
       isDefault: index === 0,
     }));
@@ -545,6 +558,20 @@ function getDisplayPrice(product, selectedVariant = null) {
   }
 
   return Number(product?.price ?? 0);
+}
+
+function getDisplayShippingPrice(
+  product,
+  selectedVariant = null
+) {
+  const variant =
+    selectedVariant || getDefaultVariant(product);
+
+  if (variant?.shippingPrice != null) {
+    return Number(variant.shippingPrice);
+  }
+
+  return Number(product?.shippingPrice ?? 0);
 }
 
 function getDisplayComparePrice(
@@ -620,6 +647,7 @@ function isVariantInStock(
     ) > 0
   );
 }
+
 
 /* =========================================================
    DESCRIPTION FORMATTER
@@ -1403,29 +1431,45 @@ export default function ProductPage({
      CART
   ======================================================= */
 
-  const addToCart = () => {
-    if (!inStock) {
-      return;
-    }
+ const addToCart = () => {
+  if (!inStock) {
+    return;
+  }
 
-    if (
-      typeof window !==
-      "undefined"
-    ) {
-      window.dispatchEvent(
-        new CustomEvent(
-          "dpack-cart-add",
-          {
-            detail: {
-              ...currentProduct,
-              quantity,
-              selectedVariant,
-            },
-          }
-        )
-      );
-    }
-  };
+  if (typeof window !== "undefined") {
+  console.log("Current Product:", currentProduct);
+  console.log("Selected Variant:", selectedVariant);
+  console.log(
+    "Selected Variant Shipping:",
+    selectedVariant?.shippingPrice
+  );
+
+  window.dispatchEvent(
+    new CustomEvent("dpack-cart-add", {
+      detail: {
+        ...currentProduct,
+        quantity,
+        selectedVariant,
+
+        shippingPrice: Number(
+          selectedVariant?.shippingPrice ??
+          currentProduct?.shippingPrice ??
+          0
+        ),
+
+        price: Number(
+          selectedVariant?.price ??
+          currentProduct?.price ??
+          0
+        ),
+
+        variantId: selectedVariant?._id ?? null,
+        size: selectedVariant?.size ?? "",
+      },
+    })
+  );
+}
+};
 
   const buyNow = () => {
     if (!inStock) {

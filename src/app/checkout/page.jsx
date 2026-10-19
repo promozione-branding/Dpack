@@ -77,7 +77,11 @@ export default function CheckoutPage() {
     0
   );
 
-  const shipping = subtotal >= 3000 ? 0 : 99;
+const shipping = items.reduce(
+  (total, item) =>
+    total + Number(item.shippingPrice ?? 0) * item.qty,
+  0
+);
 
   const cartFingerprint = items
     .map((item) => `${item.key}:${item.qty}`)
