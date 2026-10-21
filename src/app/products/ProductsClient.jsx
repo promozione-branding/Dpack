@@ -114,12 +114,61 @@ function getProductSlug(product) {
 }
 
 function getProductCategory(product) {
+  const category = product?.category;
+
+  if (category && typeof category === "object") {
+    return (
+      category.name ||
+      category.slug ||
+      product?.categoryName ||
+      ""
+    );
+  }
+
   return (
-    product?.category?.name ||
-    product?.category ||
+    category ||
     product?.categoryName ||
-    "Uncategorized"
+    product?.categorySlug ||
+    ""
   );
+}
+
+function normalizeCategory(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function categoriesMatch(productCategory, selectedCategory) {
+  const normalize = (value) => {
+    const name = normalizeCategory(value);
+
+    const aliases = {
+      "air bubble tube": "air bubble tube",
+      "air bubble tubes": "air bubble tube",
+      "air column bag": "air column bags",
+      "air column bags": "air column bags",
+      "air column roll": "air column rolls",
+      "air column rolls": "air column rolls",
+      "dunnage bag": "dunnage bags",
+      "dunnage bags": "dunnage bags",
+      "gap filler": "gap fillers",
+      "gap fillers": "gap fillers",
+      "packaging air bag": "packaging air bags",
+      "packaging air bags": "packaging air bags",
+    };
+
+    return aliases[name] || name;
+  };
+
+  const productName = normalize(productCategory);
+  const selectedName = normalize(selectedCategory);
+
+  return Boolean(productName && selectedName && productName === selectedName);
 }
 
 function getStockValue(product) {

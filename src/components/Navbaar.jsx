@@ -26,7 +26,7 @@ import {
   MapPin,
 } from "lucide-react";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 /* =========================================================
    COLORS
@@ -281,6 +281,18 @@ function HeaderIcon({
 
 export default function Navbar() {
   const pathname = usePathname();
+    const router = useRouter();
+
+    const handleSearch = (e) => {
+  e.preventDefault();
+
+  const formData = new FormData(e.currentTarget);
+  const query = String(formData.get("q") || "").trim();
+
+  if (!query) return;
+
+  router.push(`/products?search=${encodeURIComponent(query)}`);
+};
   const isAdminRoute = pathname.startsWith("/admin");
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -1119,16 +1131,7 @@ export default function Navbar() {
 
             {/* SEARCH */}
 <form
-  onSubmit={(e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const query = String(formData.get("q") || "").trim();
-
-    if (!query) return;
-
-    window.location.href = `/products?search=${encodeURIComponent(query)}`;
-  }}
+  onSubmit={handleSearch}
   className="
     flex
     h-[46px]
@@ -1263,17 +1266,8 @@ export default function Navbar() {
             lg:hidden
           "
         >
-         <form
-  onSubmit={(e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const query = String(formData.get("q") || "").trim();
-
-    if (!query) return;
-
-    window.location.href = `/products?search=${encodeURIComponent(query)}`;
-  }}
+ <form
+  onSubmit={handleSearch}
   className="
     flex
     h-[40px]
