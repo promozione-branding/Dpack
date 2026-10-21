@@ -907,52 +907,7 @@ const shipping = items.reduce(
 
               <div className="space-y-3 p-6 sm:p-7">
 
-                {/* COD */}
-
-                <button
-                  disabled
-                  className={`flex w-full items-center gap-4 border p-5 text-left transition-all duration-300 ${
-                    paymentMethod === "cod"
-                      ? "border-[#F5A623] bg-[#FFF9EF]"
-                      : "border-gray-200 hover:border-[#081A33]"
-                  }`}
-                >
-
-                  <div
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center ${
-                      paymentMethod === "cod"
-                        ? "bg-[#F5A623] text-[#081A33]"
-                        : "bg-[#081A33] text-[#F5A623]"
-                    }`}
-                  >
-                    <Banknote size={21} />
-                  </div>
-
-                  <div className="flex-1">
-
-                    <h3 className="font-black text-[#081A33]">
-                      Cash on Delivery
-                    </h3>
-
-                    <p className="mt-1 text-xs text-gray-500">
-                      Pay when your order is delivered.
-                    </p>
-
-                  </div>
-
-                  <div
-                    className={`flex h-5 w-5 items-center justify-center border ${
-                      paymentMethod === "cod"
-                        ? "border-[#F5A623] bg-[#F5A623]"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {paymentMethod === "cod" && (
-                      <Check size={12} strokeWidth={4} />
-                    )}
-                  </div>
-
-                </button>
+             
 
                 {/* ONLINE */}
 
@@ -1001,52 +956,6 @@ const shipping = items.reduce(
 
                 </button>
 
-                {/* BANK */}
-
-                <button
-                  disabled
-                  className={`flex w-full items-center gap-4 border p-5 text-left transition-all duration-300 ${
-                    paymentMethod === "bank"
-                      ? "border-[#F5A623] bg-[#FFF9EF]"
-                      : "border-gray-200 hover:border-[#081A33]"
-                  }`}
-                >
-
-                  <div
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center ${
-                      paymentMethod === "bank"
-                        ? "bg-[#F5A623] text-[#081A33]"
-                        : "bg-[#081A33] text-[#F5A623]"
-                    }`}
-                  >
-                    <CreditCard size={21} />
-                  </div>
-
-                  <div className="flex-1">
-
-                    <h3 className="font-black text-[#081A33]">
-                      Bank Transfer
-                    </h3>
-
-                    <p className="mt-1 text-xs text-gray-500">
-                      Complete payment through direct bank transfer.
-                    </p>
-
-                  </div>
-
-                  <div
-                    className={`flex h-5 w-5 items-center justify-center border ${
-                      paymentMethod === "bank"
-                        ? "border-[#F5A623] bg-[#F5A623]"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {paymentMethod === "bank" && (
-                      <Check size={12} strokeWidth={4} />
-                    )}
-                  </div>
-
-                </button>
 
               </div>
             </section>
