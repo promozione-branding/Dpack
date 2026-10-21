@@ -365,7 +365,7 @@ export default function AdminCategoriesPage() {
                 setEditingCategory(null);
                 setShowNew(true);
               }}
-              className="flex items-center gap-2 rounded-xl bg-rust px-4 py-2 text-sm font-semibold text-white hover:bg-rust/90"
+              className="flex items-center gap-2 rounded-xl bg-rust px-4 py-2 text-sm font-semibold bg-black text-white hover:bg-rust/90"
             >
               <Plus className="h-4 w-4" />
               New Category
