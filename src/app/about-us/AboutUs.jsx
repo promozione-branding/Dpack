@@ -153,13 +153,13 @@ export default function AboutUs() {
       number: "01",
       name: "Air Column Packaging",
       image: "/Air column bag (2).webp",
-      href: "/products/air-column-bags",
+      href: "/products-cate/air-column-bags",
     },
     {
       number: "02",
       name: "Dunnage Packaging",
       image: "/Dannage.webp",
-      href: "/products/dunnage-air-bags",
+      href: "/products-categories/dunnage-bags",
     },
     {
       number: "03",
