@@ -53,7 +53,7 @@ export async function GET() {
 
     return ok({
       categories: [
-        { name: "All", slug: "", image: "" },
+        // { name: "All", slug: "", image: "" },
         ...categories,
       ],
       categoryImages: Object.fromEntries(

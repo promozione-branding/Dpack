@@ -282,7 +282,7 @@ export default function AboutUs() {
                 alt="DPack Dunnage Air Bags"
                 priority
                 sizes="(max-width: 568px)"
-                heightClass="h-[320px] sm:h-[520px] lg:h-[590px]"
+                heightClass="h-[370px] sm:h-[510px] lg:h-[590px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-[#081A33]/90 via-[#081A33]/10 to-transparent" />
 
@@ -558,7 +558,7 @@ export default function AboutUs() {
               <FramedImage
                 src="/product/23.webp"
                 alt="DPack Air Column Roll"
-                heightClass="h-[320px] sm:h-[520px] lg:h-[550px]"
+                heightClass="h-[370px] sm:h-[520px] lg:h-[550px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-[#081A33]/90 via-transparent to-transparent" />
 

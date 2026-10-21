@@ -106,6 +106,7 @@ function getCategorySlug(category) {
 }
 
 
+
 /* =========================================================
    SOCIAL ICONS
 ========================================================= */
@@ -281,18 +282,18 @@ function HeaderIcon({
 
 export default function Navbar() {
   const pathname = usePathname();
-    const router = useRouter();
+  const router = useRouter();
 
-    const handleSearch = (e) => {
-  e.preventDefault();
+  const handleSearch = (e) => {
+    e.preventDefault();
 
-  const formData = new FormData(e.currentTarget);
-  const query = String(formData.get("q") || "").trim();
+    const formData = new FormData(e.currentTarget);
+    const query = String(formData.get("q") || "").trim();
 
-  if (!query) return;
+    if (!query) return;
 
-  router.push(`/products?search=${encodeURIComponent(query)}`);
-};
+    router.push(`/products?search=${encodeURIComponent(query)}`);
+  };
   const isAdminRoute = pathname.startsWith("/admin");
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -349,7 +350,7 @@ export default function Navbar() {
         });
 
         const data = await response.json();
-
+console.log(data)
         if (!response.ok || !data?.success) {
           throw new Error(
             data?.error || "Unable to load categories."
@@ -360,9 +361,9 @@ export default function Navbar() {
           setCategories(
             Array.isArray(data.categories)
               ? data.categories.filter(
-                  (category) =>
-                    category && category !== "All"
-                )
+                (category) =>
+                  category && category !== "All"
+              )
               : []
           );
         }
@@ -1011,11 +1012,10 @@ export default function Navbar() {
 
                 <ChevronDown
                   size={14}
-                  className={`text-white/70 transition-transform ${
-                    categoriesOpen
+                  className={`text-white/70 transition-transform ${categoriesOpen
                       ? "rotate-180"
                       : ""
-                  }`}
+                    }`}
                 />
               </button>
 
@@ -1070,22 +1070,22 @@ export default function Navbar() {
                       <ArrowRight size={14} />
                     </Link>
 
-                   
-{categories.map((category) => {
-  const categoryName =
-    typeof category === "string"
-      ? category
-      : category?.name || "";
 
-  const categorySlug = getCategorySlug(category);
+                    {categories.map((category) => {
+                      const categoryName =
+                        typeof category === "string"
+                          ? category
+                          : category?.name || "";
 
-  return (
-    <Link
-      key={categorySlug || categoryName}
-      href={`/products-categories/${categorySlug}`}
-      role="menuitem"
-      onClick={() => setCategoriesOpen(false)}
-      className="
+                      const categorySlug = getCategorySlug(category);
+
+                      return (
+                        <Link
+                          key={categorySlug || categoryName}
+                          href={`/products-categories/${categorySlug}`}
+                          role="menuitem"
+                          onClick={() => setCategoriesOpen(false)}
+                          className="
         flex
         items-center
         justify-between
@@ -1097,16 +1097,16 @@ export default function Navbar() {
         hover:bg-[#F7F7F5]
         hover:text-[#F5A623]
       "
-    >
-      {categoryName}
+                        >
+                          {categoryName}  
 
-      <ArrowRight
-        size={14}
-        className="text-gray-300"
-      />
-    </Link>
-  );
-})}
+                          <ArrowRight
+                            size={14}
+                            className="text-gray-300"
+                          />
+                        </Link>
+                      );
+                    })}
 
 
                     {categoriesError && (
@@ -1130,9 +1130,9 @@ export default function Navbar() {
             </div>
 
             {/* SEARCH */}
-<form
-  onSubmit={handleSearch}
-  className="
+            <form
+              onSubmit={handleSearch}
+              className="
     flex
     h-[46px]
     min-w-0
@@ -1144,26 +1144,26 @@ export default function Navbar() {
     border-[#F5A623]
     bg-white
   "
->
-  <div className="relative flex-1">
-    <Search
-      size={18}
-      strokeWidth={1.8}
-      className="
+            >
+              <div className="relative flex-1">
+                <Search
+                  size={18}
+                  strokeWidth={1.8}
+                  className="
         absolute
         left-5
         top-1/2
         -translate-y-1/2
         text-[#777]
       "
-    />
+                />
 
-    <input
-      type="text"
-      name="q"
-      placeholder="I'm looking for..."
-      autoComplete="off"
-      className="
+                <input
+                  type="text"
+                  name="q"
+                  placeholder="I'm looking for..."
+                  autoComplete="off"
+                  className="
         h-full
         w-full
         bg-transparent
@@ -1174,12 +1174,12 @@ export default function Navbar() {
         outline-none
         placeholder:text-[#999]
       "
-    />
-  </div>
+                />
+              </div>
 
-  <button
-    type="submit"
-    className="
+              <button
+                type="submit"
+                className="
       flex
       w-[130px]
       shrink-0
@@ -1194,11 +1194,11 @@ export default function Navbar() {
       duration-300
       hover:bg-[#B83F1C]
     "
-  >
-    <Search size={17} />
-    Search
-  </button>
-</form>
+              >
+                <Search size={17} />
+                Search
+              </button>
+            </form>
 
             {/* RIGHT QUICK LINKS */}
 
@@ -1266,9 +1266,9 @@ export default function Navbar() {
             lg:hidden
           "
         >
- <form
-  onSubmit={handleSearch}
-  className="
+          <form
+            onSubmit={handleSearch}
+            className="
     flex
     h-[40px]
     w-full
@@ -1279,11 +1279,11 @@ export default function Navbar() {
     bg-white
     sm:h-[42px]
   "
->
-  <div className="relative min-w-0 flex-1">
-    <Search
-      size={16}
-      className="
+          >
+            <div className="relative min-w-0 flex-1">
+              <Search
+                size={16}
+                className="
         absolute
         left-3.5
         top-1/2
@@ -1291,14 +1291,14 @@ export default function Navbar() {
         text-[#777]
         sm:left-4
       "
-    />
+              />
 
-    <input
-      type="text"
-      name="q"
-      placeholder="Search products..."
-      autoComplete="off"
-      className="
+              <input
+                type="text"
+                name="q"
+                placeholder="Search products..."
+                autoComplete="off"
+                className="
         h-full
         w-full
         min-w-0
@@ -1312,12 +1312,12 @@ export default function Navbar() {
         sm:pl-10
         sm:text-[13px]
       "
-    />
-  </div>
+              />
+            </div>
 
-  <button
-    type="submit"
-    className="
+            <button
+              type="submit"
+              className="
       flex
       w-[72px]
       shrink-0
@@ -1330,10 +1330,10 @@ export default function Navbar() {
       sm:w-[85px]
       sm:text-[12px]
     "
-  >
-    Search
-  </button>
-</form>
+            >
+              Search
+            </button>
+          </form>
         </div>
       </header>
 
@@ -1743,7 +1743,7 @@ export default function Navbar() {
 
               <div className="mx-4 mt-4 grid grid-cols-2 gap-2 sm:mx-5">
                 <Link
-                  href="/flash-sale"
+                  href="/products"
                   onClick={() =>
                     setMobileOpen(false)
                   }
@@ -1772,7 +1772,7 @@ export default function Navbar() {
                 </Link>
 
                 <Link
-                  href="/faqs"
+                  href="/about-us"
                   onClick={() =>
                     setMobileOpen(false)
                   }
