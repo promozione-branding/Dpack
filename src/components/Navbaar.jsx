@@ -74,15 +74,16 @@ const navLinks = [
 
 function getCategorySlug(category) {
   const categorySlugs = {
+
     "Dunnage Bag": "dunnage-bag",
     "Dunnage Bags": "dunnage-bag",
-    "Dunnage Air Bags": "dunnage-bag",
+    "Dunnage Air Bags": "dunnage-bags",
 
     "Air Column Bag": "air-column-bags",
     "Air Column Bags": "air-column-bags",
 
     "Air Column Roll": "air-column-roll",
-    "Air Column Rolls": "air-column-roll",
+    "Air Column Rolls": "air-column-rolls",
 
     "Gap Filler": "gap-filler",
     "Gap Fillers": "gap-filler",

@@ -27,7 +27,7 @@ import { usePathname } from "next/navigation";
 const productLinks = [
   {
     name: "Dunnage Bags",
-    href: "/products-categories/dunnage-bags",
+    href: "/products-categories/dunnage-bag",
   },
   {
     name: "Air Column Bags",
@@ -35,7 +35,7 @@ const productLinks = [
   },
   {
     name: "Air Column Rolls",
-    href: "/products-categories/air-column-roll",
+    href: "/products-categories/air-column-rolls",
   },
   {
     name: "Packaging Air Bags",
@@ -43,7 +43,7 @@ const productLinks = [
   },
   {
     name: "Gap Fillers",
-    href: "/products-categories/gap-fillers",
+    href: "/products-categories/gap-filler",
   },
 ];
 
