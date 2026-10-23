@@ -609,7 +609,7 @@ function ProductCard({
         tracking-[0.08em]
       "
     >
-      View Details
+      View Sizes
     </span>
 
     <ArrowRight

@@ -42,7 +42,7 @@ export async function POST(request) {
       body: JSON.stringify({
         platform: "DPACK Popup Form",
         supplierToken,
-        platformEmail: "sahil@promozionebranding.com",
+        platformEmail: "dpacksolutionindia@gmail.com",
         name,
         phone,
         email,
