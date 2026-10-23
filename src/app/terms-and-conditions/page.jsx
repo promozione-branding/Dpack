@@ -2,9 +2,9 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Terms & Conditions | Dpack Solution India",
+  title: "Terms & Conditions | Dpack ",
   description:
-    "Read the terms and conditions for using the Dpack Solution India website and purchasing products.",
+    "Read the terms and conditions for using the Dpack  website and purchasing products.",
 };
 
 export default function TermsAndConditions() {
@@ -13,7 +13,7 @@ export default function TermsAndConditions() {
       <div className="mx-auto max-w-4xl">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-10 lg:p-12">
           <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#f5a623]">
-            Dpack Solution India
+            Dpack 
           </p>
 
           <h1 className="mb-5 text-3xl font-bold text-[#081a33] sm:text-4xl">
@@ -21,7 +21,7 @@ export default function TermsAndConditions() {
           </h1>
 
           <p className="mb-8 leading-7 text-gray-600">
-            Welcome to Dpack Solution India. By accessing or
+            Welcome to Dpack. By accessing or
             using our website, you agree to comply with these
             Terms &amp; Conditions. Please read them carefully
             before placing an order.
@@ -167,7 +167,7 @@ export default function TermsAndConditions() {
               </h2>
               <p className="leading-7">
                 To the extent permitted by applicable law,
-                Dpack Solution India shall not be liable for
+                Dpack shall not be liable for
                 indirect or consequential losses arising from
                 website interruptions, third-party services,
                 or circumstances beyond our reasonable control.

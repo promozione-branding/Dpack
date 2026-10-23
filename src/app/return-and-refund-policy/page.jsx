@@ -2,9 +2,9 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Return & Refund Policy | Dpack Solution India",
+  title: "Return & Refund Policy | Dpack ",
   description:
-    "Read Dpack Solution India's return, replacement, refund, and cancellation policy.",
+    "Read  India's return, replacement, refund, and cancellation policy.",
 };
 
 export default function ReturnRefundPolicy() {
@@ -13,7 +13,7 @@ export default function ReturnRefundPolicy() {
       <div className="mx-auto max-w-4xl">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-10 lg:p-12">
           <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#f5a623]">
-            Dpack Solution India
+            Dpack 
           </p>
 
           <h1 className="mb-5 text-3xl font-bold text-[#081a33] sm:text-4xl">
@@ -22,8 +22,7 @@ export default function ReturnRefundPolicy() {
 
           <p className="mb-8 leading-7 text-gray-600">
             Please read our return, replacement, refund, and order
-            cancellation policy before placing an order with Dpack
-            Solution India.
+            cancellation policy before placing an order with Dpack.
           </p>
 
           <div className="space-y-8 text-gray-600">
@@ -112,7 +111,7 @@ export default function ReturnRefundPolicy() {
               <p className="mb-5 leading-7">
                 For replacement requests, order cancellations, or
                 questions regarding this policy, please contact
-                Dpack Solution India.
+                Dpack.
               </p>
 
               <div className="space-y-4 rounded-xl bg-[#f7f8fa] p-5">
@@ -144,12 +143,7 @@ export default function ReturnRefundPolicy() {
           </div>
 
           <div className="mt-10 border-t border-gray-200 pt-6">
-            <Link
-              href="/"
-              className="inline-flex items-center rounded-lg bg-[#f5a623] px-6 py-3 font-semibold text-[#081a33] transition hover:bg-[#e99a13]"
-            >
-              Back to Home
-            </Link>
+        
           </div>
         </div>
       </div>
