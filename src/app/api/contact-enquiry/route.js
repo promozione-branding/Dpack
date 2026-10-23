@@ -26,7 +26,7 @@ export async function POST(request) {
     );
   }
 
-  const supplierToken = process.env.DPACK_SUPPLIER_TOKEN;
+  const supplierToken = process.env.DPACK_SUPPLIER_TOKEN || "6a266629a0e54917311a8ce5";
   if (!supplierToken) {
     console.error("DPACK_SUPPLIER_TOKEN is not configured.");
     return NextResponse.json(
@@ -42,7 +42,7 @@ export async function POST(request) {
       body: JSON.stringify({
         platform: "DPACK Popup Form",
         supplierToken,
-        platformEmail: "dpacksolutionindia@gmail.com",
+        platformEmail: "sahil@promozionebranding.com",
         name,
         phone,
         email,

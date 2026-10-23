@@ -1,4 +1,3 @@
-
 import { connectDB } from "@/lib/db/mongoose";
 import Product from "@/lib/models/Product";
 import { ok, err } from "@/lib/apiHelpers";
@@ -26,16 +25,33 @@ export async function GET(request) {
       )
     );
 
-    const query = { isActive: true };
+    const query = {
+      isActive: true,
+    };
 
+    /*
+     * CATEGORY FILTER
+     *
+     * Supports:
+     * category: "Dunnage Bag"
+     *
+     * and products having:
+     * category: ["Dunnage Bag", "Belts"]
+     */
     if (category && category !== "All") {
       query.category = category;
     }
 
+    /*
+     * FEATURED FILTER
+     */
     if (featured === "true") {
       query.featured = true;
     }
 
+    /*
+     * SEARCH
+     */
     if (search?.trim()) {
       const escapedSearch = search
         .trim()
@@ -63,7 +79,7 @@ export async function GET(request) {
       ];
     }
 
-    const [total, products, categoryNames] = await Promise.all([
+    const [total, products, categoryValues] = await Promise.all([
       Product.countDocuments(query),
 
       Product.find(query)
@@ -72,12 +88,44 @@ export async function GET(request) {
         .limit(limit)
         .lean(),
 
-      Product.distinct("category", { isActive: true }),
+      Product.distinct("category", {
+        isActive: true,
+      }),
     ]);
+
+    /*
+     * Since category can now be:
+     *
+     * "Dunnage Bag"
+     *
+     * OR
+     *
+     * ["Dunnage Bag", "Belts"]
+     *
+     * flatten all categories for frontend.
+     */
+    const categoryNames = [
+      ...new Set(
+        categoryValues
+          .flatMap((item) => {
+            if (Array.isArray(item)) {
+              return item;
+            }
+
+            if (typeof item === "string") {
+              return [item];
+            }
+
+            return [];
+          })
+          .map((item) => String(item).trim())
+          .filter(Boolean)
+      ),
+    ].sort((a, b) => a.localeCompare(b));
 
     return ok({
       products,
-      categories: categoryNames.sort(),
+      categories: categoryNames,
       total,
       page,
       limit,

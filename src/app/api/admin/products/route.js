@@ -56,6 +56,13 @@ function parseVariants(value) {
             ? null
             : Number(v.compareAtPrice),
 
+        shippingPrice:
+          v.shippingPrice === "" ||
+          v.shippingPrice === undefined ||
+          v.shippingPrice === null
+            ? 99
+            : Number(v.shippingPrice),
+
         stock: Number(v.stock ?? 0),
 
         sku: v.sku ? String(v.sku).trim() : null,
@@ -86,6 +93,19 @@ function makeSlug(value) {
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+async function makeUniqueSlug(value) {
+  const baseSlug = makeSlug(value) || "product";
+  let slug = baseSlug;
+  let suffix = 2;
+
+  while (await Product.exists({ slug })) {
+    slug = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+
+  return slug;
 }
 
 /* =========================================================
@@ -355,7 +375,7 @@ export async function POST(request) {
 
       slug:
         fields.slug?.trim() ||
-        makeSlug(name),
+        await makeUniqueSlug(name),
 
       /*
         MULTIPLE CATEGORIES

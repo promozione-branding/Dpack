@@ -42,7 +42,15 @@ export async function PUT(request, { params }) {
         if (!Array.isArray(variants)) {
           return err("Variants must be a valid JSON array", 400);
         }
-        product.variants = variants;
+        product.variants = variants.map((variant) => ({
+          ...variant,
+          shippingPrice:
+            variant.shippingPrice === "" ||
+            variant.shippingPrice === undefined ||
+            variant.shippingPrice === null
+              ? Number(product.shippingPrice ?? 0)
+              : Number(variant.shippingPrice),
+        }));
       }
 
       if (files.imageFile) {
@@ -118,8 +126,6 @@ export async function PUT(request, { params }) {
 
       for (const field of [
         "name",
-        "slug",
-        "category",
         "shortDescription",
         "description",
         "metaTitle",
@@ -128,6 +134,14 @@ export async function PUT(request, { params }) {
         if (fields[field] !== undefined) {
           product[field] = fields[field];
         }
+      }
+
+      if (fields.slug !== undefined) {
+        product.slug = fields.slug.trim();
+      }
+
+      if (fields.category !== undefined) {
+        product.category = parseArrayField(fields.category);
       }
 
       for (const field of [
@@ -146,10 +160,19 @@ export async function PUT(request, { params }) {
       }
 
       if (fields.compareAtPrice !== undefined) {
-        product.compareAtPrice =
+        const compareAtPrice =
           fields.compareAtPrice === ""
             ? null
             : Number(fields.compareAtPrice);
+
+        if (
+          compareAtPrice !== null &&
+          (!Number.isFinite(compareAtPrice) || compareAtPrice < 0)
+        ) {
+          return err("compareAtPrice must be a valid non-negative number", 400);
+        }
+
+        product.compareAtPrice = compareAtPrice;
       }
 
       for (const field of ["featured", "trackInventory", "isActive"]) {
@@ -166,7 +189,16 @@ export async function PUT(request, { params }) {
     await product.save();
     return ok({ product });
   } catch (e) {
-    console.error(e);
+    console.error("ADMIN PRODUCT UPDATE ERROR:", e);
+
+    if (e?.code === 11000) {
+      return err("A product with this slug already exists. Please choose a different slug.", 409);
+    }
+
+    if (e?.name === "ValidationError") {
+      return err(e.message, 400);
+    }
+
     return err("Failed to update product", 500);
   }
 }

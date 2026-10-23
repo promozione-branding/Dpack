@@ -7,6 +7,19 @@ import { ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import ProductForm from "@/components/admin/ProductForm";
 import { adminAPI } from "@/lib/apiClient";
 
+function productsReturnUrl() {
+  const currentParams = new URLSearchParams(window.location.search);
+  const returnParams = new URLSearchParams();
+  const page = currentParams.get("page");
+  const search = currentParams.get("search");
+
+  if (page) returnParams.set("page", page);
+  if (search) returnParams.set("search", search);
+
+  const query = returnParams.toString();
+  return `/admin/products${query ? `?${query}` : ""}`;
+}
+
 export default function EditProductPage({ params }) {
   const { id } = use(params);
   const router = useRouter();
@@ -52,7 +65,7 @@ export default function EditProductPage({ params }) {
       setSuccess(true);
 
       setTimeout(() => {
-        router.push("/admin/products");
+        router.push(productsReturnUrl());
       }, 1200);
     } catch (e) {
       setError(e.message || "Failed to update product.");

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { Suspense, useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Plus,
   Search,
@@ -13,6 +14,7 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
+  Copy,
   Upload,
   Download,
   FileSpreadsheet,
@@ -55,10 +57,24 @@ function StockBadge({ product }) {
 }
 
 export default function AdminProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-12 text-center text-sm text-gray-500">
+          Loading products…
+        </div>
+      }
+    >
+      <AdminProductsContent />
+    </Suspense>
+  );
+}
+
+function AdminProductsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(null);
   const [error, setError] = useState("");
@@ -72,6 +88,28 @@ export default function AdminProductsPage() {
   const fileInputRef = useRef(null);
 
   const limit = 12;
+  const page = Math.max(
+    1,
+    Number.parseInt(searchParams.get("page") || "1", 10) || 1
+  );
+  const search = searchParams.get("search") || "";
+
+  const updateListQuery = (updates) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+    });
+
+    const query = params.toString();
+    router.replace(`/admin/products${query ? `?${query}` : ""}`, {
+      scroll: false,
+    });
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -236,6 +274,9 @@ export default function AdminProductsPage() {
   const totalPages = Math.ceil(
     total / limit
   );
+  const listQuery = new URLSearchParams(searchParams.toString());
+  listQuery.set("page", String(page));
+  const listQueryString = listQuery.toString();
 
   return (
     <div className="space-y-6">
@@ -291,8 +332,10 @@ export default function AdminProductsPage() {
         <input
           value={search}
           onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
+            updateListQuery({
+              search: e.target.value,
+              page: "1",
+            });
           }}
           placeholder="Search by name or category…"
           className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-11 pr-4 text-sm outline-none focus:border-rust focus:ring-2 focus:ring-rust/20"
@@ -472,10 +515,21 @@ export default function AdminProductsPage() {
                         </Link>
 
                         <Link
-                          href={`/admin/products/${p._id}/edit`}
+                          href={`/admin/products/${p._id}/edit?${listQueryString}`}
                           className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+                          aria-label={`Edit ${p.name}`}
+                          title="Edit product"
                         >
                           <Pencil className="h-4 w-4" />
+                        </Link>
+
+                        <Link
+                          href={`/admin/products/${p._id}/duplicate?${listQueryString}`}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
+                          aria-label={`Duplicate ${p.name}`}
+                          title="Duplicate product"
+                        >
+                          <Copy className="h-4 w-4" />
                         </Link>
 
                         <button
@@ -522,9 +576,7 @@ export default function AdminProductsPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() =>
-                setPage((p) =>
-                  Math.max(1, p - 1)
-                )
+                updateListQuery({ page: String(Math.max(1, page - 1)) })
               }
               disabled={page === 1}
               className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 transition hover:bg-gray-50 disabled:opacity-40"
@@ -538,12 +590,9 @@ export default function AdminProductsPage() {
 
             <button
               onClick={() =>
-                setPage((p) =>
-                  Math.min(
-                    totalPages,
-                    p + 1
-                  )
-                )
+                updateListQuery({
+                  page: String(Math.min(totalPages, page + 1)),
+                })
               }
               disabled={
                 page === totalPages

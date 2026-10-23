@@ -269,6 +269,15 @@ ProductSchema.set("toJSON", {
 });
 
 
+const existingProductModel = mongoose.models.Product;
+
+if (
+  existingProductModel &&
+  existingProductModel.schema.path("category")?.instance !== "Array"
+) {
+  mongoose.deleteModel("Product");
+}
+
 const ProductModel =
   mongoose.models.Product || mongoose.model("Product", ProductSchema);
 

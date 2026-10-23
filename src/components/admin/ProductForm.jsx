@@ -364,126 +364,361 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
     });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+ const handleSubmit = (event) => {
+  event.preventDefault();
 
-    const selectedCategories = [
-      ...new Set(normalizeCategories(form.category)),
-    ];
+  const selectedCategories = [
+    ...new Set(
+      normalizeCategories(form.category)
+        .map((category) => String(category).trim())
+        .filter(Boolean)
+    ),
+  ];
 
-    if (selectedCategories.length === 0) {
-      window.alert("Please select at least one product category.");
+  const productName = String(form.name || "").trim();
+
+  // Jodit can contain empty HTML such as <p><br></p>
+  const description = String(form.description || "")
+    .replace(/<p><br><\/p>/gi, "")
+    .replace(/<br\s*\/?>/gi, "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .trim();
+
+  const mainImageUrl = String(imageUrl || "").trim();
+
+  let finalPrice = Number(form.price);
+
+  /*
+   * If variants exist, use the default variant price.
+   */
+  const cleanedVariants = variants
+    .filter(
+      (variant) =>
+        String(variant.size || "").trim() &&
+        String(variant.price || "").trim() !== ""
+    )
+    .map((variant) => ({
+      size: String(variant.size).trim(),
+      price: Number(variant.price),
+
+      compareAtPrice:
+        variant.compareAtPrice === "" ||
+        variant.compareAtPrice == null
+          ? null
+          : Number(variant.compareAtPrice),
+
+      shippingPrice:
+        variant.shippingPrice === "" ||
+        variant.shippingPrice == null
+          ? 0
+          : Number(variant.shippingPrice),
+
+      stock: Number(variant.stock || 0),
+
+      sku: variant.sku?.trim() || null,
+
+      weight:
+        variant.weight === "" ||
+        variant.weight == null
+          ? null
+          : Number(variant.weight),
+
+      isDefault: Boolean(variant.isDefault),
+    }));
+
+  if (cleanedVariants.length > 0) {
+    const defaultVariant =
+      cleanedVariants.find((variant) => variant.isDefault) ||
+      cleanedVariants[0];
+
+    finalPrice = Number(defaultVariant.price);
+  }
+
+  /*
+   * Validate before sending to API.
+   */
+  if (!productName) {
+    window.alert("Please enter a product name.");
+    return;
+  }
+
+  if (selectedCategories.length === 0) {
+    window.alert("Please select at least one product category.");
+    return;
+  }
+
+  if (!description) {
+    window.alert("Please enter a detailed product description.");
+    return;
+  }
+
+  if (!imageFile && !mainImageUrl) {
+    window.alert("Please upload a product image or enter an image URL.");
+    return;
+  }
+
+  if (!Number.isFinite(finalPrice) || finalPrice < 0) {
+    window.alert("Please enter a valid product price.");
+    return;
+  }
+
+  /*
+   * Validate variants.
+   */
+  for (const variant of cleanedVariants) {
+    if (
+      !Number.isFinite(variant.price) ||
+      variant.price < 0
+    ) {
+      window.alert(
+        `Please enter a valid price for variant "${variant.size}".`
+      );
       return;
     }
 
-    const data = new FormData();
-
-    const arrayFieldNames = new Set([
-      ...FIELDS.map((field) => field.name),
-      "specs",
-      "extraImages",
-    ]);
-
-    for (const [name, value] of Object.entries(form)) {
-      if (
-        hasVariants &&
-        ["price", "compareAtPrice", "stock"].includes(name)
-      ) {
-        continue;
-      }
-
-      // Send categories as a JSON array for the API.
-      if (name === "category") {
-        data.set("category", JSON.stringify(selectedCategories));
-        continue;
-      }
-
-      if (arrayFieldNames.has(name)) {
-        data.set(
-          name,
-          JSON.stringify(
-            String(value || "")
-              .split("\n")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          )
-        );
-      } else {
-        data.set(name, String(value ?? ""));
-      }
+    if (
+      !Number.isFinite(variant.shippingPrice) ||
+      variant.shippingPrice < 0
+    ) {
+      window.alert(
+        `Please enter a valid shipping price for variant "${variant.size}".`
+      );
+      return;
     }
+  }
 
-    const cleanedVariants = variants
-      .filter((variant) => variant.size.trim() && variant.price !== "")
-      .map((variant) => ({
-        size: variant.size.trim(),
-        price: Number(variant.price),
-        compareAtPrice:
-          variant.compareAtPrice === "" ||
-          variant.compareAtPrice == null
-            ? null
-            : Number(variant.compareAtPrice),
-        shippingPrice: Number(variant.shippingPrice || 0),
-        stock: Number(variant.stock || 0),
-        sku: variant.sku?.trim() || null,
-        weight:
-          variant.weight === "" || variant.weight == null
-            ? null
-            : Number(variant.weight),
-        isDefault: Boolean(variant.isDefault),
-      }));
+  const data = new FormData();
 
-    data.set("variants", JSON.stringify(cleanedVariants));
+  /*
+   * BASIC FIELDS
+   */
+  data.set("name", productName);
+
+  data.set(
+    "slug",
+    String(form.slug || "").trim()
+  );
+
+  /*
+   * IMPORTANT:
+   * Always send category as JSON array.
+   *
+   * Example:
+   * ["Dunnage Bag","Belts"]
+   */
+  data.set(
+    "category",
+    JSON.stringify(selectedCategories)
+  );
+
+  data.set(
+    "shortDescription",
+    String(form.shortDescription || "")
+  );
+
+  /*
+   * Send original HTML description.
+   * Do NOT send the cleaned validation version.
+   */
+  data.set(
+    "description",
+    String(form.description || "")
+  );
+
+  /*
+   * ARRAY FIELDS
+   */
+  const arrayFieldNames = new Set([
+    ...FIELDS.map((field) => field.name),
+    "specs",
+    "extraImages",
+  ]);
+
+  for (const name of arrayFieldNames) {
+    const value = form[name];
+
+    const arrayValue = String(value || "")
+      .split("\n")
+      .map((item) => item.trim())
+      .filter(Boolean);
 
     data.set(
-      "sizes",
-      JSON.stringify(cleanedVariants.map((variant) => variant.size))
+      name,
+      JSON.stringify(arrayValue)
+    );
+  }
+
+  /*
+   * NORMAL PRODUCT PRICING
+   */
+  data.set(
+    "price",
+    String(finalPrice)
+  );
+
+  data.set(
+    "compareAtPrice",
+    form.compareAtPrice === "" ||
+      form.compareAtPrice == null
+      ? ""
+      : String(form.compareAtPrice)
+  );
+
+  data.set(
+    "stock",
+    String(form.stock ?? 0)
+  );
+
+  /*
+   * SHIPPING
+   *
+   * Do not force ₹99.
+   */
+  if (
+    form.shippingPrice !== undefined &&
+    form.shippingPrice !== null &&
+    form.shippingPrice !== ""
+  ) {
+    data.set(
+      "shippingPrice",
+      String(form.shippingPrice)
+    );
+  } else {
+    data.set("shippingPrice", "0");
+  }
+
+  /*
+   * VARIANTS
+   */
+  data.set(
+    "variants",
+    JSON.stringify(cleanedVariants)
+  );
+
+  data.set(
+    "sizes",
+    JSON.stringify(
+      cleanedVariants.map(
+        (variant) => variant.size
+      )
+    )
+  );
+
+  /*
+   * If variants exist, use the default variant
+   * shipping price.
+   */
+  if (cleanedVariants.length > 0) {
+    const defaultVariant =
+      cleanedVariants.find(
+        (variant) => variant.isDefault
+      ) || cleanedVariants[0];
+
+    data.set(
+      "price",
+      String(defaultVariant.price)
     );
 
-    if (cleanedVariants.length > 0) {
-      const defaultVariant =
-        cleanedVariants.find((variant) => variant.isDefault) ||
-        cleanedVariants[0];
+    data.set(
+      "shippingPrice",
+      String(
+        defaultVariant.shippingPrice
+      )
+    );
 
-      data.set("price", String(defaultVariant.price));
-
-      if (defaultVariant.compareAtPrice != null) {
-        data.set(
-          "compareAtPrice",
-          String(defaultVariant.compareAtPrice)
-        );
-      } else {
-        data.set("compareAtPrice", "");
-      }
-
-      data.set(
-        "stock",
-        String(
-          cleanedVariants.reduce(
-            (sum, variant) => sum + (variant.stock || 0),
-            0
-          )
+    data.set(
+      "stock",
+      String(
+        cleanedVariants.reduce(
+          (sum, variant) =>
+            sum + (Number(variant.stock) || 0),
+          0
         )
-      );
+      )
+    );
+  }
 
+  /*
+   * OTHER FIELDS
+   */
+  data.set(
+    "lowStockThreshold",
+    String(form.lowStockThreshold ?? 10)
+  );
+
+  data.set(
+    "trackInventory",
+    String(Boolean(form.trackInventory))
+  );
+
+  data.set(
+    "featured",
+    String(Boolean(form.featured))
+  );
+
+  data.set(
+    "isActive",
+    String(Boolean(form.isActive))
+  );
+
+  data.set(
+    "youtubeUrl",
+    String(form.youtubeUrl || "")
+  );
+
+  data.set(
+    "instagramUrl",
+    String(form.instagramUrl || "")
+  );
+
+  data.set(
+    "metaTitle",
+    String(form.metaTitle || "")
+  );
+
+  data.set(
+    "metaDescription",
+    String(form.metaDescription || "")
+  );
+
+  /*
+   * MAIN IMAGE
+   */
+  data.set(
+    "image",
+    mainImageUrl
+  );
+
+  if (imageFile) {
+    data.set(
+      "imageFile",
+      imageFile,
+      imageFile.name
+    );
+  }
+
+  /*
+   * GALLERY FILES
+   */
+  galleryFiles.forEach(
+    ({ file }, index) => {
       data.set(
-        "shippingPrice",
-        String(defaultVariant.shippingPrice)
+        `extraImage_${index}`,
+        file,
+        file.name
       );
     }
+  );
 
-    data.set("image", imageUrl);
-
-    if (imageFile) {
-      data.set("imageFile", imageFile);
-    }
-
-    galleryFiles.forEach(({ file }, index) => {
-      data.set(`extraImage_${index}`, file);
-    });
-
-    onSubmit(data, Boolean(imageFile || imageUrl.trim()));
-  };
+  /*
+   * Finally submit.
+   */
+  onSubmit(
+    data,
+    Boolean(imageFile || mainImageUrl)
+  );
+};
 
   const inputClass =
     "mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-rust focus:ring-2 focus:ring-rust/20";
