@@ -20,7 +20,7 @@ const products = [
     id: 1,
     name: "Air Column Bags",
     category: "Protective Packaging",
-    categorySlug: "air-column-bags",
+    categorySlug: "/packaging-air-bags",
     description: "Shockproof. Safe. Reliable.",
     image: "/Air Column Roll (2).webp",
     tag: "Impact Protection",

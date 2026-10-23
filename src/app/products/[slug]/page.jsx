@@ -1756,9 +1756,7 @@ export default function ProductPage({
 
             <div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
 
-              <span className="bg-[#081A33] px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white sm:text-[15px]">
-                {content.category}
-              </span>
+              
 
               <span
                 className={`px-3 py-1 text-[11px] font-bold sm:text-[15px] ${inStock

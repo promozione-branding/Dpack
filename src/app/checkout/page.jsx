@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -5,7 +6,12 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { couponsAPI, ordersAPI, paymentsAPI } from "@/lib/apiClient";
-import { clearCart, updateQty, useCart } from "@/lib/cartBus";
+import {
+  clearCart,
+  removeFromCart,
+  updateQty,
+  useCart,
+} from "@/lib/cartBus";
 import {
   ChevronRight,
   MapPin,
@@ -13,7 +19,6 @@ import {
   ShieldCheck,
   CreditCard,
   WalletCards,
-  Banknote,
   Check,
   LockKeyhole,
   ArrowRight,
@@ -21,7 +26,13 @@ import {
   Minus,
   Plus,
   TicketPercent,
+  Trash2,
 } from "lucide-react";
+
+const formatINR = (amount) =>
+  Number(amount || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 2,
+  });
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -32,12 +43,15 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [orderComplete, setOrderComplete] = useState(false);
+
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponMessage, setCouponMessage] = useState("");
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [couponEntryOpen, setCouponEntryOpen] = useState(false);
+
   const autoCouponAttempted = useRef(false);
+  const previousCartFingerprint = useRef(null);
 
   const [form, setForm] = useState({
     firstName: "",
@@ -53,7 +67,8 @@ export default function CheckoutPage() {
 
   const [errors, setErrors] = useState({});
 
-  const nameParts = (user?.name || "").split(/\s+/);
+  const nameParts = (user?.name || "").trim().split(/\s+/);
+
   const checkoutValues = {
     ...form,
     firstName: form.firstName || nameParts[0] || "",
@@ -67,54 +82,184 @@ export default function CheckoutPage() {
     pincode: form.pincode || user?.address?.pincode || "",
   };
 
-  const updateQuantity = (id, type) => {
-    const item = items.find((entry) => entry.key === id);
-    if (item) updateQty(id, type === "increase" ? item.qty + 1 : Math.max(1, item.qty - 1));
-  };
-
-  const subtotal = items.reduce(
-    (total, item) => total + item.price * item.qty,
-    0
-  );
-
-const shipping = items.reduce(
-  (total, item) =>
-    total + Number(item.shippingPrice ?? 0) * item.qty,
-  0
-);
-
   const cartFingerprint = items
     .map((item) => `${item.key}:${item.qty}`)
     .sort()
     .join("|");
-  const couponDiscount =
-    appliedCoupon?.cartFingerprint === cartFingerprint
-      ? appliedCoupon.discount
-      : 0;
-  const total = subtotal + shipping - couponDiscount;
 
-  const applyCouponCode = useCallback(async (code) => {
-    setCouponMessage("");
-    setApplyingCoupon(true);
-    try {
-      const result = await couponsAPI.validate(
-        code,
-        items.map((item) => ({ productId: item.key, qty: item.qty }))
-      );
-      setAppliedCoupon({ ...result.coupon, cartFingerprint });
-      setCouponCode(result.coupon.code);
-      setCouponMessage(
-        result.coupon.productRestricted
-          ? "Coupon applied to eligible products."
-          : "Coupon applied successfully."
-      );
-    } catch (error) {
-      setAppliedCoupon(null);
-      setCouponMessage(error.message || "Could not validate the coupon.");
-    } finally {
-      setApplyingCoupon(false);
+  const subtotal = items.reduce(
+    (total, item) =>
+      total + Number(item.price || 0) * Number(item.qty || 0),
+    0
+  );
+
+  const shipping = items.reduce(
+    (total, item) =>
+      total +
+      Number(item.shippingPrice ?? 0) * Number(item.qty || 0),
+    0
+  );
+
+  const couponMatchesCart =
+    Boolean(appliedCoupon) &&
+    appliedCoupon.cartFingerprint === cartFingerprint;
+
+  const couponDiscount = couponMatchesCart
+    ? Math.min(
+        Math.max(0, Number(appliedCoupon.discount) || 0),
+        subtotal
+      )
+    : 0;
+
+  const total = Math.max(0, subtotal + shipping - couponDiscount);
+
+  const updateQuantity = (key, type) => {
+    const item = items.find((entry) => entry.key === key);
+
+    if (!item) return;
+
+    const nextQty =
+      type === "increase"
+        ? Number(item.qty) + 1
+        : Math.max(1, Number(item.qty) - 1);
+
+    updateQty(key, nextQty);
+    setCheckoutError("");
+  };
+
+  const handleRemoveProduct = (key) => {
+    const item = items.find((entry) => entry.key === key);
+
+    if (!item) return;
+
+    removeFromCart(key);
+    setCheckoutError("");
+  };
+
+  /*
+   * A cart change invalidates a previously applied coupon.
+   * The customer can reapply it to the updated cart.
+   */
+  useEffect(() => {
+    if (previousCartFingerprint.current === null) {
+      previousCartFingerprint.current = cartFingerprint;
+      return;
     }
-  }, [cartFingerprint, items]);
+
+    if (previousCartFingerprint.current === cartFingerprint) {
+      return;
+    }
+
+    previousCartFingerprint.current = cartFingerprint;
+
+    setAppliedCoupon((current) => {
+      if (current && current.cartFingerprint !== cartFingerprint) {
+        setCouponMessage("Cart changed. Please apply the coupon again.");
+        setCouponEntryOpen(true);
+        return null;
+      }
+
+      return current;
+    });
+  }, [cartFingerprint]);
+
+  const applyCouponCode = useCallback(
+    async (code) => {
+      const normalizedCode = String(code || "").trim().toUpperCase();
+
+      if (!normalizedCode) {
+        setAppliedCoupon(null);
+        setCouponMessage("Please enter a coupon code.");
+        return;
+      }
+
+      if (!items.length) {
+        setAppliedCoupon(null);
+        setCouponMessage("Your cart is empty.");
+        return;
+      }
+
+      setCouponMessage("");
+      setApplyingCoupon(true);
+
+      try {
+        /*
+         * item.id is the original MongoDB product ID.
+         * item.key can contain a variant suffix, so do not send it
+         * as the product ID.
+         */
+        const couponItems = items.map((item) => ({
+          productId:
+            item.id ??
+            item.productId ??
+            item.product?._id ??
+            item._id,
+          qty: Number(item.qty ?? item.quantity ?? 1),
+        }));
+
+        const invalidItem = couponItems.some(
+          (item) =>
+            typeof item.productId !== "string" ||
+            !/^[0-9a-fA-F]{24}$/.test(item.productId) ||
+            !Number.isInteger(item.qty) ||
+            item.qty < 1
+        );
+
+        if (invalidItem) {
+          throw new Error(
+            "A valid product ID is missing from your cart. Please remove the affected product and add it again."
+          );
+        }
+
+        const result = await couponsAPI.validate(
+          normalizedCode,
+          couponItems
+        );
+
+        if (!result?.coupon) {
+          throw new Error("Coupon validation returned an invalid response.");
+        }
+
+        /*
+         * Do not apply the result if the cart changed while
+         * the coupon request was running.
+         */
+        const currentFingerprint = items
+          .map((item) => `${item.key}:${item.qty}`)
+          .sort()
+          .join("|");
+
+        if (currentFingerprint !== cartFingerprint) {
+          throw new Error(
+            "Your cart changed. Please apply the coupon again."
+          );
+        }
+
+        setAppliedCoupon({
+          ...result.coupon,
+          cartFingerprint,
+        });
+
+        setCouponCode(result.coupon.code || normalizedCode);
+
+        setCouponMessage(
+          result.coupon.productRestricted
+            ? "Coupon applied to eligible products."
+            : "Coupon applied successfully."
+        );
+
+        setCouponEntryOpen(true);
+      } catch (error) {
+        setAppliedCoupon(null);
+        setCouponMessage(
+          error.message || "Could not validate the coupon."
+        );
+      } finally {
+        setApplyingCoupon(false);
+      }
+    },
+    [cartFingerprint, items]
+  );
 
   const applyCoupon = (event) => {
     event.preventDefault();
@@ -123,7 +268,11 @@ const shipping = items.reduce(
 
   useEffect(() => {
     if (!items.length || autoCouponAttempted.current) return;
-    const code = new URLSearchParams(window.location.search).get("coupon")?.trim();
+
+    const code = new URLSearchParams(window.location.search)
+      .get("coupon")
+      ?.trim();
+
     if (!code) return;
 
     const timer = setTimeout(() => {
@@ -132,6 +281,7 @@ const shipping = items.reduce(
       setCouponCode(code.toUpperCase());
       void applyCouponCode(code);
     }, 0);
+
     return () => clearTimeout(timer);
   }, [applyCouponCode, items.length]);
 
@@ -142,8 +292,8 @@ const shipping = items.reduce(
     setCouponEntryOpen(false);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (event) => {
+    const { name, value } = event.target;
 
     setForm((current) => ({
       ...current,
@@ -198,32 +348,62 @@ const shipping = items.reduce(
 
   const placeOrder = async () => {
     setCheckoutError("");
+
     if (!items.length) {
-      setCheckoutError("Your cart is empty. Add a product before checkout.");
+      setCheckoutError(
+        "Your cart is empty. Add a product before checkout."
+      );
       return;
     }
+
     if (!isLoggedIn) {
       setCheckoutError("Please sign in before placing your order.");
       return;
     }
+
     if (paymentMethod !== "online") {
       setCheckoutError("Only online payment is currently available.");
       return;
     }
+
     if (!validateForm()) {
       window.scrollTo({
         top: 250,
         behavior: "smooth",
       });
+      return;
+    }
 
+    /*
+     * Make sure every cart line has the real database product ID.
+     */
+    const orderItems = items.map((item) => ({
+      productId: item.id ?? item.productId ?? item.product?._id,
+      qty: Number(item.qty),
+    }));
+
+    const invalidOrderItem = orderItems.some(
+      (item) =>
+        typeof item.productId !== "string" ||
+        !/^[0-9a-fA-F]{24}$/.test(item.productId) ||
+        !Number.isInteger(item.qty) ||
+        item.qty < 1
+    );
+
+    if (invalidOrderItem) {
+      setCheckoutError(
+        "A product ID is missing or invalid. Please remove the affected product and add it again."
+      );
       return;
     }
 
     setSubmitting(true);
+
     try {
       const { order, razorpay } = await ordersAPI.create({
-        items: items.map((item) => ({ productId: item.key, qty: item.qty })),
-        customerName: `${checkoutValues.firstName} ${checkoutValues.lastName}`.trim(),
+        items: orderItems,
+        customerName:
+          `${checkoutValues.firstName} ${checkoutValues.lastName}`.trim(),
         customerEmail: checkoutValues.email,
         customerMobile: checkoutValues.phone,
         shippingAddress: {
@@ -235,19 +415,33 @@ const shipping = items.reduce(
           country: "India",
         },
         sameAsShipping: true,
-        couponCode: couponDiscount > 0 ? appliedCoupon.code : "",
+        couponCode:
+          couponMatchesCart && couponDiscount > 0
+            ? appliedCoupon.code
+            : "",
       });
 
       if (!window.Razorpay) {
         await new Promise((resolve, reject) => {
           const script = document.createElement("script");
-          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+
+          script.src =
+            "https://checkout.razorpay.com/v1/checkout.js";
+
           script.onload = resolve;
-          script.onerror = () => reject(new Error("Unable to load secure payment checkout."));
+
+          script.onerror = () =>
+            reject(
+              new Error("Unable to load secure payment checkout.")
+            );
+
           document.body.appendChild(script);
         });
       }
-      if (!window.Razorpay) throw new Error("Secure payment checkout is unavailable.");
+
+      if (!window.Razorpay) {
+        throw new Error("Secure payment checkout is unavailable.");
+      }
 
       const checkout = new window.Razorpay({
         key: razorpay.keyId,
@@ -257,7 +451,8 @@ const shipping = items.reduce(
         description: "Packaging products order",
         order_id: razorpay.orderId,
         prefill: {
-          name: `${checkoutValues.firstName} ${checkoutValues.lastName}`.trim(),
+          name:
+            `${checkoutValues.firstName} ${checkoutValues.lastName}`.trim(),
           email: checkoutValues.email,
           contact: checkoutValues.phone,
         },
@@ -269,23 +464,34 @@ const shipping = items.reduce(
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
+
             clearCart();
             setOrderComplete(true);
           } catch (error) {
-            setCheckoutError(error.message || "Payment verification failed. Contact support before retrying.");
+            setCheckoutError(
+              error.message ||
+                "Payment verification failed. Contact support before retrying."
+            );
           }
         },
         modal: {
           ondismiss: () => {
             paymentsAPI.markFailed(order._id).catch((error) => {
-              console.error("Unable to mark payment as failed:", error);
+              console.error(
+                "Unable to mark payment as failed:",
+                error
+              );
             });
           },
         },
       });
+
       checkout.open();
     } catch (error) {
-      setCheckoutError(error.message || "Unable to start checkout. Please try again.");
+      setCheckoutError(
+        error.message ||
+          "Unable to start checkout. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -303,8 +509,15 @@ const shipping = items.reduce(
     return (
       <main className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-[#F7F8FA] px-5 text-center text-[#081A33]">
         <h1 className="text-3xl font-black">Payment successful</h1>
-        <p className="text-sm text-gray-500">Your order has been confirmed.</p>
-        <Link href="/my-account" className="bg-[#081A33] px-6 py-3 text-sm font-bold text-white">
+
+        <p className="text-sm text-gray-500">
+          Your order has been confirmed.
+        </p>
+
+        <Link
+          href="/my-account"
+          className="bg-[#081A33] px-6 py-3 text-sm font-bold text-white"
+        >
           View your account
         </Link>
       </main>
@@ -313,18 +526,12 @@ const shipping = items.reduce(
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#F7F8FA] text-[#1d2939]">
-
-      {/* =====================================================
-          ANIMATIONS
-      ===================================================== */}
-
       <style jsx global>{`
         @keyframes checkoutFadeUp {
           from {
             opacity: 0;
             transform: translateY(25px);
           }
-
           to {
             opacity: 1;
             transform: translateY(0);
@@ -336,7 +543,6 @@ const shipping = items.reduce(
           100% {
             transform: translateY(0);
           }
-
           50% {
             transform: translateY(-7px);
           }
@@ -346,7 +552,6 @@ const shipping = items.reduce(
           0% {
             left: -100%;
           }
-
           100% {
             left: 120%;
           }
@@ -390,13 +595,9 @@ const shipping = items.reduce(
         }
       `}</style>
 
-      {/* =====================================================
-          BREADCRUMB
-      ===================================================== */}
-
+      {/* BREADCRUMB */}
       <div className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-[1400px] items-center gap-2 px-5 py-4 text-sm text-gray-500">
-
           <Link
             href="/"
             className="font-semibold text-[#081A33] transition-colors hover:text-[#F5A623]"
@@ -418,26 +619,17 @@ const shipping = items.reduce(
           <span className="font-medium text-[#081A33]">
             Checkout
           </span>
-
         </div>
       </div>
 
-      {/* =====================================================
-          CHECKOUT HEADER
-      ===================================================== */}
-
+      {/* CHECKOUT HEADER */}
       <section className="relative overflow-hidden bg-[#081A33]">
-
         <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#F5A623]/10 blur-3xl" />
-
         <div className="absolute -bottom-32 left-20 h-80 w-80 rounded-full bg-[#F5A623]/5 blur-3xl" />
 
         <div className="relative mx-auto max-w-[1400px] px-5 py-14">
-
           <div className="checkout-fade flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-
             <div>
-
               <span className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-[#F5A623]">
                 <span className="h-[2px] w-8 bg-[#F5A623]" />
                 DPACK Checkout
@@ -448,50 +640,32 @@ const shipping = items.reduce(
               </h1>
 
               <p className="mt-4 max-w-xl text-sm leading-7 text-white/60 sm:text-base">
-                Enter your delivery details, choose your preferred payment
-                method and place your order securely.
+                Enter your delivery details, choose your preferred
+                payment method and place your order securely.
               </p>
-
             </div>
 
             <div className="flex h-16 w-16 items-center justify-center bg-[#F5A623] text-[#081A33] shadow-xl">
               <LockKeyhole size={28} />
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* =====================================================
-          CHECKOUT CONTENT
-      ===================================================== */}
-
+      {/* CHECKOUT CONTENT */}
       <section className="mx-auto max-w-[1400px] px-5 py-10 lg:py-14">
-
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_390px]">
-
-          {/* =================================================
-              LEFT SIDE
-          ================================================= */}
-
+          {/* LEFT SIDE */}
           <div className="checkout-fade space-y-7">
-
-            {/* =================================================
-                CONTACT INFORMATION
-            ================================================= */}
-
+            {/* CONTACT INFORMATION */}
             <section className="border border-gray-200 bg-white">
-
               <div className="border-b border-gray-200 p-6 sm:p-7">
-
                 <div className="flex items-start gap-4">
-
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#081A33] text-[#F5A623]">
                     <Check size={20} strokeWidth={3} />
                   </div>
 
                   <div>
-
                     <span className="text-xs font-bold uppercase tracking-[0.18em] text-[#F5A623]">
                       Step 01
                     </span>
@@ -503,19 +677,12 @@ const shipping = items.reduce(
                     <p className="mt-1 text-sm text-gray-500">
                       Enter your contact details for order updates.
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
 
               <div className="p-6 sm:p-7">
-
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-
-                  {/* FIRST NAME */}
-
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#081A33]">
                       First Name *
@@ -540,8 +707,6 @@ const shipping = items.reduce(
                       </p>
                     )}
                   </div>
-
-                  {/* LAST NAME */}
 
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#081A33]">
@@ -568,8 +733,6 @@ const shipping = items.reduce(
                     )}
                   </div>
 
-                  {/* EMAIL */}
-
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#081A33]">
                       Email Address *
@@ -595,8 +758,6 @@ const shipping = items.reduce(
                     )}
                   </div>
 
-                  {/* PHONE */}
-
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#081A33]">
                       Phone Number *
@@ -607,7 +768,7 @@ const shipping = items.reduce(
                       name="phone"
                       value={checkoutValues.phone}
                       onChange={handleChange}
-                      placeholder="+91 XXXXX XXXXX"
+                      placeholder="+91"
                       className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
                         errors.phone
                           ? "border-red-400"
@@ -621,28 +782,19 @@ const shipping = items.reduce(
                       </p>
                     )}
                   </div>
-
                 </div>
-
               </div>
             </section>
 
-            {/* =================================================
-                SHIPPING ADDRESS
-            ================================================= */}
-
+            {/* SHIPPING ADDRESS */}
             <section className="border border-gray-200 bg-white">
-
               <div className="border-b border-gray-200 p-6 sm:p-7">
-
                 <div className="flex items-start gap-4">
-
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#081A33] text-[#F5A623]">
                     <MapPin size={20} />
                   </div>
 
                   <div>
-
                     <span className="text-xs font-bold uppercase tracking-[0.18em] text-[#F5A623]">
                       Step 02
                     </span>
@@ -654,19 +806,12 @@ const shipping = items.reduce(
                     <p className="mt-1 text-sm text-gray-500">
                       Where should we deliver your order?
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
 
               <div className="p-6 sm:p-7">
-
                 <div className="space-y-5">
-
-                  {/* ADDRESS */}
-
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#081A33]">
                       Street Address *
@@ -692,8 +837,6 @@ const shipping = items.reduce(
                     )}
                   </div>
 
-                  {/* APARTMENT */}
-
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#081A33]">
                       Apartment / Landmark
@@ -712,10 +855,7 @@ const shipping = items.reduce(
                     />
                   </div>
 
-                  {/* CITY / STATE / PINCODE */}
-
                   <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-
                     <div>
                       <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#081A33]">
                         City *
@@ -791,30 +931,20 @@ const shipping = items.reduce(
                         </p>
                       )}
                     </div>
-
                   </div>
-
                 </div>
-
               </div>
             </section>
 
-            {/* =================================================
-                SHIPPING METHOD
-            ================================================= */}
-
+            {/* SHIPPING METHOD */}
             <section className="border border-gray-200 bg-white">
-
               <div className="border-b border-gray-200 p-6 sm:p-7">
-
                 <div className="flex items-start gap-4">
-
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#081A33] text-[#F5A623]">
                     <Truck size={20} />
                   </div>
 
                   <div>
-
                     <span className="text-xs font-bold uppercase tracking-[0.18em] text-[#F5A623]">
                       Step 03
                     </span>
@@ -822,71 +952,53 @@ const shipping = items.reduce(
                     <h2 className="mt-1 text-2xl font-black text-[#081A33]">
                       Shipping Method
                     </h2>
-
                   </div>
-
                 </div>
-
               </div>
 
               <div className="p-6 sm:p-7">
-
                 <div className="border-2 border-[#F5A623] bg-[#FFF9EF] p-5">
-
                   <div className="flex items-center gap-4">
-
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#081A33] text-[#F5A623]">
                       <Truck size={20} />
                     </div>
 
                     <div className="flex-1">
-
                       <div className="flex flex-wrap items-center justify-between gap-2">
-
                         <h3 className="font-black text-[#081A33]">
                           Standard Delivery
                         </h3>
 
                         <span className="font-black text-green-600">
-                          {shipping === 0 ? "FREE" : `₹${shipping}`}
+                          {shipping === 0
+                            ? "FREE"
+                            : `₹${formatINR(shipping)}`}
                         </span>
-
                       </div>
 
                       <p className="mt-1 text-xs leading-5 text-gray-500">
-                        Reliable delivery service. Estimated delivery time
-                        depends on your location.
+                        Reliable delivery service. Estimated delivery
+                        time depends on your location.
                       </p>
-
                     </div>
 
                     <div className="flex h-6 w-6 items-center justify-center bg-[#F5A623] text-[#081A33]">
                       <Check size={14} strokeWidth={3} />
                     </div>
-
                   </div>
-
                 </div>
-
               </div>
             </section>
 
-            {/* =================================================
-                PAYMENT
-            ================================================= */}
-
+            {/* PAYMENT */}
             <section className="border border-gray-200 bg-white">
-
               <div className="border-b border-gray-200 p-6 sm:p-7">
-
                 <div className="flex items-start gap-4">
-
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#081A33] text-[#F5A623]">
                     <CreditCard size={20} />
                   </div>
 
                   <div>
-
                     <span className="text-xs font-bold uppercase tracking-[0.18em] text-[#F5A623]">
                       Step 04
                     </span>
@@ -898,20 +1010,13 @@ const shipping = items.reduce(
                     <p className="mt-1 text-sm text-gray-500">
                       Select your preferred payment option.
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
 
               <div className="space-y-3 p-6 sm:p-7">
-
-             
-
-                {/* ONLINE */}
-
                 <button
+                  type="button"
                   onClick={() => setPaymentMethod("online")}
                   className={`flex w-full items-center gap-4 border p-5 text-left transition-all duration-300 ${
                     paymentMethod === "online"
@@ -919,7 +1024,6 @@ const shipping = items.reduce(
                       : "border-gray-200 hover:border-[#081A33]"
                   }`}
                 >
-
                   <div
                     className={`flex h-11 w-11 shrink-0 items-center justify-center ${
                       paymentMethod === "online"
@@ -931,7 +1035,6 @@ const shipping = items.reduce(
                   </div>
 
                   <div className="flex-1">
-
                     <h3 className="font-black text-[#081A33]">
                       Online Payment
                     </h3>
@@ -939,7 +1042,6 @@ const shipping = items.reduce(
                     <p className="mt-1 text-xs text-gray-500">
                       Secure payment through available online methods.
                     </p>
-
                   </div>
 
                   <div
@@ -953,33 +1055,20 @@ const shipping = items.reduce(
                       <Check size={12} strokeWidth={4} />
                     )}
                   </div>
-
                 </button>
-
-
               </div>
             </section>
-
           </div>
 
-          {/* =================================================
-              RIGHT ORDER SUMMARY
-          ================================================= */}
-
+          {/* RIGHT ORDER SUMMARY */}
           <aside className="checkout-fade lg:sticky lg:top-5 lg:self-start">
-
             <div className="overflow-hidden border border-gray-200 bg-white shadow-sm">
-
               {/* HEADER */}
-
               <div className="relative overflow-hidden bg-[#081A33] p-6">
-
                 <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-[#F5A623]/10 blur-2xl" />
 
                 <div className="relative flex items-center justify-between">
-
                   <div>
-
                     <span className="text-xs font-bold uppercase tracking-[0.18em] text-[#F5A623]">
                       Your Cart
                     </span>
@@ -987,115 +1076,161 @@ const shipping = items.reduce(
                     <h2 className="mt-1 text-2xl font-black text-white">
                       Order Summary
                     </h2>
-
                   </div>
 
                   <ShoppingBag
                     size={24}
                     className="text-[#F5A623]"
                   />
-
                 </div>
-
               </div>
 
               {/* PRODUCTS */}
-
               <div className="border-b border-gray-200 p-5">
+                {items.length === 0 ? (
+                  <div className="py-7 text-center">
+                    <ShoppingBag
+                      size={35}
+                      className="mx-auto text-gray-300"
+                    />
 
-                <div className="space-y-4">
+                    <h3 className="mt-3 font-bold text-[#081A33]">
+                      Your cart is empty
+                    </h3>
 
-                  {items.map((item) => (
+                    <p className="mt-1 text-sm text-gray-500">
+                      Add a product to continue checkout.
+                    </p>
 
-                    <div
-                      key={item.key}
-                      className="group flex gap-4 border-b border-gray-100 pb-4 last:border-0 last:pb-0"
+                    <Link
+                      href="/products"
+                      className="mt-4 inline-flex items-center gap-2 bg-[#081A33] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#142b49]"
                     >
+                      Continue Shopping
+                      <ArrowRight size={16} />
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {items.map((item) => (
+                      <div
+                        key={item.key}
+                        className="group flex gap-3 border-b border-gray-100 pb-4 last:border-0 last:pb-0"
+                      >
+                        <div className="relative flex h-[75px] w-[75px] shrink-0 items-center justify-center bg-[#F7F9FB]">
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.name || "Product"}
+                              className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-110"
+                            />
+                          ) : (
+                            <ShoppingBag
+                              size={25}
+                              className="text-gray-300"
+                            />
+                          )}
 
-                      <div className="relative flex h-[75px] w-[75px] shrink-0 items-center justify-center bg-[#F7F9FB]">
-
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-110"
-                        />
-
-                        <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center bg-[#F5A623] text-[10px] font-black text-[#081A33]">
-                          {item.qty}
-                        </span>
-
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-
-                        <h3 className="truncate text-sm font-black text-[#081A33]">
-                          {item.name}
-                        </h3>
-
-                        <p className="mt-1 text-xs text-gray-400">
-                          SKU: {item.sku}
-                        </p>
-
-                        <div className="mt-2 flex items-center justify-between gap-3">
-
-                          <div className="flex h-8 border border-gray-200">
-
-                            <button
-                              onClick={() =>
-                                updateQuantity(item.key, "decrease")
-                              }
-                              className="flex w-7 items-center justify-center text-gray-500 hover:bg-[#081A33] hover:text-white"
-                            >
-                              <Minus size={11} />
-                            </button>
-
-                            <span className="flex w-8 items-center justify-center border-x border-gray-200 text-xs font-bold">
-                              {item.qty}
-                            </span>
-
-                            <button
-                              onClick={() =>
-                                updateQuantity(item.key, "increase")
-                              }
-                              className="flex w-7 items-center justify-center text-gray-500 hover:bg-[#081A33] hover:text-white"
-                            >
-                              <Plus size={11} />
-                            </button>
-
-                          </div>
-
-                          <span className="text-sm font-black text-[#081A33]">
-                            ₹
-                            {(item.price * item.qty).toLocaleString(
-                              "en-IN"
-                            )}
+                          <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center bg-[#F5A623] text-[10px] font-black text-[#081A33]">
+                            {item.qty}
                           </span>
-
                         </div>
 
+                        <div className="min-w-0 flex-1">
+                          <h3 className="break-words text-sm font-black text-[#081A33]">
+                            {item.name}
+                          </h3>
+
+                          {item.size && (
+                            <p className="mt-1 text-xs text-gray-500">
+                              Size: {item.size}
+                            </p>
+                          )}
+
+                          {item.sku && (
+                            <p className="mt-1 text-xs text-gray-400">
+                              SKU: {item.sku}
+                            </p>
+                          )}
+
+                          <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex h-8 border border-gray-200">
+                              <button
+                                type="button"
+                                aria-label={`Decrease quantity of ${item.name}`}
+                                onClick={() =>
+                                  updateQuantity(item.key, "decrease")
+                                }
+                                disabled={Number(item.qty) <= 1}
+                                className="flex w-7 items-center justify-center text-gray-500 hover:bg-[#081A33] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                              >
+                                <Minus size={11} />
+                              </button>
+
+                              <span className="flex w-8 items-center justify-center border-x border-gray-200 text-xs font-bold">
+                                {item.qty}
+                              </span>
+
+                              <button
+                                type="button"
+                                aria-label={`Increase quantity of ${item.name}`}
+                                onClick={() =>
+                                  updateQuantity(item.key, "increase")
+                                }
+                                className="flex w-7 items-center justify-center text-gray-500 hover:bg-[#081A33] hover:text-white"
+                              >
+                                <Plus size={11} />
+                              </button>
+                            </div>
+
+                            <span className="text-sm font-black text-[#081A33]">
+                              ₹
+                              {formatINR(
+                                Number(item.price || 0) *
+                                  Number(item.qty || 0)
+                              )}
+                            </span>
+                          </div>
+
+                          {/* REMOVE PRODUCT */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveProduct(item.key)}
+                            disabled={submitting}
+                            className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 transition hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            <Trash2 size={13} />
+                            Remove
+                          </button>
+                        </div>
                       </div>
-
-                    </div>
-
-                  ))}
-
-                </div>
-
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* PRICE */}
-
+              {/* COUPON AND PRICE */}
               <div className="p-6">
-
                 <div className="space-y-4">
                   <div className="border-b border-gray-100 pb-4">
                     {couponDiscount > 0 ? (
                       <div className="flex items-center justify-between gap-3 rounded-lg border border-green-200 bg-green-50 p-3">
                         <div>
-                          <p className="text-xs font-bold uppercase tracking-wide text-green-800">Coupon applied</p>
-                          <p className="mt-1 text-sm font-semibold text-green-700">{appliedCoupon.code} · Save ₹{couponDiscount.toLocaleString("en-IN")}</p>
+                          <p className="text-xs font-bold uppercase tracking-wide text-green-800">
+                            Coupon applied
+                          </p>
+
+                          <p className="mt-1 text-sm font-semibold text-green-700">
+                            {appliedCoupon.code} · Save ₹
+                            {formatINR(couponDiscount)}
+                          </p>
                         </div>
-                        <button type="button" onClick={removeCoupon} className="shrink-0 rounded-md px-2.5 py-1.5 text-xs font-bold text-red-700 hover:bg-red-100">
+
+                        <button
+                          type="button"
+                          onClick={removeCoupon}
+                          className="shrink-0 rounded-md px-2.5 py-1.5 text-xs font-bold text-red-700 hover:bg-red-100"
+                        >
                           Remove
                         </button>
                       </div>
@@ -1103,36 +1238,73 @@ const shipping = items.reduce(
                       <button
                         type="button"
                         onClick={() => setCouponEntryOpen(true)}
-                        className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#081A33]/20 bg-white px-4 py-3 text-sm font-bold text-[#081A33] transition hover:border-[#F5A623] hover:bg-[#FFF9ED]"
+                        disabled={!items.length}
+                        className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#081A33]/20 bg-white px-4 py-3 text-sm font-bold text-[#081A33] transition hover:border-[#F5A623] hover:bg-[#FFF9ED] disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        <TicketPercent size={17} className="text-[#C97A00]" />
+                        <TicketPercent
+                          size={17}
+                          className="text-[#C97A00]"
+                        />
                         Add coupon code
                       </button>
                     ) : (
                       <form onSubmit={applyCoupon}>
-                        <label htmlFor="coupon-code" className="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">
+                        <label
+                          htmlFor="coupon-code"
+                          className="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500"
+                        >
                           Enter coupon code
                         </label>
+
                         <div className="flex gap-2">
                           <input
                             id="coupon-code"
                             value={couponCode}
-                            onChange={(event) => setCouponCode(event.target.value.toUpperCase())}
+                            onChange={(event) =>
+                              setCouponCode(
+                                event.target.value.toUpperCase()
+                              )
+                            }
                             placeholder="e.g. SAVE10"
                             autoComplete="off"
-                            className="h-11 min-w-0 flex-1 rounded-lg border border-gray-200 px-3 text-sm uppercase outline-none focus:border-[#F5A623]"
+                            disabled={!items.length || applyingCoupon}
+                            className="h-11 min-w-0 flex-1 rounded-lg border border-gray-200 px-3 text-sm uppercase outline-none focus:border-[#F5A623] disabled:bg-gray-100"
                           />
-                          <button type="submit" disabled={applyingCoupon || !couponCode.trim()} className="rounded-lg bg-[#081A33] px-4 text-xs font-bold text-white hover:bg-[#142b49] disabled:cursor-not-allowed disabled:opacity-50">
+
+                          <button
+                            type="submit"
+                            disabled={
+                              applyingCoupon ||
+                              !couponCode.trim() ||
+                              !items.length
+                            }
+                            className="rounded-lg bg-[#081A33] px-4 text-xs font-bold text-white hover:bg-[#142b49] disabled:cursor-not-allowed disabled:opacity-50"
+                          >
                             {applyingCoupon ? "Checking…" : "Apply"}
                           </button>
                         </div>
-                        <div className="mt-2 flex items-center justify-between">
+
+                        <div className="mt-2 flex items-start justify-between gap-3">
                           {couponMessage ? (
-                            <p role="status" className={`text-xs ${appliedCoupon ? "text-green-700" : "text-red-600"}`}>
+                            <p
+                              role="status"
+                              className={`text-xs ${
+                                couponMatchesCart
+                                  ? "text-green-700"
+                                  : "text-red-600"
+                              }`}
+                            >
                               {couponMessage}
                             </p>
-                          ) : <span />}
-                          <button type="button" onClick={removeCoupon} className="text-xs font-semibold text-gray-500 hover:text-gray-800">
+                          ) : (
+                            <span />
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={removeCoupon}
+                            className="shrink-0 text-xs font-semibold text-gray-500 hover:text-gray-800"
+                          >
                             Cancel
                           </button>
                         </div>
@@ -1146,7 +1318,7 @@ const shipping = items.reduce(
                     </span>
 
                     <span className="font-bold text-[#081A33]">
-                      ₹{subtotal.toLocaleString("en-IN")}
+                      ₹{formatINR(subtotal)}
                     </span>
                   </div>
 
@@ -1162,61 +1334,68 @@ const shipping = items.reduce(
                           : "font-bold text-[#081A33]"
                       }
                     >
-                      {shipping === 0 ? "FREE" : `₹${shipping}`}
+                      {shipping === 0
+                        ? "FREE"
+                        : `₹${formatINR(shipping)}`}
                     </span>
                   </div>
 
                   {couponDiscount > 0 && (
                     <div className="flex items-center justify-between text-green-700">
-                      <span className="text-sm">Discount ({appliedCoupon.code})</span>
-                      <span className="font-bold">−₹{couponDiscount.toLocaleString("en-IN")}</span>
+                      <span className="text-sm">
+                        Discount ({appliedCoupon.code})
+                      </span>
+
+                      <span className="font-bold">
+                        −₹{formatINR(couponDiscount)}
+                      </span>
                     </div>
                   )}
-
                 </div>
 
                 {/* TOTAL */}
-
                 <div className="mt-5 border-t-2 border-[#081A33] pt-5">
-
                   <div className="flex items-end justify-between">
-
                     <div>
-
                       <span className="text-xs font-bold uppercase tracking-wide text-gray-400">
                         Total
                       </span>
 
                       <p className="mt-1 text-3xl font-black text-[#081A33]">
-                        ₹{total.toLocaleString("en-IN")}
+                        ₹{formatINR(total)}
                       </p>
-
                     </div>
 
                     <span className="bg-[#FFF6E5] px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-[#081A33]">
                       INR
                     </span>
-
                   </div>
-
                 </div>
 
                 {/* PLACE ORDER */}
-
                 {!isLoggedIn && (
                   <p className="mt-4 text-sm text-gray-600">
-                    <Link href="/login?next=%2Fcheckout" className="font-semibold text-[#081A33] underline">
+                    <Link
+                      href="/login?next=%2Fcheckout"
+                      className="font-semibold text-[#081A33] underline"
+                    >
                       Sign in
                     </Link>{" "}
                     with your account before paying.
                   </p>
                 )}
+
                 {checkoutError && (
-                  <p role="alert" className="mt-4 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  <p
+                    role="alert"
+                    className="mt-4 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                  >
                     {checkoutError}
                   </p>
                 )}
+
                 <button
+                  type="button"
                   onClick={placeOrder}
                   disabled={submitting || items.length === 0}
                   className="checkout-shine mt-6 flex h-14 w-full items-center justify-center gap-3 bg-[#F5A623] text-sm font-black uppercase tracking-wide text-[#081A33] transition-all duration-300 hover:-translate-y-1 hover:bg-[#ffb735] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
@@ -1226,16 +1405,13 @@ const shipping = items.reduce(
                 </button>
 
                 {/* SECURITY */}
-
                 <div className="mt-5 flex items-start gap-3 border border-gray-200 bg-[#F7F8FA] p-4">
-
                   <ShieldCheck
                     size={18}
                     className="mt-0.5 shrink-0 text-[#F5A623]"
                   />
 
                   <div>
-
                     <p className="text-xs font-bold text-[#081A33]">
                       Secure Checkout
                     </p>
@@ -1243,18 +1419,13 @@ const shipping = items.reduce(
                     <p className="mt-1 text-[11px] leading-5 text-gray-500">
                       Your personal and order information is protected.
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
-
             </div>
 
             {/* BACK TO CART */}
-
-            <a
+            <Link
               href="/cart"
               className="group mt-5 flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wide text-[#081A33] transition-colors hover:text-[#F5A623]"
             >
@@ -1262,26 +1433,16 @@ const shipping = items.reduce(
                 size={17}
                 className="rotate-180 transition-transform group-hover:-translate-x-1"
               />
-
               Back to Cart
-            </a>
-
+            </Link>
           </aside>
-
         </div>
-
       </section>
 
-      {/* =====================================================
-          BOTTOM TRUST SECTION
-      ===================================================== */}
-
+      {/* BOTTOM TRUST SECTION */}
       <section className="bg-[#081A33]">
-
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 md:grid-cols-3">
-
           <div className="group border-b border-white/10 p-7 transition-colors hover:bg-white/5 md:border-b-0 md:border-r">
-
             <Truck
               size={24}
               className="text-[#F5A623] transition-transform duration-300 group-hover:translate-x-1"
@@ -1294,11 +1455,9 @@ const shipping = items.reduce(
             <p className="mt-2 text-sm leading-6 text-white/50">
               Get your packaging products delivered safely to your location.
             </p>
-
           </div>
 
           <div className="group border-b border-white/10 p-7 transition-colors hover:bg-white/5 md:border-b-0 md:border-r">
-
             <ShieldCheck
               size={24}
               className="text-[#F5A623] transition-transform duration-300 group-hover:scale-110"
@@ -1311,11 +1470,9 @@ const shipping = items.reduce(
             <p className="mt-2 text-sm leading-6 text-white/50">
               Packaging solutions selected for dependable everyday use.
             </p>
-
           </div>
 
           <div className="group p-7 transition-colors hover:bg-white/5">
-
             <LockKeyhole
               size={24}
               className="text-[#F5A623] transition-transform duration-300 group-hover:-translate-y-1"
@@ -1328,13 +1485,9 @@ const shipping = items.reduce(
             <p className="mt-2 text-sm leading-6 text-white/50">
               Your checkout information is handled securely.
             </p>
-
           </div>
-
         </div>
-
       </section>
-
     </main>
   );
 }

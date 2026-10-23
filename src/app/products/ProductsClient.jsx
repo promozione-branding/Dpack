@@ -576,122 +576,52 @@ function ProductCard({
         </div>
 
 {/* =====================================================
-    PRICE + ADD TO CART
+    VIEW DETAILS
 ===================================================== */}
 
-<div
-  className="
-    mt-auto
-    flex
-    flex-col
-    gap-3
-    pt-4
-    sm:flex-row
-    sm:items-end
-    sm:justify-between
-    sm:gap-2
-  "
->
-  {/* PRICE */}
-
-  <div className="min-w-0">
-    <div className="flex flex-wrap items-baseline gap-1.5">
-      <span
-        className="
-          text-[15px]
-          font-black
-          leading-none
-          tracking-[-0.03em]
-          text-[#081A33]
-          sm:text-[18px]
-        "
-      >
-        {formatPrice(price)}
-      </span>
-
-      {oldPrice > price && (
-        <span
-          className="
-            text-[10px]
-            leading-none
-            text-[#929BA2]
-            line-through
-            sm:text-[12px]
-          "
-        >
-          {formatPrice(oldPrice)}
-        </span>
-      )}
-    </div>
-  </div>
-
-  {/* ADD TO CART */}
-
-  <button
-    type="button"
-    onClick={() => addToCart(product)}
-    disabled={!inStock}
+<div className="mt-auto pt-4">
+  <Link
+    href={`/products/${slug}`}
     className="
-      group/cart
+      group/details
       flex
-      h-10
+      h-11
       w-full
-      shrink-0
       items-center
       justify-center
-      gap-1.5
-      bg-[#F5A623]
-      px-2.5
-      text-[#081A33]
-
-      shadow-[0_6px_18px_rgba(245,166,35,0.22)]
-
+      gap-2
+      bg-[#081A33]
+      px-4
+      text-[#FFFFFF]
+      shadow-[0_6px_18px_rgba(8,26,51,0.12)]
       transition-all
       duration-300
-
-      hover:bg-[#081A33]
-      hover:text-white
-      hover:shadow-[0_8px_22px_rgba(8,26,51,0.18)]
-
-      disabled:cursor-not-allowed
-      disabled:bg-[#E6E8EA]
-      disabled:text-[#89949C]
-      disabled:shadow-none
-
-      sm:w-auto
-      sm:min-w-[118px]
-      sm:px-3.5
+      hover:bg-[#F5A623]
+      hover:text-[#081A33]
+      hover:shadow-[0_8px_22px_rgba(245,166,35,0.20)]
     "
   >
-    <ShoppingCart
-      size={14}
-      strokeWidth={2.3}
-    />
-
     <span
       className="
-        text-[9px]
+        text-[10px]
         font-black
         uppercase
-        tracking-[0.02em]
-        sm:text-[10px]
-        sm:tracking-[0.04em]
+        tracking-[0.08em]
       "
     >
-      {inStock
-        ? "Add to Cart"
-        : "Unavailable"}
+      View Details
     </span>
 
     <ArrowRight
-      size={13}
+      size={14}
+      strokeWidth={2.3}
       className="
         transition-transform
         duration-300
-        group-hover/cart:translate-x-1
+        group-hover/details:translate-x-1
       "
     />
-  </button>
+  </Link>
 </div>
       </div>
     </motion.article>

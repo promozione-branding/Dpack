@@ -35,7 +35,7 @@ export async function POST(request) {
     let admin = await User.findOne({ role: "admin" });
     if (!admin) {
       admin = await User.create({
-        mobile: "0000000000",
+        mobile: "",
         name: validUsername,
         role: "admin",
       });
