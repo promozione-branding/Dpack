@@ -419,21 +419,7 @@ function ProductCard({ product, index }) {
           </span>
         </div>
 
-        {/* Price */}
-
-        <div className="mt-1 flex flex-wrap items-center gap-1 sm:mt-2 sm:gap-2">
-          {product.price && (
-            <span className="text-[13px] font-black text-[#123B5D] sm:text-[13px]">
-              {product.price}
-            </span>
-          )}
-
-          {product.oldPrice && (
-            <span className="text-[12px] text-[#929BA2] line-through sm:text-[13px]">
-              {product.oldPrice}
-            </span>
-          )}
-        </div>
+      
       </div>
     </motion.article>
   );

@@ -847,12 +847,12 @@ export default function Footer() {
 
           <span
             className="
-              hidden
+            
 
-              text-[14px]
+              text-[13px]
               font-bold
               uppercase
-              tracking-[0.14em]
+              tracking-[0.10em]
               text-white/25
 
             

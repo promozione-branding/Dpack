@@ -427,6 +427,67 @@ const productContent = {
 ========================================================= */
 
 function getContent(slug, product) {
+
+  // Form Data submit
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const normalizedPhone = phone.trim();
+    if (!/^\d{10}$/.test(normalizedPhone)) {
+      setStatus("Enter a valid 10-digit phone number.");
+      return;
+    }
+
+    setLoading(true);
+    setStatus("Sending...");
+
+    try {
+      const response = await fetch("/api/contact-enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: normalizedPhone,
+          email: email.trim(),
+          product: product.trim(),
+          message: message.trim(),
+        }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || "Failed to send. Please try again.");
+      }
+
+      setStatus("Your enquiry has been submitted successfully!");
+
+      const whatsappText = `Hi, I am ${name.trim()}.
+Email: ${email.trim()}
+Product: ${product.trim()}
+Message: ${message.trim()}
+Contact: ${normalizedPhone}`;
+
+      window.open(
+        `https://wa.me/917669988825?text=${encodeURIComponent(whatsappText)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+      setName("");
+      setPhone("");
+      setEmail("");
+      setProduct("");
+      setMessage("");
+    } catch (error) {
+      console.error("Contact enquiry submission failed:", error);
+      setStatus(error.message || "Server error. Try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   const customContent = productContent[slug];
 
   if (customContent) {
@@ -3039,41 +3100,7 @@ export default function ProductPage({
 
             <form
               className="mt-6 space-y-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-
-                const formData = new FormData(e.currentTarget);
-
-                const customerName = formData.get("customerName");
-                const companyName = formData.get("companyName");
-                const mobile = formData.get("mobile");
-                const place = formData.get("place");
-                const productRequirement = formData.get("productRequirement");
-                const messageText = formData.get("message");
-
-                const selectedProduct =
-                  typeof name !== "undefined" && name
-                    ? name
-                    : "Selected Product";
-
-                const message = [
-                  "Bulk Enquiry",
-                  `Product: ${selectedProduct}`,
-                  `Requirement: ${productRequirement}`,
-                  `Name: ${customerName}`,
-                  `Company Name: ${companyName}`,
-                  `Mobile: ${mobile}`,
-                  `Place: ${place}`,
-                  `Message: ${messageText}`,
-                ].join("\n");
-
-                // Open WhatsApp
-                window.open(
-                  "https://wa.link/dsy7ee",
-                  "_blank",
-                  "noopener,noreferrer"
-                );
-              }}
+             onSubmit={handleSubmit}
             >
               {/* NAME */}
               <input

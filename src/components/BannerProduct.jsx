@@ -267,123 +267,22 @@ function ProductCard({ product, index }) {
           </h3>
         </Link>
 
-        {/* RATING */}
+      
 
-        <div
-          className="
-            mt-2
-            flex
-            items-center
-            gap-2
-          "
-        >
-          <span
-            className="
-              text-[13px]
-              tracking-[1px]
-              text-[#F5A623]
-            "
-          >
-            ★★★★★
-          </span>
+       
 
-          <span
-            className="
-              text-[12px]
-              text-[#8A959D]
-            "
-          >
-            (24)
-          </span>
-        </div>
+         <Link
+    href={product.link}
+    className="group/details mt-4 flex w-full items-center justify-center gap-2 bg-[#123B5D] px-4 py-3 text-[12px] font-black uppercase tracking-[0.06em] text-white transition-colors duration-300 hover:bg-[#F5A623] 
+    hover:text-[#123B5D] max-md:!transition-none max-md:hover:!bg-[#123B5D] max-md:hover:!text-white"
+  >
+    View Sizes
 
-        {/* PRICE */}
-
-        <div
-          className="
-            mt-3
-            flex
-            items-center
-            gap-2
-          "
-        >
-          <span
-            className="
-              text-[19px]
-              font-black
-              text-[#123B5D]
-            "
-          >
-            ₹{product.price.toLocaleString("en-IN")}
-          </span>
-
-          {product.compareAtPrice > product.price && (
-            <span
-              className="
-                text-[13px]
-                text-[#8A959D]
-                line-through
-              "
-            >
-              ₹{product.compareAtPrice.toLocaleString("en-IN")}
-            </span>
-          )}
-        </div>
-
-        {/* ADD TO CART */}
-
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          className="
-            group/cart
-
-            mt-4
-            flex
-            w-full
-            items-center
-            justify-center
-            gap-2
-
-            bg-[#123B5D]
-
-            px-4
-            py-3
-
-            text-[12px]
-            font-black
-            uppercase
-            tracking-[0.06em]
-            text-white
-
-            transition-all
-            duration-300
-
-            hover:bg-[#F5A623]
-            hover:text-[#123B5D]
-
-            max-md:!transition-none
-            max-md:hover:!bg-[#123B5D]
-            max-md:hover:!text-white
-          "
-        >
-          <ShoppingCart size={16} />
-
-          Add to Cart
-
-          <ArrowRight
-            size={14}
-            className="
-              transition-transform
-              duration-300
-
-              group-hover/cart:translate-x-1
-
-              max-md:!transition-none
-              max-md:group-hover/cart:!translate-x-0
-            "
-          />
-        </button>
+    <ArrowRight
+      size={15}
+      className="transition-transform duration-300 group-hover/details:translate-x-1 max-md:!transition-none max-md:group-hover/details:!translate-x-0"
+    />
+  </Link>
       </div>
     </motion.article>
   );

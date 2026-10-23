@@ -415,27 +415,49 @@ export default function Highlight() {
 
                     {/* ADD TO CART */}
 
-                    <button
-                      type="button"
-                      onClick={() => handleAddToCart(product)}
-                      className={`flex w-full shrink-0 items-center justify-center gap-2 rounded-xl px-2 py-2.5 text-xs font-bold transition-colors sm:text-sm ${
-                        isAdded
-                          ? "bg-emerald-600 text-white"
-                          : "bg-[#081A33] text-white hover:bg-[#F5A623] hover:text-[#081A33]"
-                      }`}
-                    >
-                      {isAdded ? (
-                        <>
-                          <Check size={16} />
-                          Added to Cart
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingCart size={16} />
-                          Add to Cart
-                        </>
-                      )}
-                    </button>
+<Link
+  href={productUrl}
+  className="
+    group/details
+    flex
+    h-11
+    w-full
+    items-center
+    justify-center
+    gap-2
+    bg-[#081A33]
+    px-4
+    text-[#FFFFFF]
+    shadow-[0_6px_18px_rgba(8,26,51,0.12)]
+    transition-all
+    duration-300
+    hover:bg-[#F5A623]
+    hover:text-[#081A33]
+    hover:shadow-[0_8px_22px_rgba(245,166,35,0.20)]
+  "
+>
+  <span
+    className="
+      text-[13px]
+      font-black
+      uppercase
+      tracking-[0.08em]
+    "
+  >
+    View Sizes
+  </span>
+
+  <ArrowRight
+    size={14}
+    strokeWidth={2.3}
+    className="
+      transition-transform
+      duration-300
+      group-hover/details:translate-x-1
+    "
+  />
+</Link>
+
                   </div>
                 </div>
               );

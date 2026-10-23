@@ -603,7 +603,7 @@ function ProductCard({
   >
     <span
       className="
-        text-[10px]
+        text-[14px]
         font-black
         uppercase
         tracking-[0.08em]

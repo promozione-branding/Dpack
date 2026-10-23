@@ -21,7 +21,7 @@ const categoryDesign = {
   "air-column-bags": {
     name: "Air Column Bags",
     image: "/22.webp",
-    href: "/products-categories/air-column-bags",
+    href: "/products-categories/packaging-air-bags",
   },
 
   "air-column-roll": {
