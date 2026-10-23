@@ -93,6 +93,25 @@ const customerLinks = [
   },
 ];
 
+const policyLinks = [
+  {
+    name: "Privacy Policy",
+    href: "/privacy-policy",
+  },
+  {
+    name: "Terms & Conditions",
+    href: "/terms-and-conditions",
+  },
+  {
+    name: "Shipping & Cancellations",
+    href: "/shipping-and-cancellations",
+  },
+  {
+    name: "Return & Refund",
+    href: "/return-and-refund-policy",
+  },
+];
+
 /* =========================================================
    TRUST ITEMS
 ========================================================= */
@@ -821,7 +840,7 @@ export default function Footer() {
             max-w-[1500px]
 
             flex-col
-            gap-3
+            gap-4
 
             px-5
             py-4
@@ -844,6 +863,21 @@ export default function Footer() {
             © {new Date().getFullYear()} D Pack.
             All rights reserved.
           </p>
+
+          <nav
+            aria-label="Legal policies"
+            className="flex flex-wrap gap-x-4 gap-y-2 text-[12px] text-white/55"
+          >
+            {policyLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="transition-colors hover:text-[#F5A623]"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
 
           <span
             className="
