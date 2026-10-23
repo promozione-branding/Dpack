@@ -463,9 +463,12 @@ function getContent(slug, product) {
       setStatus("Your enquiry has been submitted successfully!");
 
       const whatsappText = `Hi, I am ${name.trim()}.
-Email: ${email.trim()}
+      CompanyName: ${companyName.trim()}
+mail: ${email.trim()}
+Place: ${place.trim()}
 Product: ${product.trim()}
 Message: ${message.trim()}
+
 Contact: ${normalizedPhone}`;
 
       window.open(
@@ -475,8 +478,10 @@ Contact: ${normalizedPhone}`;
       );
 
       setName("");
+      setCompanyName("")
       setPhone("");
       setEmail("");
+      setPlace("")
       setProduct("");
       setMessage("");
     } catch (error) {
