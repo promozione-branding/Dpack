@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -40,7 +39,7 @@ export default function NewProductPage() {
   };
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="max-w-6xl space-y-6 overflow-visible">
       <div className="flex items-center gap-4">
         <Link
           href="/admin/products"

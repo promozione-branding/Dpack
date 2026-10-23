@@ -22,6 +22,36 @@ function lines(value) {
   return Array.isArray(value) ? value.join("\n") : value || "";
 }
 
+function normalizeCategories(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) =>
+        typeof item === "string" ? item : item?.name
+      )
+      .filter(Boolean);
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    try {
+      const parsed = JSON.parse(value);
+
+      if (Array.isArray(parsed)) {
+        return parsed.filter(Boolean);
+      }
+    } catch {
+      // Existing products may store category as a plain string.
+    }
+
+    return [value.trim()];
+  }
+
+  if (value && typeof value === "object" && value.name) {
+    return [value.name];
+  }
+
+  return [];
+}
+
 function emptyVariant(isDefault = false) {
   return {
     size: "",
@@ -41,7 +71,9 @@ function buildInitialVariants(product) {
       size: v.size || "",
       price: v.price != null ? String(v.price) : "",
       compareAtPrice:
-        v.compareAtPrice != null ? String(v.compareAtPrice) : "",
+        v.compareAtPrice != null
+          ? String(v.compareAtPrice)
+          : "",
       shippingPrice:
         v.shippingPrice != null
           ? String(v.shippingPrice)
@@ -53,21 +85,22 @@ function buildInitialVariants(product) {
     }));
   }
 
-  // Migrate old sizes[] + single price to variants
   if (product?.sizes?.length) {
-    return product.sizes.map((s, i) => ({
-      size: s,
+    return product.sizes.map((size, index) => ({
+      size,
       price:
-        i === 0 && product.price != null ? String(product.price) : "",
+        index === 0 && product.price != null
+          ? String(product.price)
+          : "",
       compareAtPrice:
-        i === 0 && product.compareAtPrice != null
+        index === 0 && product.compareAtPrice != null
           ? String(product.compareAtPrice)
           : "",
       shippingPrice: String(product?.shippingPrice ?? 99),
-      stock: i === 0 ? String(product.stock ?? 0) : "0",
+      stock: index === 0 ? String(product.stock ?? 0) : "0",
       sku: "",
       weight: "",
-      isDefault: i === 0,
+      isDefault: index === 0,
     }));
   }
 
@@ -80,13 +113,12 @@ function initialValues(product) {
   return {
     name: product?.name || "",
     slug: product?.slug || "",
-    category: product?.category || "",
+    category: normalizeCategories(product?.category),
     shortDescription: product?.shortDescription || "",
     description:
       organizedFields.description ?? product?.description ?? "",
     specs: lines(organizedFields.specs || product?.specs),
 
-    // Used when there are no variants
     price: product?.price ?? "",
     compareAtPrice: product?.compareAtPrice ?? "",
     shippingPrice: product?.shippingPrice ?? 99,
@@ -175,6 +207,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
   const [imageUrl, setImageUrl] = useState(initial?.image || "");
   const [imageFile, setImageFile] = useState(null);
   const [galleryFiles, setGalleryFiles] = useState([]);
+
   const galleryFilesRef = useRef([]);
   const galleryInputRef = useRef(null);
 
@@ -182,26 +215,33 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
   const [variants, setVariants] = useState(() =>
     buildInitialVariants(initial)
   );
+
   const [categories, setCategories] = useState([]);
   const [categoriesError, setCategoriesError] = useState("");
 
   const hasVariants = variants.length > 0;
 
+  // Load available categories from the existing category API.
   useEffect(() => {
     let mounted = true;
 
     adminAPI
       .listCategoryImages()
       .then((result) => {
-        if (mounted) {
-          setCategories(
-            Array.isArray(result.categories)
-              ? result.categories
-                  .map((category) => category?.name)
-                  .filter(Boolean)
-              : []
-          );
-        }
+        if (!mounted) return;
+
+        const categoryNames = Array.isArray(result?.categories)
+          ? result.categories
+              .map((category) =>
+                typeof category === "string"
+                  ? category
+                  : category?.name
+              )
+              .filter(Boolean)
+          : [];
+
+        setCategories(categoryNames);
+        setCategoriesError("");
       })
       .catch((error) => {
         if (mounted) {
@@ -218,9 +258,9 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
 
   useEffect(
     () => () => {
-      galleryFilesRef.current.forEach(({ preview }) =>
-        URL.revokeObjectURL(preview)
-      );
+      galleryFilesRef.current.forEach(({ preview }) => {
+        URL.revokeObjectURL(preview);
+      });
     },
     []
   );
@@ -251,7 +291,10 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
 
   const removeGalleryFile = (index) => {
     const removedFile = galleryFiles[index];
-    URL.revokeObjectURL(removedFile.preview);
+
+    if (removedFile?.preview) {
+      URL.revokeObjectURL(removedFile.preview);
+    }
 
     setSelectedGalleryFiles(
       galleryFiles.filter((_, fileIndex) => fileIndex !== index)
@@ -265,35 +308,55 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
     }));
   };
 
+  // Add or remove a category without disturbing other selections.
+  const toggleCategory = (category) => {
+    setForm((current) => {
+      const selected = normalizeCategories(current.category);
+
+      const nextCategories = selected.includes(category)
+        ? selected.filter((item) => item !== category)
+        : [...selected, category];
+
+      return {
+        ...current,
+        category: nextCategories,
+      };
+    });
+  };
+
   const updateVariant = (index, field, value) => {
-    setVariants((prev) =>
-      prev.map((v, i) =>
-        i === index ? { ...v, [field]: value } : v
+    setVariants((previous) =>
+      previous.map((variant, variantIndex) =>
+        variantIndex === index
+          ? { ...variant, [field]: value }
+          : variant
       )
     );
   };
 
   const setDefaultVariant = (index) => {
-    setVariants((prev) =>
-      prev.map((v, i) => ({
-        ...v,
-        isDefault: i === index,
+    setVariants((previous) =>
+      previous.map((variant, variantIndex) => ({
+        ...variant,
+        isDefault: variantIndex === index,
       }))
     );
   };
 
   const addVariant = () => {
-    setVariants((prev) => [
-      ...prev,
-      emptyVariant(prev.length === 0),
+    setVariants((previous) => [
+      ...previous,
+      emptyVariant(previous.length === 0),
     ]);
   };
 
   const removeVariant = (index) => {
-    setVariants((prev) => {
-      const next = prev.filter((_, i) => i !== index);
+    setVariants((previous) => {
+      const next = previous.filter(
+        (_, variantIndex) => variantIndex !== index
+      );
 
-      if (next.length && !next.some((v) => v.isDefault)) {
+      if (next.length && !next.some((variant) => variant.isDefault)) {
         next[0] = { ...next[0], isDefault: true };
       }
 
@@ -304,10 +367,19 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    const selectedCategories = [
+      ...new Set(normalizeCategories(form.category)),
+    ];
+
+    if (selectedCategories.length === 0) {
+      window.alert("Please select at least one product category.");
+      return;
+    }
+
     const data = new FormData();
 
     const arrayFieldNames = new Set([
-      ...FIELDS.map((f) => f.name),
+      ...FIELDS.map((field) => field.name),
       "specs",
       "extraImages",
     ]);
@@ -317,6 +389,12 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
         hasVariants &&
         ["price", "compareAtPrice", "stock"].includes(name)
       ) {
+        continue;
+      }
+
+      // Send categories as a JSON array for the API.
+      if (name === "category") {
+        data.set("category", JSON.stringify(selectedCategories));
         continue;
       }
 
@@ -335,57 +413,63 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
       }
     }
 
-    // Include per-variant shipping price
     const cleanedVariants = variants
-      .filter((v) => v.size.trim() && v.price !== "")
-      .map((v) => ({
-        size: v.size.trim(),
-        price: Number(v.price),
+      .filter((variant) => variant.size.trim() && variant.price !== "")
+      .map((variant) => ({
+        size: variant.size.trim(),
+        price: Number(variant.price),
         compareAtPrice:
-          v.compareAtPrice === "" || v.compareAtPrice == null
+          variant.compareAtPrice === "" ||
+          variant.compareAtPrice == null
             ? null
-            : Number(v.compareAtPrice),
-        shippingPrice: Number(v.shippingPrice || 0),
-        stock: Number(v.stock || 0),
-        sku: v.sku?.trim() || null,
+            : Number(variant.compareAtPrice),
+        shippingPrice: Number(variant.shippingPrice || 0),
+        stock: Number(variant.stock || 0),
+        sku: variant.sku?.trim() || null,
         weight:
-          v.weight === "" || v.weight == null
+          variant.weight === "" || variant.weight == null
             ? null
-            : Number(v.weight),
-        isDefault: Boolean(v.isDefault),
+            : Number(variant.weight),
+        isDefault: Boolean(variant.isDefault),
       }));
 
     data.set("variants", JSON.stringify(cleanedVariants));
 
     data.set(
       "sizes",
-      JSON.stringify(cleanedVariants.map((v) => v.size))
+      JSON.stringify(cleanedVariants.map((variant) => variant.size))
     );
 
     if (cleanedVariants.length > 0) {
-      const def =
-        cleanedVariants.find((v) => v.isDefault) ||
+      const defaultVariant =
+        cleanedVariants.find((variant) => variant.isDefault) ||
         cleanedVariants[0];
 
-      data.set("price", String(def.price));
+      data.set("price", String(defaultVariant.price));
 
-      if (def.compareAtPrice != null) {
-        data.set("compareAtPrice", String(def.compareAtPrice));
+      if (defaultVariant.compareAtPrice != null) {
+        data.set(
+          "compareAtPrice",
+          String(defaultVariant.compareAtPrice)
+        );
+      } else {
+        data.set("compareAtPrice", "");
       }
 
       data.set(
         "stock",
         String(
           cleanedVariants.reduce(
-            (sum, v) => sum + (v.stock || 0),
+            (sum, variant) => sum + (variant.stock || 0),
             0
           )
         )
       );
 
-      // Keep the legacy base shipping price in sync with the default
-      // variant so older listing and checkout code remains compatible.
-      data.set("shippingPrice", String(def.shippingPrice));
+      data.set(
+        "shippingPrice",
+        String(defaultVariant.shippingPrice)
+      );
     }
 
     data.set("image", imageUrl);
@@ -406,6 +490,14 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
 
   const labelClass = "block text-sm font-medium text-gray-700";
 
+  // Include existing categories even if they are missing from the API.
+  const availableCategories = [
+    ...new Set([
+      ...categories,
+      ...normalizeCategories(form.category),
+    ]),
+  ];
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -419,7 +511,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             className={inputClass}
             required
             value={form.name}
-            onChange={(e) => setField("name", e.target.value)}
+            onChange={(event) => setField("name", event.target.value)}
           />
         </label>
 
@@ -428,57 +520,108 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
           <input
             className={inputClass}
             value={form.slug}
-            onChange={(e) => setField("slug", e.target.value)}
+            onChange={(event) => setField("slug", event.target.value)}
             placeholder="Generated from product name if blank"
           />
         </label>
 
-        <label className={labelClass}>
-          Category *
-          <select
-            className={inputClass}
-            required
-            value={form.category}
-            onChange={(e) => setField("category", e.target.value)}
-          >
-            <option value="">Select a category</option>
-            {form.category && !categories.includes(form.category) && (
-              <option value={form.category}>{form.category}</option>
-            )}
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+        {/* MULTIPLE CATEGORY SELECTION */}
+        <div className="sm:col-span-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <label className={labelClass}>
+              Product Categories *
+            </label>
+
+            <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700">
+              {normalizeCategories(form.category).length} selected
+            </span>
+          </div>
+
+          <p className="mt-1 text-xs text-gray-500">
+            Select all categories where this product should appear.
+          </p>
 
           {categoriesError && (
-            <span className="mt-1 block text-xs text-red-600">
+            <p className="mt-2 text-xs text-red-600">
               Could not load categories: {categoriesError}
-            </span>
+            </p>
           )}
-        </label>
+
+          {availableCategories.length > 0 ? (
+            <div className="mt-3 grid grid-cols-1 gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 sm:grid-cols-2 lg:grid-cols-3">
+              {availableCategories.map((category) => {
+                const checked = normalizeCategories(
+                  form.category
+                ).includes(category);
+
+                return (
+                  <label
+                    key={category}
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 text-sm transition ${
+                      checked
+                        ? "border-orange-400 bg-orange-50 text-gray-900"
+                        : "border-gray-200 bg-white text-gray-700 hover:border-orange-300"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggleCategory(category)}
+                      className="h-4 w-4 shrink-0 accent-[#F5A623]"
+                    />
+
+                    <span className="break-words">{category}</span>
+                  </label>
+                );
+              })}
+            </div>
+          ) : (
+            !categoriesError && (
+              <p className="mt-3 rounded-lg border border-dashed border-gray-300 p-4 text-sm text-gray-500">
+                No categories found. Please create categories first.
+              </p>
+            )
+          )}
+
+          {normalizeCategories(form.category).length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {normalizeCategories(form.category).map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => toggleCategory(category)}
+                  className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs text-orange-800 hover:bg-orange-100"
+                  title={`Remove ${category}`}
+                >
+                  {category}
+                  <X className="h-3 w-3" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <label className={labelClass}>
           Main image URL
           <input
             className={inputClass}
             value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
+            onChange={(event) => setImageUrl(event.target.value)}
             placeholder="https://..."
           />
         </label>
 
-        <label className="block text-sm font-medium text-gray-700 sm:col-span-2">
+        <label className={labelClass}>
           Or upload a main image
           <input
             className={`${inputClass} file:mr-3 file:rounded-md file:border-0 file:bg-gray-100 file:px-3 file:py-1.5`}
             type="file"
             accept="image/jpeg,image/png,image/webp"
-            onChange={(e) =>
-              setImageFile(e.target.files?.[0] || null)
+            onChange={(event) =>
+              setImageFile(event.target.files?.[0] || null)
             }
           />
+
           {imageFile && (
             <span className="mt-1 block text-xs text-gray-500">
               {imageFile.name}
@@ -512,7 +655,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             className={inputClass}
             rows={6}
             value={form.specs}
-            onChange={(e) => setField("specs", e.target.value)}
+            onChange={(event) => setField("specs", event.target.value)}
             placeholder="One specification per line"
           />
         </div>
@@ -525,8 +668,8 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             Product image gallery
           </h3>
           <p className="mt-1 text-xs text-gray-500">
-            Select up to 10 images. They will appear alongside the main
-            product image.
+            Select up to 10 new gallery images. They will appear alongside
+            the main product image.
           </p>
         </div>
 
@@ -561,6 +704,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                   alt={file.name}
                   className="aspect-square w-full object-cover"
                 />
+
                 <button
                   type="button"
                   onClick={() => removeGalleryFile(index)}
@@ -569,6 +713,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                 >
                   <X className="h-4 w-4" />
                 </button>
+
                 <p className="truncate px-2 py-1.5 text-xs text-gray-600">
                   {file.name}
                 </p>
@@ -583,7 +728,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             className={inputClass}
             rows={2}
             value={form.extraImages}
-            onChange={(e) => setField("extraImages", e.target.value)}
+            onChange={(event) => setField("extraImages", event.target.value)}
             placeholder="https://..."
           />
         </label>
@@ -615,7 +760,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
 
         {hasVariants ? (
           <div className="space-y-3">
-            {variants.map((v, index) => (
+            {variants.map((variant, index) => (
               <div
                 key={index}
                 className="grid gap-3 rounded-xl border border-gray-100 bg-gray-50/70 p-3 sm:grid-cols-2 lg:grid-cols-4"
@@ -624,9 +769,9 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                   Size *
                   <input
                     className={inputClass}
-                    value={v.size}
-                    onChange={(e) =>
-                      updateVariant(index, "size", e.target.value)
+                    value={variant.size}
+                    onChange={(event) =>
+                      updateVariant(index, "size", event.target.value)
                     }
                     placeholder="e.g. Small / 120mm x 180mm"
                     required
@@ -640,9 +785,9 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={v.price}
-                    onChange={(e) =>
-                      updateVariant(index, "price", e.target.value)
+                    value={variant.price}
+                    onChange={(event) =>
+                      updateVariant(index, "price", event.target.value)
                     }
                     required
                   />
@@ -655,12 +800,12 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={v.compareAtPrice}
-                    onChange={(e) =>
+                    value={variant.compareAtPrice}
+                    onChange={(event) =>
                       updateVariant(
                         index,
                         "compareAtPrice",
-                        e.target.value
+                        event.target.value
                       )
                     }
                   />
@@ -673,12 +818,12 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={v.shippingPrice}
-                    onChange={(e) =>
+                    value={variant.shippingPrice}
+                    onChange={(event) =>
                       updateVariant(
                         index,
                         "shippingPrice",
-                        e.target.value
+                        event.target.value
                       )
                     }
                     required
@@ -692,9 +837,9 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                     type="number"
                     min="0"
                     step="1"
-                    value={v.stock}
-                    onChange={(e) =>
-                      updateVariant(index, "stock", e.target.value)
+                    value={variant.stock}
+                    onChange={(event) =>
+                      updateVariant(index, "stock", event.target.value)
                     }
                   />
                 </label>
@@ -703,9 +848,9 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                   SKU
                   <input
                     className={inputClass}
-                    value={v.sku}
-                    onChange={(e) =>
-                      updateVariant(index, "sku", e.target.value)
+                    value={variant.sku}
+                    onChange={(event) =>
+                      updateVariant(index, "sku", event.target.value)
                     }
                   />
                 </label>
@@ -717,9 +862,9 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={v.weight}
-                    onChange={(e) =>
-                      updateVariant(index, "weight", e.target.value)
+                    value={variant.weight}
+                    onChange={(event) =>
+                      updateVariant(index, "weight", event.target.value)
                     }
                     placeholder="Optional"
                   />
@@ -732,20 +877,20 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                     aria-label={`Set variant ${index + 1} as default`}
                     onClick={() => setDefaultVariant(index)}
                     className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border ${
-                      v.isDefault
+                      variant.isDefault
                         ? "border-amber-300 bg-amber-50 text-amber-600"
                         : "border-gray-200 bg-white text-gray-400 hover:text-amber-500"
                     }`}
                   >
                     <Star
                       className={`h-4 w-4 ${
-                        v.isDefault ? "fill-current" : ""
+                        variant.isDefault ? "fill-current" : ""
                       }`}
                     />
                   </button>
 
                   <span className="text-xs text-gray-500">
-                    {v.isDefault ? "Default variant" : "Set default"}
+                    {variant.isDefault ? "Default variant" : "Set default"}
                   </span>
 
                   <button
@@ -760,11 +905,12 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
 
                 <div className="rounded-lg bg-orange-50 px-3 py-2 text-xs text-gray-600 sm:col-span-2 lg:col-span-4">
                   Example: Quantity 3 × shipping ₹
-                  {Number(v.shippingPrice || 0).toLocaleString("en-IN")} =
+                  {Number(variant.shippingPrice || 0).toLocaleString("en-IN")}{" "}
+                  =
                   <span className="ml-1 font-semibold text-gray-900">
                     ₹
                     {(
-                      Math.max(0, Number(v.shippingPrice) || 0) * 3
+                      Math.max(0, Number(variant.shippingPrice) || 0) * 3
                     ).toLocaleString("en-IN")}
                   </span>{" "}
                   total shipping for this variant.
@@ -783,7 +929,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                 step="0.01"
                 required
                 value={form.price}
-                onChange={(e) => setField("price", e.target.value)}
+                onChange={(event) => setField("price", event.target.value)}
               />
             </label>
 
@@ -795,8 +941,8 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                 min="0"
                 step="0.01"
                 value={form.compareAtPrice}
-                onChange={(e) =>
-                  setField("compareAtPrice", e.target.value)
+                onChange={(event) =>
+                  setField("compareAtPrice", event.target.value)
                 }
               />
             </label>
@@ -809,7 +955,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
                 min="0"
                 step="1"
                 value={form.stock}
-                onChange={(e) => setField("stock", e.target.value)}
+                onChange={(event) => setField("stock", event.target.value)}
               />
             </label>
 
@@ -830,8 +976,8 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
               min="0"
               step="0.01"
               value={form.shippingPrice}
-              onChange={(e) =>
-                setField("shippingPrice", e.target.value)
+              onChange={(event) =>
+                setField("shippingPrice", event.target.value)
               }
             />
             <span className="mt-1 block text-xs font-normal text-gray-500">
@@ -851,8 +997,8 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             min="0"
             step="1"
             value={form.lowStockThreshold}
-            onChange={(e) =>
-              setField("lowStockThreshold", e.target.value)
+            onChange={(event) =>
+              setField("lowStockThreshold", event.target.value)
             }
           />
         </label>
@@ -867,7 +1013,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
               className={inputClass}
               rows={3}
               value={form[name]}
-              onChange={(e) => setField(name, e.target.value)}
+              onChange={(event) => setField(name, event.target.value)}
               placeholder="One item per line"
             />
           </label>
@@ -882,7 +1028,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             className={inputClass}
             type="url"
             value={form.youtubeUrl}
-            onChange={(e) => setField("youtubeUrl", e.target.value)}
+            onChange={(event) => setField("youtubeUrl", event.target.value)}
           />
         </label>
 
@@ -892,7 +1038,9 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             className={inputClass}
             type="url"
             value={form.instagramUrl}
-            onChange={(e) => setField("instagramUrl", e.target.value)}
+            onChange={(event) =>
+              setField("instagramUrl", event.target.value)
+            }
           />
         </label>
 
@@ -901,7 +1049,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
           <input
             className={inputClass}
             value={form.metaTitle}
-            onChange={(e) => setField("metaTitle", e.target.value)}
+            onChange={(event) => setField("metaTitle", event.target.value)}
           />
         </label>
 
@@ -911,8 +1059,8 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             className={inputClass}
             rows={2}
             value={form.metaDescription}
-            onChange={(e) =>
-              setField("metaDescription", e.target.value)
+            onChange={(event) =>
+              setField("metaDescription", event.target.value)
             }
           />
         </label>
@@ -932,7 +1080,7 @@ function ProductForm({ initial, onSubmit, loading, submitLabel }) {
             <input
               type="checkbox"
               checked={Boolean(form[name])}
-              onChange={(e) => setField(name, e.target.checked)}
+              onChange={(event) => setField(name, event.target.checked)}
               className="h-4 w-4 rounded border-gray-300 accent-[#3d7a72]"
             />
             {label}

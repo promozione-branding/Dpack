@@ -10,6 +10,7 @@ import { adminAPI } from "@/lib/apiClient";
 export default function EditProductPage({ params }) {
   const { id } = use(params);
   const router = useRouter();
+
   const [product, setProduct] = useState(null);
   const [loadingProduct, setLoadingProduct] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -17,39 +18,67 @@ export default function EditProductPage({ params }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
+
     adminAPI
       .getProduct(id)
-      .then((res) => setProduct(res.product))
-      .catch((e) => setError(e.message))
-      .finally(() => setLoadingProduct(false));
+      .then((res) => {
+        if (!cancelled) {
+          setProduct(res.product);
+        }
+      })
+      .catch((e) => {
+        if (!cancelled) {
+          setError(e.message || "Failed to load product.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoadingProduct(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   const handleSubmit = async (formData) => {
     setSaving(true);
     setError("");
+
     try {
       await adminAPI.updateProduct(id, formData);
       setSuccess(true);
-      setTimeout(() => router.push("/admin/products"), 1200);
+
+      setTimeout(() => {
+        router.push("/admin/products");
+      }, 1200);
     } catch (e) {
-      setError(e.message);
+      setError(e.message || "Failed to update product.");
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="max-w-6xl space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="relative w-full max-w-6xl min-w-0 space-y-6 pb-8">
+      <div className="flex min-w-0 items-center gap-4">
         <Link
           href="/admin/products"
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
+          aria-label="Back to products"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Edit Product</h1>
-          <p className="text-sm text-gray-500 font-mono">{product?.slug}</p>
+
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold text-gray-900">
+            Edit Product
+          </h1>
+          <p className="break-all font-mono text-sm text-gray-500">
+            {product?.slug}
+          </p>
         </div>
       </div>
 
@@ -59,6 +88,7 @@ export default function EditProductPage({ params }) {
           Product updated! Redirecting…
         </div>
       )}
+
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
@@ -77,7 +107,7 @@ export default function EditProductPage({ params }) {
           submitLabel="Update Product"
         />
       ) : (
-        <p className="text-gray-500">Product not found.</p>
+        <p className="py-6 text-gray-500">Product not found.</p>
       )}
     </div>
   );

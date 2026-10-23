@@ -60,10 +60,21 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
     },
 
-    category: {
+ category: {
+  type: [
+    {
       type: String,
-      required: true,
+      trim: true,
     },
+  ],
+  required: true,
+  validate: {
+    validator: function (categories) {
+      return Array.isArray(categories) && categories.length > 0;
+    },
+    message: "Please select at least one category.",
+  },
+},
 
     shortDescription: {
       type: String,
