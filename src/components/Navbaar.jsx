@@ -653,6 +653,7 @@ export default function Navbar() {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const categoriesMenuRef = useRef(null);
 
   const { wishlistCount } = useAuth();
 
@@ -740,9 +741,22 @@ export default function Navbar() {
       if (event.key === "Escape") setCategoriesOpen(false);
     };
 
-    window.addEventListener("keydown", closeOnEscape);
+    const closeOnOutsideClick = (event) => {
+      if (
+        categoriesMenuRef.current &&
+        !categoriesMenuRef.current.contains(event.target)
+      ) {
+        setCategoriesOpen(false);
+      }
+    };
 
-    return () => window.removeEventListener("keydown", closeOnEscape);
+    window.addEventListener("keydown", closeOnEscape);
+    document.addEventListener("mousedown", closeOnOutsideClick);
+
+    return () => {
+      window.removeEventListener("keydown", closeOnEscape);
+      document.removeEventListener("mousedown", closeOnOutsideClick);
+    };
   }, [categoriesOpen]);
 
   /* =======================================================
@@ -980,15 +994,15 @@ export default function Navbar() {
             {/* BROWSE CATEGORIES */}
 
             <div
+              ref={categoriesMenuRef}
               className="relative shrink-0"
-              onMouseEnter={() => setCategoriesOpen(true)}
-              onMouseLeave={() => setCategoriesOpen(false)}
             >
               <button
                 type="button"
                 onClick={() => setCategoriesOpen((open) => !open)}
                 aria-expanded={categoriesOpen}
                 aria-haspopup="menu"
+                aria-controls="desktop-category-menu"
                 className="flex items-center gap-2 text-[13px] font-semibold text-white transition-colors hover:text-[#F5A623]"
               >
                 <Menu size={20} strokeWidth={1.8} />
@@ -1005,6 +1019,7 @@ export default function Navbar() {
 
               {categoriesOpen && (
                 <div
+                  id="desktop-category-menu"
                   role="menu"
                   aria-label="Product categories"
                   className="absolute left-0 top-full z-[120] w-[280px] pt-3"
