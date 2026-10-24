@@ -325,7 +325,7 @@ function ProductCard({
             className="relative h-full w-full"
           >
             <Image
-              src={image || product?.image}
+              src={product?.image}
               alt={
                 product?.name ||
                 "DPACK Product"
