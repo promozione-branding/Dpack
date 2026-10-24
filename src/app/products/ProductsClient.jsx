@@ -43,19 +43,19 @@ function formatPrice(value) {
 function getProductPrice(product) {
   return Number(
     product?.price ??
-      product?.salePrice ??
-      product?.regularPrice ??
-      0
+    product?.salePrice ??
+    product?.regularPrice ??
+    0
   );
 }
 
 function getProductOldPrice(product) {
   return Number(
     product?.oldPrice ??
-      product?.comparePrice ??
-      product?.mrp ??
-      product?.regularPrice ??
-      0
+    product?.comparePrice ??
+    product?.mrp ??
+    product?.regularPrice ??
+    0
   );
 }
 
@@ -100,7 +100,7 @@ function getProductImage(product) {
     }
   }
 
-  return image;
+  return image || product?.image;
 }
 
 function getProductSlug(product) {
@@ -240,14 +240,14 @@ function ProductCard({
 
   const rating = Number(
     product?.rating ??
-      product?.averageRating ??
-      0
+    product?.averageRating ??
+    0
   );
 
   const reviews = Number(
     product?.reviews ??
-      product?.reviewCount ??
-      0
+    product?.reviewCount ??
+    0
   );
 
   const inStock = isProductInStock(product);
@@ -325,7 +325,7 @@ function ProductCard({
             className="relative h-full w-full"
           >
             <Image
-              src={image}
+              src={image || product?.image}
               alt={
                 product?.name ||
                 "DPACK Product"
@@ -362,9 +362,9 @@ function ProductCard({
           product?.isFeatured ||
           product?.isNew ||
           product?.isBestSeller) && (
-          <div className="absolute left-3 top-3 z-10">
-            <span
-              className="
+            <div className="absolute left-3 top-3 z-10">
+              <span
+                className="
                 inline-flex
                 bg-[#081A33]
                 px-2.5
@@ -376,16 +376,16 @@ function ProductCard({
                 text-white
                 shadow-sm
               "
-            >
-              {product?.badge ||
-                (product?.isBestSeller
-                  ? "Best Seller"
-                  : product?.isNew
-                    ? "New"
-                    : "Featured")}
-            </span>
-          </div>
-        )}
+              >
+                {product?.badge ||
+                  (product?.isBestSeller
+                    ? "Best Seller"
+                    : product?.isNew
+                      ? "New"
+                      : "Featured")}
+              </span>
+            </div>
+          )}
 
         {/* DISCOUNT */}
 
@@ -407,7 +407,7 @@ function ProductCard({
               {Math.round(
                 ((oldPrice - price) /
                   oldPrice) *
-                  100
+                100
               )}
               % OFF
             </span>
@@ -436,10 +436,9 @@ function ProductCard({
             shadow-sm
             transition-all
             duration-300
-            ${
-              isWishlisted
-                ? "border-[#F5A623] bg-[#F5A623] text-[#081A33]"
-                : "border-[#DDE3E7] bg-white/95 text-[#081A33] hover:border-[#081A33] hover:bg-[#081A33] hover:text-white"
+            ${isWishlisted
+              ? "border-[#F5A623] bg-[#F5A623] text-[#081A33]"
+              : "border-[#DDE3E7] bg-white/95 text-[#081A33] hover:border-[#081A33] hover:bg-[#081A33] hover:text-white"
             }
           `}
         >
@@ -575,14 +574,14 @@ function ProductCard({
           )}
         </div>
 
-{/* =====================================================
+        {/* =====================================================
     VIEW DETAILS
 ===================================================== */}
 
-<div className="mt-auto pt-4">
-  <Link
-    href={`/products/${slug}`}
-    className="
+        <div className="mt-auto pt-4">
+          <Link
+            href={`/products/${slug}`}
+            className="
       group/details
       flex
       h-11
@@ -600,29 +599,29 @@ function ProductCard({
       hover:text-[#081A33]
       hover:shadow-[0_8px_22px_rgba(245,166,35,0.20)]
     "
-  >
-    <span
-      className="
+          >
+            <span
+              className="
         text-[14px]
         font-black
         uppercase
         tracking-[0.08em]
       "
-    >
-      View Sizes
-    </span>
+            >
+              View Sizes
+            </span>
 
-    <ArrowRight
-      size={14}
-      strokeWidth={2.3}
-      className="
+            <ArrowRight
+              size={14}
+              strokeWidth={2.3}
+              className="
         transition-transform
         duration-300
         group-hover/details:translate-x-1
       "
-    />
-  </Link>
-</div>
+            />
+          </Link>
+        </div>
       </div>
     </motion.article>
   );
@@ -642,10 +641,9 @@ function FilterSection({
       className={`
         px-5
         py-6
-        ${
-          border
-            ? "border-b border-[#E3E7EA]"
-            : ""
+        ${border
+          ? "border-b border-[#E3E7EA]"
+          : ""
         }
       `}
     >
@@ -708,11 +706,10 @@ function CategoryList({
           text-left
           transition-colors
           duration-200
-          ${
-            selectedCategory ===
+          ${selectedCategory ===
             "All Products"
-              ? "text-[#081A33]"
-              : "text-[#65727B] hover:text-[#081A33]"
+            ? "text-[#081A33]"
+            : "text-[#65727B] hover:text-[#081A33]"
           }
         `}
       >
@@ -723,11 +720,10 @@ function CategoryList({
               w-[6px]
               rounded-full
               transition-all
-              ${
-                selectedCategory ===
+              ${selectedCategory ===
                 "All Products"
-                  ? "bg-[#F5A623]"
-                  : "bg-[#C9D1D6] group-hover:bg-[#081A33]"
+                ? "bg-[#F5A623]"
+                : "bg-[#C9D1D6] group-hover:bg-[#081A33]"
               }
             `}
           />
@@ -768,10 +764,9 @@ function CategoryList({
               text-left
               transition-colors
               duration-200
-              ${
-                active
-                  ? "text-[#081A33]"
-                  : "text-[#65727B] hover:text-[#081A33]"
+              ${active
+                ? "text-[#081A33]"
+                : "text-[#65727B] hover:text-[#081A33]"
               }
             `}
           >
@@ -783,10 +778,9 @@ function CategoryList({
                   shrink-0
                   rounded-full
                   transition-all
-                  ${
-                    active
-                      ? "bg-[#F5A623]"
-                      : "bg-[#C9D1D6] group-hover:bg-[#081A33]"
+                  ${active
+                    ? "bg-[#F5A623]"
+                    : "bg-[#C9D1D6] group-hover:bg-[#081A33]"
                   }
                 `}
               />
@@ -964,10 +958,9 @@ function StatusFilter({
                 rounded-full
                 border
                 transition-all
-                ${
-                  active
-                    ? "border-[#081A33] bg-[#081A33]"
-                    : "border-[#C9D1D6] bg-white"
+                ${active
+                  ? "border-[#081A33] bg-[#081A33]"
+                  : "border-[#C9D1D6] bg-white"
                 }
               `}
             >
@@ -980,10 +973,9 @@ function StatusFilter({
               className={`
                 text-[14px]
                 font-medium
-                ${
-                  active
-                    ? "text-[#081A33]"
-                    : "text-[#68757D]"
+                ${active
+                  ? "text-[#081A33]"
+                  : "text-[#68757D]"
                 }
               `}
             >
@@ -1017,7 +1009,7 @@ function DesktopSidebar({
     minPrice ||
     maxPrice ||
     selectedCategory !==
-      "All Products" ||
+    "All Products" ||
     stockFilter !== "all";
 
   return (
@@ -1354,7 +1346,7 @@ export default function ProductsPage({
   const [selectedCategory, setSelectedCategory] =
     useState(
       initialCategory ||
-        "All Products"
+      "All Products"
     );
   const [search, setSearch] =
     useState("");
@@ -1411,7 +1403,7 @@ export default function ProductsPage({
         ) {
           throw new Error(
             data?.error ||
-              "Unable to load products."
+            "Unable to load products."
           );
         }
 
@@ -1419,12 +1411,12 @@ export default function ProductsPage({
           Array.isArray(data)
             ? data
             : Array.isArray(
-                  data?.products
-                )
+              data?.products
+            )
               ? data.products
               : Array.isArray(
-                    data?.data
-                  )
+                data?.data
+              )
                 ? data.data
                 : [];
 
@@ -1455,7 +1447,7 @@ export default function ProductsPage({
         if (mounted) {
           setError(
             err.message ||
-              "Products could not be loaded. Please try again."
+            "Products could not be loaded. Please try again."
           );
         }
       } finally {
@@ -1546,11 +1538,11 @@ export default function ProductsPage({
   /* =======================================================
      ADD TO CART
   ======================================================= */
-const addToCart = (product) => {
-  if (!product) return;
+  const addToCart = (product) => {
+    if (!product) return;
 
-  addProductToCart(product, 1);
-};
+    addProductToCart(product, 1);
+  };
 
   /* =======================================================
      FILTERED PRODUCTS
@@ -1567,7 +1559,7 @@ const addToCart = (product) => {
       if (
         selectedCategory &&
         selectedCategory !==
-          "All Products"
+        "All Products"
       ) {
         result = result.filter((product) =>
           getProductCategories(product).includes(selectedCategory)
@@ -1588,7 +1580,7 @@ const addToCart = (product) => {
               const name =
                 String(
                   product?.name ||
-                    ""
+                  ""
                 ).toLowerCase();
 
               const category =
@@ -1601,13 +1593,13 @@ const addToCart = (product) => {
               const description =
                 String(
                   product?.description ||
-                    ""
+                  ""
                 ).toLowerCase();
 
               const sku =
                 String(
                   product?.sku ||
-                    ""
+                  ""
                 ).toLowerCase();
 
               return (
@@ -1706,13 +1698,13 @@ const addToCart = (product) => {
             (a, b) =>
               Number(
                 b?.rating ||
-                  b?.averageRating ||
-                  0
+                b?.averageRating ||
+                0
               ) -
               Number(
                 a?.rating ||
-                  a?.averageRating ||
-                  0
+                a?.averageRating ||
+                0
               )
           );
           break;
@@ -1736,13 +1728,13 @@ const addToCart = (product) => {
             (a, b) => {
               const aFeatured =
                 a?.isFeatured ||
-                a?.isBestSeller
+                  a?.isBestSeller
                   ? 1
                   : 0;
 
               const bFeatured =
                 b?.isFeatured ||
-                b?.isBestSeller
+                  b?.isBestSeller
                   ? 1
                   : 0;
 
@@ -1795,7 +1787,7 @@ const addToCart = (product) => {
       ? 1
       : 0,
     selectedCategory !==
-    "All Products"
+      "All Products"
       ? 1
       : 0,
     stockFilter !== "all"
@@ -2137,10 +2129,10 @@ const addToCart = (product) => {
 
                 {activeFilterCount >
                   0 && (
-                  <span className="flex h-5 min-w-5 items-center justify-center bg-[#F5A623] px-1 text-[9px]">
-                    {activeFilterCount}
-                  </span>
-                )}
+                    <span className="flex h-5 min-w-5 items-center justify-center bg-[#F5A623] px-1 text-[9px]">
+                      {activeFilterCount}
+                    </span>
+                  )}
               </button>
 
               {/* SORT */}
@@ -2254,7 +2246,7 @@ const addToCart = (product) => {
                   }
                 </span>{" "}
                 {filteredProducts.length ===
-                1
+                  1
                   ? "product"
                   : "products"}
               </p>
@@ -2262,66 +2254,66 @@ const addToCart = (product) => {
               <div className="flex flex-wrap items-center gap-2">
                 {selectedCategory !==
                   "All Products" && (
-                  <span className="inline-flex items-center gap-1.5 border border-[#DDE3E7] bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wide text-[#081A33]">
-                    {selectedCategory}
+                    <span className="inline-flex items-center gap-1.5 border border-[#DDE3E7] bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wide text-[#081A33]">
+                      {selectedCategory}
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSelectedCategory(
-                          "All Products"
-                        )
-                      }
-                    >
-                      <X size={11} />
-                    </button>
-                  </span>
-                )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedCategory(
+                            "All Products"
+                          )
+                        }
+                      >
+                        <X size={11} />
+                      </button>
+                    </span>
+                  )}
 
                 {(minPrice ||
                   maxPrice) && (
-                  <span className="inline-flex items-center gap-1.5 border border-[#DDE3E7] bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wide text-[#081A33]">
-                    Price
+                    <span className="inline-flex items-center gap-1.5 border border-[#DDE3E7] bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wide text-[#081A33]">
+                      Price
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMinPrice("");
-                        setMaxPrice("");
-                      }}
-                    >
-                      <X size={11} />
-                    </button>
-                  </span>
-                )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMinPrice("");
+                          setMaxPrice("");
+                        }}
+                      >
+                        <X size={11} />
+                      </button>
+                    </span>
+                  )}
 
                 {stockFilter !==
                   "all" && (
-                  <span className="inline-flex items-center gap-1.5 border border-[#DDE3E7] bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wide text-[#081A33]">
-                    {stockFilter ===
-                    "in-stock"
-                      ? "In Stock"
-                      : "Out of Stock"}
+                    <span className="inline-flex items-center gap-1.5 border border-[#DDE3E7] bg-white px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wide text-[#081A33]">
+                      {stockFilter ===
+                        "in-stock"
+                        ? "In Stock"
+                        : "Out of Stock"}
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setStockFilter(
-                          "all"
-                        )
-                      }
-                    >
-                      <X size={11} />
-                    </button>
-                  </span>
-                )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setStockFilter(
+                            "all"
+                          )
+                        }
+                      >
+                        <X size={11} />
+                      </button>
+                    </span>
+                  )}
               </div>
             </div>
 
             {/* NO RESULTS */}
 
             {filteredProducts.length ===
-            0 ? (
+              0 ? (
               <motion.div
                 initial={{
                   opacity: 0,
@@ -2605,6 +2597,6 @@ const addToCart = (product) => {
 
     </main>
 
-    
+
   );
 }
