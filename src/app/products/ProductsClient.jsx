@@ -231,6 +231,7 @@ function ProductCard({
   toggleWishlist,
   addToCart,
 }) {
+  console.log(product?.image)
   const slug = getProductSlug(product);
 
   const price = getProductPrice(product);
