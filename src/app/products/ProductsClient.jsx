@@ -325,7 +325,7 @@ function ProductCard({
             }}
             className="relative h-full w-full"
           >
-            <Image
+            <img
               src={product?.image}
               alt={
                 product?.name ||
