@@ -31,7 +31,7 @@ async function getCategories() {
   try {
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL ||
-      "http://localhost:3000";
+      "http://localhost:3000" || "https://dpack-sage.vercel.app";
 
     console.log(baseUrl)
 
@@ -72,18 +72,22 @@ export default async function ProductsCategoryPage({ params }) {
   const { slug } = await params;
 
   const normalizedSlug = String(slug || "")
+    .trim()
+    .toLowerCase();
 
   const categories = await getCategories();
   console.log(categories)
   const matchedCategory = categories?.find((category) => {
     const categorySlug = String(category?.slug || "")
+      .trim()
+      .toLowerCase();
 
     return categorySlug === normalizedSlug;
   });
 
-  // if (!matchedCategory) {
-  //   notFound();
-  // }
+  if (!matchedCategory) {
+    notFound();
+  }
 
   return (
     <ProductsClient
