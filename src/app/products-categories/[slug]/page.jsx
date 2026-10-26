@@ -75,7 +75,7 @@ export default async function ProductsCategoryPage({ params }) {
 
   const categories = await getCategories();
 
-  const matchedCategory = categories.find((category) => {
+  const matchedCategory = categories?.find((category) => {
     const categorySlug = String(category.slug || "")
       .trim()
       .toLowerCase();
@@ -90,7 +90,7 @@ export default async function ProductsCategoryPage({ params }) {
   return (
     <ProductsClient
       key={normalizedSlug}
-      initialCategory={matchedCategory.name}
+      initialCategory={matchedCategory?.name}
     />
   );
 }
