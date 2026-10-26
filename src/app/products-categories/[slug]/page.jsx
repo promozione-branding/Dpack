@@ -1,6 +1,6 @@
 import ProductsClient from "@/app/products/ProductsClient";
 import { notFound } from "next/navigation";
-import connectDB from "@/lib/db";
+import { connectDB } from "@/lib/db/mongoose";
 import Category from "@/lib/models/Category";
 
 export const dynamic = "force-dynamic";
