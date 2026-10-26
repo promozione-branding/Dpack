@@ -33,6 +33,8 @@ async function getCategories() {
       process.env.NEXT_PUBLIC_APP_URL ||
       "http://localhost:3000";
 
+console.log(baseUrl)
+
     const response = await fetch(
       `${baseUrl}/api/categories`,
       {
@@ -74,9 +76,9 @@ export default async function ProductsCategoryPage({ params }) {
     .toLowerCase();
 
   const categories = await getCategories();
-
+console.log(categories)
   const matchedCategory = categories?.find((category) => {
-    const categorySlug = String(category.slug || "")
+    const categorySlug = String(category?.slug || "")
       .trim()
       .toLowerCase();
 
