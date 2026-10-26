@@ -41,6 +41,12 @@ async function getCategories() {
     );
 
     if (!response.ok) {
+      console.error(
+        "Categories API failed:",
+        response.status,
+        response.statusText
+      );
+
       return [];
     }
 
@@ -84,6 +90,8 @@ export default async function ProductsCategoryPage({ params }) {
   });
 
   if (!matchedCategory) {
+    console.error("Category not found:", normalizedSlug);
+
     notFound();
   }
 
