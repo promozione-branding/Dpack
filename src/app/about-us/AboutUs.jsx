@@ -211,7 +211,7 @@ export default function AboutUs() {
           DPACK
         </motion.div>
 
-        <div className="pointer-events-none absolute right-[7%] top-0 hidden h-full w-px bg-[#081A33]/[0.06] lg:block" />
+        <div className="pointer-events-none absolute right-[8%] top-0 hidden h-full w-px bg-[#081A33]/[0.06] lg:block" />
 
         <div className="relative z-10 mx-auto max-w-[1450px]">
           <div className="grid items-center gap-12 lg:min-h-[calc(100svh-160px)] lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
