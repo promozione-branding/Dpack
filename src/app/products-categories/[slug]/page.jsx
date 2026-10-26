@@ -81,9 +81,9 @@ export default async function ProductsCategoryPage({ params }) {
     return categorySlug === normalizedSlug;
   });
 
-  if (!matchedCategory) {
-    notFound();
-  }
+  // if (!matchedCategory) {
+  //   notFound();
+  // }
 
   return (
     <ProductsClient
