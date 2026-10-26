@@ -1,7 +1,7 @@
 import ProductsClient from "@/app/products/ProductsClient";
 import { notFound } from "next/navigation";
 import connectDB from "@/lib/db";
-import Category from "@/models/Category";
+import Category from "@/lib/models/Category";
 
 export const dynamic = "force-dynamic";
 
