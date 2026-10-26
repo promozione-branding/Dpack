@@ -29,9 +29,7 @@ import { notFound } from "next/navigation";
 
 async function getCategories() {
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      "http://localhost:3000" || "https://dpack-sage.vercel.app";
+    const baseUrl = "http://localhost:3000" || "https://dpack-sage.vercel.app" || process.env.NEXT_PUBLIC_APP_URL;
 
     console.log(baseUrl)
 
