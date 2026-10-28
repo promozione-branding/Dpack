@@ -104,7 +104,9 @@ export async function POST(request) {
       image: product.image,
       price,
       qty,
-      category: product.category,
+      category: Array.isArray(product.category)
+        ? product.category[0] || ""
+        : product.category || "",
     });
 
     subtotal += price * qty;

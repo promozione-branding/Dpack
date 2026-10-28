@@ -106,9 +106,9 @@ export default function CheckoutPage() {
 
   const couponDiscount = couponMatchesCart
     ? Math.min(
-        Math.max(0, Number(appliedCoupon.discount) || 0),
-        subtotal
-      )
+      Math.max(0, Number(appliedCoupon.discount) || 0),
+      subtotal
+    )
     : 0;
 
   const total = Math.max(0, subtotal + shipping - couponDiscount);
@@ -306,6 +306,16 @@ export default function CheckoutPage() {
     }));
   };
 
+  const normalizePhone = (value) => {
+    let digits = String(value || "").replace(/\D/g, "");
+
+    if (digits.length > 10 && digits.startsWith("91")) {
+      digits = digits.slice(2);
+    }
+
+    return digits.slice(0, 10);
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -313,16 +323,16 @@ export default function CheckoutPage() {
       newErrors.firstName = "First name is required";
     }
 
-    if (!checkoutValues.lastName.trim()) {
-      newErrors.lastName = "Last name is required";
-    }
-
     if (!checkoutValues.email.trim()) {
       newErrors.email = "Email address is required";
     }
 
-    if (!checkoutValues.phone.trim()) {
+    const phone = normalizePhone(checkoutValues.phone);
+
+    if (!phone) {
       newErrors.phone = "Phone number is required";
+    } else if (!/^[6-9]\d{9}$/.test(phone)) {
+      newErrors.phone = "Enter a valid 10-digit Indian mobile number";
     }
 
     if (!checkoutValues.address.trim()) {
@@ -358,6 +368,11 @@ export default function CheckoutPage() {
 
     if (!isLoggedIn) {
       setCheckoutError("Please sign in before placing your order.");
+
+      setTimeout(() => {
+        router.push("/login?next=%2Fcheckout");
+      }, 2000);
+
       return;
     }
 
@@ -405,7 +420,7 @@ export default function CheckoutPage() {
         customerName:
           `${checkoutValues.firstName} ${checkoutValues.lastName}`.trim(),
         customerEmail: checkoutValues.email,
-        customerMobile: checkoutValues.phone,
+        customerMobile: normalizePhone(checkoutValues.phone),
         shippingAddress: {
           line1: checkoutValues.address,
           line2: checkoutValues.apartment,
@@ -470,7 +485,7 @@ export default function CheckoutPage() {
           } catch (error) {
             setCheckoutError(
               error.message ||
-                "Payment verification failed. Contact support before retrying."
+              "Payment verification failed. Contact support before retrying."
             );
           }
         },
@@ -490,7 +505,7 @@ export default function CheckoutPage() {
     } catch (error) {
       setCheckoutError(
         error.message ||
-          "Unable to start checkout. Please try again."
+        "Unable to start checkout. Please try again."
       );
     } finally {
       setSubmitting(false);
@@ -694,11 +709,10 @@ export default function CheckoutPage() {
                       value={checkoutValues.firstName}
                       onChange={handleChange}
                       placeholder="Enter first name"
-                      className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
-                        errors.firstName
-                          ? "border-red-400"
-                          : "border-gray-300"
-                      }`}
+                      className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${errors.firstName
+                        ? "border-red-400"
+                        : "border-gray-300"
+                        }`}
                     />
 
                     {errors.firstName && (
@@ -710,7 +724,7 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#081A33]">
-                      Last Name *
+                      Last Name
                     </label>
 
                     <input
@@ -719,11 +733,10 @@ export default function CheckoutPage() {
                       value={checkoutValues.lastName}
                       onChange={handleChange}
                       placeholder="Enter last name"
-                      className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
-                        errors.lastName
-                          ? "border-red-400"
-                          : "border-gray-300"
-                      }`}
+                      className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${errors.lastName
+                        ? "border-red-400"
+                        : "border-gray-300"
+                        }`}
                     />
 
                     {errors.lastName && (
@@ -744,11 +757,10 @@ export default function CheckoutPage() {
                       value={checkoutValues.email}
                       onChange={handleChange}
                       placeholder="you@example.com"
-                      className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
-                        errors.email
-                          ? "border-red-400"
-                          : "border-gray-300"
-                      }`}
+                      className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${errors.email
+                        ? "border-red-400"
+                        : "border-gray-300"
+                        }`}
                     />
 
                     {errors.email && (
@@ -763,17 +775,29 @@ export default function CheckoutPage() {
                       Phone Number *
                     </label>
 
+
                     <input
                       type="tel"
                       name="phone"
+                      inputMode="tel"
                       value={checkoutValues.phone}
-                      onChange={handleChange}
-                      placeholder="+91"
-                      className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
-                        errors.phone
-                          ? "border-red-400"
-                          : "border-gray-300"
-                      }`}
+                      onChange={(e) => {
+                        const phone = normalizePhone(e.target.value);
+
+                        setForm((prev) => ({
+                          ...prev,
+                          phone,
+                        }));
+
+                        setErrors((prev) => ({
+                          ...prev,
+                          phone: "",
+                        }));
+                      }}
+                      placeholder="+91 9999999999"
+                      maxLength={15}
+                      className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${errors.phone ? "border-red-400" : "border-gray-300"
+                        }`}
                     />
 
                     {errors.phone && (
@@ -781,6 +805,7 @@ export default function CheckoutPage() {
                         {errors.phone}
                       </p>
                     )}
+
                   </div>
                 </div>
               </div>
@@ -823,11 +848,10 @@ export default function CheckoutPage() {
                       value={checkoutValues.address}
                       onChange={handleChange}
                       placeholder="House / Flat / Street address"
-                      className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
-                        errors.address
-                          ? "border-red-400"
-                          : "border-gray-300"
-                      }`}
+                      className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${errors.address
+                        ? "border-red-400"
+                        : "border-gray-300"
+                        }`}
                     />
 
                     {errors.address && (
@@ -867,11 +891,10 @@ export default function CheckoutPage() {
                         value={checkoutValues.city}
                         onChange={handleChange}
                         placeholder="City"
-                        className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
-                          errors.city
-                            ? "border-red-400"
-                            : "border-gray-300"
-                        }`}
+                        className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${errors.city
+                          ? "border-red-400"
+                          : "border-gray-300"
+                          }`}
                       />
 
                       {errors.city && (
@@ -892,11 +915,10 @@ export default function CheckoutPage() {
                         value={checkoutValues.state}
                         onChange={handleChange}
                         placeholder="State"
-                        className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
-                          errors.state
-                            ? "border-red-400"
-                            : "border-gray-300"
-                        }`}
+                        className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${errors.state
+                          ? "border-red-400"
+                          : "border-gray-300"
+                          }`}
                       />
 
                       {errors.state && (
@@ -918,11 +940,10 @@ export default function CheckoutPage() {
                         onChange={handleChange}
                         placeholder="110001"
                         maxLength={6}
-                        className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${
-                          errors.pincode
-                            ? "border-red-400"
-                            : "border-gray-300"
-                        }`}
+                        className={`h-12 w-full border bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623] ${errors.pincode
+                          ? "border-red-400"
+                          : "border-gray-300"
+                          }`}
                       />
 
                       {errors.pincode && (
@@ -1018,18 +1039,16 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("online")}
-                  className={`flex w-full items-center gap-4 border p-5 text-left transition-all duration-300 ${
-                    paymentMethod === "online"
-                      ? "border-[#F5A623] bg-[#FFF9EF]"
-                      : "border-gray-200 hover:border-[#081A33]"
-                  }`}
+                  className={`flex w-full items-center gap-4 border p-5 text-left transition-all duration-300 ${paymentMethod === "online"
+                    ? "border-[#F5A623] bg-[#FFF9EF]"
+                    : "border-gray-200 hover:border-[#081A33]"
+                    }`}
                 >
                   <div
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center ${
-                      paymentMethod === "online"
-                        ? "bg-[#F5A623] text-[#081A33]"
-                        : "bg-[#081A33] text-[#F5A623]"
-                    }`}
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center ${paymentMethod === "online"
+                      ? "bg-[#F5A623] text-[#081A33]"
+                      : "bg-[#081A33] text-[#F5A623]"
+                      }`}
                   >
                     <WalletCards size={21} />
                   </div>
@@ -1045,11 +1064,10 @@ export default function CheckoutPage() {
                   </div>
 
                   <div
-                    className={`flex h-5 w-5 items-center justify-center border ${
-                      paymentMethod === "online"
-                        ? "border-[#F5A623] bg-[#F5A623]"
-                        : "border-gray-300"
-                    }`}
+                    className={`flex h-5 w-5 items-center justify-center border ${paymentMethod === "online"
+                      ? "border-[#F5A623] bg-[#F5A623]"
+                      : "border-gray-300"
+                      }`}
                   >
                     {paymentMethod === "online" && (
                       <Check size={12} strokeWidth={4} />
@@ -1187,7 +1205,7 @@ export default function CheckoutPage() {
                               ₹
                               {formatINR(
                                 Number(item.price || 0) *
-                                  Number(item.qty || 0)
+                                Number(item.qty || 0)
                               )}
                             </span>
                           </div>
@@ -1288,11 +1306,10 @@ export default function CheckoutPage() {
                           {couponMessage ? (
                             <p
                               role="status"
-                              className={`text-xs ${
-                                couponMatchesCart
-                                  ? "text-green-700"
-                                  : "text-red-600"
-                              }`}
+                              className={`text-xs ${couponMatchesCart
+                                ? "text-green-700"
+                                : "text-red-600"
+                                }`}
                             >
                               {couponMessage}
                             </p>
