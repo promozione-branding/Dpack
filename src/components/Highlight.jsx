@@ -20,7 +20,7 @@ import { addToCart as addProductToCart } from "@/lib/cartBus";
 
 const HIGHLIGHT_PRODUCT_TYPES = [
   ["dunnage bag", "dunnage"],
-  ["gap filler", "gap-20-filler"],
+  ["gap filler", "gap-filler"],
   ["air pillow bag", "air pillow", "pillow bag"],
   ["air cushion bag", "air cushion"],
   ["shredder machine", "shredder"],
@@ -375,9 +375,12 @@ export default function Highlight() {
             {products.map((product, index) => {
               const image = getProductImage(product);
               const id = getProductId(product);
-              const productUrl = product.slug
-                ? `/products/${product.slug}`
-                : "/products";
+              
+              const productSlug = String(product.slug || "").trim();
+
+const productUrl = productSlug
+  ? `/products/${encodeURIComponent(productSlug)}`
+  : "/products";
 
               const isAdded = Boolean(addedProducts[id]);
 
