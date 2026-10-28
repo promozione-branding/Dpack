@@ -23,9 +23,9 @@ export default function Home() {
     <> 
     <Main/>
 {/* <BestSellingProducts/> */}
- <TrendingProducts/>
    <Highlight/> 
    <VideoSection/> 
+   <TrendingProducts/>
  <SaleNow/>
  <Product360/>
  <Categories/>
