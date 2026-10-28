@@ -24,6 +24,11 @@ const HIGHLIGHT_PRODUCT_TYPES = [
   ["air pillow bag", "air pillow", "pillow bag"],
   ["air cushion bag", "air cushion"],
   ["shredder machine", "shredder"],
+
+  // 3 MORE PRODUCTS
+  ["air column roll", "air-column-roll", "air column"],
+  ["air column bag", "air-column-bag", "air column"],
+  ["packaging air bag", "packaging-air-bag", "packaging air"],
 ];
 
 function getProductIdentity(product) {

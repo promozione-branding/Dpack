@@ -61,28 +61,39 @@ function normalizeProduct(product, index) {
 
   return {
     id: product?._id || product?.id || index,
-    brand: product?.brand || "D PACK",
+
+    brand:
+      product?.brand ||
+      "D PACK",
+
     name:
       product?.name ||
       product?.title ||
       "Product",
+
     image,
-    rating: product?.rating || "4.8",
+
+    rating:
+      product?.rating ||
+      "4.8",
+
     reviews:
       product?.reviews ||
       product?.reviewCount ||
       "0",
+
     price:
       typeof price === "number"
         ? `₹${price.toLocaleString("en-IN")}`
         : price,
+
     oldPrice:
       typeof oldPrice === "number"
-        ? `₹${oldPrice.toLocaleString(
-            "en-IN"
-          )}`
+        ? `₹${oldPrice.toLocaleString("en-IN")}`
         : oldPrice,
+
     discount,
+
     link:
       product?.link ||
       product?.url ||
@@ -234,7 +245,7 @@ function ProductCard({ product, index }) {
           />
         </button>
 
-        {/* Product image */}
+        {/* Product Image */}
 
         <div className="absolute inset-2 sm:inset-4 lg:inset-5">
           <Image
@@ -257,7 +268,7 @@ function ProductCard({ product, index }) {
           />
         </div>
 
-        {/* Bottom line */}
+        {/* Bottom Line */}
 
         <span
           className="
@@ -398,7 +409,15 @@ function ProductCard({ product, index }) {
               sm:py-1
             "
           >
-            <span className="text-[12px] font-bold text-[#123B5D] sm:text-[12px] text-center">
+            <span
+              className="
+                text-center
+                text-[12px]
+                font-bold
+                text-[#123B5D]
+                sm:text-[12px]
+              "
+            >
               {product.rating}
             </span>
 
@@ -414,12 +433,17 @@ function ProductCard({ product, index }) {
             />
           </span>
 
-          <span className="truncate text-[12px] text-[#929BA2] sm:text-[13px]">
+          <span
+            className="
+              truncate
+              text-[12px]
+              text-[#929BA2]
+              sm:text-[13px]
+            "
+          >
             {product.reviews} reviews
           </span>
         </div>
-
-      
       </div>
     </motion.article>
   );
@@ -451,16 +475,117 @@ function ProductSkeleton() {
       />
 
       <div className="space-y-2 p-2 sm:p-4">
-        <div className="h-2 w-10 animate-pulse rounded bg-[#EEF1F2] sm:h-2.5 sm:w-16" />
+        <div
+          className="
+            h-2
+            w-10
+            animate-pulse
+            rounded
+            bg-[#EEF1F2]
+            sm:h-2.5
+            sm:w-16
+          "
+        />
 
-        <div className="h-3 w-full animate-pulse rounded bg-[#EEF1F2] sm:h-4" />
+        <div
+          className="
+            h-3
+            w-full
+            animate-pulse
+            rounded
+            bg-[#EEF1F2]
+            sm:h-4
+          "
+        />
 
-        <div className="h-3 w-3/4 animate-pulse rounded bg-[#EEF1F2] sm:h-4" />
+        <div
+          className="
+            h-3
+            w-3/4
+            animate-pulse
+            rounded
+            bg-[#EEF1F2]
+            sm:h-4
+          "
+        />
 
-        <div className="h-2.5 w-14 animate-pulse rounded bg-[#EEF1F2] sm:h-3 sm:w-20" />
+        <div
+          className="
+            h-2.5
+            w-14
+            animate-pulse
+            rounded
+            bg-[#EEF1F2]
+            sm:h-3
+            sm:w-20
+          "
+        />
       </div>
     </div>
   );
+}
+
+/* =========================================================
+   PRODUCT SORTING
+========================================================= */
+
+function sortProducts(products) {
+  return [...products].sort((a, b) => {
+    const aName =
+      a?.name?.toLowerCase() || "";
+
+    const bName =
+      b?.name?.toLowerCase() || "";
+
+    const getPriority = (name) => {
+      /*
+        =====================================================
+        PRIORITY 1
+        AIR BAG PRODUCTS FIRST
+        =====================================================
+      */
+
+      if (
+        name.includes("air bag") ||
+        name.includes("air bags") ||
+        name.includes("air-column") ||
+        name.includes("air column") ||
+        name.includes("packaging air") ||
+        name.includes("packaging-air")
+      ) {
+        return 1;
+      }
+
+      /*
+        =====================================================
+        PRIORITY 3
+        CORRUGATED PRODUCTS LAST
+        =====================================================
+      */
+
+      if (
+        name.includes("corrugated") ||
+        name.includes("corrugated box") ||
+        name.includes("corrugated boxes")
+      ) {
+        return 3;
+      }
+
+      /*
+        =====================================================
+        PRIORITY 2
+        OTHER PRODUCTS
+        =====================================================
+      */
+
+      return 2;
+    };
+
+    return (
+      getPriority(aName) -
+      getPriority(bName)
+    );
+  });
 }
 
 /* =========================================================
@@ -473,6 +598,13 @@ export default function TrendingProducts() {
 
   const [loading, setLoading] =
     useState(true);
+
+  const [isMobile, setIsMobile] =
+    useState(false);
+
+  /* =======================================================
+     LOAD PRODUCTS
+  ======================================================= */
 
   useEffect(() => {
     let cancelled = false;
@@ -514,67 +646,46 @@ export default function TrendingProducts() {
     };
   }, []);
 
-  /* =========================================================
-     PRODUCT SORTING
+  /* =======================================================
+     MOBILE CHECK
+  ======================================================= */
 
-     Dunnage → Other Products → Corrugated
-  ========================================================= */
-const [isMobile, setIsMobile] = useState(false);
-
-useEffect(() => {
-  const checkMobile = () => {
-    setIsMobile(window.innerWidth < 768);
-  };
-
-  checkMobile();
-
-  window.addEventListener("resize", checkMobile);
-
-  return () => {
-    window.removeEventListener("resize", checkMobile);
-  };
-}, []);
-
-  const visibleProducts = [
-    ...products,
-  ]
-  
-    .sort((a, b) => {
-      const aName =
-        a.name?.toLowerCase() || "";
-
-      const bName =
-        b.name?.toLowerCase() || "";
-
-      const getPriority = (name) => {
-        // Dunnage first
-        if (
-          name.includes("dunnage") ||
-          name.includes("dunnage bag")
-        ) {
-          return 1;
-        }
-
-        // Corrugated last
-        if (
-          name.includes("corrugated") ||
-          name.includes(
-            "corrugated box"
-          )
-        ) {
-          return 3;
-        }
-
-        // Other products
-        return 2;
-      };
-
-      return (
-        getPriority(aName) -
-        getPriority(bName)
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(
+        window.innerWidth < 768
       );
-    })
-    .slice(0, 4);
+    };
+
+    checkMobile();
+
+    window.addEventListener(
+      "resize",
+      checkMobile
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        checkMobile
+      );
+    };
+  }, []);
+
+  /* =======================================================
+     SORT PRODUCTS
+
+     AIR BAG FIRST
+     OTHER PRODUCTS SECOND
+     CORRUGATED LAST
+  ======================================================= */
+
+  const visibleProducts =
+    sortProducts(products).slice(0, 4);
+
+  /* =======================================================
+     RETURN
+  ======================================================= */
 
   return (
     <section
@@ -602,7 +713,8 @@ useEffect(() => {
         style={{
           backgroundImage:
             "radial-gradient(#123B5D 0.7px, transparent 0.7px)",
-          backgroundSize: "12px 12px",
+          backgroundSize:
+            "12px 12px",
         }}
       />
 
@@ -634,6 +746,7 @@ useEffect(() => {
           ================================================= */}
 
           <div className="min-w-0">
+
             {/* Heading */}
 
             <motion.div
@@ -686,29 +799,26 @@ useEffect(() => {
                   sm:text-[16px]
                 "
               >
-                The most popular products from
-                our protective packaging
+                The most popular products
+                from our protective packaging
                 collection.
               </p>
             </motion.div>
 
             {/* =================================================
                 PRODUCT GRID
-
-                Mobile  = 4
-                Desktop = 3
             ================================================= */}
 
- <div
-  className="
-    grid
-    grid-cols-2
-    gap-2
-    sm:grid-cols-2
-    sm:gap-4
-    lg:grid-cols-3
-  "
->
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+                sm:grid-cols-2
+                sm:gap-4
+                lg:grid-cols-3
+              "
+            >
               {loading ? (
                 <>
                   <ProductSkeleton />
@@ -716,17 +826,22 @@ useEffect(() => {
                   <ProductSkeleton />
                   <ProductSkeleton />
                 </>
-             ) : visibleProducts.length > 0 ? (
-  visibleProducts
-    .slice(0, isMobile ? 4 : 3)
-    .map((product, index) => (
-      <ProductCard
-        key={product.id}
-        product={product}
-        index={index}
-      />
-    ))
-) : (
+              ) : visibleProducts.length > 0 ? (
+                visibleProducts
+                  .slice(
+                    0,
+                    isMobile ? 4 : 3
+                  )
+                  .map(
+                    (product, index) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        index={index}
+                      />
+                    )
+                  )
+              ) : (
                 <div
                   className="
                     col-span-full
@@ -806,9 +921,7 @@ useEffect(() => {
                     group-hover:translate-x-1
                   "
                 >
-                  <ArrowRight
-                    size={13}
-                  />
+                  <ArrowRight size={13} />
                 </span>
               </Link>
             </motion.div>
@@ -855,7 +968,7 @@ useEffect(() => {
             {/* Image */}
 
             <Image
-              src="https://packingairbag.com/cat/1.webp"
+              src="/18 (3).webp"
               alt="Dpack protective packaging solutions"
               fill
               unoptimized
@@ -886,7 +999,7 @@ useEffect(() => {
               "
             />
 
-            {/* Decorative circle */}
+            {/* Decorative Circle */}
 
             <div
               className="
@@ -978,7 +1091,7 @@ useEffect(() => {
               </Link>
             </div>
 
-            {/* Corner number */}
+            {/* Corner Number */}
 
             <div
               className="

@@ -282,16 +282,18 @@ function SearchBox({ variant = "desktop" }) {
     };
   }, []);
 
-  const goToSearch = () => {
-    const value = query.trim();
 
-    if (!value) return;
+const goToSearch = () => {
+  const value = query.trim();
 
-    setOpen(false);
-    setActiveIndex(-1);
+  if (!value) return;
 
-    router.push(`/products?search=${encodeURIComponent(value)}`);
-  };
+  setOpen(false);
+  setActiveIndex(-1);
+
+  router.push(`/products?search=${encodeURIComponent(value)}`);
+};
+
 
   const goToProduct = (product) => {
     const slug = getProductSlug(product);
