@@ -909,6 +909,10 @@ Contact: ${phone}`;
 
               <div className="order-2 flex w-full gap-3 overflow-x-auto pb-1 lg:order-1 lg:flex-col lg:gap-4 lg:overflow-visible">
 
+
+
+     {/* YouTube thumbnail: autoplays muted and loops */}
+               
                 {/* Image thumbnails */}
                 {images.map((image, index) => (
                   <MediaThumb
@@ -928,28 +932,7 @@ Contact: ${phone}`;
                   </MediaThumb>
                 ))}
 
-                {/* MP4 thumbnail: autoplays muted and loops */}
-                {hasMp4 && (
-                  <MediaThumb
-                    label="Play product video"
-                    active={activeType === "video"}
-                    onClick={() => chooseMedia({ type: "video", index: 0 })}
-                  >
-                    <div className="absolute inset-0 bg-[#081A33]" />
-                    <video
-                      src={videoUrl}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  </MediaThumb>
-                )}
-
-                {/* YouTube thumbnail: autoplays muted and loops */}
-                {youtubePreviewUrl && (
+                 {youtubePreviewUrl && (
                   <MediaThumb
                     label="Watch YouTube product video"
                     active={activeType === "youtube"}
@@ -988,7 +971,31 @@ Contact: ${phone}`;
                     />
                   </MediaThumb>
                 )}
+
+                {/* MP4 thumbnail: autoplays muted and loops */}
+                {hasMp4 && (
+                  <MediaThumb
+                    label="Play product video"
+                    active={activeType === "video"}
+                    onClick={() => chooseMedia({ type: "video", index: 0 })}
+                  >
+                    <div className="absolute inset-0 bg-[#081A33]" />
+                    <video
+                      src={videoUrl}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  </MediaThumb>
+                )}
+
+           
               </div>
+
+              
 
               {/* MAIN VIEWER */}
 
@@ -1052,9 +1059,63 @@ Contact: ${phone}`;
               </div>
             </div>
 
+            {/* LARGE PRODUCT VIDEO — displayed below the main image/gallery */}
+            {(hasMp4 || youtubeEmbedUrl || instagramEmbedUrl) && (
+              <section className="mt-6 w-full overflow-hidden border border-gray-200 bg-[#081A33]">
+                <div className="flex items-center justify-between gap-4 bg-[#081A33] px-4 py-3 sm:px-5">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[2px] text-[#F5A623]">
+                      Product Video
+                    </p>
+                    <h3 className="mt-1 text-base font-bold text-white sm:text-lg">
+                      See {currentProduct.name} in action
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="relative aspect-video w-full bg-black">
+                  {hasMp4 ? (
+                    <video
+                      key={`large-${videoUrl}`}
+                      src={videoUrl}
+                      poster={images[0] || undefined}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="absolute inset-0 h-full w-full object-contain"
+                    />
+                  ) : youtubeEmbedUrl ? (
+                    <iframe
+                      key={`large-${youtubeEmbedUrl}`}
+                      src={getYouTubeEmbedUrl(youtubeUrl, { autoplay: true, controls: false })}
+                      title={`${currentProduct.name} product video`}
+                      className="absolute inset-0 h-full w-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <iframe
+                      key={`large-${instagramEmbedUrl}`}
+                      src={instagramEmbedUrl}
+                      title={`${currentProduct.name} Instagram Reel`}
+                      className="absolute inset-0 h-full w-full border-0 bg-white"
+                      allow="autoplay; encrypted-media; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  )}
+                </div>
+              </section>
+            )}
+
             {/* TRUST STRIP */}
+      
+            
 
             <div className="mt-5 grid grid-cols-1 border border-gray-200 sm:grid-cols-3">
+              
+              
               <div className="flex items-center gap-3 border-b border-gray-200 px-4 py-4 sm:border-b-0 sm:border-r sm:px-5">
                 <ShieldCheck className="shrink-0 text-[#F5A623]" size={25} />
                 <div>
@@ -1301,14 +1362,14 @@ Contact: ${phone}`;
                     />
                   </button>
 
-                  {/* COMPARE */}
-                  <button
+                  COMPARE
+                  {/* <button
                     type="button"
                     className="mt-0 flex h-12 w-12 shrink-0 items-center justify-center border border-gray-300 bg-white transition hover:border-[#081A33] sm:mt-5"
                     aria-label="Compare product"
                   >
                     <GitCompare size={20} className="text-[#081A33]" />
-                  </button>
+                  </button> */}
                 </div>
 
                 <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
