@@ -1000,7 +1000,7 @@ Contact: ${phone}`;
 
               {/* MAIN VIEWER */}
 
-              <div className="relative order-1 flex h-[580px] w-full items-center justify-center 
+              <div className="relative order-1 flex h-[370px] w-full items-center justify-center 
               overflow-hidden border border-gray-200 bg-[#F7F9FB] sm:h-[350px] 
               lg:order-2 lg:h-auto lg:min-h-[530px]">
 
