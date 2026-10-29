@@ -999,7 +999,9 @@ Contact: ${phone}`;
 
               {/* MAIN VIEWER */}
 
-              <div className="relative order-1 flex h-[380px] w-full items-center justify-center overflow-hidden border border-gray-200 bg-[#F7F9FB] sm:h-[450px] lg:order-2 lg:h-auto lg:min-h-[570px]">
+              <div className="relative order-1 flex h-[580px] w-full items-center justify-center 
+              overflow-hidden border border-gray-200 bg-[#F7F9FB] sm:h-[450px] 
+              lg:order-2 lg:h-auto lg:min-h-[770px]">
 
                 {activeType === "youtube" && youtubeEmbedUrl && (
                   <iframe
@@ -1061,51 +1063,55 @@ Contact: ${phone}`;
 
             {/* LARGE PRODUCT VIDEO — displayed below the main image/gallery */}
             {(hasMp4 || youtubeEmbedUrl || instagramEmbedUrl) && (
-              <section className="mt-6 w-full overflow-hidden border border-gray-200 bg-[#081A33]">
+              <section className="mt-3 w-full overflow-hidden border border-gray-200 bg-[#081A33]">
                 <div className="flex items-center justify-between gap-4 bg-[#081A33] px-4 py-3 sm:px-5">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[2px] text-[#F5A623]">
-                      Product Video
-                    </p>
-                    <h3 className="mt-1 text-base font-bold text-white sm:text-lg">
-                      See {currentProduct.name} in action
-                    </h3>
-                  </div>
+                  
                 </div>
 
-                <div className="relative aspect-video w-full bg-black">
-                  {hasMp4 ? (
-                    <video
-                      key={`large-${videoUrl}`}
-                      src={videoUrl}
-                      poster={images[0] || undefined}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      className="absolute inset-0 h-full w-full object-contain"
-                    />
-                  ) : youtubeEmbedUrl ? (
-                    <iframe
-                      key={`large-${youtubeEmbedUrl}`}
-                      src={getYouTubeEmbedUrl(youtubeUrl, { autoplay: true, controls: false })}
-                      title={`${currentProduct.name} product video`}
-                      className="absolute inset-0 h-full w-full border-0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <iframe
-                      key={`large-${instagramEmbedUrl}`}
-                      src={instagramEmbedUrl}
-                      title={`${currentProduct.name} Instagram Reel`}
-                      className="absolute inset-0 h-full w-full border-0 bg-white"
-                      allow="autoplay; encrypted-media; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
-                  )}
-                </div>
+              <div
+  className={`relative w-full bg-black ${
+    hasMp4
+      ? "h-[700px]"
+      : youtubeEmbedUrl
+        ? "h-[500px]"
+        : "h-[650px]"
+  }`}
+>
+  {hasMp4 ? (
+    <video
+      key={`large-${videoUrl}`}
+      src={videoUrl}
+      poster={images[0] || undefined}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      className="absolute inset-0 h-full w-full object-contain"
+    />
+  ) : youtubeEmbedUrl ? (
+    <iframe
+      key={`large-${youtubeEmbedUrl}`}
+      src={getYouTubeEmbedUrl(youtubeUrl, {
+        autoplay: true,
+        controls: false,
+      })}
+      title={`${currentProduct.name} product video`}
+      className="absolute inset-0 h-full w-full border-0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowFullScreen
+    />
+  ) : instagramEmbedUrl ? (
+    <iframe
+      key={`large-${instagramEmbedUrl}`}
+      src={instagramEmbedUrl}
+      title={`${currentProduct.name} Instagram Reel`}
+      className="absolute inset-0 h-full w-full border-0 bg-white"
+      allow="autoplay; encrypted-media; picture-in-picture; web-share"
+      allowFullScreen
+    />
+  ) : null}
+</div>
               </section>
             )}
 
@@ -1147,7 +1153,8 @@ Contact: ${phone}`;
           <div className="min-w-0">
             <div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
               <span
-                className={`px-3 py-1 text-[11px] font-bold sm:text-[15px] ${inStock ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+                className={`px-3 py-1 text-[11px] font-bold sm:text-[15px] ${inStock ? 
+                  "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
                   }`}
               >
                 {inStock ? "In Stock" : "Out of Stock"}
@@ -1362,7 +1369,7 @@ Contact: ${phone}`;
                     />
                   </button>
 
-                  COMPARE
+                 
                   {/* <button
                     type="button"
                     className="mt-0 flex h-12 w-12 shrink-0 items-center justify-center border border-gray-300 bg-white transition hover:border-[#081A33] sm:mt-5"
