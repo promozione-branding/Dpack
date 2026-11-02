@@ -1,3 +1,4 @@
+
 import { connectDB } from "@/lib/db/mongoose";
 import Product from "@/lib/models/Product";
 import Order from "@/lib/models/Order";
@@ -15,6 +16,10 @@ function cleanAddress(addr = {}) {
     pincode: addr.pincode || "",
     country: addr.country || "India",
   };
+}
+
+function roundMoney(amount) {
+  return Math.round((Number(amount) + Number.EPSILON) * 100) / 100;
 }
 
 export async function POST(request) {
@@ -75,6 +80,15 @@ export async function POST(request) {
 
   await connectDB();
 
+  // Check whether the customer has any previous successful orders.
+  // Pending and failed orders do not count as completed purchases.
+  const previousSuccessfulOrder = await Order.exists({
+    userId: authUser._id,
+    paymentStatus: "paid",
+  });
+
+  const isFirstOrder = !previousSuccessfulOrder;
+
   const orderItems = [];
   let subtotal = 0;
 
@@ -112,6 +126,8 @@ export async function POST(request) {
     subtotal += price * qty;
   }
 
+  subtotal = roundMoney(subtotal);
+
   const resolvedBilling = sameAsShipping
     ? cleanAddress(shippingAddress)
     : cleanAddress(billingAddress || shippingAddress);
@@ -120,7 +136,7 @@ export async function POST(request) {
   const shipping = subtotal >= 3000 ? 0 : 99;
 
   let coupon = null;
-  let discount = 0;
+  let couponDiscount = 0;
 
   const normalizedCode =
     typeof couponCode === "string"
@@ -199,19 +215,38 @@ export async function POST(request) {
 
     coupon = availableCoupon;
 
-    // Discount can only be calculated on eligible product prices.
-    // Shipping is deliberately excluded from this calculation.
-    discount = Math.min(
+    // Coupon discount applies only to eligible product prices.
+    couponDiscount = Math.min(
       eligibleSubtotal,
       Math.max(
         0,
         Number(getCouponDiscount(coupon, eligibleSubtotal)) || 0
       )
     );
+
+    couponDiscount = roundMoney(couponDiscount);
   }
 
-  // Product subtotal + full shipping - product discount.
-  const total = Math.max(0, subtotal + shipping - discount);
+  // First-order offer:
+  // 5% discount on subtotal, only for first successful order.
+  // Minimum subtotal: ₹5,000.
+  // Maximum discount: ₹5,000.
+  const firstOrderEligible =
+    isFirstOrder && subtotal >= 5000;
+
+  const firstOrderDiscount = firstOrderEligible
+    ? roundMoney(Math.min(subtotal * 0.05, 5000))
+    : 0;
+
+  // Combine coupon and first-order discounts.
+  // Shipping is not discounted.
+  const totalDiscount = roundMoney(
+    couponDiscount + firstOrderDiscount
+  );
+
+  const total = roundMoney(
+    Math.max(0, subtotal + shipping - totalDiscount)
+  );
 
   let order;
 
@@ -222,7 +257,7 @@ export async function POST(request) {
       subtotal,
       shipping,
       couponCode: coupon?.code || "",
-      discount,
+      discount: totalDiscount,
       couponUsageReleased: false,
       total,
       status: "pending",
@@ -252,6 +287,7 @@ export async function POST(request) {
 
   try {
     razorpayOrder = await getRazorpay().orders.create({
+      // Razorpay receives the final discounted amount.
       amount: Math.round(total * 100),
       currency: "INR",
       receipt: String(order._id),
@@ -289,6 +325,16 @@ export async function POST(request) {
     {
       message: "Order created, awaiting payment",
       order,
+      pricing: {
+        subtotal,
+        shipping,
+        couponDiscount,
+        firstOrderDiscount,
+        totalDiscount,
+        total,
+        isFirstOrder,
+        firstOrderEligible,
+      },
       razorpay: {
         orderId: razorpayOrder.id,
         amount: razorpayOrder.amount,

@@ -50,6 +50,10 @@ export default function CheckoutPage() {
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [couponEntryOpen, setCouponEntryOpen] = useState(false);
 
+  // First-order offer state (browser-side display only).
+  const [isFirstOrder, setIsFirstOrder] = useState(false);
+  const [firstOrderChecked, setFirstOrderChecked] = useState(false);
+
   const autoCouponAttempted = useRef(false);
   const previousCartFingerprint = useRef(null);
 
@@ -66,6 +70,33 @@ export default function CheckoutPage() {
   });
 
   const [errors, setErrors] = useState({});
+
+  // This localStorage check is only a client-side convenience.
+  // The backend must independently verify first-order eligibility.
+  useEffect(() => {
+    if (!hydrated) return;
+
+    if (!user) {
+      setIsFirstOrder(false);
+      setFirstOrderChecked(true);
+      return;
+    }
+
+    const customerKey = user._id || user.id || user.email;
+
+    if (!customerKey) {
+      setIsFirstOrder(false);
+      setFirstOrderChecked(true);
+      return;
+    }
+
+    const completed = localStorage.getItem(
+      `dpack_first_order_completed_${customerKey}`
+    );
+
+    setIsFirstOrder(completed !== "true");
+    setFirstOrderChecked(true);
+  }, [hydrated, user]);
 
   const nameParts = (user?.name || "").trim().split(/\s+/);
 
@@ -111,7 +142,24 @@ export default function CheckoutPage() {
     )
     : 0;
 
-  const total = Math.max(0, subtotal + shipping - couponDiscount);
+  // First successful order: 5% off on subtotal of ₹5,000 or more,
+  // with a maximum discount of ₹5,000.
+  const firstOrderEligible =
+    firstOrderChecked && isFirstOrder && subtotal >= 5000;
+
+  const firstOrderDiscount = firstOrderEligible
+    ? Math.min(subtotal * 0.05, 5000)
+    : 0;
+
+  const firstOrderMessage =
+    firstOrderChecked && isFirstOrder && subtotal < 5000
+      ? "Minimum ₹5,000 order required for 5% discount. First-time customers only."
+      : "";
+
+  const total = Math.max(
+    0,
+    subtotal + shipping - couponDiscount - firstOrderDiscount
+  );
 
   const updateQuantity = (key, type) => {
     const item = items.find((entry) => entry.key === key);
@@ -434,6 +482,9 @@ export default function CheckoutPage() {
           couponMatchesCart && couponDiscount > 0
             ? appliedCoupon.code
             : "",
+        // Backend must validate eligibility and calculate the real payment amount.
+        firstOrderDiscount,
+        isFirstOrder: firstOrderEligible,
       });
 
       if (!window.Razorpay) {
@@ -480,6 +531,17 @@ export default function CheckoutPage() {
               razorpay_signature: response.razorpay_signature,
             });
 
+            // Remember this successful order in this browser.
+            // This is not a substitute for backend order-history validation.
+            const customerKey = user?._id || user?.id || user?.email;
+            if (customerKey) {
+              localStorage.setItem(
+                `dpack_first_order_completed_${customerKey}`,
+                "true"
+              );
+            }
+
+            setIsFirstOrder(false);
             clearCart();
             setOrderComplete(true);
           } catch (error) {
@@ -1366,6 +1428,31 @@ export default function CheckoutPage() {
                       <span className="font-bold">
                         −₹{formatINR(couponDiscount)}
                       </span>
+                    </div>
+                  )}
+
+                  {firstOrderDiscount > 0 && (
+                    <div className="flex items-center justify-between text-green-700">
+                      <span className="text-sm">First Order Discount (5%)</span>
+                      <span className="font-bold">
+                        −₹{formatINR(firstOrderDiscount)}
+                      </span>
+                    </div>
+                  )}
+
+                  {firstOrderMessage && (
+                    <div className="rounded-lg border border-orange-200 bg-orange-50 p-3">
+                      <p className="text-xs font-medium leading-5 text-orange-800">
+                        {firstOrderMessage}
+                      </p>
+                    </div>
+                  )}
+
+                  {firstOrderDiscount > 0 && (
+                    <div className="rounded-lg border border-green-200 bg-green-50 p-3">
+                      <p className="text-xs font-semibold text-green-800">
+                        Congratulations! You saved 5% on your first order.
+                      </p>
                     </div>
                   )}
                 </div>

@@ -806,7 +806,7 @@ export default function Navbar() {
             <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 text-[12px] text-[#333] lg:flex">
               <ChevronDown size={14} className="rotate-90 text-[#777]" />
 
-              <span>Get 10% off Your First Order.</span>
+              <span>Get 5% off Your First Order.</span>
 
               <Link
                 href="/products"
