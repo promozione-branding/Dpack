@@ -22,6 +22,42 @@ function roundMoney(amount) {
   return Math.round((Number(amount) + Number.EPSILON) * 100) / 100;
 }
 
+// Find the selected variant using its ID or size.
+// Supports common cart payload formats.
+function getSelectedVariant(product, raw) {
+  if (!product.variants?.length) return null;
+
+  const variantId =
+    raw.variantId ||
+    raw.variant?._id ||
+    raw.variant?.id ||
+    null;
+
+  const variantSize =
+    raw.variantSize ||
+    raw.size ||
+    raw.variant?.size ||
+    null;
+
+  let variant = null;
+
+  if (variantId) {
+    variant = product.variants.find(
+      (v) => String(v._id) === String(variantId)
+    );
+  }
+
+  if (!variant && variantSize) {
+    variant = product.variants.find(
+      (v) =>
+        String(v.size).trim().toLowerCase() ===
+        String(variantSize).trim().toLowerCase()
+    );
+  }
+
+  return variant;
+}
+
 export async function POST(request) {
   const { user: authUser, error } = await requireAuth(request);
   if (error) return error;
@@ -80,8 +116,7 @@ export async function POST(request) {
 
   await connectDB();
 
-  // Check whether the customer has any previous successful orders.
-  // Pending and failed orders do not count as completed purchases.
+  // Only previous paid orders count as successful orders.
   const previousSuccessfulOrder = await Order.exists({
     userId: authUser._id,
     paymentStatus: "paid",
@@ -91,11 +126,12 @@ export async function POST(request) {
 
   const orderItems = [];
   let subtotal = 0;
+  let shipping = 0;
 
-  // Always fetch prices from the database.
-  // Never trust product prices sent by the browser.
+  // Fetch all prices and shipping charges from the database.
   for (const raw of items) {
     const qty = Number(raw.qty);
+
     const product = await Product.findById(raw.productId);
 
     if (!product || !product.isActive) {
@@ -104,13 +140,51 @@ export async function POST(request) {
       );
     }
 
-    if (product.trackInventory && product.stock < qty) {
-      return err(
-        `Not enough stock for "${product.name}" (only ${product.stock} left)`
-      );
+    let selectedVariant = null;
+
+    if (product.variants?.length > 0) {
+      selectedVariant = getSelectedVariant(product, raw);
+
+      if (!selectedVariant) {
+        return err(
+          `Please select a valid size/variant for "${product.name}"`
+        );
+      }
     }
 
-    const price = Math.max(0, Number(product.price) || 0);
+    // Check stock for the selected variant or normal product.
+    if (product.trackInventory) {
+      const availableStock = selectedVariant
+        ? Number(selectedVariant.stock) || 0
+        : Number(product.stock) || 0;
+
+      if (availableStock < qty) {
+        return err(
+          `Not enough stock for "${product.name}"${
+            selectedVariant ? ` (${selectedVariant.size})` : ""
+          } (only ${availableStock} left)`
+        );
+      }
+    }
+
+    // Use selected variant price when variants exist.
+    const price = Math.max(
+      0,
+      Number(
+        selectedVariant ? selectedVariant.price : product.price
+      ) || 0
+    );
+
+    // Shipping is charged per unit.
+    // Variant shipping takes priority over product shipping.
+    const shippingPrice = Math.max(
+      0,
+      Number(
+        selectedVariant
+          ? selectedVariant.shippingPrice
+          : product.shippingPrice
+      ) || 0
+    );
 
     orderItems.push({
       productId: product._id,
@@ -124,16 +198,15 @@ export async function POST(request) {
     });
 
     subtotal += price * qty;
+    shipping += shippingPrice * qty;
   }
 
   subtotal = roundMoney(subtotal);
+  shipping = roundMoney(shipping);
 
   const resolvedBilling = sameAsShipping
     ? cleanAddress(shippingAddress)
     : cleanAddress(billingAddress || shippingAddress);
-
-  // Shipping is calculated separately and is never discounted.
-  const shipping = subtotal >= 3000 ? 0 : 99;
 
   let coupon = null;
   let couponDiscount = 0;
@@ -174,8 +247,7 @@ export async function POST(request) {
       return err(couponError, 400);
     }
 
-    // Reserve one coupon use only when the coupon is still active,
-    // unexpired, and under its usage limit.
+    // Reserve one coupon use.
     const now = new Date();
 
     const availableCoupon = await Coupon.findOneAndUpdate(
@@ -228,7 +300,7 @@ export async function POST(request) {
   }
 
   // First-order offer:
-  // 5% discount on subtotal, only for first successful order.
+  // 5% discount on product subtotal.
   // Minimum subtotal: ₹5,000.
   // Maximum discount: ₹5,000.
   const firstOrderEligible =
@@ -238,14 +310,14 @@ export async function POST(request) {
     ? roundMoney(Math.min(subtotal * 0.05, 5000))
     : 0;
 
-  // Combine coupon and first-order discounts.
-  // Shipping is not discounted.
+  // Shipping is not included in any discount calculation.
   const totalDiscount = roundMoney(
     couponDiscount + firstOrderDiscount
   );
 
+  // Final amount includes full shipping charges.
   const total = roundMoney(
-    Math.max(0, subtotal + shipping - totalDiscount)
+    Math.max(0, subtotal - totalDiscount + shipping)
   );
 
   let order;
@@ -280,14 +352,17 @@ export async function POST(request) {
     }
 
     console.error("Order creation failed:", createError);
-    return err("Could not create your order. Please try again.", 500);
+
+    return err(
+      "Could not create your order. Please try again.",
+      500
+    );
   }
 
   let razorpayOrder;
 
   try {
     razorpayOrder = await getRazorpay().orders.create({
-      // Razorpay receives the final discounted amount.
       amount: Math.round(total * 100),
       currency: "INR",
       receipt: String(order._id),

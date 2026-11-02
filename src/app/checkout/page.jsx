@@ -71,32 +71,57 @@ export default function CheckoutPage() {
 
   const [errors, setErrors] = useState({});
 
-  // This localStorage check is only a client-side convenience.
-  // The backend must independently verify first-order eligibility.
+  // Check the authenticated customer's actual order history.
+  // Only a successfully paid order disqualifies the first-order offer.
   useEffect(() => {
     if (!hydrated) return;
 
-    if (!user) {
-      setIsFirstOrder(false);
-      setFirstOrderChecked(true);
-      return;
-    }
+    let cancelled = false;
 
-    const customerKey = user._id || user.id || user.email;
+    const checkOrderHistory = async () => {
+      if (!isLoggedIn || !user) {
+        setIsFirstOrder(false);
+        setFirstOrderChecked(true);
+        return;
+      }
 
-    if (!customerKey) {
-      setIsFirstOrder(false);
-      setFirstOrderChecked(true);
-      return;
-    }
+      setFirstOrderChecked(false);
 
-    const completed = localStorage.getItem(
-      `dpack_first_order_completed_${customerKey}`
-    );
+      try {
+        const result = await ordersAPI.list();
+        const customerOrders =
+          result?.orders ||
+          result?.data?.orders ||
+          result?.result?.orders ||
+          [];
 
-    setIsFirstOrder(completed !== "true");
-    setFirstOrderChecked(true);
-  }, [hydrated, user]);
+        const hasSuccessfulOrder = Array.isArray(customerOrders) &&
+          customerOrders.some(
+            (order) =>
+              String(order?.paymentStatus || "").toLowerCase() === "paid"
+          );
+
+        if (!cancelled) {
+          setIsFirstOrder(!hasSuccessfulOrder);
+          setFirstOrderChecked(true);
+        }
+      } catch (error) {
+        console.error("Unable to check customer order history:", error);
+
+        // Do not show an unverified first-order offer if history cannot load.
+        if (!cancelled) {
+          setIsFirstOrder(false);
+          setFirstOrderChecked(true);
+        }
+      }
+    };
+
+    void checkOrderHistory();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, isLoggedIn, user]);
 
   const nameParts = (user?.name || "").trim().split(/\s+/);
 
@@ -443,6 +468,20 @@ export default function CheckoutPage() {
     const orderItems = items.map((item) => ({
       productId: item.id ?? item.productId ?? item.product?._id,
       qty: Number(item.qty),
+
+      // Send the selected variant so the backend can read its
+      // price, stock, and per-unit shippingPrice from MongoDB.
+      // For products without variants these values can remain undefined.
+      variantId:
+        item.variantId ??
+        item.variant?._id ??
+        item.variant?.id ??
+        undefined,
+      variantSize:
+        item.variantSize ??
+        item.size ??
+        item.variant?.size ??
+        undefined,
     }));
 
     const invalidOrderItem = orderItems.some(
@@ -531,17 +570,9 @@ export default function CheckoutPage() {
               razorpay_signature: response.razorpay_signature,
             });
 
-            // Remember this successful order in this browser.
-            // This is not a substitute for backend order-history validation.
-            const customerKey = user?._id || user?.id || user?.email;
-            if (customerKey) {
-              localStorage.setItem(
-                `dpack_first_order_completed_${customerKey}`,
-                "true"
-              );
-            }
-
+            // Refresh the first-order display after successful payment.
             setIsFirstOrder(false);
+            setFirstOrderChecked(true);
             clearCart();
             setOrderComplete(true);
           } catch (error) {
