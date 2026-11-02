@@ -783,7 +783,11 @@ export default function ProductPage({ params }) {
 
     const name = String(data.get("customerName") || "").trim();
     const companyName = String(data.get("companyName") || "").trim();
-    const phone = String(data.get("mobile") || "").replace(/\D/g, "");
+    const phoneDigits = String(data.get("mobile") || "").replace(/\D/g, "");
+    const phone =
+      phoneDigits.length === 12 && phoneDigits.startsWith("91")
+        ? phoneDigits.slice(2)
+        : phoneDigits;
     const place = String(data.get("place") || "").trim();
     const message = String(data.get("message") || "").trim();
     const productName = currentProduct?.name || "";
@@ -1886,10 +1890,10 @@ Contact: ${phone}`;
               <input
                 type="tel"
                 name="mobile"
-                maxLength={10}
+                maxLength={16}
                 placeholder="Mobile Number"
                 required
-                pattern="[0-9+\-\s()]{10,}"
+                pattern="[0-9+\-\s()]{10,16}"
                 className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
               />
 

@@ -607,11 +607,27 @@ function PinterestIcon() {
 }
 
 const SOCIAL_LINKS = [
-  { label: "Facebook", Icon: FacebookIcon },
-  { label: "Instagram", Icon: InstagramIcon },
-  { label: "TikTok", Icon: TikTokIcon },
-  { label: "Youtube", Icon: YoutubeIcon },
-  { label: "Pinterest", Icon: PinterestIcon },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/Dpacksolutions/",
+    Icon: FacebookIcon,
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/dpacksolutionsindia/",
+    Icon: InstagramIcon,
+  },
+
+  {
+    label: "Youtube",
+    href: "https://www.youtube.com/@Dpacksolutions",
+    Icon: YoutubeIcon,
+  },
+  // {
+  //   label: "LinkedIn",
+  //   href: "https://www.linkedin.com/company/dpacksolutions/",
+  //   Icon: LinkedInIcon,
+  // },
 ];
 
 /* =========================================================
@@ -788,17 +804,20 @@ export default function Navbar() {
               </p>
 
               <div className="hidden items-center gap-3 md:flex">
-                {SOCIAL_LINKS.map(({ label, Icon }) => (
-                  <a
-                    key={label}
-                    href="#"
-                    aria-label={label}
-                    className="text-[#171717] transition-colors hover:text-[#F5A623]"
-                  >
-                    <Icon />
-                  </a>
-                ))}
-              </div>
+  {SOCIAL_LINKS.map(({ label, href, Icon }) => (
+    <a
+      key={label}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      title={label}
+      className="text-[#171717] transition-colors hover:text-[#F5A623]"
+    >
+      <Icon />
+    </a>
+  ))}
+</div>
             </div>
 
             {/* CENTER OFFER */}
