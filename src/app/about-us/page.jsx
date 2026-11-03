@@ -1,9 +1,8 @@
 import AboutUs from "./AboutUs";
 
 export const metadata = {
-  title: "About Us | DPACK Packaging Solutions",
-  description:
-    "Learn about DPACK Packaging Solutions, our company, expertise, and commitment to delivering quality packaging products and solutions.",
+  title: "About D Pack – Packaging Solutions Manufacturer & Importer",
+  description: "Learn about D Pack, a packaging solutions manufacturer and importer offering innovative protective packaging products for businesses across India.",
 };
 
 export default function AboutPage() {

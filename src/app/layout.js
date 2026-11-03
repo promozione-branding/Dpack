@@ -12,7 +12,6 @@ import LenisScroll from "@/components/Smooth";
 /* =========================================================
    FONTS
 ========================================================= */
-
 const urbanist = Urbanist({
   subsets: ["latin"],
   variable: "--font-urbanist",
@@ -28,11 +27,9 @@ const workSans = Work_Sans({
 /* =========================================================
    METADATA
 ========================================================= */
-
 export const metadata = {
-  title: "Dpack | Protective Packaging Solutions",
-  description:
-    "Dpack provides innovative protective packaging solutions including air column bags, dunnage bags, packaging air bags and gap fillers.",
+  title: "Inflatable Packaging Manufacturer & Importer | D Pack",
+  description: "D Pack is a trusted manufacturer and importer of Air Cushion Bags, Dunnage Air Bags, Air Column Bags and inflatable packaging solutions.",
 };
 
 /* =========================================================
@@ -48,13 +45,13 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
           <Navbar />
-    <LenisScroll>
-          <main className="flex-1">
-            {children}
-          </main>
+          <LenisScroll>
+            <main className="flex-1">
+              {children}
+            </main>
           </LenisScroll>
 
-      <Footer />
+          <Footer />
           <CartDrawer />
         </AuthProvider>
       </body>
