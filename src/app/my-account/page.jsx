@@ -60,7 +60,16 @@ export default function MyAccountPage() {
   const [profile, setProfile] = useState({
     name: "",
     email: "",
-    address: { line1: "", line2: "", city: "", state: "", pincode: "", country: "India" },
+    address: {
+      line1: "",
+      line2: "",
+      companyName: "",
+      gstNo: "",
+      city: "",
+      state: "",
+      pincode: "",
+      country: "India",
+    },
   });
 
   useEffect(() => {
@@ -84,17 +93,19 @@ export default function MyAccountPage() {
   const accountProfile = profileEdited
     ? profile
     : {
-        name: user?.name || "",
-        email: user?.email || "",
-        address: {
-          line1: user?.address?.line1 || "",
-          line2: user?.address?.line2 || "",
-          city: user?.address?.city || "",
-          state: user?.address?.state || "",
-          pincode: user?.address?.pincode || "",
-          country: user?.address?.country || "India",
-        },
-      };
+      name: user?.name || "",
+      email: user?.email || "",
+      address: {
+        line1: user?.address?.line1 || "",
+        line2: user?.address?.line2 || "",
+        companyName: user?.address?.companyName || "",
+        gstNo: user?.address?.gstNo || "",
+        city: user?.address?.city || "",
+        state: user?.address?.state || "",
+        pincode: user?.address?.pincode || "",
+        country: user?.address?.country || "India",
+      },
+    };
 
   const handleLogout = () => {
     logout();
@@ -122,6 +133,8 @@ export default function MyAccountPage() {
           state: result.user.address?.state || "",
           pincode: result.user.address?.pincode || "",
           country: result.user.address?.country || "India",
+          companyName: result.user.address?.companyName || "",
+          gstNo: result.user.address?.gstNo || "",
         },
       }));
       setProfileEdited(true);
@@ -365,11 +378,10 @@ export default function MyAccountPage() {
                     <button
                       key={item.id}
                       onClick={() => setActiveTab(item.id)}
-                      className={`group relative mb-1 flex w-full items-center justify-between px-4 py-3.5 text-left text-sm font-medium transition-all ${
-                        active
-                          ? "bg-[#FFF4DD] text-[#081A33]"
-                          : "text-[#081A33]/65 hover:bg-[#F7F8FA] hover:text-[#081A33]"
-                      }`}
+                      className={`group relative mb-1 flex w-full items-center justify-between px-4 py-3.5 text-left text-sm font-medium transition-all ${active
+                        ? "bg-[#FFF4DD] text-[#081A33]"
+                        : "text-[#081A33]/65 hover:bg-[#F7F8FA] hover:text-[#081A33]"
+                        }`}
                     >
                       {active && (
                         <span className="absolute left-0 top-0 h-full w-1 bg-[#F5A623]" />
@@ -390,11 +402,10 @@ export default function MyAccountPage() {
 
                       <ChevronRight
                         size={15}
-                        className={`transition ${
-                          active
-                            ? "translate-x-0 text-[#F5A623]"
-                            : "-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
-                        }`}
+                        className={`transition ${active
+                          ? "translate-x-0 text-[#F5A623]"
+                          : "-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                          }`}
                       />
                     </button>
                   );
@@ -893,6 +904,20 @@ export default function MyAccountPage() {
                         label="Pincode"
                         value={accountProfile.address.pincode}
                         onChange={(value) => updateAddress("pincode", value)}
+                      />
+
+                      <AccountInput
+                        label="Company Name (Optional)"
+                        value={accountProfile.address.companyName}
+                        onChange={(value) => updateAddress("companyName", value)}
+                      />
+
+                      <AccountInput
+                        label="GST Number (Optional)"
+                        value={accountProfile.address.gstNo}
+                        onChange={(value) =>
+                          updateAddress("gstNo", value.toUpperCase())
+                        }
                       />
                     </div>
                   </div>

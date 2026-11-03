@@ -9,12 +9,21 @@ import { getCouponDiscount, getCouponError } from "@/lib/coupons";
 
 function cleanAddress(addr = {}) {
   return {
-    line1: addr.line1 || "",
-    line2: addr.line2 || "",
-    city: addr.city || "",
-    state: addr.state || "",
-    pincode: addr.pincode || "",
-    country: addr.country || "India",
+    line1: String(addr?.line1 || "").trim(),
+    line2: String(addr?.line2 || "").trim(),
+
+    companyName: String(
+      addr?.companyName || ""
+    ).trim(),
+
+    gstNo: String(
+      addr?.gstNo || ""
+    ).trim().toUpperCase(),
+
+    city: String(addr?.city || "").trim(),
+    state: String(addr?.state || "").trim(),
+    pincode: String(addr?.pincode || "").trim(),
+    country: String(addr?.country || "India").trim(),
   };
 }
 
@@ -160,8 +169,7 @@ export async function POST(request) {
 
       if (availableStock < qty) {
         return err(
-          `Not enough stock for "${product.name}"${
-            selectedVariant ? ` (${selectedVariant.size})` : ""
+          `Not enough stock for "${product.name}"${selectedVariant ? ` (${selectedVariant.size})` : ""
           } (only ${availableStock} left)`
         );
       }
@@ -340,7 +348,7 @@ export async function POST(request) {
       customerMobile: customerMobile || authUser.mobile,
       shippingAddress: cleanAddress(shippingAddress),
       billingAddress: resolvedBilling,
-      gstNumber: gstNumber?.trim() || "",
+      gstNumber: String(gstNumber ?? resolvedBilling.gstNo ?? "").trim().toUpperCase(),
       notes: notes?.trim() || "",
     });
   } catch (createError) {

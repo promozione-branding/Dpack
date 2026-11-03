@@ -64,6 +64,8 @@ export default function CheckoutPage() {
     phone: "",
     address: "",
     apartment: "",
+    companyName: "",
+    gstNo: "",
     city: "",
     state: "",
     pincode: "",
@@ -136,6 +138,8 @@ export default function CheckoutPage() {
     city: form.city || user?.address?.city || "",
     state: form.state || user?.address?.state || "",
     pincode: form.pincode || user?.address?.pincode || "",
+    companyName: form.companyName || user?.address?.companyName || "",
+    gstNo: form.gstNo || user?.address?.gstNo || "",
   };
 
   const cartFingerprint = items
@@ -511,6 +515,8 @@ export default function CheckoutPage() {
         shippingAddress: {
           line1: checkoutValues.address,
           line2: checkoutValues.apartment,
+          companyName: checkoutValues.companyName.trim(),
+          gstNo: checkoutValues.gstNo.trim().toUpperCase(),
           city: checkoutValues.city,
           state: checkoutValues.state,
           pincode: checkoutValues.pincode,
@@ -1044,6 +1050,51 @@ export default function CheckoutPage() {
                           {errors.pincode}
                         </p>
                       )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#081A33]">
+                        Company Name
+                        <span className="ml-1 font-normal text-gray-400">
+                          (Optional)
+                        </span>
+                      </label>
+
+                      <input
+                        type="text"
+                        name="companyName"
+                        value={checkoutValues.companyName}
+                        onChange={handleChange}
+                        placeholder="Enter company name"
+                        className="h-12 w-full border border-gray-300 bg-white px-4 text-sm outline-none transition-all focus:border-[#F5A623]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#081A33]">
+                        GST Number
+                        <span className="ml-1 font-normal text-gray-400">
+                          (Optional)
+                        </span>
+                      </label>
+
+                      <input
+                        type="text"
+                        name="gstNo"
+                        value={checkoutValues.gstNo}
+                        onChange={(e) =>
+                          handleChange({
+                            target: {
+                              name: "gstNo",
+                              value: e.target.value.toUpperCase(),
+                            },
+                          })
+                        }
+                        placeholder="22AAAAA0000A1Z5"
+                        maxLength={15}
+                        className="h-12 w-full border border-gray-300 bg-white px-4 text-sm uppercase outline-none transition-all focus:border-[#F5A623]"
+                      />
                     </div>
                   </div>
                 </div>
