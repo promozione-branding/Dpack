@@ -35,11 +35,11 @@ const marketplaces = [
     href: "https://www.amazon.in/",
   },
   {
-    name: "Moblix",
+    name: "Moglix",
     subtitle: "Explore our products",
     initials: "M",
     color: "#F5A623",
-    href: "#",
+    href: "https://supplier.moglix.com/",
   },
   {
     name: "Toolsvilla",
