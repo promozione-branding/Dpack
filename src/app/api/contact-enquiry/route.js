@@ -1,6 +1,8 @@
 
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 export async function POST(request) {
   try {
     const fields = await request.json();
@@ -49,6 +51,7 @@ export async function POST(request) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({
           platform: "DPACK Bulk Enquiry Form",
@@ -63,10 +66,32 @@ export async function POST(request) {
           message,
         }),
         cache: "no-store",
+        signal: AbortSignal.timeout(20000),
       }
     );
 
-    const result = await upstreamResponse.json();
+    // Safely read API response
+    const responseText = await upstreamResponse.text();
+
+    let result;
+
+    try {
+      result = JSON.parse(responseText);
+    } catch {
+      console.error(
+        "Invalid BrandBnalo response:",
+        upstreamResponse.status,
+        responseText.slice(0, 500)
+      );
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid response from enquiry service.",
+        },
+        { status: 502 }
+      );
+    }
 
     if (!upstreamResponse.ok || !result?.success) {
       console.error("Enquiry service rejected submission:", {
@@ -77,7 +102,10 @@ export async function POST(request) {
       return NextResponse.json(
         {
           success: false,
-          error: result?.error || "Failed to send enquiry. Please try again.",
+          error:
+            result?.error ||
+            result?.message ||
+            "Failed to send enquiry. Please try again.",
         },
         { status: 502 }
       );
@@ -87,15 +115,20 @@ export async function POST(request) {
       success: true,
       message: "Enquiry submitted successfully.",
     });
+
   } catch (error) {
-    console.error("Bulk enquiry submission error:", error);
+    console.error("Contact enquiry API error:", error);
+
+    const timeout = error?.name === "TimeoutError";
 
     return NextResponse.json(
       {
         success: false,
-        error: "Server error. Please try again later.",
+        error: timeout
+          ? "Request timed out. Please try again."
+          : "Server error. Please try again later.",
       },
-      { status: 500 }
+      { status: timeout ? 504 : 500 }
     );
   }
 }

@@ -775,75 +775,81 @@ export default function ProductPage({ params }) {
      BULK ENQUIRY SUBMIT
   ======================================================= */
 
-  const handleBulkSubmit = async (event) => {
-    event.preventDefault();
+const handleBulkSubmit = async (event) => {
+  event.preventDefault();
 
-    const form = event.currentTarget;
-    const data = new FormData(form);
+  const form = event.currentTarget;
+  const data = new FormData(form);
 
-    const name = String(data.get("customerName") || "").trim();
-    const companyName = String(data.get("companyName") || "").trim();
-    const phoneDigits = String(data.get("mobile") || "").replace(/\D/g, "");
-    const phone =
-      phoneDigits.length === 12 && phoneDigits.startsWith("91")
-        ? phoneDigits.slice(2)
-        : phoneDigits;
-    const place = String(data.get("place") || "").trim();
-    const message = String(data.get("message") || "").trim();
-    const productName = currentProduct?.name || "";
+  const name = String(data.get("customerName") || "").trim();
+  const phoneDigits = String(data.get("mobile") || "").replace(/\D/g, "");
+  const phone =
+    phoneDigits.length === 12 && phoneDigits.startsWith("91")
+      ? phoneDigits.slice(2)
+      : phoneDigits;
 
-    if (!/^\d{10}$/.test(phone)) {
-      setEnquiryStatus("Enter a valid 10-digit phone number.");
-      return;
-    }
+  const email = String(data.get("email") || "").trim();
+  const place = String(data.get("place") || "").trim();
+  const message = String(data.get("message") || "").trim();
+  const productName = currentProduct?.name || "";
 
-    setEnquiryLoading(true);
-    setEnquiryStatus("Sending...");
+  // Validate all required fields
+  if (!name || !phone || !email || !place || !message) {
+    setEnquiryStatus("Please fill all required fields.");
+    return;
+  }
 
-    try {
-      const response = await fetch("/api/contact-enquiry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          company: companyName,
-          place,
-          product: productName,
-          message,
-        }),
-      });
+  if (!/^\d{10}$/.test(phone)) {
+    setEnquiryStatus("Enter a valid 10-digit phone number.");
+    return;
+  }
 
-      const result = await response.json();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    setEnquiryStatus("Please enter a valid email address.");
+    return;
+  }
 
-      if (!response.ok || !result?.success) {
-        throw new Error(result?.error || "Failed to send. Please try again.");
-      }
+  setEnquiryLoading(true);
+  setEnquiryStatus("Sending...");
 
-      setEnquiryStatus("Your enquiry has been submitted successfully!");
+  try {
+    const response = await fetch("/api/contact-enquiry", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        phone,
+        email,
+        company: "",
+        place,
+        product: productName,
+        message,
+      }),
+    });
 
-      const whatsappText = `Hi, I am ${name}.
-CompanyName: ${companyName}
-Place: ${place}
-Product: ${productName}
-Message: ${message}
+    const result = await response.json();
 
-Contact: ${phone}`;
-
-      window.open(
-        `https://wa.me/917669988825?text=${encodeURIComponent(whatsappText)}`,
-        "_blank",
-        "noopener,noreferrer"
+    if (!response.ok || !result?.success) {
+      throw new Error(
+        result?.error || "Failed to send enquiry. Please try again."
       );
-
-      form.reset();
-    } catch (error) {
-      console.error("Bulk enquiry submission failed:", error);
-      setEnquiryStatus(error.message || "Server error. Try again later.");
-    } finally {
-      setEnquiryLoading(false);
     }
-  };
+
+    setEnquiryStatus("Your enquiry has been submitted successfully!");
+
+
+
+    form.reset();
+  } catch (error) {
+    console.error("Bulk enquiry submission failed:", error);
+    setEnquiryStatus(error.message || "Server error. Please try again.");
+  } finally {
+    setEnquiryLoading(false);
+  }
+};
+
 
   /* =======================================================
      LOADING / NOT FOUND
@@ -1841,93 +1847,118 @@ Contact: ${phone}`;
         </div>
       )}
 
-      {/* BULK ENQUIRY MODAL */}
+   
+{/* BULK ENQUIRY MODAL */}
 
-      {isBulkEnquiryOpen && (
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4"
-          onClick={() => setIsBulkEnquiryOpen(false)}
-        >
-          <div
-            className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-7"
-            onClick={(e) => e.stopPropagation()}
+{isBulkEnquiryOpen && (
+  <div
+    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4"
+    onClick={() => {
+      if (!enquiryLoading) setIsBulkEnquiryOpen(false);
+    }}
+  >
+    <div
+      className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-7"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        type="button"
+        onClick={() => setIsBulkEnquiryOpen(false)}
+        disabled={enquiryLoading}
+        className="absolute right-4 top-4 text-2xl text-gray-500 hover:text-black"
+        aria-label="Close enquiry form"
+      >
+        &times;
+      </button>
+
+      <h2 className="pr-8 text-2xl font-extrabold text-[#081A33]">
+        Bulk Enquiry
+      </h2>
+
+      <p className="mt-2 text-sm text-gray-600">
+        Minimum Order Value:{" "}
+        <span className="font-bold text-[#D95026]">
+          ₹20,000 or above
+        </span>
+      </p>
+
+      <form
+        className="mt-6 space-y-4"
+        onSubmit={handleBulkSubmit}
+      >
+        <input
+          type="text"
+          name="customerName"
+          placeholder="Your Name"
+          required
+          autoComplete="name"
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+        />
+
+        <input
+          type="tel"
+          name="mobile"
+          maxLength={16}
+          placeholder="Mobile Number"
+          required
+          pattern="[0-9+\-\s()]{10,16}"
+          autoComplete="tel"
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+        />
+
+        <input
+  type="email"
+  name="email"
+  placeholder="Email Address"
+  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+/>
+
+        <input
+          type="text"
+          name="place"
+          placeholder="City / Delivery Location"
+          required
+          autoComplete="address-level2"
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+        />
+
+  
+
+        <textarea
+          name="message"
+          rows={4}
+          placeholder="Message / Requirement Details"
+          required
+          className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
+        />
+
+        {enquiryStatus && (
+          <p
+            role="status"
+            className={`text-sm font-semibold ${
+              enquiryStatus.toLowerCase().includes("success")
+                ? "text-green-600"
+                : enquiryStatus === "Sending..."
+                ? "text-gray-600"
+                : "text-red-600"
+            }`}
           >
-            <button
-              type="button"
-              onClick={() => setIsBulkEnquiryOpen(false)}
-              className="absolute right-4 top-4 text-2xl text-gray-500 hover:text-black"
-              aria-label="Close enquiry form"
-            >
-              &times;
-            </button>
+            {enquiryStatus}
+          </p>
+        )}
 
-            <h2 className="pr-8 text-2xl font-extrabold text-[#081A33]">
-              Bulk Enquiry
-            </h2>
+        <button
+          type="submit"
+          disabled={enquiryLoading}
+          className="w-full rounded-xl bg-[#081A33] px-5 py-3.5 font-bold text-white transition hover:bg-[#D95026] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {enquiryLoading ? "Sending..." : "Submit Bulk Enquiry"}
+        </button>
+      </form>
+    </div>
+  </div>
+)}
 
-            <p className="mt-2 text-sm text-gray-600">
-              Minimum Order Value:{" "}
-              <span className="font-bold text-[#D95026]">₹20,000 or above</span>
-            </p>
-
-            <form className="mt-6 space-y-4" onSubmit={handleBulkSubmit}>
-              <input
-                type="text"
-                name="customerName"
-                placeholder="Your Name"
-                required
-                className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
-              />
-
-              <input
-                type="text"
-                name="companyName"
-                placeholder="Company Name"
-                required
-                className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
-              />
-
-              <input
-                type="tel"
-                name="mobile"
-                maxLength={16}
-                placeholder="Mobile Number"
-                required
-                pattern="[0-9+\-\s()]{10,16}"
-                className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
-              />
-
-              <input
-                type="text"
-                name="place"
-                placeholder="City / Delivery Location"
-                required
-                className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
-              />
-
-              <textarea
-                name="message"
-                rows={4}
-                placeholder="Message / Requirement Details"
-                required
-                className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#081A33]"
-              />
-
-              {enquiryStatus && (
-                <p className="text-sm font-semibold text-[#081A33]">{enquiryStatus}</p>
-              )}
-
-              <button
-                type="submit"
-                disabled={enquiryLoading}
-                className="w-full rounded-xl bg-[#081A33] px-5 py-3.5 font-bold text-white transition hover:bg-[#D95026] disabled:opacity-60"
-              >
-                {enquiryLoading ? "Sending..." : "Submit Bulk Enquiry"}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
