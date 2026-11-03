@@ -32,6 +32,57 @@ export const metadata = {
   description: "D Pack is a trusted manufacturer and importer of Air Cushion Bags, Dunnage Air Bags, Air Column Bags and inflatable packaging solutions.",
 };
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://dpackshop.com/#organization",
+      name: "Dpack",
+      url: "https://dpackshop.com/",
+      description:
+        "Dpack offers protective packaging, cargo securing and industrial packaging solutions for businesses, logistics, warehousing and e-commerce.",
+      email: "info@dpacksolutions.com",
+      knowsAbout: [
+        "Protective Packaging",
+        "Air Column Bags",
+        "Air Cushion Packaging",
+        "Dunnage Bags",
+        "Honeycomb Paper Packaging",
+        "Cargo Securing Products",
+        "Packaging Machines",
+        "Lashing Belts",
+        "Packaging Tapes",
+        "Industrial Packaging",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://dpackshop.com/#website",
+      url: "https://dpackshop.com/",
+      name: "Dpack Shop",
+      publisher: {
+        "@id": "https://dpackshop.com/#organization",
+      },
+      inLanguage: "en-IN",
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://dpackshop.com/#webpage",
+      url: "https://dpackshop.com/",
+      name: "Dpack - Protective Packaging Solutions",
+      description:
+        "Shop protective packaging products, air bags, air column rolls, gap fillers, cargo securing products and industrial packaging solutions.",
+      isPartOf: {
+        "@id": "https://dpackshop.com/#website",
+      },
+      about: {
+        "@id": "https://dpackshop.com/#organization",
+      },
+    },
+  ],
+};
+
 /* =========================================================
    ROOT LAYOUT
 ========================================================= */
@@ -42,6 +93,15 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${urbanist.variable} ${workSans.variable}`}
     >
+      <head>
+        <link rel="canonical" href="https://dpackshop.com/"></link>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
           <Navbar />
