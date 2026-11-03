@@ -47,9 +47,26 @@ const menuItems = [
   },
 ];
 
+const getInitialProfile = (user) => ({
+  name: user?.name || "",
+  email: user?.email || "",
+
+  address: {
+    line1: user?.address?.line1 || "",
+    line2: user?.address?.line2 || "",
+    companyName: user?.address?.companyName || "",
+    gstNo: user?.address?.gstNo || "",
+    city: user?.address?.city || "",
+    state: user?.address?.state || "",
+    pincode: user?.address?.pincode || "",
+    country: user?.address?.country || "India",
+  },
+});
+
 export default function MyAccountPage() {
   const router = useRouter();
   const { user, hydrated, isLoggedIn, logout, wishlistCount } = useAuth();
+  console.log(user)
   const [activeTab, setActiveTab] = useState("dashboard");
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
@@ -57,55 +74,18 @@ export default function MyAccountPage() {
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
   const [profileEdited, setProfileEdited] = useState(false);
-  const [profile, setProfile] = useState({
-    name: "",
-    email: "",
-    address: {
-      line1: "",
-      line2: "",
-      companyName: "",
-      gstNo: "",
-      city: "",
-      state: "",
-      pincode: "",
-      country: "India",
-    },
-  });
+
+  const [profile, setProfile] = useState(() =>
+    getInitialProfile(null)
+  );
 
   useEffect(() => {
-    if (!hydrated || !isLoggedIn) return;
-    let cancelled = false;
-    ordersAPI.list()
-      .then((result) => {
-        if (!cancelled) setOrders(Array.isArray(result.orders) ? result.orders : []);
-      })
-      .catch((fetchError) => {
-        if (!cancelled) setError(fetchError.message || "Could not load your orders.");
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingOrders(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [hydrated, isLoggedIn]);
+    if (hydrated && user && !profileEdited) {
+      setProfile(getInitialProfile(user));
+    }
+  }, [user, hydrated, profileEdited]);
 
-  const accountProfile = profileEdited
-    ? profile
-    : {
-      name: user?.name || "",
-      email: user?.email || "",
-      address: {
-        line1: user?.address?.line1 || "",
-        line2: user?.address?.line2 || "",
-        companyName: user?.address?.companyName || "",
-        gstNo: user?.address?.gstNo || "",
-        city: user?.address?.city || "",
-        state: user?.address?.state || "",
-        pincode: user?.address?.pincode || "",
-        country: user?.address?.country || "India",
-      },
-    };
+  const accountProfile = profile;
 
   const handleLogout = () => {
     logout();
@@ -113,34 +93,34 @@ export default function MyAccountPage() {
   };
 
   const saveProfile = async () => {
+    if (saving) return;
+
     setSaving(true);
     setError("");
     setNotice("");
+
     try {
       const result = await userAPI.updateProfile({
-        name: accountProfile.name,
-        email: accountProfile.email,
-        address: accountProfile.address,
-      });
-      setProfile((current) => ({
-        ...current,
-        name: result.user.name || "",
-        email: result.user.email || "",
+        name: profile.name.trim(),
+        email: profile.email.trim(),
         address: {
-          line1: result.user.address?.line1 || "",
-          line2: result.user.address?.line2 || "",
-          city: result.user.address?.city || "",
-          state: result.user.address?.state || "",
-          pincode: result.user.address?.pincode || "",
-          country: result.user.address?.country || "India",
-          companyName: result.user.address?.companyName || "",
-          gstNo: result.user.address?.gstNo || "",
+          ...profile.address,
+          gstNo: profile.address.gstNo.trim().toUpperCase(),
         },
-      }));
-      setProfileEdited(true);
-      setNotice("Account details saved.");
+      });
+
+      if (!result?.user) {
+        throw new Error("Invalid profile update response");
+      }
+
+      setProfile(getInitialProfile(result.user));
+
+      setProfileEdited(false);
+      setNotice("Account details saved successfully.");
     } catch (saveError) {
-      setError(saveError.message || "Could not save account details.");
+      setError(
+        saveError.message || "Could not save account details."
+      );
     } finally {
       setSaving(false);
     }
@@ -148,9 +128,13 @@ export default function MyAccountPage() {
 
   const updateAddress = (field, value) => {
     setProfileEdited(true);
+
     setProfile((current) => ({
       ...current,
-      address: { ...accountProfile.address, [field]: value },
+      address: {
+        ...current.address,
+        [field]: value,
+      },
     }));
   };
 
@@ -835,9 +819,13 @@ export default function MyAccountPage() {
                       value={accountProfile.name.split(/\s+/)[0] || ""}
                       onChange={(value) => {
                         setProfileEdited(true);
+
                         setProfile((current) => ({
                           ...current,
-                          name: `${value} ${accountProfile.name.split(/\s+/).slice(1).join(" ")}`.trim(),
+                          name: `${value} ${current.name
+                            .split(/\s+/)
+                            .slice(1)
+                            .join(" ")}`.trim(),
                         }));
                       }}
                     />
@@ -847,9 +835,10 @@ export default function MyAccountPage() {
                       value={accountProfile.name.split(/\s+/).slice(1).join(" ")}
                       onChange={(value) => {
                         setProfileEdited(true);
+
                         setProfile((current) => ({
                           ...current,
-                          name: `${accountProfile.name.split(/\s+/)[0] || ""} ${value}`.trim(),
+                          name: `${current.name.split(/\s+/)[0] || ""} ${value}`.trim(),
                         }));
                       }}
                     />
@@ -860,9 +849,23 @@ export default function MyAccountPage() {
                       type="email"
                       onChange={(value) => {
                         setProfileEdited(true);
-                        setProfile((current) => ({ ...current, email: value }));
+
+                        setProfile((current) => ({
+                          ...current,
+                          email: value,
+                        }));
                       }}
                     />
+
+                    {/* <AccountInput
+                      label="Email Address"
+                      value={accountProfile.email}
+                      type="email"
+                      onChange={(value) => {
+                        setProfileEdited(true);
+                        setProfile((current) => ({ ...current, email: value }));
+                      }}
+                    /> */}
 
                     <AccountInput
                       label="Phone Number"
