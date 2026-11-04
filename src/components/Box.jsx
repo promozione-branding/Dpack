@@ -20,7 +20,7 @@ const products = [
     id: 1,
     name: "Air Column Bags",
     category: "Protective Packaging",
-    categorySlug: "packaging-air-bags",
+    categorySlug: "air-column-rolls",
     description: "Shockproof. Safe. Reliable.",
     image: "/Air Column Roll (2).webp",
     tag: "Impact Protection",
@@ -68,24 +68,24 @@ const products = [
 ========================================================= */
 
 export default function Main() {
-  
+
   const [activeProduct, setActiveProduct] = useState(0);
 
   const active = products[activeProduct];
 
-  
-useEffect(() => {
-  const sliderInterval = setInterval(() => {
-    setActiveProduct((current) => (current + 1) % products.length);
-  }, 3000);
 
-  return () => clearInterval(sliderInterval);
-}, []);
+  useEffect(() => {
+    const sliderInterval = setInterval(() => {
+      setActiveProduct((current) => (current + 1) % products.length);
+    }, 3000);
+
+    return () => clearInterval(sliderInterval);
+  }, []);
 
 
   return (
     <section
-  className="
+      className="
   relative
   w-full
   overflow-hidden
@@ -95,13 +95,13 @@ useEffect(() => {
   md:h-[78vh]
   md:min-h-[590px]
 "
->
+    >
       {/* =====================================================
           MAIN GRID
       ===================================================== */}
 
       <div
-       className="
+        className="
   grid
   w-full
   grid-cols-1
@@ -116,8 +116,8 @@ useEffect(() => {
             LEFT SIDE
         ==================================================== */}
 
-      <div
-  className="
+        <div
+          className="
     order-2
     hidden
     h-[380px]
@@ -129,7 +129,7 @@ useEffect(() => {
     md:grid
     md:h-full
   "
->
+        >
           <SideCard
             product={products[0]}
             color="#F7774F"
@@ -150,7 +150,7 @@ useEffect(() => {
         ==================================================== */}
 
         <div
-         className="
+          className="
   order-1
   relative
   aspect-square
@@ -459,30 +459,30 @@ useEffect(() => {
                 "
               />
 
-             
-<div className="absolute inset-0">
-  <AnimatePresence mode="sync">
-    <motion.div
-      key={active.id}
-      className="absolute inset-0"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{
-        opacity: { duration: 0.7, ease: "easeInOut" },
-      }}
-    >
-      <Image
-        src={active.image}
-        alt={active.name}
-        fill
-        priority={activeProduct === 0}
-        sizes="(max-width: 640px) 90vw, (max-width: 768px) 70vw, 45vw"
-        className="object-contain object-center drop-shadow-[0_25px_25px_rgba(0,35,60,0.28)]"
-      />
-    </motion.div>
-  </AnimatePresence>
-</div>
+
+              <div className="absolute inset-0">
+                <AnimatePresence mode="sync">
+                  <motion.div
+                    key={active.id}
+                    className="absolute inset-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                      opacity: { duration: 0.7, ease: "easeInOut" },
+                    }}
+                  >
+                    <Image
+                      src={active.image}
+                      alt={active.name}
+                      fill
+                      priority={activeProduct === 0}
+                      sizes="(max-width: 640px) 90vw, (max-width: 768px) 70vw, 45vw"
+                      className="object-contain object-center drop-shadow-[0_25px_25px_rgba(0,35,60,0.28)]"
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
 
             </div>
 
@@ -529,7 +529,7 @@ useEffect(() => {
                   <ShieldCheck size={12} />
                 </span>
 
-               
+
               </div>
             </div>
 
@@ -537,7 +537,7 @@ useEffect(() => {
                 STATIC SPARK
             ================================================= */}
 
-            
+
           </div>
 
           {/* =================================================
@@ -569,10 +569,9 @@ useEffect(() => {
                       block
                       h-[4px]
                       rounded-full
-                      ${
-                        activeProduct === index
-                          ? "w-9 bg-[#FFE15A]"
-                          : "w-2 bg-white/35"
+                      ${activeProduct === index
+                        ? "w-9 bg-[#FFE15A]"
+                        : "w-2 bg-white/35"
                       }
                     `}
                   />
@@ -611,7 +610,7 @@ useEffect(() => {
               sm:block
             "
           >
-           
+
 
             <p className="mt-1 text-[12px] font-bold text-white">
               {active.name}
@@ -622,8 +621,8 @@ useEffect(() => {
         {/* ===================================================
             RIGHT SIDE
         ==================================================== */}
-<div
-  className="
+        <div
+          className="
     order-3
     hidden
     h-[380px]
@@ -634,7 +633,7 @@ useEffect(() => {
     md:grid
     md:h-full
   "
->
+        >
           <SideCard
             product={products[3]}
             color="#ED4D78"
@@ -651,7 +650,7 @@ useEffect(() => {
         </div>
       </div>
 
-     
+
     </section>
   );
 }
