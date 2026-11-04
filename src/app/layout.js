@@ -30,6 +30,9 @@ const workSans = Work_Sans({
 export const metadata = {
   title: "Inflatable Packaging Manufacturer & Importer | D Pack",
   description: "D Pack is a trusted manufacturer and importer of Air Cushion Bags, Dunnage Air Bags, Air Column Bags and inflatable packaging solutions.",
+  verification: {
+    google: "HVXcRkauSMMisCiVEB1UOgYhrw-j8-i71zh5zOc4pNI",
+  },
 };
 
 const structuredData = {
@@ -95,6 +98,36 @@ export default function RootLayout({ children }) {
     >
       <head>
         <link rel="canonical" href="https://dpackshop.com/"></link>
+        <script
+          async
+          src="https://www.googletagmanager.com/gtm.js?id=GTM-M5JCKR4F"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());",
+          }}
+        />
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18166665273"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18166665273');",
+          }}
+        />
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-SNGVTX6F4H"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-SNGVTX6F4H');",
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
