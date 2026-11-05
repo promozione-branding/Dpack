@@ -1,4 +1,4 @@
-
+"use client";
 import { handleCallClick } from "@/lib/track";
 import Link from "next/link";
 
@@ -14,7 +14,7 @@ export default function TermsAndConditions() {
       <div className="mx-auto max-w-4xl">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-10 lg:p-12">
           <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#f5a623]">
-            Dpack 
+            Dpack
           </p>
 
           <h1 className="mb-5 text-3xl font-bold text-[#081a33] sm:text-4xl">
@@ -253,7 +253,7 @@ export default function TermsAndConditions() {
           </div>
 
           <div className="mt-10 border-t border-gray-200 pt-6">
-    
+
           </div>
         </div>
       </div>

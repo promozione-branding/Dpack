@@ -1,4 +1,4 @@
-
+"use client";
 import { handleCallClick } from "@/lib/track";
 import Link from "next/link";
 
