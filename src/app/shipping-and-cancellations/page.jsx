@@ -1,4 +1,5 @@
 
+import { handleCallClick } from "@/lib/track";
 import Link from "next/link";
 
 export const metadata = {
@@ -149,7 +150,7 @@ export default function ShippingCancellationsPolicy() {
                   <p className="mb-1 text-sm font-medium text-gray-500">
                     Call Us
                   </p>
-                  <a
+                  <a onClick={() => handleCallClick({ source: "Dpack Ecom", obj: "N/A" })}
                     href="tel:+917669988825"
                     className="font-semibold text-[#081a33] transition hover:text-[#f5a623]"
                   >

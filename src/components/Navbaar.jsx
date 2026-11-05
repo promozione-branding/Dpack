@@ -27,6 +27,7 @@ import {
   MapPin,
   Package,
 } from "lucide-react";
+import { handleCallClick } from "@/lib/track";
 
 /* =========================================================
    NAVIGATION
@@ -283,16 +284,16 @@ function SearchBox({ variant = "desktop" }) {
   }, []);
 
 
-const goToSearch = () => {
-  const value = query.trim();
+  const goToSearch = () => {
+    const value = query.trim();
 
-  if (!value) return;
+    if (!value) return;
 
-  setOpen(false);
-  setActiveIndex(-1);
+    setOpen(false);
+    setActiveIndex(-1);
 
-  router.push(`/products?search=${encodeURIComponent(value)}`);
-};
+    router.push(`/products?search=${encodeURIComponent(value)}`);
+  };
 
 
   const goToProduct = (product) => {
@@ -473,9 +474,8 @@ const goToSearch = () => {
                   setActiveIndex(-1);
                   setQuery("");
                 }}
-                className={`flex items-center gap-3 border-b border-[#F0F0F0] px-4 py-2.5 transition-colors ${
-                  active ? "bg-[#F7F7F5]" : "bg-white"
-                }`}
+                className={`flex items-center gap-3 border-b border-[#F0F0F0] px-4 py-2.5 transition-colors ${active ? "bg-[#F7F7F5]" : "bg-white"
+                  }`}
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden border border-[#E5E7EB] bg-[#F7F7F5]">
                   {image ? (
@@ -730,9 +730,9 @@ export default function Navbar() {
           setCategories(
             Array.isArray(data.categories)
               ? data.categories.filter((category) => {
-                  const name = getCategoryName(category);
-                  return name && name !== "All";
-                })
+                const name = getCategoryName(category);
+                return name && name !== "All";
+              })
               : []
           );
         }
@@ -804,20 +804,20 @@ export default function Navbar() {
               </p>
 
               <div className="hidden items-center gap-3 md:flex">
-  {SOCIAL_LINKS.map(({ label, href, Icon }) => (
-    <a
-      key={label}
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={label}
-      title={label}
-      className="text-[#171717] transition-colors hover:text-[#F5A623]"
-    >
-      <Icon />
-    </a>
-  ))}
-</div>
+                {SOCIAL_LINKS.map(({ label, href, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    title={label}
+                    className="text-[#171717] transition-colors hover:text-[#F5A623]"
+                  >
+                    <Icon />
+                  </a>
+                ))}
+              </div>
             </div>
 
             {/* CENTER OFFER */}
@@ -904,7 +904,7 @@ export default function Navbar() {
                 />
 
                 <div className="leading-tight">
-                  <a
+                  <a onClick={() => handleCallClick({ source: "Dpack Ecom", obj: "N/A" })}
                     href="tel:+917669988825"
                     className="block whitespace-nowrap text-[15px] font-semibold text-[#171717] transition-colors hover:text-[#F5A623]"
                   >
@@ -1032,9 +1032,8 @@ export default function Navbar() {
 
                 <ChevronDown
                   size={14}
-                  className={`text-white/70 transition-transform ${
-                    categoriesOpen ? "rotate-180" : ""
-                  }`}
+                  className={`text-white/70 transition-transform ${categoriesOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -1204,9 +1203,8 @@ export default function Navbar() {
 
                   <ChevronDown
                     size={16}
-                    className={`text-[#999] transition-transform ${
-                      mobileCategoriesOpen ? "rotate-180" : ""
-                    }`}
+                    className={`text-[#999] transition-transform ${mobileCategoriesOpen ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -1289,7 +1287,7 @@ export default function Navbar() {
                       Need Help?
                     </p>
 
-                    <a
+                    <a onClick={() => handleCallClick({ source: "Dpack Ecom", obj: "N/A" })}
                       href="tel:+917669988825"
                       className="mt-1 block truncate text-[13px] font-bold text-[#0C203A] sm:text-[14px]"
                     >

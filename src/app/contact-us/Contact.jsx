@@ -12,6 +12,7 @@ import {
   Clock3,
   Send,
 } from "lucide-react";
+import { handleCallClick } from "@/lib/track";
 
 /* =========================================================
    CONTACT PAGE
@@ -52,7 +53,7 @@ export default function Contact() {
 
     // Open synchronously during the form submission gesture.
     // This avoids popup blockers when opening WhatsApp after the API response.
-  
+
 
     try {
       const response = await fetch("/api/contact-enquiry", {
@@ -94,7 +95,7 @@ export default function Contact() {
       }
 
       setStatus(error.message || "Server error. Please try again later.");
-      } finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -262,7 +263,7 @@ export default function Contact() {
 
                   {/* PHONE */}
 
-                  <motion.a
+                  <motion.a onClick={() => handleCallClick({ source: "Dpack Ecom", obj: "N/A" })}
                     href="tel:+917669988825"
                     whileHover={{ x: 4 }}
                     transition={{ duration: 0.25 }}
@@ -358,7 +359,7 @@ export default function Contact() {
 
                 </div>
 
-            
+
               </div>
             </div>
 
@@ -474,21 +475,21 @@ export default function Contact() {
                   />
 
                   <div>
-  <label className="mb-1.5 block text-[13px] font-semibold text-[#123B5D] uppercase">
-    Message / Requirement Details
-  </label>
+                    <label className="mb-1.5 block text-[13px] font-semibold text-[#123B5D] uppercase">
+                      Message / Requirement Details
+                    </label>
 
-  <textarea
-    rows={3}
-    placeholder="Enter your message or requirement details"
-    className="w-full resize-none border-b border-slate-200 bg-[#FAFBFC] px-3 py-2.5 text-[10px] text-[#123B5D] outline-none transition-all placeholder:text-slate-400 focus:border-[#F5A623]"
-    value={message}
-    onChange={(event) => setMessage(event.target.value)}
-  />
-</div>
+                    <textarea
+                      rows={3}
+                      placeholder="Enter your message or requirement details"
+                      className="w-full resize-none border-b border-slate-200 bg-[#FAFBFC] px-3 py-2.5 text-[10px] text-[#123B5D] outline-none transition-all placeholder:text-slate-400 focus:border-[#F5A623]"
+                      value={message}
+                      onChange={(event) => setMessage(event.target.value)}
+                    />
+                  </div>
                 </div>
 
-               
+
 
 
                 {/* Submit */}
@@ -504,13 +505,12 @@ export default function Contact() {
                       <p
                         role="status"
                         aria-live="polite"
-                        className={`mt-2 text-sm ${
-                          status.includes("successfully")
-                            ? "text-green-700"
-                            : status === "Sending..."
-                              ? "text-slate-500"
-                              : "text-red-600"
-                        }`}
+                        className={`mt-2 text-sm ${status.includes("successfully")
+                          ? "text-green-700"
+                          : status === "Sending..."
+                            ? "text-slate-500"
+                            : "text-red-600"
+                          }`}
                       >
                         {status}
                       </p>
@@ -653,7 +653,7 @@ export default function Contact() {
 
               <div className="mt-5 flex flex-wrap gap-2">
 
-                <a
+                <a onClick={() => handleCallClick({ source: "Dpack Ecom", obj: "N/A" })}
                   href="tel:+917669988825"
                   className="group inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-[16px] font-bold uppercase tracking-[0.06em] text-[#123B5D] transition-all hover:bg-[#F5A623]"
                 >
@@ -683,79 +683,79 @@ export default function Contact() {
     FULL WIDTH GOOGLE MAP
 ====================================================== */}
 
-<section className="w-full px-0 pb-0 pt-6 sm:pt-8">
+      <section className="w-full px-0 pb-0 pt-6 sm:pt-8">
 
-  <div className="relative h-[280px] w-full overflow-hidden sm:h-[340px] lg:h-[390px]">
+        <div className="relative h-[280px] w-full overflow-hidden sm:h-[340px] lg:h-[390px]">
 
-    {/* Google Map */}
+          {/* Google Map */}
 
-    <iframe
-      src="https://www.google.com/maps?q=Shakti%20Auto,%20Second%20Floor,%2024/54B,%20Lala%20Ganesh%20Das%20Marg,%20Tilak%20Nagar,%20West%20Delhi,%20New%20Delhi%20110018,%20Delhi,%20India&output=embed"
-      width="100%"
-      height="100%"
-      style={{
-        border: 0,
-      }}
-      allowFullScreen=""
-      loading="lazy"
-      referrerPolicy="no-referrer-when-downgrade"
-      title="DPACK Location - Shakti Auto, Tilak Nagar"
-    />
+          <iframe
+            src="https://www.google.com/maps?q=Shakti%20Auto,%20Second%20Floor,%2024/54B,%20Lala%20Ganesh%20Das%20Marg,%20Tilak%20Nagar,%20West%20Delhi,%20New%20Delhi%20110018,%20Delhi,%20India&output=embed"
+            width="100%"
+            height="100%"
+            style={{
+              border: 0,
+            }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="DPACK Location - Shakti Auto, Tilak Nagar"
+          />
 
-    {/* Map Label */}
+          {/* Map Label */}
 
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="absolute left-4 top-4 z-10 sm:left-6 sm:top-6"
-    >
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="absolute left-4 top-4 z-10 sm:left-6 sm:top-6"
+          >
 
-      <div className="flex items-center gap-3 bg-[#123B5D] px-4 py-3 shadow-lg sm:px-5">
+            <div className="flex items-center gap-3 bg-[#123B5D] px-4 py-3 shadow-lg sm:px-5">
 
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5A623] text-[#123B5D]">
-          <MapPin size={15} />
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5A623] text-[#123B5D]">
+                <MapPin size={15} />
+              </div>
+
+              <div>
+
+                <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-white/45">
+                  Visit Us
+                </p>
+
+                <p className="mt-0.5 text-[10px] font-semibold text-white sm:text-[11px]">
+                  Tilak Nagar, New Delhi
+                </p>
+
+              </div>
+
+            </div>
+
+          </motion.div>
+
         </div>
 
-        <div>
-
-          <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-white/45">
-            Visit Us
-          </p>
-
-          <p className="mt-0.5 text-[10px] font-semibold text-white sm:text-[11px]">
-            Tilak Nagar, New Delhi
-          </p>
-
-        </div>
-
-      </div>
-
-    </motion.div>
-
-  </div>
-
-</section>
+      </section>
 
     </main>
   );
 }
 
 
-  /* =========================================================
-   INPUT FIELD
-  ========================================================= */
+/* =========================================================
+ INPUT FIELD
+========================================================= */
 
-   function InputField({
+function InputField({
   label,
   placeholder,
   type,
-    value,
-    onChange,
-    required = false,
-    maxLength,
-       }) {
+  value,
+  onChange,
+  required = false,
+  maxLength,
+}) {
   return (
     <div>
 
@@ -775,8 +775,8 @@ export default function Contact() {
 
     </div>
 
-    
+
   );
 
-  
+
 }
