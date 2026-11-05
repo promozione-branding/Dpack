@@ -2,12 +2,6 @@
 import { handleCallClick } from "@/lib/track";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Shipping & Cancellations Policy | Dpack ",
-  description:
-    "Read the shipping, cancellation, return, and replacement policy of Dpack",
-};
-
 export default function ShippingCancellationsPolicy() {
   return (
     <main className="min-h-screen bg-[#f7f8fa] px-4 py-12 sm:px-6 lg:px-8">

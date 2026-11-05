@@ -2,12 +2,6 @@
 import { handleCallClick } from "@/lib/track";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Return & Refund Policy | Dpack ",
-  description:
-    "Read  India's return, replacement, refund, and cancellation policy.",
-};
-
 export default function ReturnRefundPolicy() {
   return (
     <main className="min-h-screen bg-[#f7f8fa] px-4 py-12 sm:px-6 lg:px-8">

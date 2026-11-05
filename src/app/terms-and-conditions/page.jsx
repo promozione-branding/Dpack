@@ -2,12 +2,6 @@
 import { handleCallClick } from "@/lib/track";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Terms & Conditions | Dpack ",
-  description:
-    "Read the terms and conditions for using the Dpack  website and purchasing products.",
-};
-
 export default function TermsAndConditions() {
   return (
     <main className="min-h-screen bg-[#f7f8fa] px-4 py-12 sm:px-6 lg:px-8">
