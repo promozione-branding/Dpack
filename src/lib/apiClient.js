@@ -74,7 +74,7 @@ export const authAPI = {
       method: "POST",
       body: JSON.stringify({ mobile, otp }),
     }),
-firebaseLogin: (idToken) =>
+  firebaseLogin: (idToken) =>
     request("/api/auth/firebase-login", {
       method: "POST",
       body: JSON.stringify({ idToken }),
@@ -140,6 +140,8 @@ export const ordersAPI = {
     }),
 
   list: () => request("/api/orders"),
+  getById: (id) =>
+    request(`/api/orders/${encodeURIComponent(id)}`),
 };
 
 export const couponsAPI = {

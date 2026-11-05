@@ -74,16 +74,57 @@ export default function MyAccountPage() {
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
   const [profileEdited, setProfileEdited] = useState(false);
-
-  const [profile, setProfile] = useState(() =>
-    getInitialProfile(null)
-  );
+  const [profile, setProfile] = useState(() => getInitialProfile(null));
 
   useEffect(() => {
     if (hydrated && user && !profileEdited) {
       setProfile(getInitialProfile(user));
     }
   }, [user, hydrated, profileEdited]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchOrders = async () => {
+      try {
+        setLoadingOrders(true);
+        setError("");
+
+        const response = await ordersAPI.list();
+
+        if (cancelled) return;
+        if (response.success === false) {
+          throw new Error(response.message || "Failed to fetch orders");
+        }
+
+        setOrders(
+          Array.isArray(response)
+            ? response
+            : Array.isArray(response.orders)
+              ? response.orders
+              : Array.isArray(response.data)
+                ? response.data
+                : []);
+
+      } catch (err) {
+        if (cancelled) return;
+
+        console.error("Error fetching orders:", err);
+        setError(err.message || "Something went wrong");
+        setOrders([]);
+      } finally {
+        if (!cancelled) {
+          setLoadingOrders(false);
+        }
+      }
+    };
+
+    fetchOrders();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const accountProfile = profile;
 
@@ -676,8 +717,7 @@ export default function MyAccountPage() {
                       No orders yet. <Link href="/products" className="font-semibold text-[#081A33] underline">Browse products</Link>
                     </div>
                   ) : displayOrders.map((order) => (
-                    <div
-                      key={order.id}
+                    <div key={order.id}
                       className="group border border-[#081A33]/10 bg-white p-5 transition duration-300 hover:-translate-y-1 hover:border-[#F5A623]/40 hover:shadow-[0_15px_40px_rgba(8,26,51,0.07)] sm:p-6"
                     >
                       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -723,10 +763,10 @@ export default function MyAccountPage() {
                             <StatusBadge order={order} />
                           </div>
 
-                          <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#081A33] transition hover:text-[#F5A623]">
+                          <a href={`/order/${order.id}`} className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#081A33] transition hover:text-[#F5A623]">
                             View Order
                             <ArrowRight size={14} />
-                          </button>
+                          </a>
 
                         </div>
                       </div>
