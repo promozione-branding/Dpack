@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Users, RefreshCw, ChevronLeft, ChevronRight, Search, UserCheck, Shield } from "lucide-react";
+import {
+  Users,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  UserCheck,
+  Shield,
+  Trash2,
+} from "lucide-react";
 import { adminAPI } from "@/lib/apiClient";
 
 export default function AdminUsersPage() {
@@ -9,22 +17,56 @@ export default function AdminUsersPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const limit = 20;
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
       const res = await adminAPI.listUsers({ page, limit });
-      setUsers(res.users);
+      setUsers(res.users || []);
       setTotal(res.total);
-    } catch (e) {
-      console.error(e);
+    } catch (cause) {
+      setError(cause.message || "Could not load users.");
     } finally {
       setLoading(false);
     }
   }, [page]);
 
   useEffect(() => { load(); }, [load]);
+
+  const handleDelete = async (user) => {
+    if (
+      !window.confirm(
+        `Delete ${user.name || user.mobile}'s account? This cannot be undone. Their order history will be kept.`
+      )
+    ) {
+      return;
+    }
+
+    setDeletingId(user._id);
+    setError("");
+    setNotice("");
+    try {
+      await adminAPI.deleteUser(user._id);
+      setUsers((currentUsers) =>
+        currentUsers.filter((currentUser) => currentUser._id !== user._id)
+      );
+      setTotal((currentTotal) => Math.max(0, currentTotal - 1));
+      setNotice(`${user.name || "User"} was deleted.`);
+
+      if (users.length === 1 && page > 1) {
+        setPage((currentPage) => currentPage - 1);
+      }
+    } catch (cause) {
+      setError(cause.message || "Could not delete user.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const totalPages = Math.ceil(total / limit);
 
@@ -40,6 +82,17 @@ export default function AdminUsersPage() {
           Refresh
         </button>
       </div>
+
+      {error && (
+        <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </p>
+      )}
+      {notice && (
+        <p role="status" className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          {notice}
+        </p>
+      )}
 
       <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
         {loading ? (
@@ -57,7 +110,9 @@ export default function AdminUsersPage() {
         ) : users.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-16 text-center">
             <Users className="h-10 w-10 text-gray-300" />
-            <p className="text-gray-500">No users yet</p>
+            <p className="text-gray-500">
+              {error ? "Could not load users" : "No users yet"}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -70,6 +125,7 @@ export default function AdminUsersPage() {
                   <th className="px-4 py-3.5">Role</th>
                   <th className="px-4 py-3.5">Joined</th>
                   <th className="px-4 py-3.5">Last Login</th>
+                  <th className="px-4 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -103,6 +159,18 @@ export default function AdminUsersPage() {
                       {u.lastLoginAt
                         ? new Date(u.lastLoginAt).toLocaleDateString("en-IN")
                         : "—"}
+                    </td>
+                    <td className="px-4 py-3.5 text-right">
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(u)}
+                        disabled={u.role === "admin" || deletingId !== null}
+                        title={u.role === "admin" ? "Admin accounts cannot be deleted" : "Delete user"}
+                        aria-label={`Delete ${u.name || u.mobile}`}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}

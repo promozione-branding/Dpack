@@ -6,8 +6,11 @@ import { verifyFirebaseIdToken } from "@/lib/firebaseVerify";
 
 export async function POST(request) {
   try {
-    const { idToken } = await request.json();
+    const body = await request.json();
+    const idToken = body?.idToken;
+    const name = typeof body?.name === "string" ? body.name.trim() : "";
     if (!idToken) return err("Missing idToken");
+    if (name.length > 100) return err("Name must be 100 characters or fewer");
 
     let decoded;
     try {
@@ -29,8 +32,10 @@ export async function POST(request) {
     if (!user) {
       user = await User.create({
         mobile: cleaned,
-        name: `User ${cleaned.slice(-4)}`,
+        name: name || `User ${cleaned.slice(-4)}`,
       });
+    } else if (name && (!user.name || user.name === `User ${cleaned.slice(-4)}`)) {
+      user.name = name;
     }
 
     if (!user.isActive) return err("Account is disabled", 403);

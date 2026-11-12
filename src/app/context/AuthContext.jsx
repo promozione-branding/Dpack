@@ -17,7 +17,11 @@ import {
 } from "@/lib/apiClient";
 import { syncCartFromServer } from "@/lib/cartBus";
 import { addToCart } from "@/lib/cartBus";
-import { sendFirebaseOtp, verifyFirebaseOtp } from "@/lib/firebase";
+import {
+  resetFirebaseOtp,
+  sendFirebaseOtp,
+  verifyFirebaseOtp,
+} from "@/lib/firebase";
 
 const AuthContext = createContext(null);
 const GUEST_WISHLIST_KEY = "dpack_guest_wishlist";
@@ -132,9 +136,9 @@ export function AuthProvider({ children }) {
     setWishlistState([]);
   }, []);
 
-  const sendOtp = useCallback(async (mobile) => {
+  const sendOtp = useCallback(async (mobile, recaptchaId = "recaptcha-container") => {
     const phone = `+91${mobile}`;
-    const result = await sendFirebaseOtp(phone, "recaptcha-container");
+    const result = await sendFirebaseOtp(phone, recaptchaId);
 
     if (!result.success) {
       return { ok: false, error: result.error?.message || "Failed to send OTP" };
@@ -142,16 +146,27 @@ export function AuthProvider({ children }) {
     return { ok: true, message: "OTP sent" };
   }, []);
 
+  const resetOtp = useCallback(() => {
+    resetFirebaseOtp();
+  }, []);
+
   const loginWithOtp = useCallback(
-    async (mobile, otp) => {
+    async (mobile, otp, name) => {
       const result = await verifyFirebaseOtp(otp);
       if (!result.success) {
         return { ok: false, error: result.error?.message || "Invalid OTP" };
       }
+      const expectedMobile = String(mobile || "").replace(/\D/g, "").slice(-10);
+      const verifiedMobile = result.user.phoneNumber
+        ?.replace(/\D/g, "")
+        .slice(-10);
+      if (expectedMobile && expectedMobile !== verifiedMobile) {
+        return { ok: false, error: "The verification code is for a different mobile number." };
+      }
 
       try {
         const idToken = await result.user.getIdToken();
-        const res = await authAPI.firebaseLogin(idToken);
+        const res = await authAPI.firebaseLogin(idToken, name);
         setToken(res.token);
         setUser(res.user);
         await syncCartFromServer();
@@ -272,6 +287,7 @@ export function AuthProvider({ children }) {
       closeLogin,
       loginIntent,
       sendOtp,
+      resetOtp,
       loginWithOtp,
       loginWithPassword,
       loginWithToken,
@@ -282,7 +298,7 @@ export function AuthProvider({ children }) {
       isWishlisted, toggleWishlist, removeWishlistItem,
       clearWishlist,
       loginOpen, openLogin, closeLogin, loginIntent,
-      sendOtp, loginWithOtp, loginWithToken, logout,
+      sendOtp, resetOtp, loginWithOtp, loginWithToken, logout,
       loginWithPassword,
     ]
   );

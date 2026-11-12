@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
+import { ArrowRight, Loader2, Minus, Phone, Plus, ShoppingBag, Trash2, X } from "lucide-react";
+import { useAuth } from "@/app/context/AuthContext";
 import {
   cartCount,
   cartSubtotal,
@@ -14,8 +15,17 @@ import {
 } from "@/lib/cartBus";
 
 export default function CartDrawer() {
+  const router = useRouter();
+  const { user, hydrated, sendOtp, resetOtp, loginWithOtp } = useAuth();
   const cart = useCart();
   const [open, setOpen] = useState(false);
+  const [checkoutAuthOpen, setCheckoutAuthOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
   const itemCount = cartCount(cart);
   const subtotal = cartSubtotal(cart);
 
@@ -26,13 +36,78 @@ export default function CartDrawer() {
   }, []);
 
   useEffect(() => {
-    if (!open) return undefined;
+    if (!open && !checkoutAuthOpen) return undefined;
     const closeOnEscape = (event) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") {
+        if (checkoutAuthOpen) {
+          setCheckoutAuthOpen(false);
+          setOtpSent(false);
+          setOtp("");
+          setAuthError("");
+          resetOtp();
+        } else {
+          setOpen(false);
+        }
+      }
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [open]);
+  }, [open, checkoutAuthOpen, resetOtp]);
+
+  const proceedToCheckout = () => {
+    if (user) {
+      setOpen(false);
+      router.push("/checkout");
+      return;
+    }
+
+    setAuthError("");
+    setCheckoutAuthOpen(true);
+  };
+
+  const handleCheckoutAuth = async (event) => {
+    event.preventDefault();
+    setAuthError("");
+    setAuthLoading(true);
+
+    try {
+      if (!otpSent) {
+        const normalizedName = name.trim();
+        if (!normalizedName) throw new Error("Enter your name to continue.");
+        if (!/^\d{10}$/.test(mobile)) {
+          throw new Error("Enter a valid 10-digit mobile number.");
+        }
+
+        const result = await sendOtp(mobile, "checkout-recaptcha-container");
+        if (!result.ok) throw new Error(result.error || "Could not send verification code.");
+        setOtpSent(true);
+      } else {
+        if (!/^\d{6}$/.test(otp)) {
+          throw new Error("Enter the 6-digit verification code.");
+        }
+
+        const result = await loginWithOtp(mobile, otp, name.trim());
+        if (!result.ok) throw new Error(result.error || "Could not verify the code.");
+
+        resetOtp();
+        setCheckoutAuthOpen(false);
+        setOpen(false);
+        router.push("/checkout");
+      }
+    } catch (error) {
+      setAuthError(error.message || "Could not continue to checkout.");
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const resetCheckoutAuth = () => {
+    setCheckoutAuthOpen(false);
+    setOtpSent(false);
+    setOtp("");
+    setAuthError("");
+    resetOtp();
+  };
 
   return (
     <AnimatePresence>
@@ -154,13 +229,14 @@ export default function CartDrawer() {
                   <span className="text-xl font-black text-[#081A33]">{formatINR(subtotal)}</span>
                 </div>
                 <p className="mt-1 text-[10px] text-gray-400">Shipping and taxes calculated at checkout.</p>
-                <Link
-                  href="/checkout"
-                  onClick={() => setOpen(false)}
-                  className="mt-5 flex h-12 w-full items-center justify-center gap-2 bg-[#081A33] text-[11px] font-black uppercase tracking-wide text-white hover:bg-[#F5A623] hover:text-[#081A33]"
+                <button
+                  type="button"
+                  onClick={proceedToCheckout}
+                  disabled={!hydrated}
+                  className="mt-5 flex h-12 w-full items-center justify-center gap-2 bg-[#081A33] text-[11px] font-black uppercase tracking-wide text-white hover:bg-[#F5A623] hover:text-[#081A33] disabled:cursor-wait disabled:opacity-60"
                 >
                   Proceed to checkout <ArrowRight size={15} />
-                </Link>
+                </button>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
@@ -171,6 +247,146 @@ export default function CartDrawer() {
               </footer>
             )}
           </motion.aside>
+          <AnimatePresence>
+            {checkoutAuthOpen && (
+              <>
+                <motion.button
+                  type="button"
+                  aria-label="Close checkout sign-in"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={resetCheckoutAuth}
+                  className="fixed inset-0 z-[10000] bg-black/50 backdrop-blur-sm"
+                />
+                <motion.div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="checkout-auth-title"
+                  initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                  className="fixed left-1/2 top-1/2 z-[10001] max-h-[90dvh] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-white p-6 shadow-2xl sm:p-8"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F5A623]">
+                        Secure checkout
+                      </p>
+                      <h2 id="checkout-auth-title" className="mt-2 text-xl font-black text-[#081A33]">
+                        {otpSent ? "Verify your mobile" : "Continue as a customer"}
+                      </h2>
+                      <p className="mt-2 text-sm leading-6 text-gray-500">
+                        {otpSent
+                          ? `Enter the verification code sent to +91 ${mobile}.`
+                          : "Enter your name and mobile number to continue. We’ll verify your number and create an account if needed."}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={resetCheckoutAuth}
+                      aria-label="Close"
+                      className="flex h-9 w-9 shrink-0 items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-[#081A33]"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleCheckoutAuth} className="mt-6 space-y-4">
+                    {!otpSent ? (
+                      <>
+                        <div>
+                          <label htmlFor="checkout-customer-name" className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#081A33]/60">
+                            Name
+                          </label>
+                          <input
+                            id="checkout-customer-name"
+                            type="text"
+                            autoComplete="name"
+                            maxLength={100}
+                            required
+                            value={name}
+                            onChange={(event) => setName(event.target.value)}
+                            placeholder="Your name"
+                            className="h-12 w-full border border-gray-200 px-4 text-sm text-[#081A33] outline-none focus:border-[#F5A623]"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="checkout-customer-mobile" className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#081A33]/60">
+                            Mobile number
+                          </label>
+                          <div className="flex h-12 items-center border border-gray-200 focus-within:border-[#F5A623]">
+                            <span className="border-r border-gray-200 px-3 text-sm text-gray-500">+91</span>
+                            <Phone size={16} className="ml-3 text-gray-400" />
+                            <input
+                              id="checkout-customer-mobile"
+                              type="tel"
+                              inputMode="numeric"
+                              autoComplete="tel-national"
+                              pattern="[0-9]{10}"
+                              maxLength={10}
+                              required
+                              value={mobile}
+                              onChange={(event) => setMobile(event.target.value.replace(/\D/g, ""))}
+                              placeholder="10-digit number"
+                              className="h-full min-w-0 flex-1 px-3 text-sm text-[#081A33] outline-none"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div>
+                        <label htmlFor="checkout-customer-otp" className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#081A33]/60">
+                          Verification code
+                        </label>
+                        <input
+                          id="checkout-customer-otp"
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          pattern="[0-9]{6}"
+                          maxLength={6}
+                          required
+                          value={otp}
+                          onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))}
+                          placeholder="6-digit code"
+                          className="h-12 w-full border border-gray-200 px-4 text-sm tracking-[0.3em] text-[#081A33] outline-none focus:border-[#F5A623]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOtpSent(false);
+                            setOtp("");
+                            setAuthError("");
+                          }}
+                          className="mt-3 text-xs font-semibold text-gray-500 hover:text-[#081A33]"
+                        >
+                          Change name or mobile number
+                        </button>
+                      </div>
+                    )}
+
+                    {authError && (
+                      <p role="alert" className="text-sm text-red-600">{authError}</p>
+                    )}
+                    <div id="checkout-recaptcha-container" />
+                    <button
+                      type="submit"
+                      disabled={authLoading}
+                      className="flex h-12 w-full items-center justify-center gap-2 bg-[#F5A623] px-4 text-xs font-black uppercase tracking-wide text-[#081A33] hover:bg-[#ffb735] disabled:cursor-wait disabled:opacity-60"
+                    >
+                      {authLoading ? (
+                        <Loader2 size={17} className="animate-spin" />
+                      ) : (
+                        otpSent ? "Verify and continue" : "Continue"
+                      )}
+                      {!authLoading && <ArrowRight size={15} />}
+                    </button>
+                  </form>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
         </>
       )}
     </AnimatePresence>

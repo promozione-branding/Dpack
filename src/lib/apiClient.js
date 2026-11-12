@@ -74,10 +74,10 @@ export const authAPI = {
       method: "POST",
       body: JSON.stringify({ mobile, otp }),
     }),
-  firebaseLogin: (idToken) =>
+  firebaseLogin: (idToken, name) =>
     request("/api/auth/firebase-login", {
       method: "POST",
-      body: JSON.stringify({ idToken }),
+      body: JSON.stringify({ idToken, name }),
     }),
   me: () => request("/api/auth/me"),
 };
@@ -277,6 +277,9 @@ export const adminAPI = {
     const qs = new URLSearchParams(params).toString();
     return request(`/api/admin/users${qs ? "?" + qs : ""}`);
   },
+
+  deleteUser: (id) =>
+    request(`/api/admin/users/${encodeURIComponent(id)}`, { method: "DELETE" }),
 
   // seed: () => request("/api/admin/seed", { method: "POST" }),
 };

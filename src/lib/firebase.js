@@ -57,3 +57,10 @@ export const verifyFirebaseOtp = async (otp) => {
     return { success: false, error };
   }
 };
+
+export function resetFirebaseOtp() {
+  if (typeof window === "undefined") return;
+  window.recaptchaVerifier?.clear();
+  delete window.recaptchaVerifier;
+  delete window.confirmationResult;
+}
