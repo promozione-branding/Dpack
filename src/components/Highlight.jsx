@@ -20,11 +20,11 @@ import { addToCart as addProductToCart } from "@/lib/cartBus";
 
 const HIGHLIGHT_PRODUCT_TYPES = [
   ["dunnage bag", "dunnage"],
+  ["honey comb products", "honeycomb paper roll"],
   ["gap filler", "gap-filler"],
   ["air pillow bag", "air pillow", "pillow bag"],
   ["air cushion bag", "air cushion"],
   ["shredder machine", "shredder"],
-  ["honey comb products", "honeycomb paper roll"],
 
   // 3 MORE PRODUCTS
   ["air column roll", "air-column-roll", "air column"],
