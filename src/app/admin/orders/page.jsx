@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, RefreshCw, ShoppingBag } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, ShoppingBag, Trash2 } from "lucide-react";
 import { adminAPI } from "@/lib/apiClient";
 import OrderDetailsModal from "@/components/admin/OrderDetailsModal";
 const STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
@@ -69,6 +69,42 @@ export default function AdminOrdersPage() {
       setSavingId("");
     }
   };
+
+
+  const deleteOrder = async (orderId) => {
+    if (!window.confirm("Are you sure you want to delete this order?")) {
+      return;
+    }
+
+    setSavingId(orderId);
+    setError("");
+
+    try {
+      const response = await fetch(
+        `/api/admin/orders?orderId=${encodeURIComponent(orderId)}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete order");
+      }
+
+      setSelectedOrder(null);
+      await load();
+
+      alert("Order deleted successfully");
+    } catch (cause) {
+      setError(cause.message || "Failed to delete order");
+    } finally {
+      setSavingId("");
+    }
+  };
+
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
@@ -166,6 +202,21 @@ export default function AdminOrdersPage() {
                           </option>
                         ))}
                       </select>
+
+
+                      {/* <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          deleteOrder(order._id);
+                        }}
+                        disabled={savingId === order._id}
+                        title="Delete order"
+                        className="ml-1 mt-0.5 rounded-xl bg-red-500 p-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <Trash2 size={15} />
+                      </button> */}
+
                     </td>
                   </tr>
                 ))}

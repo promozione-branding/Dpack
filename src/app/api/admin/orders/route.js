@@ -48,3 +48,45 @@ export async function PATCH(request) {
     return err("Failed to update order", 500);
   }
 }
+
+export async function DELETE(request) {
+  const { error } = await requireAdmin(request);
+  if (error) return error;
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const orderId = searchParams.get("orderId");
+
+    if (!orderId) {
+      return err("Order ID is required", 400);
+    }
+
+    await connectDB();
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return err("Order not found", 404);
+    }
+
+    // Protect paid orders from accidental deletion
+    if (order.paymentStatus === "paid") {
+      return err("Paid orders cannot be deleted", 403);
+    }
+
+    // Prevent deletion of orders with reserved coupon usage
+    if (order.couponCode && !order.couponUsageReleased) {
+      return err("Release coupon usage before deleting this order", 409);
+    }
+
+    await Order.findByIdAndDelete(orderId);
+
+    return ok({
+      message: "Order deleted successfully",
+      orderId,
+    });
+  } catch (cause) {
+    console.error("Admin order delete failed:", cause);
+    return err("Failed to delete order", 500);
+  }
+}

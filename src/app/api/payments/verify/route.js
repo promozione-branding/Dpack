@@ -117,7 +117,7 @@ export async function POST(request) {
       });
     }
   }
- 
+
   await User.findByIdAndUpdate(authUser._id, { $set: { cart: [] } });
 
   let finalOrder = claimed;
@@ -128,6 +128,66 @@ export async function POST(request) {
       { new: true }
     );
   }
+
+
+  const paidOrder = await Order.findOne({
+    _id: finalOrder._id,
+    userId: authUser._id,
+    paymentStatus: "paid",
+  });
+
+  if (paidOrder) {
+    try {
+      const productNames = paidOrder.items
+        .map((item) => `${item.name} (Qty: ${item.qty})`)
+        .join(", ");
+
+      const payload = {
+        platform: "Dpack Shop - Order Created",
+        supplierToken: "6a266629a0e54917311a8ce5",
+        platformEmail: "info@dpacksolutions.com",
+        name: paidOrder.customerName || "",
+        phone: String(paidOrder.customerMobile || ""),
+        email: paidOrder.customerEmail || "",
+        place: [
+          paidOrder.shippingAddress?.city,
+          paidOrder.shippingAddress?.state,
+          paidOrder.shippingAddress?.pincode,
+        ].filter(Boolean).join(", "),
+        product: productNames,
+        priceRange: `₹${Number(paidOrder.total).toFixed(2)}`,
+        message: [
+          "New order on Dpack Shop",
+          `Order ID: ${paidOrder._id}`,
+          `Products: ${productNames}`,
+          `Total Amount: ₹${paidOrder.total}`,
+          `Payment ID: ${paidOrder.razorpayPaymentId || ""}`,
+          "Payment Status: Paid",
+        ].join("\n"),
+      };
+
+      const response = await fetch(
+        "https://brandbnalo.com/api/form/add",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(8000),
+        }
+      );
+
+      console.log(
+        "BrandBnalo:",
+        response.status,
+        await response.text()
+      );
+    } catch (error) {
+      console.error("BrandBnalo error:", error);
+    }
+  }
+
 
   return ok({ message: "Payment verified, order confirmed", order: finalOrder });
 }
