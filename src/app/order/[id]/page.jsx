@@ -574,7 +574,7 @@ export default function OrderDetailsPage() {
                             </p>
 
                             <Link
-                                href="/contact"
+                                href="/contact-us"
                                 className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-50"
                             >
                                 Contact Support

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, RefreshCw, ShoppingBag } from "lucide-react";
 import { adminAPI } from "@/lib/apiClient";
-
+import OrderDetailsModal from "@/components/admin/OrderDetailsModal";
 const STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 
 function formatMoney(value) {
@@ -19,14 +19,32 @@ export default function AdminOrdersPage() {
   const [error, setError] = useState("");
   const [savingId, setSavingId] = useState("");
   const limit = 20;
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
+
     try {
-      const result = await adminAPI.listOrders({ page, limit, ...(statusFilter ? { status: statusFilter } : {}) });
-      setOrders(result.orders);
-      setTotal(result.total);
+      const result = await adminAPI.listOrders({
+        page,
+        limit,
+        ...(statusFilter ? { status: statusFilter } : {}),
+      });
+
+      const updatedOrders = result.orders || [];
+
+      setOrders(updatedOrders);
+      setTotal(result.total || 0);
+
+      setSelectedOrder((current) => {
+        if (!current) return null;
+
+        return (
+          updatedOrders.find((item) => item._id === current._id) ||
+          current
+        );
+      });
     } catch (cause) {
       setError(cause.message || "Could not load orders.");
     } finally {
@@ -105,7 +123,7 @@ export default function AdminOrdersPage() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {orders.map((order) => (
-                  <tr key={order._id} className="align-top hover:bg-gray-50/60">
+                  <tr key={order._id} onClick={() => setSelectedOrder(order)} className="align-top hover:bg-gray-50/60">
                     <td className="px-5 py-4">
                       <p className="font-mono text-xs font-semibold text-gray-800">#{String(order._id).slice(-8).toUpperCase()}</p>
                       {order.couponCode && <p className="mt-1 text-xs text-green-700">{order.couponCode} −{formatMoney(order.discount)}</p>}
@@ -133,12 +151,20 @@ export default function AdminOrdersPage() {
                     <td className="px-4 py-4">
                       <select
                         value={order.status}
-                        onChange={(event) => updateStatus(order._id, event.target.value)}
+                        onClick={(event) => event.stopPropagation()}
+                        onChange={(event) => {
+                          event.stopPropagation();
+                          updateStatus(order._id, event.target.value);
+                        }}
                         disabled={savingId === order._id}
                         aria-label={`Update order ${String(order._id).slice(-8)} status`}
                         className="rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-xs font-semibold capitalize text-gray-700 outline-none focus:border-rust disabled:opacity-50"
                       >
-                        {STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}
+                        {STATUSES.map((status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        ))}
                       </select>
                     </td>
                   </tr>
@@ -148,6 +174,15 @@ export default function AdminOrdersPage() {
           </div>
         )}
       </div>
+
+      {selectedOrder && (
+        <OrderDetailsModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          onUpdateStatus={updateStatus}
+          savingId={savingId}
+        />
+      )}
 
       {total > 0 && (
         <div className="flex items-center justify-between">
