@@ -10,7 +10,7 @@ const clients = [
   { name: "Client 03", logo: "/9 (7).webp" },
   { name: "Client 04", logo: "/10 (5).webp" },
   { name: "Client 05", logo: "/11 (4).webp" },
-  { name: "Client 06", logo: "/12 (6).webp" },
+  { name: "Client 06", logo: "/moglix.png" },
   { name: "Client 07", logo: "/logo (12) (1).webp" },
 ];
 
