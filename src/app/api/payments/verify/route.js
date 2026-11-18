@@ -5,6 +5,7 @@ import Product from "@/lib/models/Product";
 import Order from "@/lib/models/Order";
 import Coupon from "@/lib/models/Coupon";
 import { requireAuth, ok, err } from "@/lib/apiHelpers";
+import { sendOrderToSalesmax } from "@/lib/salesmax";
 
 export async function POST(request) {
   const { user: authUser, error } = await requireAuth(request);
@@ -135,6 +136,18 @@ export async function POST(request) {
     userId: authUser._id,
     paymentStatus: "paid",
   });
+
+  if (paidOrder) {
+    const salesmaxResult = await sendOrderToSalesmax(paidOrder);
+
+    if (!salesmaxResult.success) {
+      console.error(
+        "Salesmax order notification failed:",
+        String(paidOrder._id),
+        salesmaxResult
+      );
+    }
+  }
 
   if (paidOrder) {
     try {
