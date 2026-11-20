@@ -5,7 +5,7 @@ import Product from "@/lib/models/Product";
 import Order from "@/lib/models/Order";
 import Coupon from "@/lib/models/Coupon";
 import { requireAuth, ok, err } from "@/lib/apiHelpers";
-import { sendOrderToSalesmax } from "@/lib/salesmax";
+import { sendOrderWhatsApp } from "@/lib/bhashsms";
 
 export async function POST(request) {
   const { user: authUser, error } = await requireAuth(request);
@@ -130,7 +130,6 @@ export async function POST(request) {
     );
   }
 
-
   const paidOrder = await Order.findOne({
     _id: finalOrder._id,
     userId: authUser._id,
@@ -138,13 +137,12 @@ export async function POST(request) {
   });
 
   if (paidOrder) {
-    const salesmaxResult = await sendOrderToSalesmax(paidOrder);
+    const whatsappResult = await sendOrderWhatsApp(paidOrder);
 
-    if (!salesmaxResult.success) {
+    if (!whatsappResult.success) {
       console.error(
-        "Salesmax order notification failed:",
-        String(paidOrder._id),
-        salesmaxResult
+        "Order WhatsApp request failed:",
+        whatsappResult.error || whatsappResult.response
       );
     }
   }
