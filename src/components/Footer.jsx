@@ -148,10 +148,10 @@ const trustItems = [
 export default function Footer() {
 
   const pathname = usePathname();
-    const isAdminRoute = pathname.startsWith("/admin");
-    if (isAdminRoute) {
-        return null; 
-    }
+  const isAdminRoute = pathname.startsWith("/admin");
+  if (isAdminRoute) {
+    return null;
+  }
   return (
     <footer
       className="
@@ -792,8 +792,8 @@ export default function Footer() {
               <ContactItem
                 icon={Phone}
                 label="Call Us"
-                value="91-7669988825"
-                href="tel:7669988825"
+                value="91-7701988825"
+                href="tel:+917701988825"
               />
 
               {/* EMAIL */}
@@ -892,7 +892,7 @@ export default function Footer() {
             
             "
           >
-           Website Designed By Inquiry Bazaar Pvt. Ltd.  <a href="https://www.inquirybazaar.com/" target="_blank" rel="noopener noreferrer" className="text-[#F5A623] hover:underline">
+            Website Designed By Inquiry Bazaar Pvt. Ltd.  <a href="https://www.inquirybazaar.com/" target="_blank" rel="noopener noreferrer" className="text-[#F5A623] hover:underline">
               B2B Marketplace </a>
           </span>
         </div>

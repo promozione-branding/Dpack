@@ -449,7 +449,7 @@ export default function RegisterPage() {
                           type="tel"
                           value={form.phone}
                           onChange={handleChange}
-                          placeholder="+91 98765 43210"
+                          placeholder="+91 999999999"
                           required
                           className="dpack-input h-11 w-full border border-[#081A33]/10 bg-[#F8F9FB] pl-10 pr-3 text-sm text-[#081A33] placeholder:text-[#081A33]/30"
                         />

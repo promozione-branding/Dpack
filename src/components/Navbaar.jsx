@@ -905,10 +905,10 @@ export default function Navbar() {
 
                 <div className="leading-tight">
                   <a onClick={() => handleCallClick({ source: "Dpack Ecom", obj: "N/A" })}
-                    href="tel:+917669988825"
+                    href="tel:+917701988825"
                     className="block whitespace-nowrap text-[15px] font-semibold text-[#171717] transition-colors hover:text-[#F5A623]"
                   >
-                    +91-7669988825
+                    +91-7701988825
                   </a>
                 </div>
               </div>
@@ -1288,10 +1288,10 @@ export default function Navbar() {
                     </p>
 
                     <a onClick={() => handleCallClick({ source: "Dpack Ecom", obj: "N/A" })}
-                      href="tel:+917669988825"
+                      href="tel:+917701988825"
                       className="mt-1 block truncate text-[13px] font-bold text-[#0C203A] sm:text-[14px]"
                     >
-                      +91 766 998 8825
+                      +91 7701988825
                     </a>
                   </div>
                 </div>

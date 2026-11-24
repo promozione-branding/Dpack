@@ -264,7 +264,7 @@ export default function Contact() {
                   {/* PHONE */}
 
                   <motion.a onClick={() => handleCallClick({ source: "Dpack Ecom", obj: "N/A" })}
-                    href="tel:+917669988825"
+                    href="tel:+917701988825"
                     whileHover={{ x: 4 }}
                     transition={{ duration: 0.25 }}
                     className="group block"
@@ -283,7 +283,7 @@ export default function Contact() {
                         </p>
 
                         <p className="mt-1 text-[15px] font-semibold text-white transition-colors group-hover:text-[#F5A623]">
-                          +91-7669988825
+                          +91-7701988825
                         </p>
 
                       </div>
@@ -654,7 +654,7 @@ export default function Contact() {
               <div className="mt-5 flex flex-wrap gap-2">
 
                 <a onClick={() => handleCallClick({ source: "Dpack Ecom", obj: "N/A" })}
-                  href="tel:+917669988825"
+                  href="tel:+917701988825"
                   className="group inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-[16px] font-bold uppercase tracking-[0.06em] text-[#123B5D] transition-all hover:bg-[#F5A623]"
                 >
                   <Phone size={12} />

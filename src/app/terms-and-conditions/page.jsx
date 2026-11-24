@@ -224,10 +224,10 @@ export default function TermsAndConditions() {
                     Call Us
                   </p>
                   <a onClick={() => handleCallClick({ source: "Dpack Ecom", obj: "N/A" })}
-                    href="tel:+917669988825"
+                    href="tel:+917701988825"
                     className="font-semibold text-[#081a33] hover:text-[#f5a623]"
                   >
-                    +91-7669988825
+                    +91-7701988825
                   </a>
                 </div>
 

@@ -246,7 +246,7 @@ export default function OrderDetailsPage() {
                     {error || "Order not found"}
                 </p>
                 <button
-                    onClick={() => router.push("/orders")}
+                    onClick={() => router.push("/order")}
                     className="mt-6 rounded-xl bg-gray-900 px-6 py-3 text-sm font-medium text-white hover:bg-gray-800"
                 >
                     Back to Orders
@@ -274,7 +274,7 @@ export default function OrderDetailsPage() {
                         Home
                     </Link>
                     <ChevronRight size={14} />
-                    <Link href="/orders" className="hover:text-gray-900">
+                    <Link href="/order" className="hover:text-gray-900">
                         My Orders
                     </Link>
                     <ChevronRight size={14} />
@@ -287,7 +287,7 @@ export default function OrderDetailsPage() {
                 <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <Link
-                            href="/orders"
+                            href="/order"
                             className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900"
                         >
                             <ArrowLeft size={16} />
