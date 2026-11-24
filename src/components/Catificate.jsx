@@ -1,31 +1,29 @@
-
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   ArrowUpRight,
-  BadgeCheck,
-  Award,
   ShieldCheck,
   ShoppingBag,
   ExternalLink,
-  Building2,
+  X,
+  Maximize2,
+  Download,
 } from "lucide-react";
 
 const certificates = [
   {
- 
     title: "ISO Certificate",
-    image: "/iso.webp",
-
+    image: "/58934_DPACK_9001.pdf",
+    type: "pdf",
   },
   {
-  
     title: "GEM Registered",
     image: "/gem (1).webp",
+    type: "image",
   },
 ];
-
 const marketplaces = [
   {
     name: "Amazon",
@@ -58,6 +56,29 @@ const marketplaces = [
 ];
 
 export default function Cartificat() {
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
+
+  useEffect(() => {
+    if (!selectedCertificate) return;
+
+    const previousOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (e) => {
+      if (e.key === "Escape") {
+        setSelectedCertificate(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [selectedCertificate]);
+
   return (
     <section className="relative overflow-hidden bg-[#081A33] py-11 text-white sm:py-10 lg:py-15">
       {/* Background decoration */}
@@ -88,51 +109,74 @@ export default function Cartificat() {
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {certificates.map((certificate) => {
-              
+              {certificates.map((certificate) => (
+                <button
+                  type="button"
+                  key={certificate.title}
+                  onClick={() => setSelectedCertificate(certificate)}
+                  className="group cursor-pointer overflow-hidden border border-white/10 bg-[#0C2342] text-left transition-all duration-300 hover:border-[#F5A623]/60"
+                >
+                  {/* Certificate Preview */}
+                  <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-[#F7F8FA]">
 
-                return (
-                  <article
-                    key={certificate.title}
-                    className="group overflow-hidden border border-white/10 bg-[#0C2342] transition-colors duration-300 hover:border-[#F5A623]/60"
-                  >
-                    {/* Certificate preview */}
-                    <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-[#F7F8FA] p-3">
+                    {certificate.type === "pdf" ? (
+                      <iframe
+                        src={`${certificate.image}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                        title={certificate.title}
+                        className="pointer-events-none h-full w-full border-0"
+                        tabIndex={-1}
+                        loading="lazy"
+                      />
+                    ) : (
                       <Image
                         src={certificate.image}
                         alt={certificate.title}
                         fill
-                        sizes="(max-width: 639px) 100vw, (max-width: 1023px) 45vw, 25vw"
-                        className="object-contain p-3 transition-transform duration-500 group-hover:scale-[1.03]"
+                        sizes="(max-width: 639px) 100vw, 25vw"
+                        className="object-contain p-3 transition-transform duration-500 group-hover:scale-105"
                       />
+                    )}
 
-                      <span className="absolute left-3 top-3 z-10 bg-[#081A33] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-                        Certificate
-                      </span>
+                    {/* Certificate Badge */}
+                    <span className="absolute left-3 top-3 z-10 bg-[#081A33] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                      Certificate
+                    </span>
+
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#081A33]/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#081A33]">
+                        <Maximize2 size={21} />
+                      </div>
                     </div>
 
-                    <div className="p-4 sm:p-5">
-                      <div className="mb-3 flex items-center gap-2">
-                    
-                        <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
-                          {certificate.number} 
-                        </span>
-                      </div>
+                    {/* Expand Icon */}
+                    <div className="absolute bottom-3 right-3 z-20 flex h-9 w-9 items-center justify-center bg-[#081A33] text-white">
+                      <Maximize2 size={16} />
+                    </div>
+                  </div>
 
-                      <h4 className="text-lg font-bold">
+                  {/* Certificate Details */}
+                  <div className="flex items-center justify-between gap-3 p-4 sm:p-5">
+                    <div>
+                      <h4 className="text-base font-bold sm:text-lg">
                         {certificate.title}
                       </h4>
 
-                      <p className="mt-2 text-xs leading-6 text-slate-400 sm:text-sm">
-                        {certificate.description}
+                      <p className="mt-1 text-xs text-slate-400">
+                        Click to view certificate
                       </p>
                     </div>
-                  </article>
-                );
-              })}
+
+                    <ArrowUpRight
+                      size={20}
+                      className="shrink-0 text-[#F5A623] transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
+                    />
+                  </div>
+                </button>
+              ))}
             </div>
 
-    
+
           </div>
 
           {/* RIGHT: Marketplaces */}
@@ -191,6 +235,92 @@ export default function Cartificat() {
           </div>
         </div>
       </div>
+      {/* Certificate Modal */}
+      {selectedCertificate && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-3 backdrop-blur-sm sm:p-6"
+          onClick={() => setSelectedCertificate(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="certificate-modal-title"
+            onClick={(e) => e.stopPropagation()}
+            className="flex h-[90dvh] w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-white/10 bg-[#081A33] shadow-2xl"
+          >
+            {/* Modal Header */}
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-4 py-4 sm:px-6">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#F5A623]">
+                  Our Credentials
+                </p>
+
+                <h3
+                  id="certificate-modal-title"
+                  className="mt-1 truncate text-base font-bold text-white sm:text-xl"
+                >
+                  {selectedCertificate.title}
+                </h3>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-2">
+
+                {/* Download Certificate */}
+                <a
+                  href={selectedCertificate.image}
+                  download
+                  title="Download certificate"
+                  aria-label="Download certificate"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-white transition-colors hover:bg-white/10"
+                >
+                  <Download size={19} />
+                </a>
+
+                {/* Open in New Tab */}
+                <a
+                  href={selectedCertificate.image}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Open in new tab"
+                  aria-label="Open in new tab"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-white transition-colors hover:bg-white/10"
+                >
+                  <ExternalLink size={19} />
+                </a>
+
+                {/* Close Modal */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedCertificate(null)}
+                  aria-label="Close certificate"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-[#F5A623] text-[#081A33] transition-colors hover:bg-white"
+                >
+                  <X size={22} />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="relative min-h-0 flex-1 overflow-hidden bg-[#F7F8FA]">
+              {selectedCertificate.type === "pdf" ? (
+                <iframe
+                  src={`${selectedCertificate.image}#view=FitH`}
+                  title={selectedCertificate.title}
+                  className="h-full w-full border-0"
+                />
+              ) : (
+                <Image
+                  src={selectedCertificate.image}
+                  alt={selectedCertificate.title}
+                  fill
+                  sizes="100vw"
+                  className="object-contain p-4 sm:p-6"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
