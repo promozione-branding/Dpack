@@ -328,9 +328,9 @@ export default function Inquiry() {
     return (
         <main className="min-h-screen bg-[#f8f9fb]">
             {/* Products Section */}
-            <section className="mx-auto max-w-[1500px] px-4 py-8 sm:px-8 lg:px-12 lg:py-12">
+            <section className="mx-auto max-w-[1700px] px-2 py-8 sm:px-8 lg:py-12">
 
-                <div className="grid items-start gap-7 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]">
+                <div className="grid items-start gap-5 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]">
 
                     {/* Desktop Filter Sidebar */}
                     <aside className="sticky top-5 hidden rounded-2xl border border-gray-200 bg-white p-5 lg:block">
@@ -467,7 +467,7 @@ export default function Inquiry() {
 
                         {/* Product Grid */}
                         {filteredProducts.length > 0 ? (
-                            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                            <div className="grid sm:gap-3 gap-2 grid-cols-2 xl:grid-cols-4">
 
                                 {filteredProducts.map((product) => (
                                     <article
@@ -489,28 +489,28 @@ export default function Inquiry() {
                                             />
 
                                             {/* Size Label */}
-                                            <span className="absolute left-3 top-3 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700">
+                                            <span className="absolute left-1 top-1 sm:left-3 sm:top-3 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700">
                                                 {product.size}
                                             </span>
                                         </Link>
 
                                         {/* Product Details */}
-                                        <div className="flex flex-1 flex-col p-4">
-                                            <span className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-gray-400">
+                                        <div className="flex flex-1 flex-col sm:p-4 p-2">
+                                            <span className="mb-1 sm:block hidden text-[10px] font-semibold uppercase tracking-widest text-gray-400">
                                                 Air Cushion Gap Filler
                                             </span>
 
                                             <Link
                                                 href={`${product.slug}`}
-                                                className="mb-4 block"
+                                                className="sm:mb-4 block"
                                             >
-                                                <h2 className="line-clamp-3 text-[15px] font-semibold leading-[22px] text-gray-900 transition-colors hover:text-[var(--primary,#102A43)]">
+                                                <h2 className="line-clamp-3 text-xs sm:text-[15px] font-semibold sm:leading-[22px] text-gray-900 transition-colors hover:text-[var(--primary,#102A43)]">
                                                     {product.name}
                                                 </h2>
                                             </Link>
 
                                             {/* Specifications */}
-                                            <div className="mb-2 grid grid-cols-2 divide-x divide-gray-200 rounded-lg border border-gray-200 bg-gray-50">
+                                            <div className="mb-2 hidden sm:grid grid-cols-2 divide-x divide-gray-200 rounded-lg border border-gray-200 bg-gray-50">
 
                                                 <div className="p-3">
                                                     <div className="mb-1 flex items-center gap-1.5 text-[11px] text-gray-500">
@@ -538,7 +538,7 @@ export default function Inquiry() {
                                             {/* Inquiry Button */}
                                             <Link
                                                 href={`${product.slug}`}
-                                                className="mt-auto flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--primary,#102A43)] px-4 py-3.5 text-sm font-medium text-white transition-all duration-300 hover:opacity-90"
+                                                className="mt-auto sm:flex hidden w-full items-center justify-center gap-2 rounded-lg bg-[var(--primary,#102A43)] px-4 py-3.5 text-sm font-medium text-white transition-all duration-300 hover:opacity-90"
                                             >
                                                 View Product
 
