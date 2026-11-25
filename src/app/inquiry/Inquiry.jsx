@@ -502,7 +502,7 @@ export default function Inquiry() {
 
                                             <Link
                                                 href={`${product.slug}`}
-                                                className="sm:mb-4 block"
+                                                className="sm:mb-4 mb-2 block"
                                             >
                                                 <h2 className="line-clamp-3 text-xs sm:text-[15px] font-semibold sm:leading-[22px] text-gray-900 transition-colors hover:text-[var(--primary,#102A43)]">
                                                     {product.name}
@@ -538,7 +538,7 @@ export default function Inquiry() {
                                             {/* Inquiry Button */}
                                             <Link
                                                 href={`${product.slug}`}
-                                                className="mt-auto sm:flex hidden w-full items-center justify-center gap-2 rounded-lg bg-[var(--primary,#102A43)] px-4 py-3.5 text-sm font-medium text-white transition-all duration-300 hover:opacity-90"
+                                                className="mt-auto flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--primary,#102A43)] p-2 sm:px-4 sm:py-3.5 text-sm font-medium text-white transition-all duration-300 hover:opacity-90"
                                             >
                                                 View Product
 
