@@ -22,7 +22,7 @@ const gapFillerProducts = [
         size: "100 × 200mm",
         name: "Shoe Gap Filler for Footwear Packaging – 100 × 200mm, 237 Pcs",
         quantity: 237,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
         slug: "/products/gap-filler-100mm-x-200mm",
     },
     {
@@ -30,7 +30,7 @@ const gapFillerProducts = [
         size: "100 × 200mm",
         name: "Air Cushion Gap Filler for Shoe Box Packing – 100 × 200mm, 237 Pcs",
         quantity: 237,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
         slug: "/products/gap-filler-100mm-x-200mm",
     },
     {
@@ -38,7 +38,7 @@ const gapFillerProducts = [
         size: "100 × 200mm",
         name: "Gap Filler for Small Parcel Packaging – 100 × 200mm, 237 Pcs",
         quantity: 237,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
         slug: "/products/gap-filler-100mm-x-200mm",
     },
     {
@@ -46,7 +46,7 @@ const gapFillerProducts = [
         size: "200 × 200mm",
         name: "Shoe Gap Filler for Sports Shoes Packaging – 200 × 200mm, 118 Pcs",
         quantity: 118,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
         slug: "/products/gap-filler-200mmx-200mm-118-pcs",
     },
     {
@@ -54,7 +54,7 @@ const gapFillerProducts = [
         size: "200 × 200mm",
         name: "Air Gap Filler for Mobile Accessories Packaging – 200 × 200mm, 118 Pcs",
         quantity: 118,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
         slug: "/products/gap-filler-200mmx-200mm-118-pcs",
     },
     {
@@ -62,7 +62,7 @@ const gapFillerProducts = [
         size: "200 × 200mm",
         name: "Gap Filler for E-commerce Parcel Packing – 200 × 200mm, 118 Pcs",
         quantity: 118,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
         slug: "/products/gap-filler-200mmx-200mm-118-pcs",
     },
     {
@@ -70,7 +70,7 @@ const gapFillerProducts = [
         size: "200 × 300mm",
         name: "Shoe Gap Filler for Shoe and Sneaker Packaging – 200 × 300mm, 78 Pcs",
         quantity: 78,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
         slug: "/products/gap-filler-200mmx-300mm",
     },
     {
@@ -78,7 +78,7 @@ const gapFillerProducts = [
         size: "200 × 300mm",
         name: "Gap Filler for Footwear and Sandal Packaging – 200 × 300mm, 78 Pcs",
         quantity: 78,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
         slug: "/products/gap-filler-200mmx-300mm",
     },
     {
@@ -86,7 +86,7 @@ const gapFillerProducts = [
         size: "200 × 300mm",
         name: "Air Cushion Filler for Courier Box Packaging – 200 × 300mm, 78 Pcs",
         quantity: 78,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
         slug: "/products/gap-filler-200mmx-300mm",
     },
     {
@@ -94,7 +94,7 @@ const gapFillerProducts = [
         size: "300 × 400mm",
         name: "Shoe Gap Filler for Large Footwear Boxes – 300 × 400mm, 52 Pcs",
         quantity: 52,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
         slug: "/products/gap-filler-300mm-x-400mm",
     },
     {
@@ -102,7 +102,7 @@ const gapFillerProducts = [
         size: "300 × 400mm",
         name: "Gap Filler for Handbag and Leather Product Packaging – 300 × 400mm, 52 Pcs",
         quantity: 52,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
         slug: "/products/gap-filler-300mm-x-400mm",
     },
     {
@@ -110,7 +110,7 @@ const gapFillerProducts = [
         size: "300 × 400mm",
         name: "Air Cushion Filler for Glass Product Packaging – 300 × 400mm, 52 Pcs",
         quantity: 52,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
         slug: "/products/gap-filler-300mm-x-400mm",
     },
     {
@@ -118,7 +118,7 @@ const gapFillerProducts = [
         size: "400 × 400mm",
         name: "Large Shoe Gap Filler for Bulk Footwear Packaging – 400 × 400mm, 29 Pcs",
         quantity: 29,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
         slug: "/products/gap-filler-320mm-x-390mm",
     },
     {
@@ -126,7 +126,7 @@ const gapFillerProducts = [
         size: "400 × 400mm",
         name: "Gap Filler for Large Carton Box Packaging – 400 × 400mm, 29 Pcs",
         quantity: 29,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
         slug: "/products/gap-filler-320mm-x-390mm",
     },
     {
@@ -134,7 +134,7 @@ const gapFillerProducts = [
         size: "400 × 400mm",
         name: "Air Cushion Gap Filler for Furniture Packaging – 400 × 400mm, 29 Pcs",
         quantity: 29,
-        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/3d7fb175-342c-4c19-a033-4b6ef15f3155",
+        image: "https://pub-6773b48348124a078cb55322f384ad44.r2.dev/dpack/products/65b6450c-4dc2-4e3d-9248-9590f4132bee",
         slug: "/products/gap-filler-320mm-x-390mm",
     },
 ];
