@@ -120,13 +120,15 @@ export default function Cartificat() {
                   <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-[#F7F8FA]">
 
                     {certificate.type === "pdf" ? (
-                      <iframe
-                        src={`${certificate.image}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
-                        title={certificate.title}
-                        className="pointer-events-none h-full w-full border-0"
-                        tabIndex={-1}
-                        loading="lazy"
-                      />
+                      <div className="flex h-full w-full items-center justify-center overflow-hidden bg-white">
+                        <iframe
+                          src={`${certificate.image}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                          title={certificate.title}
+                          className="pointer-events-none h-full aspect-[210/297] max-w-full border-0 bg-white"
+                          tabIndex={-1}
+                          loading="lazy"
+                        />
+                      </div>
                     ) : (
                       <Image
                         src={certificate.image}
@@ -235,6 +237,7 @@ export default function Cartificat() {
           </div>
         </div>
       </div>
+
       {/* Certificate Modal */}
       {selectedCertificate && (
         <div
